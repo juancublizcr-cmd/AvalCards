@@ -1,0 +1,32 @@
+Esta es la pregunta más importante de todo el negocio: la confianza es lo que hace que la gente compre una y otra vez sin dudar.
+
+Para demostrarle al público que el Raspa y Gana es 100% justo, transparente, legal y no manipulado a dedo, las mejores plataformas del mundo y las marcas en Costa Rica aplican estos 4 pilares fundamentales de transparencia:
+
+1. 🔐 Motor de Azar Criptográfico Real (RNG - Random Number Generator)
+El sistema no sabe quién está jugando, ni de dónde viene, ni cuánto dinero tiene.
+Cada vez que alguien presiona la tarjeta o la compra, el sistema ejecuta un algoritmo matemático de azar criptográfico (RNG) en el servidor:
+Nadie puede predecir ni alterar la combinación de símbolos en vivo.
+La tarjeta se genera de forma instantánea e imparcial con base en las probabilidades matemáticas configuradas.
+2. 🧾 Código de Folio / Huella Digital Única por Tarjeta (Hash ID)
+Cada tarjeta que el usuario raspa genera un Código Único de Auditoría (por ejemplo: #RSP-84920-CR) con fecha y hora exacta hasta el milisegundo.
+¿Para qué sirve?
+Si el usuario gana, ese código de folio único queda registrado en el sistema. Nadie puede falsificar una captura ni inventar que ganó, y el cliente tiene la certeza de que su tarjeta es única e irrepetible.
+3. 📱 Prueba Social en Vivo: Comprobantes de SINPE Móvil Reales
+En Costa Rica, nada genera más confianza y credibilidad que ver el dinero moviéndose:
+
+Cuando una persona gana (ejemplo: ₡50,000 o ₡100,000), le haces la transferencia por SINPE Móvil de inmediato.
+Tomas captura del comprobante bancario del SINPE (tapando la cédula y datos privados por seguridad) y lo subes a:
+Las historias de Instagram / Facebook.
+Los estados de WhatsApp.
+La sección de Testimonios / Ganadores de la web.
+La gente al ver que personas reales de Alajuela, San José, Heredia o Guanacaste reciben sus transferencias en minutos, se convence al 100% de que es real y justo.
+4. ⚖️ Respaldo Legal y Términos Comerciales en Costa Rica
+En Costa Rica, este tipo de juegos digitales opera formalmente bajo la figura de "Evento Promocional Comercial con Premiación Instantánea".
+En el pie de página de tu plataforma ya cuentas con:
+Razón Social Formal: Importadora Luxury Scents LTDA.
+Términos y Condiciones Públicos: Donde se especifica que los premios se entregan de forma transparente e inmediata sin costo de retiro.
+Certificación Notarial: Para los premios mayores (vehículos y motos).
+🛡️ ¿Qué podemos agregar en la pantalla del Raspa y Gana para dar aún más confianza?
+Podemos incluir una insignia discreta y profesional en la tarjeta que diga:
+
+🛡️ Azar Digital Certificado · Algoritmo RNG Ponderado sin intervención humana · Folio #[Código]

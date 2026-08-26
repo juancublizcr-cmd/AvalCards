@@ -1,0 +1,17 @@
+modelo hibrido de ruleta 
+
+El Modelo Híbrido es la combinación del Modelo A + Modelo B en la misma plataforma:
+
+🤝 ¿Cómo funciona en la vida real?
+Le da dos puertas de entrada al cliente según lo que él prefiera:
+
+Puerta 1 (Para el que compra Tokens del Carro):
+
+Si el cliente compra un paquete de tokens (ej. el de 12 tokens por ₡12,000), el sistema le da 3 Giros GRATIS como bono de bienvenida.
+No tiene que pagar nada extra por la ruleta.
+Puerta 2 (Para el que solo quiere jugar la Ruleta rápida):
+
+Si un usuario entra a la web y dice "Yo no quiero tokens del carro, solo quiero probar la ruleta con ₡1,000", hace un SINPE de ₡1,000 y se le desbloquea 1 Giro Oficial.
+💡 ¿Por qué es el mejor de todos?
+No dejas dinero sobre la mesa: Captas al que tiene presupuesto para comprar ₡12,000 en tokens del carro, y también captas al que solo anda ₡1,000 en la bolsa para un tiro rápido.
+Nadie juega gratis: O compró tokens del sorteo, o pagó ₡1,000 por el tiro de ruleta.
