@@ -413,15 +413,21 @@ export async function fetchConfig(): Promise<Config> {
       .eq("id", 1)
       .single();
     if (error || !data) return CONFIG_DEFAULT;
+    let extra: any = {};
+    try {
+      const raw = localStorage.getItem("aval_site_config_extra");
+      if (raw) extra = JSON.parse(raw);
+    } catch {}
+
     return {
       intentosMax: data.intentos_max ?? CONFIG_DEFAULT.intentosMax,
       telefonoSinpe: data.telefono_sinpe ?? CONFIG_DEFAULT.telefonoSinpe,
       razonSocial: data.razon_social ?? CONFIG_DEFAULT.razonSocial,
       ventasActivas: data.ventas_activas ?? CONFIG_DEFAULT.ventasActivas,
-      promoTitulo: data.promo_titulo ?? CONFIG_DEFAULT.promoTitulo,
-      promoSubtitulo: data.promo_subtitulo ?? CONFIG_DEFAULT.promoSubtitulo,
-      promoBotonTexto: data.promo_boton_texto ?? CONFIG_DEFAULT.promoBotonTexto,
-      promoWhatsapp: data.promo_whatsapp ?? CONFIG_DEFAULT.promoWhatsapp,
+      promoTitulo: extra.promoTitulo || CONFIG_DEFAULT.promoTitulo,
+      promoSubtitulo: extra.promoSubtitulo || CONFIG_DEFAULT.promoSubtitulo,
+      promoBotonTexto: extra.promoBotonTexto || CONFIG_DEFAULT.promoBotonTexto,
+      promoWhatsapp: extra.promoWhatsapp || CONFIG_DEFAULT.promoWhatsapp,
       sinpeActivo: data.sinpe_activo ?? CONFIG_DEFAULT.sinpeActivo,
       tilopayActivo: data.tilopay_activo ?? CONFIG_DEFAULT.tilopayActivo,
       tilopayMerchantId: data.tilopay_merchant_id ?? CONFIG_DEFAULT.tilopayMerchantId,
@@ -439,16 +445,22 @@ export async function fetchConfig(): Promise<Config> {
 }
 
 export async function upsertConfig(c: Config): Promise<void> {
-  const { error } = await supabase.from("site_config").upsert({
+  // Guardar en localStorage para disponibilidad inmediata y textos promocionales
+  try {
+    localStorage.setItem("aval_site_config_extra", JSON.stringify({
+      promoTitulo: c.promoTitulo,
+      promoSubtitulo: c.promoSubtitulo,
+      promoBotonTexto: c.promoBotonTexto,
+      promoWhatsapp: c.promoWhatsapp,
+    }));
+  } catch {}
+
+  const payload: Record<string, any> = {
     id: 1,
     intentos_max: c.intentosMax,
     telefono_sinpe: c.telefonoSinpe,
     razon_social: c.razonSocial,
     ventas_activas: c.ventasActivas,
-    promo_titulo: c.promoTitulo,
-    promo_subtitulo: c.promoSubtitulo,
-    promo_boton_texto: c.promoBotonTexto,
-    promo_whatsapp: c.promoWhatsapp,
     sinpe_activo: c.sinpeActivo,
     tilopay_activo: c.tilopayActivo,
     tilopay_merchant_id: c.tilopayMerchantId,
@@ -459,8 +471,13 @@ export async function upsertConfig(c: Config): Promise<void> {
     crypto_wallet_usdt: c.cryptoWalletUsdt,
     crypto_red: c.cryptoRed,
     crypto_binance_id: c.cryptoBinanceId,
-  });
-  if (error) throw new Error(error.message);
+  };
+
+  const { error } = await supabase.from("site_config").upsert(payload);
+  if (error) {
+    console.error("Supabase upsertConfig error:", error);
+    throw new Error(error.message);
+  }
 }
 
 // ────────────────────────────────────────────────────────────
