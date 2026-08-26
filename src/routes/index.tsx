@@ -23,6 +23,7 @@ import { JuegosExpressModal } from "@/components/JuegosExpressModal";
 import { GanadoresSection } from "@/components/GanadoresSection";
 import { FaqSection } from "@/components/FaqSection";
 import { Footer } from "@/components/Footer";
+import { FlyerPromocional } from "@/components/FlyerPromocional";
 import pradoImg from "@/assets/premio-prado.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
 import consolaImg from "@/assets/premio-consola.jpg";
@@ -193,6 +194,18 @@ function IndexPage() {
       abrir(paquetes[2] || paquetes[0] || { cantidad: 12, precio: 12000 });
     }
   };
+
+  // MODO PROMOCIONAL / PRÓXIMAMENTE: Oculta toda la tienda y muestra SOLO el Flyer Promocional
+  if (!config.ventasActivas) {
+    return (
+      <FlyerPromocional
+        premioMayor={premios[0]}
+        config={config}
+        sorteo={sorteo}
+        tiempo={t}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
