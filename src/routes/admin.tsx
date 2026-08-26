@@ -9,6 +9,7 @@ import {
   fetchInventario,
   fetchPremios,
   fetchSorteo,
+  upsertConfig,
   type Cliente,
   type Config,
   type Inventario,
@@ -159,6 +160,31 @@ function Admin() {
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  const nueva = !config.ventasActivas;
+                  const actualizado = { ...config, ventasActivas: nueva };
+                  setConfig(actualizado);
+                  try {
+                    await upsertConfig(actualizado);
+                    toast.success(nueva ? "🟢 ¡Ventas Públicas Activadas!" : "🟡 ¡Modo Preventa / Promocional Activado!");
+                  } catch (err) {
+                    console.error(err);
+                    toast.error("Error al guardar estado");
+                  }
+                }}
+                className={`cursor-pointer px-3 py-1.5 rounded-full text-xs font-bold border transition-colors flex items-center gap-1.5 ${
+                  config.ventasActivas
+                    ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25"
+                    : "bg-amber-500/15 border-amber-500/40 text-amber-400 hover:bg-amber-500/25"
+                }`}
+                title="Haz clic para alternar entre Modo Promocional y Venta Directa"
+              >
+                <span className={`size-2 rounded-full ${config.ventasActivas ? "bg-emerald-400" : "bg-amber-400"} animate-pulse`} />
+                {config.ventasActivas ? "🟢 Venta Abierta" : "🟡 Modo Promo"}
+              </button>
+
               <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex">
                 <Link to="/validar">
                   <Search className="size-4" /> Validar Stickers
