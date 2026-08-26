@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   CheckCircle2,
   Crown,
@@ -41,19 +41,12 @@ export function FlyerPromocional({
 
       {/* 1. Header Minimalista */}
       <header className="relative z-10 border-b border-white/10 bg-black/50 backdrop-blur-md px-4 py-3.5">
-        <div className="mx-auto max-w-5xl flex items-center justify-between">
+        <div className="mx-auto max-w-5xl flex items-center justify-center">
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-6 text-primary" />
             <span className="font-display text-xl sm:text-2xl tracking-widest text-white">
               AVAL <span className="text-primary">MOTORS CR</span>
             </span>
-          </Link>
-
-          <Link
-            to="/admin"
-            className="text-[11px] font-semibold text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg"
-          >
-            <Lock className="size-3 text-primary" /> Panel Admin
           </Link>
         </div>
       </header>
