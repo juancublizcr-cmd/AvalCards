@@ -1,10 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   CheckCircle2,
   Crown,
   Flame,
   Key,
-  Lock,
   MessageCircle,
   ShieldCheck,
   Sparkles,
@@ -13,16 +13,46 @@ import {
 import type { Config, Premio, Sorteo } from "@/lib/admin-store";
 import pradoImg from "@/assets/premio-prado.jpg";
 
+function useCuenta7Dias() {
+  const [tiempo, setTiempo] = useState({ d: 7, h: 0, m: 0, s: 0 });
+
+  useEffect(() => {
+    let target = localStorage.getItem("aval_apertura_7dias");
+    if (!target || isNaN(Number(target)) || Number(target) <= Date.now()) {
+      const sieteDiasMs = Date.now() + 7 * 24 * 60 * 60 * 1000;
+      target = String(sieteDiasMs);
+      localStorage.setItem("aval_apertura_7dias", target);
+    }
+
+    const objetivo = Number(target);
+    const tick = () => {
+      const diff = Math.max(0, objetivo - Date.now());
+      setTiempo({
+        d: Math.floor(diff / 86400000),
+        h: Math.floor((diff / 3600000) % 24),
+        m: Math.floor((diff / 60000) % 60),
+        s: Math.floor((diff / 1000) % 60),
+      });
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return tiempo;
+}
+
 export function FlyerPromocional({
   premioMayor,
   config,
-  tiempo,
 }: {
   premioMayor?: Premio;
   config: Config;
   sorteo: Sorteo;
-  tiempo: { d: number; h: number; m: number; s: number };
+  tiempo?: { d: number; h: number; m: number; s: number };
 }) {
+  const tiempo7d = useCuenta7Dias();
   const rawTel = (config.promoWhatsapp || config.telefonoSinpe || "50686092162").replace(/\D/g, "");
   const telFinal = rawTel.startsWith("506") ? rawTel : `506${rawTel}`;
   const mensaje = encodeURIComponent(
@@ -94,10 +124,10 @@ export function FlyerPromocional({
           </div>
           <div className="grid grid-cols-4 gap-2 text-center">
             {[
-              { val: tiempo.d, lab: "Días" },
-              { val: tiempo.h, lab: "Horas" },
-              { val: tiempo.m, lab: "Min" },
-              { val: tiempo.s, lab: "Seg" },
+              { val: tiempo7d.d, lab: "Días" },
+              { val: tiempo7d.h, lab: "Horas" },
+              { val: tiempo7d.m, lab: "Min" },
+              { val: tiempo7d.s, lab: "Seg" },
             ].map((item, i) => (
               <div key={i} className="rounded-xl border border-white/10 bg-black/60 py-2">
                 <div className="font-display text-2xl sm:text-3xl text-primary font-bold">
