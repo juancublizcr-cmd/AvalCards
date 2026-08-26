@@ -81,17 +81,67 @@ export function ConfigSection({
 
           <div className="flex items-center justify-between rounded-xl border border-border p-4 bg-secondary/30">
             <div>
-              <div className="text-sm font-semibold">Ventas Activas en la Web</div>
+              <div className="text-sm font-semibold">Estado de la Web al Público</div>
               <p className="text-[11px] text-muted-foreground">
-                Pausa o reactiva las compras en la página principal.
+                {borrador.ventasActivas
+                  ? "🟢 En Vivo (Venta abierta con paquetes y checkout)"
+                  : "🟡 Modo Promocional / Próximamente (Venta oculta con botón de WhatsApp)"}
               </p>
             </div>
-            <Switch
-              checked={borrador.ventasActivas}
-              onCheckedChange={(v) => setBorrador({ ...borrador, ventasActivas: v })}
-            />
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-bold ${borrador.ventasActivas ? "text-emerald-500" : "text-amber-500"}`}>
+                {borrador.ventasActivas ? "Venta Activa" : "Modo Promo"}
+              </span>
+              <Switch
+                checked={borrador.ventasActivas}
+                onCheckedChange={(v) => setBorrador({ ...borrador, ventasActivas: v })}
+              />
+            </div>
           </div>
         </div>
+
+        {/* DETALLES DEL MODO PROMOCIONAL */}
+        {!borrador.ventasActivas && (
+          <div className="mt-4 rounded-xl border-2 border-amber-500/40 bg-amber-500/10 p-4 space-y-4">
+            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+              <Sparkles className="size-4" /> Personalización de Pantalla Promocional (Próximamente)
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Título del Anuncio / Preventa</Label>
+              <Input
+                value={borrador.promoTitulo || ""}
+                onChange={(e) => setBorrador({ ...borrador, promoTitulo: e.target.value })}
+                placeholder="🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Mensaje Explicativo</Label>
+              <Input
+                value={borrador.promoSubtitulo || ""}
+                onChange={(e) => setBorrador({ ...borrador, promoSubtitulo: e.target.value })}
+                placeholder="Estamos afinando los últimos detalles. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva!"
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs">Texto del Botón de Contacto</Label>
+                <Input
+                  value={borrador.promoBotonTexto || ""}
+                  onChange={(e) => setBorrador({ ...borrador, promoBotonTexto: e.target.value })}
+                  placeholder="📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA EXCLUSIVA)!"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">WhatsApp para Preventa (sin guiones ni signos)</Label>
+                <Input
+                  value={borrador.promoWhatsapp || ""}
+                  onChange={(e) => setBorrador({ ...borrador, promoWhatsapp: e.target.value })}
+                  placeholder="50686092162"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* 2. CONFIGURACIÓN SINPE MÓVIL */}

@@ -97,6 +97,10 @@ export type Config = {
   telefonoSinpe: string;
   razonSocial: string;
   ventasActivas: boolean;
+  promoTitulo?: string;
+  promoSubtitulo?: string;
+  promoBotonTexto?: string;
+  promoWhatsapp?: string;
 };
 
 export type Ganador = { sticker: string; orden: Orden };
@@ -231,7 +235,11 @@ export const CONFIG_DEFAULT: Config = {
   intentosMax: 5,
   telefonoSinpe: "8609-2162",
   razonSocial: "Importadora Luxury Scents LTDA.",
-  ventasActivas: true,
+  ventasActivas: false, // Inicia en modo promocional para que el admin lo active cuando guste
+  promoTitulo: "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!",
+  promoSubtitulo: "Estamos afinando los últimos detalles de la plataforma. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!",
+  promoBotonTexto: "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA EXCLUSIVA)!",
+  promoWhatsapp: "50686092162",
   sinpeActivo: true,
   tilopayActivo: true,
   tilopayMerchantId: "",
@@ -410,6 +418,10 @@ export async function fetchConfig(): Promise<Config> {
       telefonoSinpe: data.telefono_sinpe ?? CONFIG_DEFAULT.telefonoSinpe,
       razonSocial: data.razon_social ?? CONFIG_DEFAULT.razonSocial,
       ventasActivas: data.ventas_activas ?? CONFIG_DEFAULT.ventasActivas,
+      promoTitulo: data.promo_titulo ?? CONFIG_DEFAULT.promoTitulo,
+      promoSubtitulo: data.promo_subtitulo ?? CONFIG_DEFAULT.promoSubtitulo,
+      promoBotonTexto: data.promo_boton_texto ?? CONFIG_DEFAULT.promoBotonTexto,
+      promoWhatsapp: data.promo_whatsapp ?? CONFIG_DEFAULT.promoWhatsapp,
       sinpeActivo: data.sinpe_activo ?? CONFIG_DEFAULT.sinpeActivo,
       tilopayActivo: data.tilopay_activo ?? CONFIG_DEFAULT.tilopayActivo,
       tilopayMerchantId: data.tilopay_merchant_id ?? CONFIG_DEFAULT.tilopayMerchantId,
@@ -433,6 +445,10 @@ export async function upsertConfig(c: Config): Promise<void> {
     telefono_sinpe: c.telefonoSinpe,
     razon_social: c.razonSocial,
     ventas_activas: c.ventasActivas,
+    promo_titulo: c.promoTitulo,
+    promo_subtitulo: c.promoSubtitulo,
+    promo_boton_texto: c.promoBotonTexto,
+    promo_whatsapp: c.promoWhatsapp,
     sinpe_activo: c.sinpeActivo,
     tilopay_activo: c.tilopayActivo,
     tilopay_merchant_id: c.tilopayMerchantId,

@@ -30,9 +30,12 @@ import {
   fetchPremios,
   fetchInventario,
   fetchSorteo,
+  fetchConfig,
   type Premio,
+  type Config,
   PREMIOS_DEFAULT,
   SORTEO_DEFAULT,
+  CONFIG_DEFAULT,
   FEATURES_DEFAULT,
 } from "@/lib/admin-store";
 
@@ -95,6 +98,7 @@ function IndexPage() {
   const [progreso, setProgreso] = useState(87);
   const [fechaSorteo, setFechaSorteo] = useState("2026-09-27");
   const [sorteo, setSorteo] = useState(SORTEO_DEFAULT);
+  const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
   const [openRaspa, setOpenRaspa] = useState(false);
 
   const t = useCuentaRegresiva(fechaSorteo);
@@ -122,14 +126,18 @@ function IndexPage() {
   useEffect(() => {
     async function cargar() {
       try {
-        const [premiosData, inventarioData, sorteoData] = await Promise.all([
+        const [premiosData, inventarioData, sorteoData, configData] = await Promise.all([
           fetchPremios(),
           fetchInventario(),
           fetchSorteo(),
+          fetchConfig(),
         ]);
 
         if (premiosData && premiosData.length > 0) {
           setPremios(premiosData);
+        }
+        if (configData) {
+          setConfig(configData);
         }
         if (sorteoData) {
           setSorteo(sorteoData);
@@ -156,12 +164,28 @@ function IndexPage() {
     void cargar();
   }, []);
 
+  const abrirWhatsAppPreventa = (textoExtra = "") => {
+    const rawTel = (config.promoWhatsapp || config.telefonoSinpe || "50686092162").replace(/\D/g, "");
+    const tel = rawTel.startsWith("506") ? rawTel : `506${rawTel}`;
+    const baseMsg = `Hola Aval Motors CR, me interesa información sobre el próximo gran evento y la preventa exclusiva de tokens. ${textoExtra}`;
+    const url = `https://wa.me/${tel}?text=${encodeURIComponent(baseMsg)}`;
+    window.open(url, "_blank");
+  };
+
   const abrir = (p: Paquete) => {
+    if (!config.ventasActivas) {
+      abrirWhatsAppPreventa(`Me interesa apartar el paquete de ${p.cantidad} Tokens (₡${p.precio.toLocaleString("es-CR")}).`);
+      return;
+    }
     setPaquete(p);
     setOpen(true);
   };
 
   const irAPaquetes = () => {
+    if (!config.ventasActivas) {
+      abrirWhatsAppPreventa();
+      return;
+    }
     const el = document.getElementById("paquetes-compra");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -174,7 +198,9 @@ function IndexPage() {
     <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Barra de Notificación Superior */}
       <div className="bg-[image:var(--gradient-fire)] py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase">
-        🔥 Edición Especial 2026 · Más del 85% de Tokens colocados · ¡Quedan pocos cupos!
+        {config.ventasActivas
+          ? "🔥 Edición Especial 2026 · Más del 85% de Tokens colocados · ¡Quedan pocos cupos!"
+          : config.promoTitulo || "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"}
       </div>
 
       {/* Header Sticky */}
@@ -224,7 +250,7 @@ function IndexPage() {
               onClick={irAPaquetes}
               className="h-8 px-3 sm:px-4 text-xs sm:text-sm shadow-[var(--shadow-fire)] font-bold whitespace-nowrap"
             >
-              Participar
+              {config.ventasActivas ? "Participar" : "🔥 Preventa"}
             </Button>
           </div>
         </div>
@@ -260,7 +286,8 @@ function IndexPage() {
           <div className="relative mx-auto max-w-6xl px-5 text-center">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-                <Sparkles className="size-3.5" /> Evento Promocional Oficial Costa Rica
+                <Sparkles className="size-3.5" />{" "}
+                {config.ventasActivas ? "Evento Promocional Oficial Costa Rica" : "🔥 PREVENTA EXCLUSIVA 2026"}
               </div>
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
                 <Crown className="size-3.5" /> SuperToken: +$6,000 USD Cash si ganas ({premios[0]?.nombre || "1° Lugar"})
@@ -272,7 +299,9 @@ function IndexPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-              La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los <strong>resultados oficiales</strong>.
+              {config.ventasActivas
+                ? "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales."
+                : config.promoSubtitulo || "Estamos afinando los últimos detalles. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!"}
             </p>
 
             {/* Imagen Principal Showcase con Badges Flotantes */}
@@ -307,7 +336,16 @@ function IndexPage() {
                 onClick={irAPaquetes}
                 className="w-full sm:w-auto text-base px-8 py-7 shadow-[var(--shadow-fire)] group cursor-pointer"
               >
-                🔥 ¡QUIERO PARTICIPAR AHORA! <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                {config.ventasActivas ? (
+                  <>
+                    🔥 ¡QUIERO PARTICIPAR AHORA!{" "}
+                    <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                  </>
+                ) : (
+                  <>
+                    {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
+                  </>
+                )}
               </Button>
               <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-base px-8 py-7">
                 <a href="#como-funciona">¿Cómo funciona? ↓</a>
@@ -498,13 +536,15 @@ function IndexPage() {
 
           <div className="text-center max-w-2xl mx-auto">
             <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-              Elige tu Paquete Digital
+              {config.ventasActivas ? "Elige tu Paquete Digital" : "🔥 Preventa Exclusiva de Tokens"}
             </span>
             <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-              Elige tu paquete de Tokens
+              {config.ventasActivas ? "Elige tu paquete de Tokens" : "Paquetes Oficiales del Evento"}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos.
+              {config.ventasActivas
+                ? "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos."
+                : "La venta directa abrirá muy pronto. ¡Contáctanos por WhatsApp para apartar tus números antes del lanzamiento público!"}
             </p>
           </div>
 
@@ -526,7 +566,7 @@ function IndexPage() {
                 </div>
                 <div className="mt-4 text-2xl font-bold">₡{p.precio.toLocaleString("es-CR")}</div>
                 <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary group-hover:translate-x-0.5 transition-transform">
-                  Adquirir ahora →
+                  {config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
                 </div>
               </button>
             ))}
@@ -565,7 +605,7 @@ function IndexPage() {
 
             <div className="mt-12 text-center">
               <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
-                Comenzar y Elegir mis Tokens →
+                {config.ventasActivas ? "Comenzar y Elegir mis Tokens →" : "🔥 Consultar Preventa por WhatsApp →"}
               </Button>
             </div>
           </div>
