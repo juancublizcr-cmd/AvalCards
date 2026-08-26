@@ -69,7 +69,7 @@ const PAQUETES_DEFAULT: Paquete[] = [
 ];
 
 function useCuentaRegresiva(fechaObjetivo: string) {
-  const [t, setT] = useState({ d: 12, h: 0, m: 0, s: 0 });
+  const [t, setT] = useState({ d: 7, h: 0, m: 0, s: 0 });
   useEffect(() => {
     const objetivo = fechaObjetivo
       ? new Date(fechaObjetivo).getTime()
