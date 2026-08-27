@@ -275,6 +275,12 @@ def build_pdf():
         body_style
     ))
 
+    story.append(Paragraph("<b>Pilar 5: Facultad de Modificación y Mejoras en Beneficio de la Comunidad</b>", h2_style))
+    story.append(Paragraph(
+        "La empresa organizadora se reserva la potestad expresa de actualizar, ampliar, complementar o modificar las bases operativas, catálogo de premios e incentivos de la plataforma, siempre que dichas reformas tengan como propósito <b>optimizar la experiencia, incrementar los beneficios comerciales de los participantes o velar por el interés colectivo de la comunidad de participantes</b>, surtiendo efectos a partir de su publicación oficial en la plataforma web.",
+        body_style
+    ))
+
     # 6. Checklist
     story.append(Paragraph("6. Checklist de Implementación y Lanzamiento", h1_style))
     

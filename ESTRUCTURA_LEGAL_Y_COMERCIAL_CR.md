@@ -95,6 +95,9 @@ El día de la adjudicación del premio mayor (automóvil, motocicleta, bien inmu
 3. Otorgamiento de escritura pública de traspaso de bienes inscribibles en el Registro Nacional de Costa Rica a nombre del ganador.
 4. Registro audiovisual y transmisión en vivo para salvaguardar la reputación y confianza de la plataforma.
 
+### Pilar 5: Facultad de Modificación y Mejoras en Beneficio de la Comunidad
+La empresa organizadora se reserva la potestad expresa de actualizar, ampliar, complementar o modificar en cualquier momento las condiciones operativas, el catálogo de premios o las dinámicas de fidelización de la plataforma, siempre que dichas reformas tengan como propósito **optimizar la experiencia del usuario, incrementar los beneficios comerciales de los participantes o velar por el interés colectivo de la comunidad de participantes**, surtiendo plenos efectos a partir de su publicación oficial en la plataforma web.
+
 ---
 
 ## 📋 6. Checklist de Implementación para el Lanzamiento

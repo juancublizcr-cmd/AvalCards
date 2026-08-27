@@ -56,7 +56,10 @@ Para hacer efectivo el reclamo y traspaso del premio, el favorecido deberá cump
 4. El favorecido dispondrá de un plazo improrrogable de treinta (30) días naturales a partir de la fecha de realización del sorteo para apersonarse a coordinar la formalización.
 5. La entrega formal se realizará mediante comparecencia ante Notario Público, levantándose la respectiva ACTA NOTARIAL DE ADJUDICACIÓN Y ENTREGA DE PREMIO PROMOCIONAL y formalizándose la escritura pública de traspaso ante el Registro Nacional de Costa Rica libre de gravámenes, anotaciones o prendas.
 
-SÉPTIMA: ACEPTACIÓN Y PROTOCOLIZACIÓN.-
+SÉPTIMA: FACULTAD DE MODIFICACIÓN Y MEJORAS EN BENEFICIO DE LA COMUNIDAD.-
+La empresa organizadora "${razonSocial.toUpperCase()}" se reserva el derecho expreso de actualizar, complementar, modificar o perfeccionar en cualquier momento las cláusulas operativas, dinámicas de fidelización, catálogo de premios e incentivos de la plataforma, siempre que dichas reformas tengan por objeto optimizar la experiencia, incrementar los beneficios comerciales de los participantes o velar por el interés colectivo de la comunidad de usuarios. Dichas modificaciones surtirán efectos legales plenos a partir de su publicación oficial en el sitio web de la plataforma.
+
+OCTAVA: ACEPTACIÓN Y PROTOCOLIZACIÓN.-
 El compareciente solicita al suscrito Notario protocolizar en todas sus partes el presente Reglamento Oficial de Promoción Comercial para que surta plenos efectos jurídicos, obligándose su representada a publicarlo íntegramente en la dirección electrónica oficial de la plataforma (https://avalmotors.cr/terminos) a disposición permanente de los consumidores y autoridades competentes.
 
 Leída la presente escritura al compareciente, la encuentra conforme, la aprueba y firmamos en la ciudad de San José, a las diez horas con cuarenta y cinco minutos del día quince de agosto de dos mil veintiséis.- DOY FE.-

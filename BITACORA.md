@@ -146,3 +146,16 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 3. **Documento Maestro y PDF Ejecutivo de Estructura Legal y Comercial:**
    - Generado el documento `ESTRUCTURA_LEGAL_Y_COMERCIAL_CR.md` en la raíz del proyecto.
    - Compilado el PDF oficial `ESTRUCTURA_LEGAL_Y_COMERCIAL_CR.pdf` disponible para descarga en el navegador.
+
+---
+
+## 🚀 Hito 11: Cláusula de Actualización y Mejoras Continuas en Beneficio de la Comunidad
+
+1. **En Términos y Condiciones (`/terminos`):**
+   - Incorporada la sección **7. Modificaciones y Mejoras Continuas en Beneficio de la Comunidad**, estipulando la potestad de la empresa de perfeccionar bases, dinámicas y premios en favor del interés colectivo de los participantes.
+
+2. **En Políticas de Privacidad (`/privacidad`):**
+   - Incorporada la sección **5. Actualizaciones y Mejoras en Beneficio de la Comunidad**, asegurando actualización tecnológica y de seguridad conforme a la Ley N° 8968 (PRODHAB).
+
+3. **En Minuta Notarial y Documentos Maestros (`/admin`, `.md` y `.pdf`):**
+   - Incorporada la **Cláusula SÉPTIMA Notarial** en la escritura pública del Admin, en `ESTRUCTURA_LEGAL_Y_COMERCIAL_CR.md` y en el PDF oficial regenerado.

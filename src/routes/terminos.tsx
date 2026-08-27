@@ -10,6 +10,7 @@ import {
   Lock,
   Scale,
   ShieldCheck,
+  Sparkles,
   Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -211,6 +212,24 @@ function TerminosPage() {
                 Si el <strong>100% de las acciones se completa antes del 27 de septiembre de 2026</strong>, el evento se adelantará y se realizará el domingo más cercano posterior a la finalización de las ventas, informando oportunamente la fecha definitiva por nuestros canales oficiales.
               </li>
             </ul>
+          </div>
+        </section>
+
+        {/* 7. Facultad de Modificación y Mejoras en Beneficio de la Comunidad */}
+        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+              <Sparkles className="size-5" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">7. Modificaciones y Mejoras Continuas en Beneficio de la Comunidad</h2>
+          </div>
+          <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+            <p>
+              <strong>Importadora Luxury Scents LTDA</strong> se reserva la facultad de actualizar, complementar, modificar o perfeccionar en cualquier momento las presentes bases, dinámicas promocionales, catálogo de premios e incentivos de la plataforma, siempre que dichas modificaciones tengan como objetivo <strong>mejorar la experiencia del usuario, incrementar los beneficios comerciales de los participantes o responder a las necesidades colectivas de la comunidad</strong>.
+            </p>
+            <p className="text-xs">
+              Toda modificación o mejora entrará en vigencia y surtirá plenos efectos legales a partir de su publicación oficial en este sitio web. La participación continuada del usuario constituirá su plena aceptación de las condiciones optimizadas.
+            </p>
           </div>
         </section>
       </main>
