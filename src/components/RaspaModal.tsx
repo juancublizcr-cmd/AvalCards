@@ -43,7 +43,7 @@ export function RaspaModal({
   open,
   onOpenChange,
   config,
-  telefonoSoporte = "86092162",
+  telefonoSoporte = "86344772",
 }: RaspaModalProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawing = useRef(false);
@@ -63,7 +63,7 @@ export function RaspaModal({
     { id: "r2", nombre: "₡50,000 en SINPE Móvil", icono: "💵", probabilidad: 10, esGanador: true },
     { id: "r3", nombre: "₡20,000 en SINPE Móvil", icono: "💵", probabilidad: 15, esGanador: true },
     { id: "r4", nombre: "12 Tokens Oficiales", icono: "🎟️", probabilidad: 20, esGanador: true },
-    { id: "r5", nombre: "SuperToken VIP Gratis", icono: "👑", probabilidad: 20, esGanador: true },
+    { id: "r5", nombre: "SuperToken Gratis", icono: "👑", probabilidad: 20, esGanador: true },
     { id: "r6", nombre: "¡Casi lo logras! Sigue Intentando", icono: "⚡", probabilidad: 30, esGanador: false },
   ];
 

@@ -136,7 +136,7 @@ export function ConfigSection({
                 <Input
                   value={borrador.promoWhatsapp || ""}
                   onChange={(e) => setBorrador({ ...borrador, promoWhatsapp: e.target.value })}
-                  placeholder="50686092162"
+                  placeholder="50686344772"
                 />
               </div>
             </div>
@@ -161,11 +161,11 @@ export function ConfigSection({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Teléfono SINPE Móvil</Label>
+            <Label className="text-xs">Número de Teléfono SINPE</Label>
             <Input
-              value={borrador.telefonoSinpe}
+              value={borrador.telefonoSinpe || ""}
               onChange={(e) => setBorrador({ ...borrador, telefonoSinpe: e.target.value })}
-              placeholder="8609-2162"
+              placeholder="8634-4772"
             />
           </div>
           <div className="space-y-2">
@@ -243,12 +243,139 @@ export function ConfigSection({
         </div>
       </section>
 
-      {/* 4. CONFIGURACIÓN CRIPTOMONEDAS */}
+      {/* 3. CONFIGURACIÓN PAYPAL */}
+      <section className="rounded-2xl border border-sky-500/40 bg-card p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-bold text-base text-sky-400">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-300 font-black text-sm">🅿️</span>
+              3. PayPal · Pagos Internacionales (USD / CRC)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Permite a compradores de cualquier país pagar con saldo PayPal, tarjetas internacionales o transferencias.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.paypalActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.paypalActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, paypalActivo: v })}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Email de Negocio / Cuenta Comercial PayPal</Label>
+            <Input
+              value={borrador.paypalEmail || ""}
+              onChange={(e) => setBorrador({ ...borrador, paypalEmail: e.target.value })}
+              placeholder="pagos@avalmotors.cr"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Client ID de PayPal REST API</Label>
+            <Input
+              value={borrador.paypalClientId || ""}
+              onChange={(e) => setBorrador({ ...borrador, paypalClientId: e.target.value })}
+              placeholder="AX..."
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between rounded-xl border border-border p-4 bg-secondary/30">
+          <div>
+            <div className="text-sm font-semibold">Modo Sandbox de PayPal</div>
+            <p className="text-[11px] text-muted-foreground">
+              {borrador.paypalSandbox ?? true
+                ? "Simulación de pagos de prueba mediante cuentas de prueba Sandbox."
+                : "PRODUCCIÓN: Recibe pagos reales en tu cuenta de PayPal Business."}
+            </p>
+          </div>
+          <Switch
+            checked={borrador.paypalSandbox ?? true}
+            onCheckedChange={(v) => setBorrador({ ...borrador, paypalSandbox: v })}
+          />
+        </div>
+      </section>
+
+      {/* 4. CONFIGURACIÓN APPLE PAY */}
+      <section className="rounded-2xl border border-zinc-700 bg-card p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-bold text-base text-zinc-100">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-zinc-800 text-white font-black text-sm">🍏</span>
+              4. Apple Pay · Pagos en 1 Clic (iOS / Mac)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Pago express ultra-rápido y seguro mediante Face ID y Touch ID para dispositivos Apple.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.applePayActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.applePayActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, applePayActivo: v })}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Apple Merchant Identifier</Label>
+            <Input
+              value={borrador.applePayMerchantId || ""}
+              onChange={(e) => setBorrador({ ...borrador, applePayMerchantId: e.target.value })}
+              placeholder="merchant.cr.avalmotors"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Estado del Dominio Web</Label>
+            <div className="rounded-md border border-border bg-zinc-900/90 px-3 py-2 text-xs font-mono text-emerald-400 flex items-center gap-2">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              avalmotors.cr (Verificado SSL)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. CONFIGURACIÓN GOOGLE PAY */}
+      <section className="rounded-2xl border border-amber-500/30 bg-card p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-bold text-base text-amber-400">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 font-black text-sm">🌐</span>
+              5. Google Pay · Pago Express Android & Chrome
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Permite pagar en 1 toque usando las tarjetas guardadas en la cuenta Google de los clientes.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.googlePayActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.googlePayActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, googlePayActivo: v })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Google Merchant ID</Label>
+          <Input
+            value={borrador.googlePayMerchantId || ""}
+            onChange={(e) => setBorrador({ ...borrador, googlePayMerchantId: e.target.value })}
+            placeholder="avalmotors-cr-google-pay"
+          />
+        </div>
+      </section>
+
+      {/* 6. CONFIGURACIÓN CRIPTOMONEDAS */}
       <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
             <div className="flex items-center gap-2.5 font-bold text-base text-amber-500">
-              <Coins className="size-5" /> 3. Criptomonedas (USDT / Binance Pay)
+              <Coins className="size-5" /> 6. Criptomonedas (USDT / Binance Pay)
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               Recibe pagos globales en dólares digitales USDT sin riesgo de contracargo.

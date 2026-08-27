@@ -33,7 +33,7 @@ export function JuegosExpressModal({
   open,
   onOpenChange,
   config,
-  telefonoSoporte = "86092162",
+  telefonoSoporte = "86344772",
 }: JuegosExpressModalProps) {
   const [juegoSeleccionado, setJuegoSeleccionado] = useState<"raspa" | "ruleta" | null>(null);
 

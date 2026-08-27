@@ -2,11 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { FileText, Flame, Lock, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 
 export function Footer() {
-  const abrirWhatsApp = () => {
-    const texto = encodeURIComponent(
-      "Hola Aval Motors CR, tengo una consulta sobre el evento promocional.",
-    );
-    window.open(`https://wa.me/50686092162?text=${texto}`, "_blank");
+  const abrirWhatsApp = (asunto: string) => {
+    const texto = encodeURIComponent(`Hola Aval Motors CR, tengo una consulta sobre: ${asunto}`);
+    window.open(`https://wa.me/50686344772?text=${texto}`, "_blank");
   };
 
   return (
@@ -84,7 +82,7 @@ export function Footer() {
                 onClick={abrirWhatsApp}
                 className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 text-emerald-500 font-medium"
               >
-                <MessageCircle className="size-3.5" /> WhatsApp: 8609-2162
+                <MessageCircle className="size-3.5" /> WhatsApp: 8634-4772
               </button>
             </li>
           </ul>

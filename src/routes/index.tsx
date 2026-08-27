@@ -40,7 +40,25 @@ import {
   FEATURES_DEFAULT,
 } from "@/lib/admin-store";
 
-export const Route = createFileRoute("/")(({
+export const Route = createFileRoute("/")({
+  loader: async () => {
+    try {
+      const [premios, inventario, sorteo, config] = await Promise.all([
+        fetchPremios(),
+        fetchInventario(),
+        fetchSorteo(),
+        fetchConfig(),
+      ]);
+      return { premios, inventario, sorteo, config };
+    } catch {
+      return {
+        premios: PREMIOS_DEFAULT,
+        inventario: { total: 0, disponibles: 0, fecha: "" },
+        sorteo: SORTEO_DEFAULT,
+        config: CONFIG_DEFAULT,
+      };
+    }
+  },
   head: () => ({
     meta: [
       { title: "Aval Motors CR | ¡Estrena tu Toyota Prado 0KM!" },
@@ -59,7 +77,7 @@ export const Route = createFileRoute("/")(({
     ],
   }),
   component: IndexPage,
-}));
+});
 
 const PAQUETES_DEFAULT: Paquete[] = [
   { cantidad: 4, precio: 4000 },
@@ -92,14 +110,33 @@ function useCuentaRegresiva(fechaObjetivo: string) {
 }
 
 function IndexPage() {
+  const loaderData = Route.useLoaderData();
   const [paquete, setPaquete] = useState<Paquete | null>(null);
   const [open, setOpen] = useState(false);
-  const [premios, setPremios] = useState<Premio[]>(PREMIOS_DEFAULT);
-  const [paquetes, setPaquetes] = useState<Paquete[]>(PAQUETES_DEFAULT);
-  const [progreso, setProgreso] = useState(87);
-  const [fechaSorteo, setFechaSorteo] = useState("2026-09-27");
-  const [sorteo, setSorteo] = useState(SORTEO_DEFAULT);
-  const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
+  const [premios, setPremios] = useState<Premio[]>(loaderData?.premios || PREMIOS_DEFAULT);
+  const [sorteo, setSorteo] = useState<Sorteo>(loaderData?.sorteo || SORTEO_DEFAULT);
+  const [config, setConfig] = useState<Config>(loaderData?.config || CONFIG_DEFAULT);
+  const [fechaSorteo, setFechaSorteo] = useState(loaderData?.sorteo?.fecha || "2026-09-27");
+  const [paquetes, setPaquetes] = useState<Paquete[]>(() => {
+    const sorteoActual = loaderData?.sorteo || SORTEO_DEFAULT;
+    if (sorteoActual.modalidadVenta === "fijo_3x5000") {
+      return [{ cantidad: 3, precio: 5000 }];
+    }
+    const base = sorteoActual.precioBase || 1000;
+    return [
+      { cantidad: 4, precio: base * 4 },
+      { cantidad: 8, precio: base * 8 },
+      { cantidad: 12, precio: base * 12 },
+      { cantidad: 24, precio: base * 24 },
+    ];
+  });
+  const [progreso, setProgreso] = useState(() => {
+    if (loaderData?.inventario && loaderData.inventario.total > 0) {
+      const vendidos = loaderData.inventario.total - loaderData.inventario.disponibles;
+      return Math.round((vendidos / loaderData.inventario.total) * 100);
+    }
+    return 87;
+  });
   const [openRaspa, setOpenRaspa] = useState(false);
 
   const t = useCuentaRegresiva(fechaSorteo);
@@ -143,8 +180,12 @@ function IndexPage() {
         if (sorteoData) {
           setSorteo(sorteoData);
           if (sorteoData.fecha) setFechaSorteo(sorteoData.fecha);
-          if (sorteoData.precioBase) {
-            const base = sorteoData.precioBase;
+          if (sorteoData.modalidadVenta === "fijo_3x5000") {
+            setPaquetes([
+              { cantidad: 3, precio: 5000 },
+            ]);
+          } else {
+            const base = sorteoData.precioBase || 1000;
             setPaquetes([
               { cantidad: 4, precio: base * 4 },
               { cantidad: 8, precio: base * 8 },
@@ -166,8 +207,10 @@ function IndexPage() {
   }, []);
 
   const abrirWhatsAppPreventa = (textoExtra = "") => {
-    const rawTel = (config.promoWhatsapp || config.telefonoSinpe || "50686092162").replace(/\D/g, "");
-    const tel = rawTel.startsWith("506") ? rawTel : `506${rawTel}`;
+    const rawTel = (config.promoWhatsapp || config.telefonoSinpe || "50686344772").replace(/\D/g, "");
+    const tel = (rawTel.includes("8609") || !rawTel)
+      ? "50686344772"
+      : (rawTel.startsWith("506") ? rawTel : `506${rawTel}`);
     const baseMsg = `Hola Aval Motors CR, me interesa información sobre el próximo gran evento y la preventa exclusiva de tokens. ${textoExtra}`;
     const url = `https://wa.me/${tel}?text=${encodeURIComponent(baseMsg)}`;
     window.open(url, "_blank");
@@ -227,7 +270,7 @@ function IndexPage() {
           </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {sorteo.raspaConfig?.activo !== false && (
+            {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
               <Button
                 variant="outline"
                 size="sm"
@@ -270,7 +313,7 @@ function IndexPage() {
       </header>
 
       {/* Botón Flotante Móvil de Juegos Express */}
-      {sorteo.raspaConfig?.activo !== false && (
+      {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
         <button
           type="button"
           onClick={() => setOpenRaspa(true)}
@@ -381,7 +424,7 @@ function IndexPage() {
         </section>
 
         {/* BANNER INTERACTIVO JUEGOS EXPRESS (RASPA / RULETA) */}
-        {sorteo.raspaConfig?.activo !== false && (
+        {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
           <section className="relative z-10 -mt-8 pb-10">
             <div className="mx-auto max-w-5xl px-5">
               <div
@@ -549,40 +592,62 @@ function IndexPage() {
 
           <div className="text-center max-w-2xl mx-auto">
             <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-              {config.ventasActivas ? "Elige tu Paquete Digital" : "🔥 Preventa Exclusiva de Tokens"}
+              {paquetes.length === 1
+                ? "🔥 Paquete Oficial del Evento"
+                : config.ventasActivas
+                ? "Elige tu Paquete Digital"
+                : "🔥 Preventa Exclusiva de Tokens"}
             </span>
             <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-              {config.ventasActivas ? "Elige tu paquete de Tokens" : "Paquetes Oficiales del Evento"}
+              {paquetes.length === 1
+                ? "Adquiere tus Tokens Digitales"
+                : config.ventasActivas
+                ? "Elige tu paquete de Tokens"
+                : "Paquetes Oficiales del Evento"}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {config.ventasActivas
+              {paquetes.length === 1
+                ? "Participa con tu paquete especial de 3 combinaciones oficiales por ₡5,000. Puedes generarlos al azar o elegir tus números favoritos."
+                : config.ventasActivas
                 ? "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos."
                 : "La venta directa abrirá muy pronto. ¡Contáctanos por WhatsApp para apartar tus números antes del lanzamiento público!"}
             </p>
           </div>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {paquetes.map((p) => (
-              <button
-                key={p.cantidad}
-                onClick={() => abrir(p)}
-                className="group relative cursor-pointer rounded-2xl border border-border bg-[image:var(--gradient-surface)] p-6 text-left transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-[var(--shadow-fire)]"
-              >
-                {p.cantidad === 12 && (
-                  <span className="absolute -top-3 right-4 rounded-full bg-[image:var(--gradient-fire)] px-3 py-1 text-[11px] font-semibold text-primary-foreground">
-                    Más popular
-                  </span>
-                )}
-                <div className="font-display text-5xl text-primary">{p.cantidad}</div>
-                <div className="text-sm uppercase tracking-widest text-muted-foreground">
-                  Tokens Digitales
-                </div>
-                <div className="mt-4 text-2xl font-bold">₡{p.precio.toLocaleString("es-CR")}</div>
-                <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary group-hover:translate-x-0.5 transition-transform">
-                  {config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
-                </div>
-              </button>
-            ))}
+          <div className={`mt-12 ${paquetes.length === 1 ? "max-w-md mx-auto" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4"}`}>
+            {paquetes.map((p) => {
+              const es3x5000 = p.cantidad === 3 && p.precio === 5000;
+              const esPopular = p.cantidad === 12 && p.precio === 12000;
+
+              return (
+                <button
+                  key={p.cantidad}
+                  onClick={() => abrir(p)}
+                  className={`w-full group relative cursor-pointer rounded-2xl border bg-[image:var(--gradient-surface)] p-7 text-left transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-[var(--shadow-fire)] ${
+                    es3x5000 ? "border-amber-500/60 bg-gradient-to-b from-amber-500/15 via-card to-card shadow-[0_0_40px_rgba(245,158,11,0.2)]" : "border-border"
+                  }`}
+                >
+                  {es3x5000 ? (
+                    <span className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-3.5 py-1 text-xs font-black text-black shadow-md">
+                      🔥 Paquete Especial Único 3x₡5,000
+                    </span>
+                  ) : esPopular ? (
+                    <span className="absolute -top-3 right-4 rounded-full bg-[image:var(--gradient-fire)] px-3 py-1 text-[11px] font-semibold text-primary-foreground">
+                      Más popular
+                    </span>
+                  ) : null}
+
+                  <div className="font-display text-5xl sm:text-6xl text-primary">{p.cantidad}</div>
+                  <div className="text-sm uppercase tracking-widest text-muted-foreground mt-1">
+                    Tokens Digitales Oficiales
+                  </div>
+                  <div className="mt-4 text-3xl font-bold text-foreground">₡{p.precio.toLocaleString("es-CR")}</div>
+                  <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-primary group-hover:translate-x-0.5 transition-transform">
+                    {config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </section>
 

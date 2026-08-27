@@ -85,7 +85,7 @@ function TerminosPage() {
           <div className="grid gap-3 sm:grid-cols-2 rounded-xl bg-card p-4 border border-border">
             <div>
               <span className="text-xs text-muted-foreground">Teléfono SINPE Móvil:</span>
-              <p className="font-mono text-xl font-bold text-primary">8609-2162</p>
+              <p className="font-mono text-xl font-bold text-primary">8634-4772</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Titular Oficial de la Cuenta:</span>

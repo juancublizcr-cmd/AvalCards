@@ -106,6 +106,27 @@ export function PagosSection({
         </span>
       );
     }
+    if (m === "paypal") {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 text-xs font-semibold text-sky-400">
+          🅿️ PayPal
+        </span>
+      );
+    }
+    if (m === "applepay") {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md border border-zinc-600 bg-zinc-800 px-2 py-0.5 text-xs font-semibold text-zinc-100">
+          🍏 Apple Pay
+        </span>
+      );
+    }
+    if (m === "googlepay") {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-400">
+          🌐 Google Pay
+        </span>
+      );
+    }
     if (m === "crypto") {
       return (
         <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-500">
@@ -126,7 +147,7 @@ export function PagosSection({
         <div>
           <h2 className="font-semibold text-lg">Registro de Pagos y Transacciones</h2>
           <p className="text-xs text-muted-foreground">
-            {filtradas.length} transacción(es) · SINPE Móvil, Tarjetas TiloPay y Cripto USDT
+            {filtradas.length} transacción(es) · SINPE, Tarjetas, PayPal, Apple Pay, Google Pay y Cripto
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -154,13 +175,16 @@ export function PagosSection({
               setPagina(1);
             }}
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-38">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos los Métodos</SelectItem>
               <SelectItem value="sinpe">SINPE Móvil</SelectItem>
               <SelectItem value="tarjeta">Tarjeta TiloPay</SelectItem>
+              <SelectItem value="paypal">PayPal</SelectItem>
+              <SelectItem value="applepay">Apple Pay</SelectItem>
+              <SelectItem value="googlepay">Google Pay</SelectItem>
               <SelectItem value="crypto">Cripto USDT</SelectItem>
             </SelectContent>
           </Select>
@@ -323,7 +347,7 @@ export function PagosSection({
                 <div className="flex items-center gap-3 rounded-xl border-2 border-amber-500/50 bg-amber-500/15 p-3.5 text-xs text-amber-500 font-medium shadow-sm">
                   <Crown className="size-5 text-amber-500 shrink-0" />
                   <div>
-                    <strong className="block text-sm">SuperToken VIP ($6,000 USD Cash) Activo</strong>
+                    <strong className="block text-sm">SuperToken ($6,000 USD Cash) Activo</strong>
                     <span>Esta orden califica para el bono adicional de $6,000 en efectivo (~₡3,100,000) si gana el 1° Lugar.</span>
                   </div>
                 </div>

@@ -233,7 +233,7 @@ export function StickersModal({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Upgrade SuperToken VIP ($6,000 USD Cash) con Switch interactivo */}
+        {/* Upgrade SuperToken ($6,000 USD Cash) con Switch interactivo */}
         {paquete && (
           <div
             onClick={() => setSupertoken(!supertoken)}
@@ -255,7 +255,7 @@ export function StickersModal({
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="font-bold text-xs sm:text-sm text-foreground">
-                      Activar SuperToken VIP
+                      Activar SuperToken
                     </span>
                     <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide text-amber-400 border border-amber-500/40 shrink-0">
                       +$6,000 USD CASH
@@ -479,7 +479,7 @@ export function StickersModal({
           <ShieldCheck className="size-5 shrink-0" />
           <span>
             {supertoken
-              ? `Confirmar con SuperToken VIP · ₡${precioFinal.toLocaleString("es-CR")}`
+              ? `Confirmar con SuperToken · ₡${precioFinal.toLocaleString("es-CR")}`
               : `Confirmar y Pagar ₡${precioFinal.toLocaleString("es-CR")}`}
           </span>
         </Button>

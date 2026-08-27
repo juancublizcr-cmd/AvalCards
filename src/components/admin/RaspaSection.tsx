@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Calculator,
   Download,
@@ -64,6 +64,10 @@ export function RaspaSection({
   const [guardando, setGuardando] = useState(false);
   const [guiaAbierta, setGuiaAbierta] = useState(false);
   const [mostrarSelectorFrases, setMostrarSelectorFrases] = useState(false);
+
+  useEffect(() => {
+    setBorrador(sorteo);
+  }, [sorteo]);
 
   const raspa = borrador.raspaConfig || RASPA_DEFAULT;
   const modoActivo: JuegoModo = raspa.modo || "ambos";

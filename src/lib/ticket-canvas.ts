@@ -49,7 +49,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
   ctx.lineTo(width - 100, 210);
   ctx.stroke();
 
-  // 4. Badge SuperToken VIP si aplica
+  // 4. Badge SuperToken si aplica
   let currentY = 270;
   if (orden.supertoken) {
     const badgeGrad = ctx.createLinearGradient(120, currentY - 35, width - 120, currentY + 35);
@@ -64,7 +64,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
     ctx.fillStyle = "#000000";
     ctx.font = "bold 26px sans-serif, Arial";
     ctx.textAlign = "center";
-    ctx.fillText("👑 SUPERTOKEN VIP ACTIVO · CALIFICA PARA +$6,000 USD CASH", width / 2, currentY + 4);
+    ctx.fillText("👑 SUPERTOKEN ACTIVO · CALIFICA PARA +$6,000 USD CASH", width / 2, currentY + 4);
     currentY += 85;
   }
 

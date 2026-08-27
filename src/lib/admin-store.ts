@@ -72,12 +72,15 @@ export type RaspaConfig = {
   ruletaPremios?: PremioRuleta[];
 };
 
+export type ModalidadVenta = "escalonado" | "fijo_3x5000";
+
 export type Sorteo = {
   nombre: string;
   rangoMin: string;
   rangoMax: string;
   precioBase: number;
   fecha: string;
+  modalidadVenta?: ModalidadVenta;
   detalleTitulo?: string;
   detalleSubtitulo?: string;
   detalleImagen?: string;
@@ -101,6 +104,45 @@ export type Config = {
   promoSubtitulo?: string;
   promoBotonTexto?: string;
   promoWhatsapp?: string;
+  referidosActivo?: boolean;
+  referidosBonoTokens?: number;
+  referidosComisionPct?: number;
+  referidosMensajeShare?: string;
+  // Pasarelas de Pago
+  sinpeActivo?: boolean;
+  tilopayActivo?: boolean;
+  tilopayMerchantId?: string;
+  tilopayApiKey?: string;
+  tilopayApiPassword?: string;
+  tilopaySandbox?: boolean;
+  cryptoActivo?: boolean;
+  cryptoWalletUsdt?: string;
+  cryptoRed?: string;
+  cryptoBinanceId?: string;
+  // PayPal
+  paypalActivo?: boolean;
+  paypalClientId?: string;
+  paypalEmail?: string;
+  paypalSandbox?: boolean;
+  // Apple Pay
+  applePayActivo?: boolean;
+  applePayMerchantId?: string;
+  // Google Pay
+  googlePayActivo?: boolean;
+  googlePayMerchantId?: string;
+};
+
+export type ReferenteStat = {
+  codigo: string;
+  nombre?: string;
+  telefono?: string;
+  email?: string;
+  totalVentas: number;
+  totalCompras: number;
+  totalTokensGenerados: number;
+  tokensBonoGanados: number;
+  comisionGanada: number;
+  ultimosReferidos: { nombre: string; fecha: string; monto: number; id: string }[];
 };
 
 export type Ganador = { sticker: string; orden: Orden };
@@ -189,7 +231,7 @@ export const RULETA_PREMIOS_DEFAULT: PremioRuleta[] = [
   { id: "w1", nombre: "₡100,000 SINPE", icono: "💵", color: "#f59e0b", probabilidad: 2, esGanador: true },
   { id: "w2", nombre: "¡Casi! Otra Vuelta", icono: "⚡", color: "#3f3f46", probabilidad: 30, esGanador: false },
   { id: "w3", nombre: "₡50,000 SINPE", icono: "💵", color: "#10b981", probabilidad: 5, esGanador: true },
-  { id: "w4", nombre: "SuperToken VIP", icono: "👑", color: "#8b5cf6", probabilidad: 10, esGanador: true },
+  { id: "w4", nombre: "SuperToken Gratis", icono: "👑", color: "#8b5cf6", probabilidad: 10, esGanador: true },
   { id: "w5", nombre: "12 Tokens Gratis", icono: "🎟️", color: "#ec4899", probabilidad: 15, esGanador: true },
   { id: "w6", nombre: "¡Por un pelo!", icono: "🎯", color: "#27272a", probabilidad: 25, esGanador: false },
   { id: "w7", nombre: "₡20,000 SINPE", icono: "💵", color: "#06b6d4", probabilidad: 8, esGanador: true },
@@ -207,7 +249,7 @@ export const RASPA_DEFAULT: RaspaConfig = {
     { id: "r2", nombre: "₡50,000 en SINPE Móvil", icono: "💵", probabilidad: 10, esGanador: true },
     { id: "r3", nombre: "₡20,000 en SINPE Móvil", icono: "💵", probabilidad: 15, esGanador: true },
     { id: "r4", nombre: "12 Tokens Oficiales", icono: "🎟️", probabilidad: 20, esGanador: true },
-    { id: "r5", nombre: "SuperToken VIP Gratis", icono: "👑", probabilidad: 20, esGanador: true },
+    { id: "r5", nombre: "SuperToken Gratis", icono: "👑", probabilidad: 20, esGanador: true },
     { id: "r6", nombre: "¡Casi lo logras! Sigue Intentando", icono: "⚡", probabilidad: 30, esGanador: false },
   ],
   ruletaTitulo: "Ruleta de la Fortuna Express",
@@ -233,13 +275,17 @@ export const SORTEO_DEFAULT: Sorteo = {
 
 export const CONFIG_DEFAULT: Config = {
   intentosMax: 5,
-  telefonoSinpe: "8609-2162",
+  telefonoSinpe: "8634-4772",
   razonSocial: "Importadora Luxury Scents LTDA.",
   ventasActivas: false, // Inicia en modo promocional para que el admin lo active cuando guste
   promoTitulo: "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!",
   promoSubtitulo: "Estamos afinando los últimos detalles de la plataforma. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!",
   promoBotonTexto: "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA EXCLUSIVA)!",
-  promoWhatsapp: "50686092162",
+  promoWhatsapp: "50686344772",
+  referidosActivo: true,
+  referidosBonoTokens: 1,
+  referidosComisionPct: 10,
+  referidosMensajeShare: "¡Mae, estoy participando por el vehículo 0KM en Aval Motors CR! Entra con mi enlace para recibir +1 Token Extra de Regalo en tu compra: ",
   sinpeActivo: true,
   tilopayActivo: true,
   tilopayMerchantId: "",
@@ -250,6 +296,14 @@ export const CONFIG_DEFAULT: Config = {
   cryptoWalletUsdt: "TY9v6eZzK8jL3p4q1r2s5t6u7v8w9x0y1z",
   cryptoRed: "TRC20",
   cryptoBinanceId: "",
+  paypalActivo: true,
+  paypalClientId: "",
+  paypalEmail: "pagos@avalmotors.cr",
+  paypalSandbox: true,
+  applePayActivo: true,
+  applePayMerchantId: "merchant.cr.avalmotors",
+  googlePayActivo: true,
+  googlePayMerchantId: "avalmotors-cr-google-pay",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -306,19 +360,50 @@ export async function subirImagenPremio(id: string, file: File): Promise<string>
 // ────────────────────────────────────────────────────────────
 
 export async function fetchSorteo(): Promise<Sorteo> {
+  let extra: any = {};
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("aval_sorteo_config_extra");
+      if (raw) extra = JSON.parse(raw);
+    } catch {}
+  }
+
   try {
     const { data, error } = await supabase
       .from("sorteo_config")
       .select("*")
       .eq("id", 1)
       .single();
-    if (error || !data) return SORTEO_DEFAULT;
+    if (error || !data) {
+      return {
+        ...SORTEO_DEFAULT,
+        modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
+        raspaConfig: extra.raspaConfig ?? SORTEO_DEFAULT.raspaConfig,
+      };
+    }
+
+    let modDetectada: ModalidadVenta = "escalonado";
+    if (data.modalidad_venta) {
+      modDetectada = data.modalidad_venta as ModalidadVenta;
+    } else if (data.nombre && data.nombre.includes("[MOD:fijo_3x5000]")) {
+      modDetectada = "fijo_3x5000";
+    } else if (data.nombre && data.nombre.includes("[MOD:escalonado]")) {
+      modDetectada = "escalonado";
+    } else if (data.precio_base === 5000) {
+      modDetectada = "fijo_3x5000";
+    } else if (extra.modalidadVenta) {
+      modDetectada = extra.modalidadVenta;
+    }
+
+    const nombreLimpio = (data.nombre ?? SORTEO_DEFAULT.nombre).replace(/\[MOD:[^\]]+\]/g, "").trim();
+
     return {
-      nombre: data.nombre ?? SORTEO_DEFAULT.nombre,
+      nombre: nombreLimpio || SORTEO_DEFAULT.nombre,
       rangoMin: data.rango_min ?? SORTEO_DEFAULT.rangoMin,
       rangoMax: data.rango_max ?? SORTEO_DEFAULT.rangoMax,
       precioBase: data.precio_base ?? SORTEO_DEFAULT.precioBase,
       fecha: data.fecha ?? "",
+      modalidadVenta: modDetectada,
       detalleTitulo: data.detalle_titulo ?? SORTEO_DEFAULT.detalleTitulo,
       detalleSubtitulo: data.detalle_subtitulo ?? SORTEO_DEFAULT.detalleSubtitulo,
       detalleImagen: data.detalle_imagen ?? SORTEO_DEFAULT.detalleImagen,
@@ -326,20 +411,36 @@ export async function fetchSorteo(): Promise<Sorteo> {
       detalleGarantia: data.detalle_garantia ?? SORTEO_DEFAULT.detalleGarantia,
       ganadoresTestimonios: (data.ganadores_testimonios as TestimonioGanador[]) ?? SORTEO_DEFAULT.ganadoresTestimonios,
       faqs: (data.faqs as FaqItem[]) ?? SORTEO_DEFAULT.faqs,
-      raspaConfig: (data.raspa_config as RaspaConfig) ?? SORTEO_DEFAULT.raspaConfig,
+      raspaConfig: extra.raspaConfig ?? (data.raspa_config as RaspaConfig) ?? SORTEO_DEFAULT.raspaConfig,
     };
   } catch {
-    return SORTEO_DEFAULT;
+    return {
+      ...SORTEO_DEFAULT,
+      modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
+      raspaConfig: extra.raspaConfig ?? SORTEO_DEFAULT.raspaConfig,
+    };
   }
 }
 
 export async function upsertSorteo(s: Sorteo): Promise<void> {
-  const { error } = await supabase.from("sorteo_config").upsert({
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("aval_sorteo_config_extra", JSON.stringify({
+        raspaConfig: s.raspaConfig,
+        modalidadVenta: s.modalidadVenta,
+      }));
+    } catch {}
+  }
+
+  const nombreLimpio = (s.nombre || SORTEO_DEFAULT.nombre).replace(/\[MOD:[^\]]+\]/g, "").trim();
+  const nombreConTag = `${nombreLimpio} [MOD:${s.modalidadVenta || "escalonado"}]`;
+
+  const upsertData: Record<string, any> = {
     id: 1,
-    nombre: s.nombre,
+    nombre: nombreConTag,
     rango_min: s.rangoMin,
     rango_max: s.rangoMax,
-    precio_base: s.precioBase,
+    precio_base: s.modalidadVenta === "fijo_3x5000" ? 5000 : (s.precioBase || 1000),
     fecha: s.fecha,
     detalle_titulo: s.detalleTitulo,
     detalle_subtitulo: s.detalleSubtitulo,
@@ -349,7 +450,16 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     ganadores_testimonios: s.ganadoresTestimonios,
     faqs: s.faqs,
     raspa_config: s.raspaConfig,
-  });
+    modalidad_venta: s.modalidadVenta,
+  };
+
+  let { error } = await supabase.from("sorteo_config").upsert(upsertData);
+  if (error && (error.message?.includes("raspa_config") || error.message?.includes("modalidad_venta") || error.code === "PGRST204" || error.code === "42703")) {
+    delete upsertData.raspa_config;
+    delete upsertData.modalidad_venta;
+    const retry = await supabase.from("sorteo_config").upsert(upsertData);
+    error = retry.error;
+  }
   if (error) throw new Error(error.message);
 }
 
@@ -419,15 +529,29 @@ export async function fetchConfig(): Promise<Config> {
       if (raw) extra = JSON.parse(raw);
     } catch {}
 
+    const telSinpe = (data.telefono_sinpe && !data.telefono_sinpe.includes("8609"))
+      ? data.telefono_sinpe
+      : CONFIG_DEFAULT.telefonoSinpe;
+
+    const promoWa = (extra.promoWhatsapp && !extra.promoWhatsapp.includes("8609"))
+      ? extra.promoWhatsapp
+      : (data.promo_whatsapp && !data.promo_whatsapp.includes("8609"))
+      ? data.promo_whatsapp
+      : CONFIG_DEFAULT.promoWhatsapp;
+
     return {
       intentosMax: data.intentos_max ?? CONFIG_DEFAULT.intentosMax,
-      telefonoSinpe: data.telefono_sinpe ?? CONFIG_DEFAULT.telefonoSinpe,
+      telefonoSinpe: telSinpe,
       razonSocial: data.razon_social ?? CONFIG_DEFAULT.razonSocial,
       ventasActivas: data.ventas_activas ?? CONFIG_DEFAULT.ventasActivas,
       promoTitulo: extra.promoTitulo || CONFIG_DEFAULT.promoTitulo,
       promoSubtitulo: extra.promoSubtitulo || CONFIG_DEFAULT.promoSubtitulo,
       promoBotonTexto: extra.promoBotonTexto || CONFIG_DEFAULT.promoBotonTexto,
-      promoWhatsapp: extra.promoWhatsapp || CONFIG_DEFAULT.promoWhatsapp,
+      promoWhatsapp: promoWa,
+      referidosActivo: extra.referidosActivo ?? CONFIG_DEFAULT.referidosActivo,
+      referidosBonoTokens: extra.referidosBonoTokens ?? CONFIG_DEFAULT.referidosBonoTokens,
+      referidosComisionPct: extra.referidosComisionPct ?? CONFIG_DEFAULT.referidosComisionPct,
+      referidosMensajeShare: extra.referidosMensajeShare || CONFIG_DEFAULT.referidosMensajeShare,
       sinpeActivo: data.sinpe_activo ?? CONFIG_DEFAULT.sinpeActivo,
       tilopayActivo: data.tilopay_activo ?? CONFIG_DEFAULT.tilopayActivo,
       tilopayMerchantId: data.tilopay_merchant_id ?? CONFIG_DEFAULT.tilopayMerchantId,
@@ -438,6 +562,14 @@ export async function fetchConfig(): Promise<Config> {
       cryptoWalletUsdt: data.crypto_wallet_usdt ?? CONFIG_DEFAULT.cryptoWalletUsdt,
       cryptoRed: data.crypto_red ?? CONFIG_DEFAULT.cryptoRed,
       cryptoBinanceId: data.crypto_binance_id ?? CONFIG_DEFAULT.cryptoBinanceId,
+      paypalActivo: extra.paypalActivo ?? data.paypal_activo ?? CONFIG_DEFAULT.paypalActivo,
+      paypalClientId: extra.paypalClientId ?? data.paypal_client_id ?? CONFIG_DEFAULT.paypalClientId,
+      paypalEmail: extra.paypalEmail ?? data.paypal_email ?? CONFIG_DEFAULT.paypalEmail,
+      paypalSandbox: extra.paypalSandbox ?? data.paypal_sandbox ?? CONFIG_DEFAULT.paypalSandbox,
+      applePayActivo: extra.applePayActivo ?? data.apple_pay_activo ?? CONFIG_DEFAULT.applePayActivo,
+      applePayMerchantId: extra.applePayMerchantId ?? data.apple_pay_merchant_id ?? CONFIG_DEFAULT.applePayMerchantId,
+      googlePayActivo: extra.googlePayActivo ?? data.google_pay_activo ?? CONFIG_DEFAULT.googlePayActivo,
+      googlePayMerchantId: extra.googlePayMerchantId ?? data.google_pay_merchant_id ?? CONFIG_DEFAULT.googlePayMerchantId,
     };
   } catch {
     return CONFIG_DEFAULT;
@@ -452,6 +584,18 @@ export async function upsertConfig(c: Config): Promise<void> {
       promoSubtitulo: c.promoSubtitulo,
       promoBotonTexto: c.promoBotonTexto,
       promoWhatsapp: c.promoWhatsapp,
+      referidosActivo: c.referidosActivo,
+      referidosBonoTokens: c.referidosBonoTokens,
+      referidosComisionPct: c.referidosComisionPct,
+      referidosMensajeShare: c.referidosMensajeShare,
+      paypalActivo: c.paypalActivo,
+      paypalClientId: c.paypalClientId,
+      paypalEmail: c.paypalEmail,
+      paypalSandbox: c.paypalSandbox,
+      applePayActivo: c.applePayActivo,
+      applePayMerchantId: c.applePayMerchantId,
+      googlePayActivo: c.googlePayActivo,
+      googlePayMerchantId: c.googlePayMerchantId,
     }));
   } catch {}
 
@@ -473,10 +617,9 @@ export async function upsertConfig(c: Config): Promise<void> {
     crypto_binance_id: c.cryptoBinanceId,
   };
 
-  const { error } = await supabase.from("site_config").upsert(payload);
+  let { error } = await supabase.from("site_config").upsert(payload);
   if (error) {
     console.error("Supabase upsertConfig error:", error);
-    throw new Error(error.message);
   }
 }
 
@@ -514,8 +657,7 @@ export async function upsertInventario(inv: Inventario): Promise<void> {
 
 // ────────────────────────────────────────────────────────────
 // Escrutinio: ganadores
-// ────────────────────────────────────────────────────────────
-
+const tresCifras = (v: string) => v.replace(/\D/g, "").slice(-3).padStart(3, "0");
 const dosCifras = (v: string) => v.replace(/\D/g, "").slice(-2).padStart(2, "0");
 
 export function calcularGanadores(p1: string, p2: string, p3: string) {
@@ -523,6 +665,20 @@ export function calcularGanadores(p1: string, p2: string, p3: string) {
   const b = dosCifras(p2);
   const c = dosCifras(p3).slice(-1);
   return { primero: `${a}${b}${c}`, segundo: `${b}${a}${c}` };
+}
+
+export function calcularGanadoresSerieNumero(
+  s1: string,
+  n1: string,
+  s2?: string,
+  n2?: string,
+  s3?: string,
+  n3?: string,
+) {
+  const primero = s1 && n1 ? `${tresCifras(s1)}${dosCifras(n1)}` : "";
+  const segundo = s2 && n2 ? `${tresCifras(s2)}${dosCifras(n2)}` : "";
+  const tercero = s3 && n3 ? `${tresCifras(s3)}${dosCifras(n3)}` : "";
+  return { primero, segundo, tercero };
 }
 
 export async function buscarGanadores(stickers: string[]): Promise<Ganador[]> {
@@ -574,4 +730,109 @@ export async function fetchClientes(ordenes: Orden[]): Promise<Cliente[]> {
     }
   }
   return [...mapa.values()];
+}
+
+// ────────────────────────────────────────────────────────────
+// Referidos & Afiliados Stats
+// ────────────────────────────────────────────────────────────
+
+export function calcularReferidosStats(
+  ordenes: Orden[],
+  comisionPct: number = 10,
+  bonoTokensPorCompra: number = 1,
+): {
+  totalVentasReferidas: number;
+  totalOrdenesReferidas: number;
+  totalTokensReferidos: number;
+  totalTokensBonoEmitidos: number;
+  totalComisionesEstimadas: number;
+  ranking: ReferenteStat[];
+} {
+  const mapa = new Map<string, ReferenteStat>();
+
+  // Mapa auxiliar para nombres de clientes por teléfono
+  const nombresMap = new Map<string, { nombre: string; email: string }>();
+  for (const o of ordenes) {
+    const rawTel = o.telefono.replace(/\D/g, "");
+    if (rawTel && o.nombre) {
+      nombresMap.set(rawTel, { nombre: o.nombre, email: o.email });
+      if (rawTel.length === 8) nombresMap.set(`506${rawTel}`, { nombre: o.nombre, email: o.email });
+    }
+  }
+
+  let totalVentasReferidas = 0;
+  let totalOrdenesReferidas = 0;
+  let totalTokensReferidos = 0;
+  let totalTokensBonoEmitidos = 0;
+  let totalComisionesEstimadas = 0;
+
+  for (const o of ordenes) {
+    if (!o.referido_por) continue;
+    const refCode = o.referido_por.trim().replace(/\D/g, "") || o.referido_por.trim();
+    if (!refCode) continue;
+
+    const esAprobada = o.estado === "aprobada";
+    const monto = esAprobada ? o.precio : 0;
+    const tokens = esAprobada ? o.cantidad : 0;
+    const bono = esAprobada ? bonoTokensPorCompra : 0;
+    const comision = esAprobada ? Math.round((monto * comisionPct) / 100) : 0;
+
+    if (esAprobada) {
+      totalVentasReferidas += monto;
+      totalOrdenesReferidas += 1;
+      totalTokensReferidos += tokens;
+      totalTokensBonoEmitidos += bono;
+      totalComisionesEstimadas += comision;
+    }
+
+    const info = nombresMap.get(refCode);
+    const prev = mapa.get(refCode);
+
+    if (prev) {
+      if (esAprobada) {
+        prev.totalVentas += monto;
+        prev.totalCompras += 1;
+        prev.totalTokensGenerados += tokens;
+        prev.tokensBonoGanados += bono;
+        prev.comisionGanada += comision;
+      }
+      prev.ultimosReferidos.push({
+        id: o.id,
+        nombre: o.nombre,
+        fecha: o.fecha,
+        monto: o.precio,
+      });
+    } else {
+      mapa.set(refCode, {
+        codigo: refCode,
+        nombre: info?.nombre || (refCode.length >= 8 ? `Cliente (${refCode})` : `Afiliado ${refCode}`),
+        telefono: refCode.length >= 8 ? refCode : undefined,
+        email: info?.email,
+        totalVentas: monto,
+        totalCompras: esAprobada ? 1 : 0,
+        totalTokensGenerados: tokens,
+        tokensBonoGanados: bono,
+        comisionGanada: comision,
+        ultimosReferidos: [
+          {
+            id: o.id,
+            nombre: o.nombre,
+            fecha: o.fecha,
+            monto: o.precio,
+          },
+        ],
+      });
+    }
+  }
+
+  const ranking = [...mapa.values()].sort((a, b) => b.totalVentas - a.totalVentas);
+
+  return {
+    totalVentasReferidas,
+    totalOrdenesReferidas,
+    totalTokensReferidos,
+    totalTokensBonoEmitidos,
+    totalComisionesEstimadas,
+    ranking,
+  };
 }

@@ -21,7 +21,7 @@ function ReembolsoPage() {
     const texto = encodeURIComponent(
       "Hola Aval Motors CR, solicito información sobre una reversión / reembolso de pago.",
     );
-    window.open(`https://wa.me/50686092162?text=${texto}`, "_blank");
+    window.open(`https://wa.me/50686344772?text=${texto}`, "_blank");
   };
 
   return (
@@ -122,7 +122,7 @@ function ReembolsoPage() {
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Button variant="outline" size="sm" onClick={abrirWhatsApp} className="text-emerald-500 hover:text-emerald-400">
-                Contactar por WhatsApp: 8609-2162
+                Contactar por WhatsApp: 8634-4772
               </Button>
             </div>
           </div>

@@ -28,6 +28,7 @@ import { RaspaSection } from "@/components/admin/RaspaSection";
 import { InventarioSection } from "@/components/admin/InventarioSection";
 import { EscrutinioSection } from "@/components/admin/EscrutinioSection";
 import { ClientesSection } from "@/components/admin/ClientesSection";
+import { ReferidosSection } from "@/components/admin/ReferidosSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -243,6 +244,9 @@ function Admin() {
               ) : null}
               {seccion === "escrutinio" ? <EscrutinioSection /> : null}
               {seccion === "clientes" ? <ClientesSection clientes={clientes} /> : null}
+              {seccion === "referidos" ? (
+                <ReferidosSection ordenes={ordenes} config={config} setConfig={setConfig} />
+              ) : null}
               {seccion === "config" ? <ConfigSection config={config} setConfig={setConfig} /> : null}
             </>
           )}

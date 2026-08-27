@@ -88,7 +88,7 @@ export function ClientesSection({ clientes }: { clientes: Cliente[] }) {
                 <td className="px-5 py-4">
                   {c.supertokenCount > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 border border-amber-500/40 px-2 py-0.5 text-xs font-bold text-amber-500">
-                      <Crown className="size-3" /> VIP ({c.supertokenCount})
+                      <Crown className="size-3" /> SuperToken ({c.supertokenCount})
                     </span>
                   ) : (
                     <span className="text-xs text-muted-foreground">—</span>

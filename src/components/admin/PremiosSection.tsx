@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Award,
   Calendar,
+  CheckCircle2,
   FileText,
   Gamepad2,
   Gift,
@@ -11,6 +12,7 @@ import {
   Plus,
   Save,
   Sparkles,
+  Ticket,
   Trash2,
   Trophy,
   UserCheck,
@@ -41,6 +43,7 @@ import {
   upsertSorteo,
   type FaqItem,
   type FeatureDetalle,
+  type ModalidadVenta,
   type Nivel,
   type Premio,
   type PremioRaspa,
@@ -62,6 +65,7 @@ export function PremiosSection({
 }) {
   const [borrador, setBorrador] = useState<Sorteo>({
     ...sorteo,
+    modalidadVenta: sorteo.modalidadVenta || "escalonado",
     detalleTitulo: sorteo.detalleTitulo || "Toyota Prado 2026: Lujo, Potencia y Confort",
     detalleSubtitulo: sorteo.detalleSubtitulo || "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre.",
     detalleImagen: sorteo.detalleImagen || "",
@@ -71,6 +75,14 @@ export function PremiosSection({
     faqs: sorteo.faqs && sorteo.faqs.length > 0 ? sorteo.faqs : FAQS_DEFAULT,
     raspaConfig: sorteo.raspaConfig || RASPA_DEFAULT,
   });
+
+  useEffect(() => {
+    setBorrador((prev) => ({
+      ...prev,
+      ...sorteo,
+      modalidadVenta: sorteo.modalidadVenta || prev.modalidadVenta || "escalonado",
+    }));
+  }, [sorteo]);
   const [guardandoSorteo, setGuardandoSorteo] = useState(false);
   const [guardandoRaspa, setGuardandoRaspa] = useState(false);
   const [subiendoImagen, setSubiendoImagen] = useState<string | null>(null);
@@ -383,6 +395,72 @@ export function PremiosSection({
               onChange={(e) => setBorrador({ ...borrador, precioBase: Number(e.target.value) })}
               placeholder="1000"
             />
+          </div>
+        </div>
+
+        {/* SELECTOR DE MODALIDAD DE VENTA DE TOKENS */}
+        <div className="pt-3 border-t border-border space-y-3">
+          <Label className="text-sm font-bold flex items-center gap-2">
+            <Ticket className="size-4 text-primary" /> Modalidad de Venta y Paquetes de Tokens en la Web:
+          </Label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {/* Opción 1: Paquetes Estándar Escalonados */}
+            <div
+              onClick={() => setBorrador({ ...borrador, modalidadVenta: "escalonado" })}
+              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative ${
+                (borrador.modalidadVenta || "escalonado") === "escalonado"
+                  ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(234,88,12,0.2)]"
+                  : "border-border bg-secondary/30 hover:border-border/80"
+              }`}
+            >
+              {(borrador.modalidadVenta || "escalonado") === "escalonado" && (
+                <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary text-black">
+                  <CheckCircle2 className="size-3.5 stroke-[3]" />
+                </span>
+              )}
+              <div className="font-bold text-sm text-foreground flex items-center gap-2">
+                <span>📦</span> Paquetes Estándar (Multi-Paquete)
+              </div>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                Muestra los 4 paquetes escalonados clásicos: <strong>4 Tokens (₡4k)</strong>, <strong>8 Tokens (₡8k)</strong>, <strong>12 Tokens (₡12k)</strong> y <strong>24 Tokens (₡24k)</strong>.
+              </p>
+              <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-mono font-bold text-primary">
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">4 = ₡4k</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">8 = ₡8k</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">12 = ₡12k</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">24 = ₡24k</span>
+              </div>
+            </div>
+
+            {/* Opción 2: Paquete Especial 3 Tokens por ₡5,000 */}
+            <div
+              onClick={() => setBorrador({ ...borrador, modalidadVenta: "fijo_3x5000" })}
+              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative ${
+                borrador.modalidadVenta === "fijo_3x5000"
+                  ? "border-amber-500 bg-amber-500/15 shadow-[0_0_20px_rgba(245,158,11,0.25)]"
+                  : "border-border bg-secondary/30 hover:border-border/80"
+              }`}
+            >
+              {borrador.modalidadVenta === "fijo_3x5000" && (
+                <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-amber-500 text-black">
+                  <CheckCircle2 className="size-3.5 stroke-[3]" />
+                </span>
+              )}
+              <div className="font-bold text-sm text-amber-400 flex items-center gap-2">
+                <span>🔥</span> Sorteo Especial (3 Tokens por ₡5,000)
+              </div>
+              <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                Muestra el paquete promocional único de <strong>3 Tokens Digitales por ₡5,000 CRC</strong>. Mantiene activos los SuperTokens y Referidos.
+              </p>
+              <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-mono font-bold text-amber-400">
+                <span className="px-2.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/40">
+                  🎟️ 3 Tokens = ₡5,000 CRC
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary/80 border text-muted-foreground text-[10px]">
+                  +SuperToken & Referidos activos
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 

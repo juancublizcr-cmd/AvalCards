@@ -54,7 +54,7 @@ export function RuletaModal({
   open,
   onOpenChange,
   config,
-  telefonoSoporte = "86092162",
+  telefonoSoporte = "86344772",
 }: RuletaModalProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const anguloRef = useRef<number>(0);
@@ -286,7 +286,9 @@ export function RuletaModal({
   // Iniciar Giro
   const iniciarGiro = () => {
     if (girosDisponibles <= 0 && !esModoDemo) {
-      // Mostrar opciones
+      // Si no le quedan giros gratis, salir del resultado y abrir la opción de pago SINPE
+      setEstado("listo");
+      setPremioGanado(null);
       setMostrarCanje(false);
       setMostrarPagoDirecto(true);
       return;

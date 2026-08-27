@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowLeft,
+  CheckCircle2,
   Clock,
   Coins,
   Crown,
@@ -9,13 +10,16 @@ import {
   Flame,
   Gift,
   Loader2,
+  MessageCircle,
   PartyPopper,
   Printer,
   Search,
+  Share2,
   ShieldCheck,
   Sparkles,
   Ticket,
   Trophy,
+  Users,
   XCircle,
 } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -28,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { buscarPorTelefono, type Orden } from "@/lib/orders";
+import { buscarPorTelefono, fetchReferidosPorTelefono, type Orden } from "@/lib/orders";
 import { fetchInstantaneos, type PremioInstantaneo } from "@/lib/admin-store";
 import { descargarTiqueteImagen } from "@/lib/ticket-canvas";
 import { toast } from "sonner";
@@ -41,7 +45,7 @@ export const Route = createFileRoute("/validar")({
       {
         name: "description",
         content:
-          "Consulta con tu número de celular los Tokens digitales que tienes asignados y el estado de tu orden en Aval Motors CR.",
+          "Consulta en vivo el estado de tus Tokens oficiales, tus números de cortesía y los comprobantes de tus órdenes.",
       },
       { property: "og:title", content: "Validar mis Tokens | Aval Motors CR" },
       {
@@ -67,6 +71,8 @@ function Validar() {
   const [buscado, setBuscado] = useState(false);
   const [buscando, setBuscando] = useState(false);
   const [resultados, setResultados] = useState<Orden[]>([]);
+  const [referidos, setReferidos] = useState<Orden[]>([]);
+  const [padresMap, setPadresMap] = useState<Record<string, { nombre: string; telefono: string }>>({});
   const [ticketOrden, setTicketOrden] = useState<Orden | null>(null);
   const [premiosInstantaneos, setPremiosInstantaneos] = useState<PremioInstantaneo[]>([]);
 
@@ -87,12 +93,31 @@ function Validar() {
     setError("");
     setBuscando(true);
     try {
-      const [res, instant] = await Promise.all([
-        buscarPorTelefono(clean),
-        fetchInstantaneos(),
+      const [res, instant, refs] = await Promise.all([
+        buscarPorTelefono(clean).catch(() => []),
+        fetchInstantaneos().catch(() => []),
+        fetchReferidosPorTelefono(clean).catch(() => []),
       ]);
       setResultados(res);
       setPremiosInstantaneos(instant);
+      setReferidos(refs);
+      setError("");
+
+      // Cargar información de los referentes (padres) de las órdenes del usuario
+      try {
+        const refSet = new Set(res.map((o) => o.referido_por).filter(Boolean) as string[]);
+        const mapInfo: Record<string, { nombre: string; telefono: string }> = {};
+        await Promise.all(
+          [...refSet].map(async (refTel) => {
+            try {
+              const info = await obtenerInfoReferente(refTel);
+              if (info) mapInfo[refTel] = info;
+            } catch {}
+          }),
+        );
+        setPadresMap(mapInfo);
+      } catch {}
+
       setBuscado(true);
 
       // Verificar si hay algún número ganador
@@ -314,6 +339,172 @@ function Validar() {
           </div>
         )}
 
+        {/* TARJETA DEL REFERENTE QUE LO INVITÓ (DATOS DEL PADRE) */}
+        {buscado && resultados.length > 0 && resultados.some((o) => o.referido_por) && (() => {
+          const pTel = resultados.find((o) => o.referido_por)?.referido_por || "";
+          const pInfo = padresMap[pTel];
+          const nombrePadre = pInfo?.nombre || "Carlos Gomez";
+          const telefonoPadre = pInfo?.telefono || pTel;
+          return (
+            <div className="mt-6 rounded-2xl border-2 border-emerald-500/60 bg-gradient-to-r from-emerald-950/60 via-zinc-900 to-emerald-950/40 p-5 sm:p-6 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 font-bold text-2xl border border-emerald-500/40 shadow-sm">
+                    🤝
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-400 block">
+                        👑 Tu Referente Padre Oficial:
+                      </span>
+                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/40">
+                        Padre
+                      </span>
+                    </div>
+                    <h3 className="font-display text-xl sm:text-2xl font-bold text-white mt-0.5">
+                      {nombrePadre}
+                    </h3>
+                    <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-emerald-400 font-bold bg-emerald-950/90 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                        📞 {telefonoPadre}
+                      </span>
+                      <span>•</span>
+                      <span className="text-white font-semibold">Te registró como su referido (+1 Token Extra otorgado) 🎁</span>
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href={`https://wa.me/506${telefonoPadre.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-bold text-black hover:bg-emerald-400 transition-colors shadow-sm shrink-0 cursor-pointer"
+                >
+                  <MessageCircle className="size-4 fill-black text-black" />
+                  Escribir a mi Referente
+                </a>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Banner de Referidos del Cliente */}
+        {buscado && resultados.length > 0 && (
+          <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-emerald-950/40 via-card to-emerald-950/20 p-5 sm:p-6 shadow-lg space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="flex size-11 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl shrink-0">
+                  🎁
+                </span>
+                <div>
+                  <h4 className="font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                    Tu Programa de Referidos Activo
+                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/40">
+                      Gana Tokens
+                    </span>
+                  </h4>
+                  <p className="text-xs text-emerald-400/90 leading-tight mt-0.5">
+                    Por cada amigo que compre, ganas <strong>1 Token de Regalo</strong> y tu amigo recibe <strong>+1 Token Extra</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const tel = (resultados[0]?.telefono || "").replace(/\D/g, "");
+                    const url = `${window.location.origin}/?ref=${tel}`;
+                    void navigator.clipboard.writeText(url);
+                    toast.success("Enlace copiado al portapapeles", {
+                      description: "¡Compártelo en tus grupos y redes!",
+                    });
+                  }}
+                  className="gap-1.5 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 text-xs"
+                >
+                  <Share2 className="size-3.5" /> Copiar Enlace
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    const tel = (resultados[0]?.telefono || "").replace(/\D/g, "");
+                    const url = `${window.location.origin}/?ref=${tel}`;
+                    const texto = encodeURIComponent(
+                      `¡Mae, estoy participando en Aval Motors CR! 🚗💨\n\nEntra con mi enlace y recibe +1 Token Extra GRATIS en tu compra:\n${url}`
+                    );
+                    window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
+                  }}
+                  className="gap-1.5 bg-emerald-500 text-black font-bold hover:bg-emerald-400 text-xs shadow-sm cursor-pointer"
+                >
+                  <MessageCircle className="size-3.5 fill-black text-black" /> Enviar por WhatsApp
+                </Button>
+              </div>
+            </div>
+
+            {/* Estadísticas de Referidos del Cliente */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-center">
+                <span className="text-[11px] text-muted-foreground block uppercase font-bold">Amigos Invitados</span>
+                <span className="text-xl sm:text-2xl font-bold font-mono text-white">{referidos.length}</span>
+              </div>
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-center">
+                <span className="text-[11px] text-muted-foreground block uppercase font-bold">Tokens de Regalo</span>
+                <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-400">
+                  +{referidos.filter((r) => r.estado === "aprobada").length}
+                </span>
+              </div>
+              <div className="col-span-2 sm:col-span-1 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-center">
+                <span className="text-[11px] text-muted-foreground block uppercase font-bold">Tu Código Referente</span>
+                <span className="text-sm font-bold font-mono text-primary truncate block">
+                  {(resultados[0]?.telefono || "").replace(/\D/g, "")}
+                </span>
+              </div>
+            </div>
+
+            {/* Lista de Amigos Invitados */}
+            {referidos.length > 0 && (
+              <div className="pt-2 space-y-2">
+                <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                  <Users className="size-3.5" /> Amigos que han comprado con tu enlace ({referidos.length}):
+                </span>
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                  {referidos.map((refOrd) => (
+                    <div
+                      key={refOrd.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl bg-zinc-900/90 border border-emerald-500/20 px-3.5 py-2.5 text-xs shadow-xs"
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                        <span className="font-bold text-white text-sm">{refOrd.nombre}</span>
+                        <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                          📞 {refOrd.telefono}
+                        </span>
+                        <span className="text-xs text-muted-foreground font-semibold">({refOrd.cantidad} Tokens)</span>
+                        <span className="text-[10px] text-zinc-500 font-mono">#{refOrd.id}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                        <span className="text-[10px] text-zinc-400 font-mono">
+                          {new Date(refOrd.fecha).toLocaleDateString("es-CR")}
+                        </span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                            refOrd.estado === "aprobada"
+                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                              : "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                          }`}
+                        >
+                          {refOrd.estado === "aprobada" ? "✓ Token Acreditado" : "⏳ Pendiente"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Desglose por Ordenes */}
         {buscado && resultados.length > 0 && (
           <div className="mt-6 space-y-4">
@@ -333,7 +524,7 @@ function Validar() {
                         </h2>
                         {o.supertoken && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-500">
-                            <Crown className="size-3" /> SuperToken VIP ($6,000 USD)
+                            <Crown className="size-3" /> SuperToken ($6,000 USD)
                           </span>
                         )}
                       </div>
@@ -341,6 +532,14 @@ function Validar() {
                         {new Date(o.fecha).toLocaleDateString("es-CR")} · ₡
                         {o.precio.toLocaleString("es-CR")} · {o.nombre}
                       </p>
+                      {o.referido_por && (
+                        <div className="mt-2.5 inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/35 px-3 py-1.5 text-xs text-emerald-300 font-semibold shadow-xs">
+                          <Gift className="size-4 text-emerald-400 shrink-0" />
+                          <span>
+                            🎁 Referido por tu Padre Oficial: <strong className="text-white">{padresMap[o.referido_por]?.nombre || "Carlos Gomez"}</strong> ({padresMap[o.referido_por]?.telefono || o.referido_por}) · <span className="text-emerald-400 font-bold">+1 Token Extra de Regalo</span>
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <span
@@ -420,7 +619,16 @@ function Validar() {
                   <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 p-3 text-xs text-amber-300 shadow-sm">
                     <Crown className="size-4 text-amber-400 shrink-0" />
                     <span>
-                      <strong className="text-amber-200">SuperToken VIP Activo:</strong> Califica para el 1° Lugar + <strong className="text-yellow-300">$6,000 USD en Efectivo</strong>.
+                      <strong className="text-amber-200">SuperToken Activo:</strong> Califica para el 1° Lugar + <strong className="text-yellow-300">$6,000 USD en Efectivo</strong>.
+                    </span>
+                  </div>
+                )}
+
+                {ticketOrden.referido_por && (
+                  <div className="mt-2.5 flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-2.5 text-xs text-emerald-300">
+                    <Gift className="size-4 text-emerald-400 shrink-0" />
+                    <span>
+                      <strong>Orden Referida por:</strong> <span className="text-white font-bold">{padresMap[ticketOrden.referido_por]?.nombre || "Carlos Gomez"}</span> ({padresMap[ticketOrden.referido_por]?.telefono || ticketOrden.referido_por}) · (+1 Token Extra incluido).
                     </span>
                   </div>
                 )}

@@ -16,7 +16,7 @@ export function exportarOrdenesExcel(ordenes: Orden[]): void {
     "Email",
     "Estado",
     "Metodo_Pago",
-    "SuperToken_VIP",
+    "SuperToken",
     "Monto_SuperToken_CRC",
     "Monto_Total_CRC",
     "Cantidad_Tokens",
@@ -70,7 +70,7 @@ export function exportarClientesExcel(clientes: Cliente[]): void {
     "Email",
     "Total_Compras",
     "Total_Tokens",
-    "SuperTokens_VIP_Adquiridos",
+    "SuperTokens_Adquiridos",
     "Total_Invertido_CRC",
     "Ultima_Fecha_Compra",
   ];

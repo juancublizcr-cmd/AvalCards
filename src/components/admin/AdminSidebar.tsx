@@ -8,6 +8,7 @@ import {
   LogOut,
   Search,
   Settings,
+  Share2,
   ShoppingCart,
   Target,
   Trophy,
@@ -30,6 +31,7 @@ export type AdminSeccion =
   | "inventario"
   | "escrutinio"
   | "clientes"
+  | "referidos"
   | "config";
 
 export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
@@ -40,6 +42,7 @@ export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[]
   { id: "inventario", label: "Generador e Inventario", icono: Dices },
   { id: "escrutinio", label: "Escrutinio del Sorteo", icono: Target },
   { id: "clientes", label: "Clientes (CRM)", icono: Users },
+  { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
   { id: "config", label: "Configuración y Pasarelas", icono: Settings },
 ];
 

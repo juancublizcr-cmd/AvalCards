@@ -53,8 +53,10 @@ export function FlyerPromocional({
   tiempo?: { d: number; h: number; m: number; s: number };
 }) {
   const tiempo7d = useCuenta7Dias();
-  const rawTel = (config.promoWhatsapp || config.telefonoSinpe || "50686092162").replace(/\D/g, "");
-  const telFinal = rawTel.startsWith("506") ? rawTel : `506${rawTel}`;
+  const rawTel = (config.promoWhatsapp || config.telefonoSinpe || "50686344772").replace(/\D/g, "");
+  const telFinal = (rawTel.includes("8609") || !rawTel)
+    ? "50686344772"
+    : (rawTel.startsWith("506") ? rawTel : `506${rawTel}`);
   const mensaje = encodeURIComponent(
     `¡Hola Aval Motors CR! Quiero apartar mi lugar en la preventa exclusiva del evento promocional y recibir información de los tokens.`
   );

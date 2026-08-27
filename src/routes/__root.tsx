@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
+import { toast } from "sonner";
 import { InstallPWA } from "../components/InstallPWA";
 
 function NotFoundComponent() {
@@ -130,6 +131,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref") || params.get("r");
+      if (ref) {
+        const cleaned = ref.trim();
+        const prevRef = localStorage.getItem("aval_ref");
+        if (cleaned && cleaned !== prevRef) {
+          localStorage.setItem("aval_ref", cleaned);
+          toast.success(
+            "🎁 ¡Enlace de amigo activado! Recibirás +1 Token Extra de Regalo en tu compra.",
+            { duration: 6000 }
+          );
+        }
+      }
+    } catch {}
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
