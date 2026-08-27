@@ -130,6 +130,19 @@ export type Config = {
   // Google Pay
   googlePayActivo?: boolean;
   googlePayMerchantId?: string;
+  // 5 Herramientas Virales de Crecimiento
+  fomoActivo?: boolean;
+  rankingReferidosActivo?: boolean;
+  rankingPremioPrimero?: string;
+  rankingPremioSegundo?: string;
+  rankingPremioTercero?: string;
+  rankingFechaCierre?: string;
+  generadorHistoriasActivo?: boolean;
+  miniSorteosActivo?: boolean;
+  miniSorteoTitulo?: string;
+  miniSorteoFecha?: string;
+  miniSorteoPremio?: string;
+  pwaBannerActivo?: boolean;
 };
 
 export type ReferenteStat = {
@@ -304,6 +317,18 @@ export const CONFIG_DEFAULT: Config = {
   applePayMerchantId: "merchant.cr.avalmotors",
   googlePayActivo: true,
   googlePayMerchantId: "avalmotors-cr-google-pay",
+  fomoActivo: true,
+  rankingReferidosActivo: true,
+  rankingPremioPrimero: "₡250,000 SINPE",
+  rankingPremioSegundo: "₡100,000 SINPE",
+  rankingPremioTercero: "₡50,000 SINPE",
+  rankingFechaCierre: "Último día del mes · 11:59 PM",
+  generadorHistoriasActivo: true,
+  miniSorteosActivo: true,
+  miniSorteoTitulo: "⛽ Viernes de Tanque Lleno (₡50,000 en Combustible)",
+  miniSorteoFecha: "Viernes 7:00 PM",
+  miniSorteoPremio: "₡50,000 en Gasolina Delta / Uno",
+  pwaBannerActivo: true,
 };
 
 // ────────────────────────────────────────────────────────────
@@ -570,6 +595,18 @@ export async function fetchConfig(): Promise<Config> {
       applePayMerchantId: extra.applePayMerchantId ?? data.apple_pay_merchant_id ?? CONFIG_DEFAULT.applePayMerchantId,
       googlePayActivo: extra.googlePayActivo ?? data.google_pay_activo ?? CONFIG_DEFAULT.googlePayActivo,
       googlePayMerchantId: extra.googlePayMerchantId ?? data.google_pay_merchant_id ?? CONFIG_DEFAULT.googlePayMerchantId,
+      fomoActivo: extra.fomoActivo ?? CONFIG_DEFAULT.fomoActivo,
+      rankingReferidosActivo: extra.rankingReferidosActivo ?? CONFIG_DEFAULT.rankingReferidosActivo,
+      rankingPremioPrimero: extra.rankingPremioPrimero || CONFIG_DEFAULT.rankingPremioPrimero,
+      rankingPremioSegundo: extra.rankingPremioSegundo || CONFIG_DEFAULT.rankingPremioSegundo,
+      rankingPremioTercero: extra.rankingPremioTercero || CONFIG_DEFAULT.rankingPremioTercero,
+      rankingFechaCierre: extra.rankingFechaCierre || CONFIG_DEFAULT.rankingFechaCierre,
+      generadorHistoriasActivo: extra.generadorHistoriasActivo ?? CONFIG_DEFAULT.generadorHistoriasActivo,
+      miniSorteosActivo: extra.miniSorteosActivo ?? CONFIG_DEFAULT.miniSorteosActivo,
+      miniSorteoTitulo: extra.miniSorteoTitulo || CONFIG_DEFAULT.miniSorteoTitulo,
+      miniSorteoFecha: extra.miniSorteoFecha || CONFIG_DEFAULT.miniSorteoFecha,
+      miniSorteoPremio: extra.miniSorteoPremio || CONFIG_DEFAULT.miniSorteoPremio,
+      pwaBannerActivo: extra.pwaBannerActivo ?? CONFIG_DEFAULT.pwaBannerActivo,
     };
   } catch {
     return CONFIG_DEFAULT;
@@ -596,6 +633,18 @@ export async function upsertConfig(c: Config): Promise<void> {
       applePayMerchantId: c.applePayMerchantId,
       googlePayActivo: c.googlePayActivo,
       googlePayMerchantId: c.googlePayMerchantId,
+      fomoActivo: c.fomoActivo,
+      rankingReferidosActivo: c.rankingReferidosActivo,
+      rankingPremioPrimero: c.rankingPremioPrimero,
+      rankingPremioSegundo: c.rankingPremioSegundo,
+      rankingPremioTercero: c.rankingPremioTercero,
+      rankingFechaCierre: c.rankingFechaCierre,
+      generadorHistoriasActivo: c.generadorHistoriasActivo,
+      miniSorteosActivo: c.miniSorteosActivo,
+      miniSorteoTitulo: c.miniSorteoTitulo,
+      miniSorteoFecha: c.miniSorteoFecha,
+      miniSorteoPremio: c.miniSorteoPremio,
+      pwaBannerActivo: c.pwaBannerActivo,
     }));
   } catch {}
 

@@ -431,6 +431,183 @@ export function ConfigSection({
         </div>
       </section>
 
+      {/* ──────────────────────────────────────────────────────────── */}
+      {/* 7. HERRAMIENTAS DE CRECIMIENTO VIRAL Y RETENCIÓN */}
+      {/* ──────────────────────────────────────────────────────────── */}
+      <div className="pt-4 border-t border-border">
+        <h3 className="text-lg font-black text-foreground flex items-center gap-2">
+          <Sparkles className="size-5 text-amber-400" /> Herramientas de Viralidad, FOMO y Retención
+        </h3>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Activa o desactiva módulos independientes según tu campaña o estrategia comercial.
+        </p>
+      </div>
+
+      {/* 7.1 NOTIFICACIONES FLOTANTES FOMO */}
+      <section className="rounded-2xl border border-amber-500/40 bg-card p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-amber-500">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 font-black text-sm">🔥</span>
+              7.1 Notificaciones Flotantes en Vivo (Prueba Social & FOMO)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Muestra alertas discretas en la esquina de la pantalla con compras recientes y ganadores de raspa/ruleta.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.fomoActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.fomoActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, fomoActivo: v })}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 7.2 TABLA DE LÍDERES Y CONCURSO DE REFERIDOS */}
+      <section className="rounded-2xl border border-primary/40 bg-card p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-primary">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-primary font-black text-sm">👑</span>
+              7.2 Concurso y Ranking Mensual de Referidos (Afiliados)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Despliega la tabla de posiciones pública con los Top 10 usuarios que más amigos han invitado y premios en efectivo.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.rankingReferidosActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.rankingReferidosActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, rankingReferidosActivo: v })}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label>Premio 1° Lugar</Label>
+            <Input
+              value={borrador.rankingPremioPrimero || ""}
+              onChange={(e) => setBorrador({ ...borrador, rankingPremioPrimero: e.target.value })}
+              placeholder="₡250,000 SINPE"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Premio 2° Lugar</Label>
+            <Input
+              value={borrador.rankingPremioSegundo || ""}
+              onChange={(e) => setBorrador({ ...borrador, rankingPremioSegundo: e.target.value })}
+              placeholder="₡100,000 SINPE"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Premio 3° Lugar</Label>
+            <Input
+              value={borrador.rankingPremioTercero || ""}
+              onChange={(e) => setBorrador({ ...borrador, rankingPremioTercero: e.target.value })}
+              placeholder="₡50,000 SINPE"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Texto de Fecha / Cierre del Concurso</Label>
+          <Input
+            value={borrador.rankingFechaCierre || ""}
+            onChange={(e) => setBorrador({ ...borrador, rankingFechaCierre: e.target.value })}
+            placeholder="Último día del mes · 11:59 PM"
+          />
+        </div>
+      </section>
+
+      {/* 7.3 GENERADOR DE HISTORIAS PARA WHATSAPP */}
+      <section className="rounded-2xl border border-emerald-500/40 bg-card p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-emerald-500">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-500 font-black text-sm">📸</span>
+              7.3 Generador de Historias para WhatsApp & Instagram (9:16)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Habilita el botón en Checkout y Consulta de Tokens para descargar en 1 clic una imagen vertical HD con sus números y su link QR.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.generadorHistoriasActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.generadorHistoriasActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, generadorHistoriasActivo: v })}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 7.4 MINI-SORTEOS SEMANALES */}
+      <section className="rounded-2xl border border-amber-500/40 bg-card p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-amber-500">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 font-black text-sm">⛽</span>
+              7.4 Mini-Sorteos Semanales (Gasolina / Supermercado)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Rifas semanales automáticas de calentamiento para mantener la emoción viva cada viernes.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.miniSorteosActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.miniSorteosActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, miniSorteosActivo: v })}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Título del Mini-Sorteo Semanal</Label>
+            <Input
+              value={borrador.miniSorteoTitulo || ""}
+              onChange={(e) => setBorrador({ ...borrador, miniSorteoTitulo: e.target.value })}
+              placeholder="⛽ Viernes de Tanque Lleno (₡50,000 en Combustible)"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Premio a Entregar</Label>
+            <Input
+              value={borrador.miniSorteoPremio || ""}
+              onChange={(e) => setBorrador({ ...borrador, miniSorteoPremio: e.target.value })}
+              placeholder="₡50,000 en Gasolina Delta / Uno"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 7.5 BANNER DE INSTALACIÓN PWA */}
+      <section className="rounded-2xl border border-sky-500/40 bg-card p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-sky-500">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-500 font-black text-sm">📲</span>
+              7.5 Banner de Instalación Rápida de la App (PWA)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Muestra el aviso flotante para instalar Aval Motors CR en la pantalla de inicio de celulares Android y iPhone.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.pwaBannerActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.pwaBannerActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, pwaBannerActivo: v })}
+            />
+          </div>
+        </div>
+      </section>
+
       <div className="sticky bottom-4 z-20 flex justify-end">
         <Button
           variant="hero"

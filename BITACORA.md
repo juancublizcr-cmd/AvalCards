@@ -85,6 +85,24 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
   - Verificación instantánea contra la tabla `ordenes` de Supabase.
   - Visualización de clientes ganadores, asignación de premio, detección de SuperToken (+$6,000 USD Cash) y botón WhatsApp con mensaje de felicitación prellenado.
 
+### 8. Herramientas Virales, FOMO y Retención (Control 100% Modular desde Admin)
+- **1. Notificaciones Flotantes en Vivo (FOMO & Prueba Social):**
+  - Componente flotante `FomoNotifications` con compras verificadas y premios instantáneos de raspa/ruleta.
+  - Switch administrativo On/Off (`fomoActivo`) en Panel Admin.
+- **2. Concurso y Ranking Mensual de Referidos (Afiliados):**
+  - Podio interactivo (🥇, 🥈, 🥉) y tabla de posiciones de los Top 10 usuarios que más amigos invitan.
+  - Configuración desde Admin de premios en efectivo SINPE (1°, 2° y 3° lugar) y fecha de cierre mensual (`rankingReferidosActivo`, `rankingPremioPrimero`, `rankingPremioSegundo`, `rankingPremioTercero`, `rankingFechaCierre`).
+- **3. Generador de Historias para Estados de WhatsApp e Instagram (9:16):**
+  - Motor de renderizado en HTML5 Canvas (`story-canvas.ts`) en formato vertical 1080x1920 con diseño de lujo, badges de tokens oficiales y enlace/QR de referido.
+  - Modal interactivo `StoryShareModal` en Checkout y Validador con descarga HD en 1 clic y soporte para Web Share API.
+  - Switch administrativo On/Off (`generadorHistoriasActivo`).
+- **4. Mini-Sorteos Semanales de Gasolina / Supermercado:**
+  - Módulo `MiniSorteosSection` con reloj en cuenta regresiva todos los viernes a las 7:00 PM.
+  - Configuración de título, premio y fecha desde Admin (`miniSorteosActivo`, `miniSorteoTitulo`, `miniSorteoPremio`).
+- **5. Banner de Instalación Rápida PWA:**
+  - Notificación no invasiva `PwaInstallPrompt` para añadir Aval Motors CR a la pantalla de inicio con 1 toque en Android y guía interactiva en 2 pasos para iPhone / Safari.
+  - Switch administrativo On/Off (`pwaBannerActivo`).
+
 ---
 
 ## 🔐 Acceso Administrativo
@@ -96,4 +114,35 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
   - Escrutinio dual con Lotería Nacional (Serie + Número) y algoritmo combinado.
   - CRM de clientes y estadísticas de compra.
   - Gestión de pasarelas de pago y configuración de plataforma.
+  - Interruptores y configuración de las 5 herramientas de viralidad y retención.
 
+---
+
+## 🚀 Hito 9: Perfeccionamiento de Flujos, Auto-Validación y Universalidad Multi-Premio
+
+1. **Corrección de Import en `/validar` (`useEffect`):**
+   - Corregido el error de `ReferenceError: useEffect is not defined` importándolo directamente de React.
+   - Implementada la búsqueda automática al cargar la pantalla si el usuario viene de registrar su compra en `/checkout`.
+
+2. **Visualización y Persistencia de Tokens en Pantalla de Éxito (`/checkout`):**
+   - Corregido el renderizado de los números de tokens y la cantidad real adquirida (`tokensCreados`) para que nunca muestre `0 Tokens` tras limpiar la selección temporal.
+   - Vinculación fluida del botón **"Ver mis Tokens y Comprobante"** para transferir el número del usuario a `/validar` sin necesidad de volver a digitarlo.
+
+3. **Subida Visual de Comprobante SINPE:**
+   - Incorporada vista previa fotográfica (thumbnail real) de la captura adjunta.
+   - Marco de confirmación verde esmeralda con peso del archivo y botón para cambiar de foto en 1 clic.
+
+---
+
+## 🚀 Hito 10: Protocolización Notarial, Cláusula de Deslinde JPS y Blindaje Jurídico
+
+1. **Cláusula de Deslinde JPS en Términos y Condiciones (`/terminos`):**
+   - Agregada la sección destacada de deslinde institucional con la Junta de Protección Social (JPS) y fundamentación en la Ley N° 7472 (MEIC) y Código de Comercio.
+
+2. **Módulo de Protocolo Notarial en Panel Admin (`/admin`):**
+   - Creado el componente `ReglamentoNotarialSection.tsx` con la minuta de escritura pública protocolizable en tomo de Notario Público costarricense y engrose en papel de seguridad.
+   - Herramientas de copia en 1 clic (`[ Copiar Minuta Notarial ]`) e impresión directa.
+
+3. **Documento Maestro y PDF Ejecutivo de Estructura Legal y Comercial:**
+   - Generado el documento `ESTRUCTURA_LEGAL_Y_COMERCIAL_CR.md` en la raíz del proyecto.
+   - Compilado el PDF oficial `ESTRUCTURA_LEGAL_Y_COMERCIAL_CR.pdf` disponible para descarga en el navegador.

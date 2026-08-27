@@ -6,6 +6,7 @@ import {
   Flame,
   Gift,
   LogOut,
+  Scale,
   Search,
   Settings,
   Share2,
@@ -32,6 +33,7 @@ export type AdminSeccion =
   | "escrutinio"
   | "clientes"
   | "referidos"
+  | "legal"
   | "config";
 
 export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
@@ -43,6 +45,7 @@ export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[]
   { id: "escrutinio", label: "Escrutinio del Sorteo", icono: Target },
   { id: "clientes", label: "Clientes (CRM)", icono: Users },
   { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
+  { id: "legal", label: "Protocolo Notarial & Legal", icono: Scale },
   { id: "config", label: "Configuración y Pasarelas", icono: Settings },
 ];
 

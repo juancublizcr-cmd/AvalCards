@@ -60,26 +60,44 @@ function TerminosPage() {
           </p>
         </div>
 
-        {/* 1. Transparencia */}
+        {/* 1. Transparencia y Marco Legal */}
         <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-success/15 text-success">
               <ShieldCheck className="size-5" />
             </div>
-            <h2 className="text-xl font-bold">1. Evento Promocional 100% Transparente</h2>
+            <h2 className="text-xl font-bold">1. Evento Promocional 100% Transparente y Legal</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            El presente evento promocional se realiza de forma totalmente transparente, utilizando como referencia exclusiva los <strong>resultados oficiales de la Lotería Nacional de Costa Rica</strong>, garantizando un proceso claro, auditable e inviolable para todos los participantes.
+            El presente evento constituye una <strong>promoción comercial privada</strong> organizada de conformidad con la <strong>Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor de Costa Rica)</strong> y el Código de Comercio. La adquisición de productos o servicios comerciales de la empresa otorga al consumidor códigos promocionales de cortesía (Tokens) para participar en las dinámicas oficiales.
           </p>
         </section>
 
-        {/* 2. Instrucciones de Pago SINPE Móvil */}
+        {/* 2. Cláusula de Deslinde JPS */}
+        <section className="rounded-2xl border-2 border-amber-500/50 bg-amber-950/20 p-6 sm:p-8 space-y-4 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+              <Scale className="size-5" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">2. Cláusula de Deslinde y Uso de Fe Pública Externa (JPS)</h2>
+          </div>
+          <div className="rounded-xl border border-amber-500/30 bg-card/80 p-4 space-y-2">
+            <p className="text-sm text-foreground font-medium leading-relaxed">
+              La plataforma aclara de forma expresa que <strong>no está asociada, afiliada ni patrocinada por la Junta de Protección Social (JPS)</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Se utiliza la extracción pública y televisada de la Lotería Nacional de Costa Rica exclusivamente como un <strong>mecanismo neutral, externo e inalterable de fe pública</strong> para garantizar absoluta transparencia y aleatoriedad en la determinación de los códigos participantes favorecidos.
+            </p>
+          </div>
+        </section>
+
+        {/* 3. Instrucciones de Pago SINPE Móvil */}
         <section className="rounded-2xl border-2 border-primary/50 bg-secondary/50 p-6 sm:p-8 space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
               <CreditCard className="size-5" />
             </div>
-            <h2 className="text-xl font-bold">2. Instrucciones de Pago y SINPE Móvil</h2>
+            <h2 className="text-xl font-bold">3. Instrucciones de Pago y SINPE Móvil</h2>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 rounded-xl bg-card p-4 border border-border">
@@ -103,13 +121,13 @@ function TerminosPage() {
           </div>
         </section>
 
-        {/* 3. Confirmación y Reserva */}
+        {/* 4. Confirmación y Reserva */}
         <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
               <Lock className="size-5" />
             </div>
-            <h2 className="text-xl font-bold">3. Reserva de Acciones y Validación</h2>
+            <h2 className="text-xl font-bold">4. Reserva de Tokens y Validación</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Una vez realizado el pago, debes adjuntar la captura del comprobante en el sistema para que nuestro equipo lo valide y tu participación quede formalmente confirmada.
@@ -119,13 +137,13 @@ function TerminosPage() {
           </div>
         </section>
 
-        {/* 4. Determinación de Ganadores */}
+        {/* 5. Determinación de Ganadores */}
         <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
               <Trophy className="size-5" />
             </div>
-            <h2 className="text-xl font-bold">4. ¿Cómo se determinarán los Ganadores?</h2>
+            <h2 className="text-xl font-bold">5. ¿Cómo se determinarán los Ganadores?</h2>
           </div>
           <p className="text-sm text-muted-foreground">
             Los números ganadores se calcularán de acuerdo con las siguientes combinaciones matemáticas directas basadas en el sorteo oficial:
@@ -173,13 +191,13 @@ function TerminosPage() {
           </div>
         </section>
 
-        {/* 5. Fechas y Reprogramación */}
+        {/* 6. Fechas y Reprogramación */}
         <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
               <Calendar className="size-5" />
             </div>
-            <h2 className="text-xl font-bold">5. Fecha del Evento y Condiciones de Cierre</h2>
+            <h2 className="text-xl font-bold">6. Fecha del Evento y Condiciones de Cierre</h2>
           </div>
           <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <p>

@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  Camera,
   CheckCircle2,
   Clock,
   Coins,
@@ -32,9 +33,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { buscarPorTelefono, fetchReferidosPorTelefono, type Orden } from "@/lib/orders";
-import { fetchInstantaneos, type PremioInstantaneo } from "@/lib/admin-store";
+import { buscarPorTelefono, fetchReferidosPorTelefono, obtenerInfoReferente, type Orden } from "@/lib/orders";
+import {
+  fetchInstantaneos,
+  fetchPremios,
+  fetchSorteo,
+  type PremioInstantaneo,
+  type Premio,
+  type Sorteo,
+  PREMIOS_DEFAULT,
+  SORTEO_DEFAULT,
+} from "@/lib/admin-store";
 import { descargarTiqueteImagen } from "@/lib/ticket-canvas";
+import { StoryShareModal } from "@/components/StoryShareModal";
 import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
 
@@ -75,21 +86,13 @@ function Validar() {
   const [padresMap, setPadresMap] = useState<Record<string, { nombre: string; telefono: string }>>({});
   const [ticketOrden, setTicketOrden] = useState<Orden | null>(null);
   const [premiosInstantaneos, setPremiosInstantaneos] = useState<PremioInstantaneo[]>([]);
+  const [premios, setPremios] = useState<Premio[]>(PREMIOS_DEFAULT);
+  const [sorteo, setSorteo] = useState<Sorteo>(SORTEO_DEFAULT);
+  const [modalHistoria, setModalHistoria] = useState(false);
+  const [datosHistoria, setDatosHistoria] = useState<any>(null);
 
-  const buscar = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const clean = telefono.trim();
-    if (!clean) {
-      setError("Ingresa tu número de teléfono o correo");
-      setBuscado(false);
-      return;
-    }
-    const digits = clean.replace(/\D/g, "");
-    if (!clean.includes("@") && digits.length < 8) {
-      setError("Digita al menos los 8 dígitos de tu número celular (ej. 8888-8888)");
-      setBuscado(false);
-      return;
-    }
+  const ejecutarBusqueda = async (clean: string) => {
+    if (!clean) return;
     setError("");
     setBuscando(true);
     try {
@@ -103,7 +106,6 @@ function Validar() {
       setReferidos(refs);
       setError("");
 
-      // Cargar información de los referentes (padres) de las órdenes del usuario
       try {
         const refSet = new Set(res.map((o) => o.referido_por).filter(Boolean) as string[]);
         const mapInfo: Record<string, { nombre: string; telefono: string }> = {};
@@ -119,23 +121,51 @@ function Validar() {
       } catch {}
 
       setBuscado(true);
+      sessionStorage.setItem("aval_ultimo_telefono", clean);
 
-      // Verificar si hay algún número ganador
       const numerosCliente = new Set(res.flatMap((o) => o.numeros));
       const ganados = instant.filter((p) => numerosCliente.has(p.numero));
       if (ganados.length > 0) {
-        // Disparar Fiesta de Confeti
         confetti({ particleCount: 160, spread: 90, origin: { y: 0.35 } });
         window.setTimeout(
           () => confetti({ particleCount: 220, spread: 130, origin: { y: 0.45 } }),
-          350,
+          400,
         );
       }
     } catch {
-      setError("Error al buscar. Verifica tu conexión e intenta de nuevo.");
+      setError("No se pudo consultar el estado. Revisa tu conexión.");
+      setBuscado(false);
     } finally {
       setBuscando(false);
     }
+  };
+
+  useEffect(() => {
+    void fetchPremios().then((p) => { if (p && p.length > 0) setPremios(p); }).catch(() => {});
+    void fetchSorteo().then((s) => { if (s) setSorteo(s); }).catch(() => {});
+
+    const guardado = typeof window !== "undefined" ? sessionStorage.getItem("aval_ultimo_telefono") : null;
+    if (guardado) {
+      setTelefono(guardado);
+      void ejecutarBusqueda(guardado);
+    }
+  }, []);
+
+  const buscar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = telefono.trim();
+    if (!clean) {
+      setError("Ingresa tu número de teléfono o correo");
+      setBuscado(false);
+      return;
+    }
+    const digits = clean.replace(/\D/g, "");
+    if (!clean.includes("@") && digits.length < 8) {
+      setError("Digita al menos los 8 dígitos de tu número celular (ej. 8888-8888)");
+      setBuscado(false);
+      return;
+    }
+    await ejecutarBusqueda(clean);
   };
 
   const imprimirTicket = () => {
@@ -408,7 +438,25 @@ function Validar() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setDatosHistoria({
+                      nombre: resultados[0]?.nombre || "Participante",
+                      telefono: resultados[0]?.telefono || telefono,
+                      tokens: resultados.flatMap((o) => o.numeros),
+                      premioMayor: premios[0]?.nombre || sorteo?.titulo || "Gran Sorteo Oficial",
+                      ordenId: resultados[0]?.id,
+                      supertoken: resultados.some((o) => o.supertoken),
+                    });
+                    setModalHistoria(true);
+                  }}
+                  className="gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold hover:from-amber-400 hover:to-amber-500 text-xs shadow-md"
+                >
+                  <Camera className="size-3.5" /> 📸 Imagen para Estado
+                </Button>
                 <Button
                   type="button"
                   variant="outline"
@@ -438,7 +486,7 @@ function Validar() {
                   }}
                   className="gap-1.5 bg-emerald-500 text-black font-bold hover:bg-emerald-400 text-xs shadow-sm cursor-pointer"
                 >
-                  <MessageCircle className="size-3.5 fill-black text-black" /> Enviar por WhatsApp
+                  <MessageCircle className="size-3.5 fill-black text-black" /> Enviar WhatsApp
                 </Button>
               </div>
             </div>
@@ -682,20 +730,37 @@ function Validar() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
                 <Button
                   variant="hero"
-                  className="gap-2 shadow-[var(--shadow-fire)] font-bold text-white"
+                  className="gap-2 shadow-[var(--shadow-fire)] font-bold text-white text-xs sm:text-sm"
                   onClick={async () => {
                     await descargarTiqueteImagen(ticketOrden);
                     toast.success("¡Tiquete oficial descargado en tu dispositivo!");
                   }}
                 >
-                  <Download className="size-4" /> Guardar Imagen (HD)
+                  <Download className="size-4" /> Guardar Tiquete
                 </Button>
                 <Button
                   variant="outline"
-                  className="gap-2 border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 hover:text-white"
+                  className="gap-2 border-amber-500/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs sm:text-sm font-bold"
+                  onClick={() => {
+                    setDatosHistoria({
+                      nombre: ticketOrden.nombre,
+                      telefono: ticketOrden.telefono,
+                      tokens: ticketOrden.numeros,
+                      premioMayor: premios[0]?.nombre || sorteo?.titulo || "Gran Sorteo Oficial",
+                      ordenId: ticketOrden.id,
+                      supertoken: ticketOrden.supertoken,
+                    });
+                    setModalHistoria(true);
+                  }}
+                >
+                  <Camera className="size-4 text-amber-400" /> Crear Historia
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2 border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 hover:text-white text-xs sm:text-sm"
                   onClick={imprimirTicket}
                 >
                   <Printer className="size-4" /> Imprimir / PDF
@@ -713,6 +778,12 @@ function Validar() {
           )}
         </DialogContent>
       </Dialog>
+
+      <StoryShareModal
+        abierto={modalHistoria}
+        alCerrar={() => setModalHistoria(false)}
+        datos={datosHistoria}
+      />
 
       <Footer />
     </div>

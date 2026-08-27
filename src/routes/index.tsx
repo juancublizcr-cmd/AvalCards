@@ -24,6 +24,10 @@ import { GanadoresSection } from "@/components/GanadoresSection";
 import { FaqSection } from "@/components/FaqSection";
 import { Footer } from "@/components/Footer";
 import { FlyerPromocional } from "@/components/FlyerPromocional";
+import { FomoNotifications } from "@/components/FomoNotifications";
+import { RankingReferidos } from "@/components/RankingReferidos";
+import { MiniSorteosSection } from "@/components/MiniSorteosSection";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import pradoImg from "@/assets/premio-prado.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
 import consolaImg from "@/assets/premio-consola.jpg";
@@ -34,6 +38,7 @@ import {
   fetchConfig,
   type Premio,
   type Config,
+  type Sorteo,
   PREMIOS_DEFAULT,
   SORTEO_DEFAULT,
   CONFIG_DEFAULT,
@@ -143,6 +148,31 @@ function IndexPage() {
 
   const featureIcons = [Gauge, Compass, Star, FileCheck];
 
+  const metodosActivosLista = [
+    { id: "sinpe", nombre: "SINPE Móvil", icono: "📱", activo: config.sinpeActivo ?? true },
+    { id: "tarjeta", nombre: "Tarjeta", icono: "💳", activo: config.tilopayActivo ?? true },
+    { id: "paypal", nombre: "PayPal", icono: "🅿️", activo: config.paypalActivo ?? true },
+    { id: "applepay", nombre: "Apple Pay", icono: "🍏", activo: config.applePayActivo ?? true },
+    { id: "googlepay", nombre: "Google Pay", icono: "🌐", activo: config.googlePayActivo ?? true },
+    { id: "crypto", nombre: "Cripto USDT", icono: "🪙", activo: config.cryptoActivo ?? true },
+  ].filter((m) => m.activo);
+
+  const nombresMetodos = metodosActivosLista.map((m) => m.nombre);
+  const tituloPaso2 =
+    nombresMetodos.length === 0
+      ? "Paga de Forma Segura"
+      : nombresMetodos.length <= 2
+      ? `Paga con ${nombresMetodos.join(" o ")}`
+      : `Paga con ${nombresMetodos.slice(0, 3).join(", ")}${nombresMetodos.length > 3 ? " y más" : ""}`;
+
+  const descPaso2 =
+    nombresMetodos.length === 0
+      ? "Transfiere a nuestra cuenta oficial o paga con tarjeta para validación inmediata."
+      : `Aceptamos ${nombresMetodos.join(", ")} con validación inmediata y máxima seguridad.`;
+
+  const premioMayorActual = premios[0]?.nombre || sorteo.titulo || "el Premio Mayor";
+  const descPaso3 = `El sorteo se determina con los resultados oficiales de la Lotería Nacional (JPS). Si aciertas tu número, te llevas ${premioMayorActual} (vehículo 0KM, moto, casa, dinero en efectivo o el premio activo).`;
+
   const pasos = [
     {
       num: "01",
@@ -151,13 +181,13 @@ function IndexPage() {
     },
     {
       num: "02",
-      titulo: "Paga por SINPE o Tarjeta",
-      desc: "Transfiere en segundos a nuestra cuenta comercial oficial o paga con tarjeta para validación inmediata.",
+      titulo: tituloPaso2,
+      desc: descPaso2,
     },
     {
       num: "03",
       titulo: "¡Participa con Resultados Oficiales!",
-      desc: "El evento se determina directamente con las combinaciones de resultados oficiales públicos. Si aciertas, estrenas vehículo 0KM.",
+      desc: descPaso3,
     },
   ];
 
@@ -676,6 +706,19 @@ function IndexPage() {
                     <div className="font-display text-6xl text-primary/30">{paso.num}</div>
                     <h3 className="mt-4 font-bold text-xl">{paso.titulo}</h3>
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{paso.desc}</p>
+                    {idx === 1 && metodosActivosLista.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {metodosActivosLista.map((m) => (
+                          <span
+                            key={m.id}
+                            className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-foreground shadow-xs"
+                          >
+                            <span>{m.icono}</span>
+                            <span>{m.nombre}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -704,7 +747,7 @@ function IndexPage() {
               </p>
 
               <div className="mt-8 space-y-4">
-                {(sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT).map((c, i) => {
+                {(sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT).map((c: { titulo: string; desc: string }, i: number) => {
                   const Icono = featureIcons[i % featureIcons.length] || Gauge;
                   return (
                     <div key={i} className="flex items-start gap-4 rounded-xl border border-border bg-secondary/40 p-4">
@@ -741,14 +784,32 @@ function IndexPage() {
           </div>
         </section>
 
+        {/* MINI-SORTEOS SEMANALES */}
+        {config.miniSorteosActivo && (
+          <div className="mx-auto max-w-6xl px-5 py-8">
+            <MiniSorteosSection config={config} />
+          </div>
+        )}
+
         {/* GANADORES ANTERIORES Y TESTIMONIOS */}
         <GanadoresSection ganadores={sorteo.ganadoresTestimonios} />
+
+        {/* RANKING Y CONCURSO DE REFERIDOS */}
+        {config.rankingReferidosActivo && (
+          <div className="mx-auto max-w-6xl px-5 py-8">
+            <RankingReferidos config={config} />
+          </div>
+        )}
 
         {/* PREGUNTAS FRECUENTES */}
         <FaqSection faqs={sorteo.faqs} />
       </main>
 
       <Footer />
+
+      {/* NOTIFICACIONES FOMO Y BANNER PWA */}
+      <FomoNotifications config={config} />
+      <PwaInstallPrompt config={config} />
 
       <StickersModal
         paquete={paquete}

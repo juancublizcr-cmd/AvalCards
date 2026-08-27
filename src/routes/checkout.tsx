@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import {
   ArrowLeft,
+  Camera,
   Check,
   CheckCircle2,
   Coins,
@@ -30,6 +31,7 @@ import { fetchConfig, fetchSorteo, type Config, type Sorteo, CONFIG_DEFAULT, SOR
 import { Footer } from "@/components/Footer";
 import { calcularGirosPorTokens, guardarGiros } from "@/lib/giros-store";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
+import { StoryShareModal } from "@/components/StoryShareModal";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -106,6 +108,8 @@ function Checkout() {
   const [esUsuarioExistente, setEsUsuarioExistente] = useState(false);
   const [arrastrando, setArrastrando] = useState(false);
   const [openJuego, setOpenJuego] = useState(false);
+  const [tokensCreados, setTokensCreados] = useState<string[]>([]);
+  const [modalHistoria, setModalHistoria] = useState(false);
   const inputFile = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -287,6 +291,7 @@ function Checkout() {
 
       setOrdenCreadaId(nuevoId);
       setOrdenAprobadaDirecta(esPagoInstantaneo);
+      setTokensCreados(numerosFinales);
       limpiarSeleccion();
       setExito(true);
 
@@ -357,22 +362,18 @@ function Checkout() {
               </span>
             ) : (
               <span>
-                Tus {seleccion?.cantidad ?? 0} Tokens quedaron{" "}
+                Tus {tokensCreados.length > 0 ? tokensCreados.length : (seleccion?.cantidad ?? 4)} Tokens quedaron{" "}
                 <strong className="text-foreground">reservados</strong> mientras validamos tu comprobante.
               </span>
             )}
           </p>
 
-          {seleccion && (
+          {tokensCreados.length > 0 && (
             <div className="mt-6 grid grid-cols-4 gap-2">
-              {seleccion.numeros.map((n, i) => (
+              {tokensCreados.map((n, i) => (
                 <span
                   key={`${n}-${i}`}
-                  className={`rounded-md border py-1.5 font-mono text-xs font-bold ${
-                    seleccion.supertoken
-                      ? "border-amber-400/60 bg-amber-500/15 text-amber-400"
-                      : "border-primary/30 bg-secondary/50 text-primary"
-                  }`}
+                  className="rounded-md border border-primary/40 bg-secondary/50 py-1.5 font-mono text-xs font-bold text-primary"
                 >
                   {n}
                 </span>
@@ -387,79 +388,93 @@ function Checkout() {
                 <Sparkles className="size-3.5" /> ¡BONO DE JUEGO EXPRESS DESBLOQUEADO!
               </div>
               <h3 className="font-display text-xl text-white font-bold">
-                Tu compra incluye {calcularGirosPorTokens(seleccion?.cantidad ?? 4)} Giros GRATIS
+                Tu compra incluye {calcularGirosPorTokens(tokensCreados.length > 0 ? tokensCreados.length : (seleccion?.cantidad ?? 4))} Giros GRATIS
               </h3>
-              <p className="text-xs text-zinc-300">
-                ¡Puedes ganar hasta ₡100,000 en SINPE Móvil o más tokens al instante!
+              <p className="text-xs text-muted-foreground">
+                Juega de inmediato tu Raspa & Gana Express o Ruleta de la Suerte para premios instantáneos de hasta ₡50,000 SINPE.
               </p>
               <Button
+                type="button"
                 variant="hero"
                 size="lg"
-                className="w-full gap-2 font-bold shadow-[var(--shadow-fire)] cursor-pointer text-sm py-5"
                 onClick={() => setOpenJuego(true)}
+                className="mt-2 w-full gap-2 text-sm font-black shadow-[var(--shadow-fire)] animate-bounce"
               >
-                🎡 ¡JUGAR MIS {calcularGirosPorTokens(seleccion?.cantidad ?? 4)} GIROS GRATIS AHORA!
+                <PartyPopper className="size-4" /> 🎁 ¡Jugar Mis Giros Gratis Ahora!
               </Button>
             </div>
           )}
 
-          {/* PROGRAMA DE REFERIDOS - GANA TOKENS GRATIS */}
-          <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-emerald-950/40 via-background to-emerald-950/30 p-5 text-left space-y-3 shadow-lg">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-base shrink-0">
+          {/* Tarjeta de Referidos con Enlace Directo */}
+          <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/20 p-5 text-left space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg shrink-0">
                 🎁
-              </span>
-              <div>
-                <h4 className="font-bold text-sm text-white">¡Gana Tokens GRATIS con tu enlace!</h4>
-                <p className="text-[11px] text-emerald-400/90 leading-tight">
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-sm text-foreground">¡Gana Tokens GRATIS con tu enlace!</h4>
+                <p className="text-xs text-emerald-400/90 leading-tight mt-0.5">
                   Tus amigos reciben <strong>+1 Token Extra</strong> y tú ganas <strong>1 Token de Regalo</strong> por cada compra.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 rounded-xl bg-black/70 border border-emerald-500/30 p-2 text-xs font-mono">
+            <div className="flex items-center gap-2 rounded-xl bg-zinc-950/80 p-2 border border-emerald-500/30">
               <input
                 type="text"
                 readOnly
-                value={`${typeof window !== "undefined" ? window.location.origin : "https://avalmotors.cr"}/?ref=${form.telefono.replace(/\D/g, "") || ordenCreadaId}`}
-                className="bg-transparent text-zinc-300 w-full outline-none truncate text-[11px]"
+                value={enlaceReferido}
+                className="w-full bg-transparent px-2 text-xs font-mono text-muted-foreground outline-none select-all"
               />
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
                 onClick={copiarEnlaceReferido}
-                className="shrink-0 h-7 px-2.5 text-xs text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/20"
+                className="h-8 text-xs font-bold border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 shrink-0"
               >
-                {copiadoRef ? "¡Copiado!" : "Copiar"}
+                {copiadoEnlace ? "¡Copiado!" : "Copiar"}
               </Button>
             </div>
 
             <Button
               type="button"
-              variant="outline"
-              size="lg"
+              size="sm"
               onClick={compartirWhatsApp}
-              className="w-full gap-2 bg-emerald-500 text-black font-black hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] py-4 text-xs sm:text-sm cursor-pointer"
+              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
             >
-              <MessageCircle className="size-4 fill-black text-black" /> ¡Compartir mi Enlace en WhatsApp!
+              <MessageCircle className="size-4" /> ¡Compartir mi Enlace en WhatsApp!
             </Button>
           </div>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 flex flex-col gap-3">
+            <Button
+              type="button"
+              size="lg"
+              onClick={() => setModalHistoria(true)}
+              className="w-full gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold hover:from-amber-400 hover:to-amber-500 text-sm shadow-md"
+            >
+              <Camera className="size-4" /> 📸 Crear Imagen para mi Estado de WhatsApp
+            </Button>
             <Button
               variant="outline"
-              size="lg"
+              size="sm"
               className="w-full gap-2 text-emerald-500 hover:text-emerald-400"
               onClick={compartirWhatsApp}
             >
-              <Share2 className="size-4" /> Compartir en WhatsApp
+              <Share2 className="size-4" /> Compartir Enlace en WhatsApp
             </Button>
             <Button
               variant="hero"
               size="xl"
               className="w-full"
-              onClick={() => void navigate({ to: "/validar" })}
+              onClick={() => {
+                const tel = form.telefono.trim();
+                if (tel) {
+                  sessionStorage.setItem("aval_ultimo_telefono", tel);
+                }
+                void navigate({ to: "/validar" });
+              }}
             >
               Ver mis Tokens y Comprobante
             </Button>
@@ -473,6 +488,19 @@ function Checkout() {
             </Button>
           </div>
         </div>
+
+        <StoryShareModal
+          abierto={modalHistoria}
+          alCerrar={() => setModalHistoria(false)}
+          datos={{
+            nombre: form.nombre || "Participante",
+            telefono: form.telefono,
+            tokens: tokensCreados.length > 0 ? tokensCreados : (seleccion?.numeros || []),
+            premioMayor: sorteo?.titulo || "Gran Sorteo Oficial",
+            ordenId: ordenCreadaId,
+            supertoken: seleccion?.supertoken,
+          }}
+        />
 
         <JuegosExpressModal
           open={openJuego}
@@ -732,32 +760,68 @@ function Checkout() {
 
                 <div>
                   <Label htmlFor="archivo-input" className="text-xs">Adjuntar captura del comprobante SINPE</Label>
-                  <div
-                    onDragOver={(e) => { e.preventDefault(); setArrastrando(true); }}
-                    onDragLeave={() => setArrastrando(false)}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      setArrastrando(false);
-                      const f = e.dataTransfer.files[0];
-                      if (f) elegirArchivo(f);
-                    }}
-                    onClick={() => inputFile.current?.click()}
-                    className={`mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all ${
-                      arrastrando
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50 hover:bg-secondary/40"
-                    }`}
-                  >
-                    <Upload className="size-8 text-muted-foreground" />
-                    <p className="mt-2 text-xs font-medium">
-                      {archivo ? (
-                        <span className="text-primary font-bold">{archivo.name}</span>
-                      ) : (
-                        "Arrastra aquí tu comprobante o haz clic para seleccionarlo"
-                      )}
-                    </p>
-                    <span className="text-[10px] text-muted-foreground mt-1">Formatos JPG, PNG o WebP (máx. 5MB)</span>
-                  </div>
+                  {preview && archivo ? (
+                    <div className="mt-2 relative rounded-2xl border-2 border-emerald-500/60 bg-emerald-950/20 p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                          <CheckCircle2 className="size-4 text-emerald-400" />
+                          <span>¡Comprobante adjuntado con éxito!</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setArchivo(null);
+                            setPreview(null);
+                          }}
+                          className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                        >
+                          Cambiar imagen
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center gap-4 bg-zinc-950/80 p-3 rounded-xl border border-emerald-500/30">
+                        <img
+                          src={preview}
+                          alt="Comprobante SINPE"
+                          className="h-20 w-20 rounded-lg object-cover border border-border shadow-md shrink-0"
+                        />
+                        <div className="min-w-0 flex-1 text-left">
+                          <div className="font-bold text-sm text-foreground truncate">{archivo.name}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5 font-mono">
+                            {(archivo.size / 1024).toFixed(1)} KB · Imagen verificada
+                          </div>
+                          <div className="inline-flex items-center gap-1 mt-1.5 rounded-full bg-emerald-500/20 text-emerald-400 px-2 py-0.5 text-[10px] font-bold">
+                            ✓ Listo para validar
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onDragOver={(e) => { e.preventDefault(); setArrastrando(true); }}
+                      onDragLeave={() => setArrastrando(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setArrastrando(false);
+                        const f = e.dataTransfer.files[0];
+                        if (f) elegirArchivo(f);
+                      }}
+                      onClick={() => inputFile.current?.click()}
+                      className={`mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+                        arrastrando
+                          ? "border-primary bg-primary/10"
+                          : "border-border hover:border-primary/50 hover:bg-secondary/40"
+                      }`}
+                    >
+                      <Upload className="size-8 text-muted-foreground" />
+                      <p className="mt-2 text-xs font-medium text-foreground">
+                        Arrastra aquí tu comprobante o haz clic para seleccionarlo
+                      </p>
+                      <span className="text-[10px] text-muted-foreground mt-1">Formatos JPG, PNG o WebP (máx. 5MB)</span>
+                    </div>
+                  )}
                   <input
                     ref={inputFile}
                     id="archivo-input"
