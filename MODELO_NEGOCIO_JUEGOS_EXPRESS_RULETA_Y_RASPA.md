@@ -1,5 +1,5 @@
 # 🎡 ESTRATEGIA Y MODELO DE NEGOCIO: JUEGOS EXPRESS DIGITALES
-## Aval Motors CR · Ruleta de la Fortuna y Raspa y Gana Digital
+## Aval Community CR · Ruleta de la Fortuna y Raspa y Gana Digital
 **Versión Oficial 2026 · Documento Estratégico y Operativo**
 
 ---
@@ -10,7 +10,7 @@ Para maximizar ingresos, garantizar rentabilidad y evitar que usuarios jueguen s
 
 ```
                                ┌────────────────────────────────────────┐
-                               │     AVAL MOTORS CR - JUEGOS EXPRESS    │
+                               │     AVAL COMMUNITY CR - JUEGOS EXPRESS    │
                                └──────────────────┬─────────────────────┘
                                                   │
              ┌────────────────────────────────────┼────────────────────────────────────┐
@@ -68,7 +68,7 @@ Para maximizar ingresos, garantizar rentabilidad y evitar que usuarios jueguen s
 En los estudios de psicología de juego digital (iGaming):
 1. **Sensación de Habilidad y Control:** Cuando la ruleta frena de inmediato al tocar **`DETENER`**, el cliente no siente que una computadora eligió por él; siente que su dedo y sus reflejos fueron los protagonistas.
 2. **Cero Sospecha de Amaño:** La ruleta gira continuamente y solo se detiene cuando el usuario lo ordena, eliminando la clásica desconfianza de *"la ruleta frenó donde el sistema quiso"*.
-3. **Sello Criptográfico Inmutable:** Cada jugada queda registrada con un código irrepetible para que cualquier reclamo por WhatsApp sea 100% verificable contra la base de datos de Aval Motors CR.
+3. **Sello Criptográfico Inmutable:** Cada jugada queda registrada con un código irrepetible para que cualquier reclamo por WhatsApp sea 100% verificable contra la base de datos de Aval Community CR.
 
 ---
 
@@ -87,4 +87,4 @@ Suponiendo 1,000 jugadas a ₡1,000 (₡1,000,000 de recaudación bruta):
 
 ---
 
-*Documento confidencial para la administración de Aval Motors CR e Importadora Luxury Scents LTDA.*
+*Documento confidencial para la administración de Aval Community CR e Importadora Luxury Scents LTDA.*

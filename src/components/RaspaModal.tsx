@@ -157,7 +157,7 @@ export function RaspaModal({
     ctx.fillStyle = "#451a03";
     ctx.font = "bold 16px 'Bebas Neue', sans-serif, Arial";
     ctx.textAlign = "center";
-    ctx.fillText("AVAL MOTORS CR · RASPA Y GANA", width / 2, 45);
+    ctx.fillText("AVAL COMMUNITY CR · RASPA Y GANA", width / 2, 45);
 
     ctx.fillStyle = "#78350f";
     ctx.font = "bold 20px sans-serif, Arial";
@@ -288,7 +288,7 @@ export function RaspaModal({
   const reclamarPremio = () => {
     if (!resultado) return;
     const texto = encodeURIComponent(
-      `¡Hola Aval Motors CR! 🏆 Acabo de jugar el Raspa y Gana Digital (Folio Oficial: #${ticketFolio}) y resulté GANADOR de: *${resultado.premio.nombre}*. ¿Cómo coordino mi entrega / SINPE?`,
+      `¡Hola Aval Community CR! 🏆 Acabo de jugar el Raspa y Gana Digital (Folio Oficial: #${ticketFolio}) y resulté GANADOR de: *${resultado.premio.nombre}*. ¿Cómo coordino mi entrega / SINPE?`,
     );
     const tel = telefonoSoporte.replace(/\D/g, "");
     window.open(`https://wa.me/506${tel}?text=${texto}`, "_blank");
@@ -443,7 +443,7 @@ export function RaspaModal({
           {verTransparencia && (
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 text-xs text-zinc-300 space-y-2 animate-in fade-in">
               <div className="font-bold text-emerald-400 flex items-center gap-1.5">
-                <ShieldCheck className="size-4" /> Garantía de Transparencia Aval Motors CR:
+                <ShieldCheck className="size-4" /> Garantía de Transparencia Aval Community CR:
               </div>
               <ul className="list-disc pl-4 space-y-1 text-[11px] text-zinc-400">
                 <li><strong>Sin intervención humana:</strong> La combinación se calcula por algoritmo matemático aleatorio al iniciar tu partida.</li>

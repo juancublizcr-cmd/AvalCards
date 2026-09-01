@@ -1,4 +1,4 @@
-# Aval Motors CR - Rifas Digitales (PWA)
+# Aval Community CR - Rifas Digitales (PWA)
 
 Plataforma moderna de rifas y stickers digitales construida con React, TanStack Start/Router, TailwindCSS y Supabase.
 

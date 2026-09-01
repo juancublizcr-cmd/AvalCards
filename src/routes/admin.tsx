@@ -39,11 +39,11 @@ import { getAdminSession, clearAdminSession } from "@/routes/login";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Dashboard CRM | Aval Motors CR" },
+      { title: "Dashboard CRM | Aval Community CR" },
       {
         name: "description",
         content:
-          "Consola administrativa de Aval Motors CR: métricas, pagos SINPE, sorteos, inventario, escrutinio y CRM de clientes.",
+          "Consola administrativa de Aval Community CR: métricas, pagos SINPE, sorteos, inventario, escrutinio y CRM de clientes.",
       },
       { name: "robots", content: "noindex, nofollow" },
     ],
@@ -156,7 +156,7 @@ function Admin() {
               <div>
                 <h1 className="text-lg sm:text-xl font-bold">{titulo}</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">
-                  {sorteo.nombre || "Aval Motors CR"} · consola de administración
+                  {sorteo.nombre || "Aval Community CR"} · consola de administración
                 </p>
               </div>
             </div>

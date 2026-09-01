@@ -1,7 +1,7 @@
 # 🤝 MANUAL OPERATIVO: PROGRAMA DE REFERIDOS Y AFILIADOS
-## Plataforma Oficial de Rifas Digitales — Aval Motors CR
+## Plataforma Oficial de Rifas Digitales — Aval Community CR
 
-Este manual describe el funcionamiento completo, las reglas de incentivos, la operativa técnica y las estrategias de difusión para el **Programa de Referidos y Afiliados** de Aval Motors CR.
+Este manual describe el funcionamiento completo, las reglas de incentivos, la operativa técnica y las estrategias de difusión para el **Programa de Referidos y Afiliados** de Aval Community CR.
 
 ---
 
@@ -43,8 +43,8 @@ El éxito del programa radica en que **ambas partes obtienen un beneficio tangib
 ## 2. Enlaces Únicos y Captura Automática
 
 1. **Estructura del Enlace:**
-   * `https://avalmotorscr.com/?ref=NUMERO_TELEFONO`
-   * Ejemplo: `https://avalmotorscr.com/?ref=86344772`
+   * `https://avalcommunitycr.com/?ref=NUMERO_TELEFONO`
+   * Ejemplo: `https://avalcommunitycr.com/?ref=86344772`
 2. **Persistencia (Memoria del Navegador):**
    * Cuando una persona hace clic en un enlace de referido, el sistema guarda el código en el `localStorage` de su dispositivo.
    * Si la persona no compra inmediatamente y regresa 3 días después a pagar, **la compra sigue quedando atribuida al referente original**.
@@ -70,19 +70,19 @@ Cuando un cliente busca sus números con su cédula o teléfono, la pantalla le 
 ## 4. Plantillas de Mensajes Listas para WhatsApp y Redes
 
 ### Plantilla 1: Para Grupos de Amigos y Familiares
-> *"¡Mae! Estoy participando por el Mercedes Benz 2026 en Aval Motors CR 🚗💨.*  
+> *"¡Mae! Estoy participando por el Mercedes Benz 2026 en Aval Community CR 🚗💨.*  
 > *Si entras con mi enlace te regalan **+1 Token Extra GRATIS** en tu paquete:*  
-> *👉 https://avalmotorscr.com/?ref=TU_NUMERO"*
+> *👉 https://avalcommunitycr.com/?ref=TU_NUMERO"*
 
 ### Plantilla 2: Para Estados de WhatsApp / Historias de Instagram
 > *"¿Te imaginas estrenar un Mercedes Benz 2026 por ₡1,000? 🔥*  
 > *Usa mi link y llévate números extra de regalo:*  
-> *👉 https://avalmotorscr.com/?ref=TU_NUMERO"*
+> *👉 https://avalcommunitycr.com/?ref=TU_NUMERO"*
 
 ### Plantilla 3: Para Creadores de Contenido / Influencers
-> *"¡Mi gente! Me uní con Aval Motors CR para regalarles números adicionales para el sorteo del Mercedes Benz 0KM con traspaso y marchamo pago.*  
+> *"¡Mi gente! Me uní con Aval Community CR para regalarles números adicionales para el sorteo del Mercedes Benz 0KM con traspaso y marchamo pago.*  
 > *Entren al link oficial para reclamar su Token de regalo:*  
-> *👉 https://avalmotorscr.com/?ref=CODIGO_INFLUENCER"*
+> *👉 https://avalcommunitycr.com/?ref=CODIGO_INFLUENCER"*
 
 ---
 

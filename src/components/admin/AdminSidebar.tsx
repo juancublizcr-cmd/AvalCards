@@ -70,7 +70,7 @@ export function AdminSidebarContent({
         <Link to="/" className="flex items-center gap-2" onClick={onItemClick}>
           <Flame className="size-5 text-primary" />
           <span className="font-display text-2xl tracking-wide">
-            Aval <span className="text-primary">Motors CR</span>
+            Aval <span className="text-primary">Community CR</span>
           </span>
         </Link>
         <p className="mt-1 text-xs text-muted-foreground">Consola administrativa</p>

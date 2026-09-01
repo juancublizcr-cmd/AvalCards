@@ -1,5 +1,5 @@
 # ⚖️ MARCO LEGAL, TRIBUTARIO Y ESTRATEGIA COMERCIAL
-## Aval Motors CR · Plataforma Digital de Promociones Comerciales
+## Aval Community CR · Plataforma Digital de Promociones Comerciales
 **Operada por:** Importadora Luxury Scents LTDA  
 **Jurisdicción:** República de Costa Rica  
 **Fecha de Emisión:** Agosto 2026  
@@ -8,7 +8,7 @@
 
 ## 📌 1. Resumen Ejecutivo y Objeto del Documento
 
-Este documento establece la **estructura jurídica, tributaria y operativa** para el lanzamiento, comercialización y administración de la plataforma digital **Aval Motors CR** en el territorio costarricense.
+Este documento establece la **estructura jurídica, tributaria y operativa** para el lanzamiento, comercialización y administración de la plataforma digital **Aval Community CR** en el territorio costarricense.
 
 El objetivo central es garantizar que la plataforma opere con:
 1. **Total legalidad y respaldo institucional** bajo la **Ley N° 7472** (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor / MEIC) y el **Código de Comercio de Costa Rica**.
@@ -28,7 +28,7 @@ El derecho mercantil y la Ley de Defensa del Consumidor amparan el derecho de cu
 
 ```
 ┌─────────────────────────────────────────┐      ┌─────────────────────────────────────────┐
-│     ACTIVIDAD ILEGAL / CLANDESTINA      │      │     MODELO LEGAL AVAL MOTORS CR         │
+│     ACTIVIDAD ILEGAL / CLANDESTINA      │      │     MODELO LEGAL AVAL COMMUNITY CR         │
 ├─────────────────────────────────────────┤      ├─────────────────────────────────────────┤
 │ ❌ Venta directa de apuestas / números  │      │ ✅ Venta de producto / servicio digital │
 │ ❌ No hay producto ni factura mercantil │      │ ✅ Factura Electrónica con IVA (DGT)    │
@@ -45,7 +45,7 @@ Para blindar el negocio ante el consumidor, entidades bancarias y autoridades re
 
 ### A. Producto Comercial Adquirido
 El consumidor realiza el pago comercial por alguno de los siguientes conceptos comerciales emitidos por **Importadora Luxury Scents LTDA**:
-* **Membresía / Club Digital de Descuentos Aval Motors:** Acceso exclusivo a promociones, cuponeras de descuento en talleres mecánicos, autolavados, repuestos, perfumería y comercios aliados.
+* **Membresía / Club Digital de Descuentos Aval Community:** Acceso exclusivo a promociones, cuponeras de descuento en talleres mecánicos, autolavados, repuestos, perfumería y comercios aliados.
 * **Vales de Compra Canjeables (Gift Cards):** Bonos aplicables a productos físicos, aromatizantes premium de vehículos y fragancias de la importadora.
 * **Pase de Acceso a Entretenimiento Digital:** Licencia de uso de la plataforma digital, juegos interactivos de destreza y herramientas de la comunidad.
 
@@ -113,4 +113,4 @@ La empresa organizadora se reserva la potestad expresa de actualizar, ampliar, c
 
 ---
 
-**Conclusión:** La plataforma **Aval Motors CR** cuenta con la arquitectura técnica, comercial y jurídica necesaria para operar de manera transparente, segura y con apego irrestricto al ordenamiento jurídico costarricense.
+**Conclusión:** La plataforma **Aval Community CR** cuenta con la arquitectura técnica, comercial y jurídica necesaria para operar de manera transparente, segura y con apego irrestricto al ordenamiento jurídico costarricense.

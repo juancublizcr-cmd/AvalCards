@@ -372,7 +372,7 @@ export function PremiosSection({
             <Input
               value={borrador.nombre}
               onChange={(e) => setBorrador({ ...borrador, nombre: e.target.value })}
-              placeholder="Evento Promocional Aval Motors CR"
+              placeholder="Evento Promocional Aval Community CR"
             />
           </div>
           <div className="space-y-2">
@@ -656,7 +656,7 @@ export function PremiosSection({
 
             <div className="space-y-1.5 pt-2">
               <Label className="flex items-center gap-1.5 text-primary font-bold">
-                <Award className="size-4" /> Texto de Garantía Aval Motors
+                <Award className="size-4" /> Texto de Garantía Aval Community
               </Label>
               <Input
                 value={borrador.detalleGarantia || ""}

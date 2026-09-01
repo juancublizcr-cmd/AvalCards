@@ -1,4 +1,4 @@
-# 👶 GUÍA DE REFERIDOS PARA DUMMIES (Aval Motors CR)
+# 👶 GUÍA DE REFERIDOS PARA DUMMIES (Aval Community CR)
 ### *Explicado con manzanas, sin tecnicismos ni palabras difíciles*
 
 ---
@@ -20,7 +20,7 @@ Imagina a dos personas: **Juan** (tu cliente) y **Pedro** (el amigo de Juan).
 
 2. Juan toca un botón verde y se le abre WhatsApp.
    └─ Le manda un mensaje a Pedro con su link especial:
-      "Mae, entra con mi link a Aval Motors y te regalan 1 número extra en tu compra".
+      "Mae, entra con mi link a Aval Community y te regalan 1 número extra en tu compra".
 
 3. Pedro toca el link y compra un paquete de 4 números.
    └─ Como usó el link de Juan, Pedro recibe 5 números (4 que pagó + 1 de regalo).
@@ -43,7 +43,7 @@ Imagina a dos personas: **Juan** (tu cliente) y **Pedro** (el amigo de Juan).
 
 ### ¿Cómo sabe la página quién invitó a quién?
 Cada persona tiene su link con su número de teléfono al final:  
-👉 `https://avalmotorscr.com/?ref=86344772`  
+👉 `https://avalcommunitycr.com/?ref=86344772`  
 Cuando alguien toca ese link, la página "recuerda" ese número aunque el cliente cierre la página y compre horas más tarde.
 
 ### ¿Qué pasa si un cliente no tiene teléfono o no sabe su link?

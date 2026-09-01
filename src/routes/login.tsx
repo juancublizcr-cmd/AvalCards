@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Acceso Administrativo | Aval Motors CR" },
+      { title: "Acceso Administrativo | Aval Community CR" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -38,7 +38,7 @@ export function clearAdminSession() {
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@avalmotors.cr");
+  const [email, setEmail] = useState("admin@avalcommunity.cr");
   const [password, setPassword] = useState("");
   const [cargando, setCargando] = useState(false);
   const [verificando, setVerificando] = useState(true);
@@ -116,7 +116,7 @@ function Login() {
           <Link to="/" className="inline-flex items-center gap-2">
             <Flame className="size-8 text-primary" />
             <span className="font-display text-3xl tracking-wide">
-              Aval <span className="text-primary">Motors CR</span>
+              Aval <span className="text-primary">Community CR</span>
             </span>
           </Link>
           <h1 className="mt-4 text-xl font-bold">Consola Administrativa</h1>
@@ -133,7 +133,7 @@ function Login() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@avalmotors.cr"
+                placeholder="admin@avalcommunity.cr"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-9"
@@ -164,7 +164,7 @@ function Login() {
         </form>
 
         <div className="rounded-xl border border-border bg-secondary/50 p-3 text-center text-xs text-muted-foreground">
-          Credenciales iniciales: <strong>admin@avalmotors.cr</strong>
+          Credenciales iniciales: <strong>admin@avalcommunity.cr</strong>
         </div>
 
         <div className="text-center text-xs text-muted-foreground">

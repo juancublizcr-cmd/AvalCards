@@ -236,7 +236,7 @@ export const FAQS_DEFAULT: FaqItem[] = [
   {
     pregunta: "¿Cómo se realiza la entrega del vehículo o beneficio principal?",
     respuesta:
-      "La entrega se realiza de forma presencial con firma formal de traspaso legal ante Notario Público. Todos los costos de traspaso, marchamo y derechos corren por cuenta de Aval Motors CR e Importadora Luxury Scents LTDA.",
+      "La entrega se realiza de forma presencial con firma formal de traspaso legal ante Notario Público. Todos los costos de traspaso, marchamo y derechos corren por cuenta de Aval Community CR e Importadora Luxury Scents LTDA.",
   },
 ];
 
@@ -271,7 +271,7 @@ export const RASPA_DEFAULT: RaspaConfig = {
 };
 
 export const SORTEO_DEFAULT: Sorteo = {
-  nombre: "Evento Promocional Aval Motors CR",
+  nombre: "Evento Promocional Aval Community CR",
   rangoMin: "00000",
   rangoMax: "99999",
   precioBase: 1000,
@@ -298,7 +298,7 @@ export const CONFIG_DEFAULT: Config = {
   referidosActivo: true,
   referidosBonoTokens: 1,
   referidosComisionPct: 10,
-  referidosMensajeShare: "¡Mae, estoy participando por el vehículo 0KM en Aval Motors CR! Entra con mi enlace para recibir +1 Token Extra de Regalo en tu compra: ",
+  referidosMensajeShare: "¡Mae, estoy participando por el vehículo 0KM en Aval Community CR! Entra con mi enlace para recibir +1 Token Extra de Regalo en tu compra: ",
   sinpeActivo: true,
   tilopayActivo: true,
   tilopayMerchantId: "",
@@ -311,12 +311,12 @@ export const CONFIG_DEFAULT: Config = {
   cryptoBinanceId: "",
   paypalActivo: true,
   paypalClientId: "",
-  paypalEmail: "pagos@avalmotors.cr",
+  paypalEmail: "pagos@avalcommunity.cr",
   paypalSandbox: true,
   applePayActivo: true,
-  applePayMerchantId: "merchant.cr.avalmotors",
+  applePayMerchantId: "merchant.cr.avalcommunity",
   googlePayActivo: true,
-  googlePayMerchantId: "avalmotors-cr-google-pay",
+  googlePayMerchantId: "avalcommunity-cr-google-pay",
   fomoActivo: true,
   rankingReferidosActivo: true,
   rankingPremioPrimero: "₡250,000 SINPE",

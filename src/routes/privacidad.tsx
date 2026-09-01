@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/privacidad")({
   head: () => ({
     meta: [
-      { title: "Políticas de Privacidad | Aval Motors CR" },
+      { title: "Políticas de Privacidad | Aval Community CR" },
       {
         name: "description",
         content:
-          "Políticas de privacidad y protección de datos personales de los participantes de Aval Motors CR.",
+          "Políticas de privacidad y protección de datos personales de los participantes de Aval Community CR.",
       },
     ],
   }),
@@ -24,7 +24,7 @@ function PrivacidadPage() {
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-6 text-primary" />
             <span className="font-display text-2xl tracking-widest">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
           <Button variant="outline" size="sm" asChild>
@@ -44,7 +44,7 @@ function PrivacidadPage() {
             Políticas de Privacidad
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responsable del Tratamiento: Importadora Luxury Scents LTDA. (Aval Motors CR)
+            Responsable del Tratamiento: Importadora Luxury Scents LTDA. (Aval Community CR)
           </p>
         </div>
 
@@ -67,7 +67,7 @@ function PrivacidadPage() {
 
           <h2 className="text-lg font-bold text-foreground pt-4">3. Confidencialidad y No Divulgación</h2>
           <p>
-            Aval Motors CR y <strong>Importadora Luxury Scents LTDA.</strong> garantizan que tus datos personales <strong>nunca</strong> serán vendidos, cedidos, transferidos ni compartidos con empresas externas o terceras partes para fines publicitarios.
+            Aval Community CR y <strong>Importadora Luxury Scents LTDA.</strong> garantizan que tus datos personales <strong>nunca</strong> serán vendidos, cedidos, transferidos ni compartidos con empresas externas o terceras partes para fines publicitarios.
           </p>
 
           <h2 className="text-lg font-bold text-foreground pt-4">4. Seguridad del Almacenamiento</h2>
@@ -83,7 +83,7 @@ function PrivacidadPage() {
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aval Motors CR · Importadora Luxury Scents LTDA.
+        © {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA.
       </footer>
     </div>
   );

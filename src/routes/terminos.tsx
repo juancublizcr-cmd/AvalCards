@@ -18,11 +18,11 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/terminos")({
   head: () => ({
     meta: [
-      { title: "Términos, Condiciones y Reglamento | Aval Motors CR" },
+      { title: "Términos, Condiciones y Reglamento | Aval Community CR" },
       {
         name: "description",
         content:
-          "Bases, reglamento oficial y condiciones de participación del evento promocional de Aval Motors CR.",
+          "Bases, reglamento oficial y condiciones de participación del evento promocional de Aval Community CR.",
       },
     ],
   }),
@@ -37,7 +37,7 @@ function TerminosPage() {
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-6 text-primary" />
             <span className="font-display text-2xl tracking-widest">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
           <Button variant="outline" size="sm" asChild>
@@ -235,7 +235,7 @@ function TerminosPage() {
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aval Motors CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.
+        © {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.
       </footer>
     </div>
   );

@@ -36,7 +36,7 @@ import { StoryShareModal } from "@/components/StoryShareModal";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Checkout de Pago | Aval Motors CR" },
+      { title: "Checkout de Pago | Aval Community CR" },
       {
         name: "description",
         content:
@@ -142,7 +142,7 @@ function Checkout() {
 
   const copiarEnlaceReferido = () => {
     const tel = form.telefono.replace(/\D/g, "") || ordenCreadaId || "amigo";
-    const url = `${typeof window !== "undefined" ? window.location.origin : "https://avalmotors.cr"}/?ref=${tel}`;
+    const url = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${tel}`;
     void navigator.clipboard.writeText(url);
     setCopiadoRef(true);
     toast.success("Enlace de referido copiado", {
@@ -320,16 +320,16 @@ function Checkout() {
 
   const compartirWhatsApp = () => {
     const telLimpio = form.telefono.replace(/\D/g, "") || ordenCreadaId || "";
-    const urlReferido = `${typeof window !== "undefined" ? window.location.origin : "https://avalmotors.cr"}/?ref=${telLimpio}`;
+    const urlReferido = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${telLimpio}`;
     const texto = encodeURIComponent(
-      `¡Mae, estoy participando por el Mercedes Benz 2026 en Aval Motors CR! 🚗💨\n\nEntra con mi enlace exclusivo y recibe +1 Token Extra GRATIS en tu compra:\n${urlReferido}`
+      `¡Mae, estoy participando por el Mercedes Benz 2026 en Aval Community CR! 🚗💨\n\nEntra con mi enlace exclusivo y recibe +1 Token Extra GRATIS en tu compra:\n${urlReferido}`
     );
     window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
   };
 
   const abrirSoporteWhatsApp = () => {
     const texto = encodeURIComponent(
-      `Hola Aval Motors CR, tengo una consulta sobre mi pago por ${metodo === "sinpe" ? "SINPE" : metodo === "tarjeta" ? "Tarjeta TiloPay" : "Cripto USDT"}.`,
+      `Hola Aval Community CR, tengo una consulta sobre mi pago por ${metodo === "sinpe" ? "SINPE" : metodo === "tarjeta" ? "Tarjeta TiloPay" : "Cripto USDT"}.`,
     );
     const tel = config.telefonoSinpe.replace(/\D/g, "");
     window.open(`https://wa.me/506${tel}?text=${texto}`, "_blank");
@@ -519,7 +519,7 @@ function Checkout() {
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-5 text-primary" />
             <span className="font-display text-xl tracking-widest">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
           <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
@@ -924,7 +924,7 @@ function Checkout() {
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Cuenta Comercial: <strong>{config.paypalEmail || "pagos@avalmotors.cr"}</strong>
+                    Cuenta Comercial: <strong>{config.paypalEmail || "pagos@avalcommunity.cr"}</strong>
                   </div>
                 </div>
 
@@ -954,7 +954,7 @@ function Checkout() {
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Merchant ID: <strong className="font-mono text-zinc-300">{config.applePayMerchantId || "merchant.cr.avalmotors"}</strong>
+                    Merchant ID: <strong className="font-mono text-zinc-300">{config.applePayMerchantId || "merchant.cr.avalcommunity"}</strong>
                   </div>
                 </div>
 
@@ -984,7 +984,7 @@ function Checkout() {
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Google Merchant: <strong className="font-mono text-zinc-300">{config.googlePayMerchantId || "avalmotors-cr-google-pay"}</strong>
+                    Google Merchant: <strong className="font-mono text-zinc-300">{config.googlePayMerchantId || "avalcommunity-cr-google-pay"}</strong>
                   </div>
                 </div>
 

@@ -427,7 +427,7 @@ export function EscrutinioSection() {
                             onClick={() => {
                               const tel = g.orden.telefono.replace(/\D/g, "");
                               const texto = encodeURIComponent(
-                                `¡Felicidades ${g.orden.nombre}! 🎉🚗💨\n\nTe contactamos oficialmente de Aval Motors CR para informarte que tu Token #${g.sticker} ha resultado GANADOR del Sorteo Oficial con tu Orden ${g.orden.id}.\n\n¡Por favor contáctanos para coordinar la entrega de tu premio!`
+                                `¡Felicidades ${g.orden.nombre}! 🎉🚗💨\n\nTe contactamos oficialmente de Aval Community CR para informarte que tu Token #${g.sticker} ha resultado GANADOR del Sorteo Oficial con tu Orden ${g.orden.id}.\n\n¡Por favor contáctanos para coordinar la entrega de tu premio!`
                               );
                               window.open(`https://wa.me/506${tel}?text=${texto}`, "_blank");
                             }}

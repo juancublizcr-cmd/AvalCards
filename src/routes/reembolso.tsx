@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/reembolso")({
   head: () => ({
     meta: [
-      { title: "Política de Reembolsos y Devoluciones | Aval Motors CR" },
+      { title: "Política de Reembolsos y Devoluciones | Aval Community CR" },
       {
         name: "description",
         content:
-          "Políticas de reembolso, reversión de pagos y cancelaciones de Aval Motors CR e Importadora Luxury Scents LTDA.",
+          "Políticas de reembolso, reversión de pagos y cancelaciones de Aval Community CR e Importadora Luxury Scents LTDA.",
       },
     ],
   }),
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/reembolso")({
 function ReembolsoPage() {
   const abrirWhatsApp = () => {
     const texto = encodeURIComponent(
-      "Hola Aval Motors CR, solicito información sobre una reversión / reembolso de pago.",
+      "Hola Aval Community CR, solicito información sobre una reversión / reembolso de pago.",
     );
     window.open(`https://wa.me/50686344772?text=${texto}`, "_blank");
   };
@@ -31,7 +31,7 @@ function ReembolsoPage() {
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-6 text-primary" />
             <span className="font-display text-2xl tracking-widest">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
           <Button variant="outline" size="sm" asChild>
@@ -61,7 +61,7 @@ function ReembolsoPage() {
               <ShieldCheck className="size-5 text-primary" /> 1. Casos en que Aplica Reembolso
             </h2>
             <p className="mt-2">
-              En <strong>Aval Motors CR</strong> (Importadora Luxury Scents LTDA.) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
+              En <strong>Aval Community CR</strong> (Importadora Luxury Scents LTDA.) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
               <li>
@@ -130,7 +130,7 @@ function ReembolsoPage() {
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aval Motors CR · Importadora Luxury Scents LTDA.
+        © {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA.
       </footer>
     </div>
   );

@@ -1,6 +1,6 @@
 # 🛡️ GUÍA FINANCIERA DE ARRANQUE Y RENTABILIDAD
 ## Estrategia de Protección de Caja y Premios Escalonados
-**Aval Motors CR · Plataforma de Rifas y Juegos Express**
+**Aval Community CR · Plataforma de Rifas y Juegos Express**
 
 ---
 
@@ -12,13 +12,13 @@ Si la rifa apenas está iniciando (ej. 10 a 20 clientes han comprado tokens para
 ### 🛡️ La Solución Maestra: "El Inventario Digital de Costo Cero"
 Los premios más atractivos y rentables en la fase de inicio son los **Tokens Oficiales y Pases VIP**:
 - Para el cliente, ganar **12 Tokens Gratis** equivale a **₡12,000 CRC de valor real** y aumenta directamente sus probabilidades de ganarse el vehículo principal.
-- Para la empresa (Aval Motors CR), el costo financiero de entregar 12 tokens digitales es de **₡0 CRC**.
+- Para la empresa (Aval Community CR), el costo financiero de entregar 12 tokens digitales es de **₡0 CRC**.
 
 ---
 
 ## 📊 2. TABLA DE PREMIOS SEGÚN COSTO REAL
 
-| Premio en la Ruleta / Raspa | Valor Percibido por el Cliente | Costo Real para Aval Motors CR | Impacto en Flujo de Caja |
+| Premio en la Ruleta / Raspa | Valor Percibido por el Cliente | Costo Real para Aval Community CR | Impacto en Flujo de Caja |
 | :--- | :--- | :--- | :--- |
 | 🎟️ **12 Tokens Oficiales** | **₡12,000 CRC** | **₡0 CRC** | Cero impacto (100% digital) |
 | 🎟️ **8 Tokens Oficiales** | **₡8,000 CRC** | **₡0 CRC** | Cero impacto |
@@ -66,4 +66,4 @@ Supongamos que 50 personas juegan a ₡1,000 en la Ruleta o Raspa durante los pr
 
 ---
 
-*Documento estratégico y confidencial para la dirección general de Aval Motors CR.*
+*Documento estratégico y confidencial para la dirección general de Aval Community CR.*

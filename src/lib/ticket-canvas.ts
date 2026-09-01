@@ -1,7 +1,7 @@
 import type { Orden } from "@/lib/orders";
 
 /**
- * Genera y descarga una imagen PNG de alta resolución con el Tiquete Digital Oficial de Aval Motors CR
+ * Genera y descarga una imagen PNG de alta resolución con el Tiquete Digital Oficial de Aval Community CR
  */
 export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lugar"): Promise<void> {
   const canvas = document.createElement("canvas");
@@ -35,7 +35,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
   ctx.fillStyle = "#ffffff";
   ctx.font = "bold 56px 'Bebas Neue', sans-serif, Arial";
   ctx.textAlign = "center";
-  ctx.fillText("AVAL MOTORS CR", width / 2, 130);
+  ctx.fillText("AVAL COMMUNITY CR", width / 2, 130);
 
   ctx.fillStyle = "#f97316";
   ctx.font = "bold 24px sans-serif, Arial";
@@ -184,7 +184,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
   ctx.fillStyle = "#71717a";
   ctx.font = "16px sans-serif, Arial";
   ctx.fillText("Operado por Importadora Luxury Scents LTDA · Costa Rica", width / 2, footerY + 40);
-  ctx.fillText("Valida este tiquete en cualquier momento en: https://avalmotors.cr/validar", width / 2, footerY + 70);
+  ctx.fillText("Valida este tiquete en cualquier momento en: https://avalcommunity.cr/validar", width / 2, footerY + 70);
 
   // Convertir canvas a Blob y forzar descarga
   return new Promise((resolve) => {
@@ -193,7 +193,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `Tiquete-AvalMotors-${orden.id}.png`;
+      link.download = `Tiquete-AvalCommunity-${orden.id}.png`;
       link.click();
       URL.revokeObjectURL(url);
       resolve();

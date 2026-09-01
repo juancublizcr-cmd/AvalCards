@@ -1,6 +1,6 @@
-# Bitácora del Proyecto: Aval Motors CR (PWA Digital)
+# Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 26 de Agosto de 2026  
+**Última actualización:** 1 de Septiembre de 2026  
 **Dominio Oficial:** [https://www.avalcomunity.com](https://www.avalcomunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -8,7 +8,7 @@
 ---
 
 ## 📋 Resumen Ejecutivo
-Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionales instantáneos (*Raspa & Gana* y *Ruleta de la Fortuna*) para **Aval Motors CR**, con backend serverless en **Supabase** y despliegue global de alto rendimiento en **Vercel Edge Network** con dominio propio bajo HTTPS/SSL.
+Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionales instantáneos (*Raspa & Gana* y *Ruleta de la Fortuna*) para **Aval Community CR**, con backend serverless en **Supabase** y despliegue global de alto rendimiento en **Vercel Edge Network** con dominio propio bajo HTTPS/SSL.
 
 ---
 
@@ -42,7 +42,7 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
   - Reloj de cuenta regresiva en vivo a **7 Días** para la Gran Apertura Oficial.
   - Flyer showcase con foto del vehículo (Toyota Prado 2026), badge 0KM y Bono \$6,000 USD.
   - Botón gigante y llamativo de WhatsApp para unirse a la preventa y lista de espera.
-  - Cabecera limpia y centrada exclusivamente con el logo de Aval Motors CR.
+  - Cabecera limpia y centrada exclusivamente con el logo de Aval Community CR.
 - **Control Administrativo:**
   - Switch de 1 clic en la barra superior del Admin (`/admin`) y en *Configuración General* para alternar entre **Modo Promo** y **Venta Abierta**.
 
@@ -67,7 +67,7 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 ### 6. Nuevas Pasarelas de Pago Internacionales y Express
 - **Configuración en Panel Admin (`/admin` -> Configuración y Pasarelas):**
   - 🅿️ **PayPal Checkout:** Control activo/inactivo, Client ID REST API, Email comercial y switch Sandbox/Live.
-  - 🍏 **Apple Pay:** Control activo/inactivo, Apple Merchant Identifier (`merchant.cr.avalmotors`) y validación SSL.
+  - 🍏 **Apple Pay:** Control activo/inactivo, Apple Merchant Identifier (`merchant.cr.avalcommunity`) y validación SSL.
   - 🌐 **Google Pay:** Control activo/inactivo y Google Merchant ID.
 - **Experiencia de Compra en `/checkout`:**
   - Selector interactivo de 6 métodos de pago (SINPE Móvil, Tarjetas TiloPay, PayPal, Apple Pay, Google Pay y Cripto USDT).
@@ -100,7 +100,7 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
   - Módulo `MiniSorteosSection` con reloj en cuenta regresiva todos los viernes a las 7:00 PM.
   - Configuración de título, premio y fecha desde Admin (`miniSorteosActivo`, `miniSorteoTitulo`, `miniSorteoPremio`).
 - **5. Banner de Instalación Rápida PWA:**
-  - Notificación no invasiva `PwaInstallPrompt` para añadir Aval Motors CR a la pantalla de inicio con 1 toque en Android y guía interactiva en 2 pasos para iPhone / Safari.
+  - Notificación no invasiva `PwaInstallPrompt` para añadir Aval Community CR a la pantalla de inicio con 1 toque en Android y guía interactiva en 2 pasos para iPhone / Safari.
   - Switch administrativo On/Off (`pwaBannerActivo`).
 
 ---
@@ -159,3 +159,17 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 3. **En Minuta Notarial y Documentos Maestros (`/admin`, `.md` y `.pdf`):**
    - Incorporada la **Cláusula SÉPTIMA Notarial** en la escritura pública del Admin, en `ESTRUCTURA_LEGAL_Y_COMERCIAL_CR.md` y en el PDF oficial regenerado.
+
+---
+
+## 🚀 Hito 12: Rebranding Integral a "Aval Community CR", Estandarización de Marca y Configuración de Entorno
+
+1. **Rebranding Completo de Marca a Aval Community:**
+   - Actualización exhaustiva de todas las menciones, metadatos SEO (OpenGraph, títulos, PWA manifest), políticas legales, términos y condiciones, pie de página, flyers y modales de juegos express (*Raspa & Gana*, *Ruleta de la Fortuna*).
+   - Estandarización de la identidad visual en todos los encabezados y barras de navegación (`AVAL COMMUNITY CR` con el texto destacado en color primario naranja) a lo largo de todas las rutas públicas (`/`, `/checkout`, `/validar`, `/login`, `/terminos`, `/privacidad`, `/reembolso`) y en la barra lateral del panel administrativo (`/admin`).
+   - Actualización de identificadores comerciales, plantillas de tiquetes digitales y reportes exportables en CSV/Excel del CRM (`Reporte-Ventas-AvalCommunity`, `Tiquete-AvalCommunity-`, etc.).
+
+2. **Configuración de Entorno de Desarrollo y Compilación:**
+   - Configuración del puerto predeterminado en `3000` en `vite.config.ts` (tanto para `server` como para `preview`), liberando el puerto 5173.
+   - Optimización del script de pre-renderizado HTML estático (`scripts/prerender.js`) para finalización limpia de procesos de compilación en producción.
+

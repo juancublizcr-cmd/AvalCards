@@ -33,7 +33,7 @@ class NumberedCanvas(canvas.Canvas):
         
         # Header (pages > 1)
         if self._pageNumber > 1:
-            self.drawString(54, 750, "AVAL MOTORS CR · ESTRUCTURA LEGAL, TRIBUTARIA Y COMERCIAL")
+            self.drawString(54, 750, "AVAL COMMUNITY CR · ESTRUCTURA LEGAL, TRIBUTARIA Y COMERCIAL")
             self.drawRightString(612 - 54, 750, "IMPORTADORA LUXURY SCENTS LTDA")
             self.setStrokeColor(colors.HexColor("#e4e4e7"))
             self.setLineWidth(0.5)
@@ -160,14 +160,14 @@ def build_pdf():
 
     # Title & Metadata
     story.append(Paragraph("⚖️ MARCO LEGAL, TRIBUTARIO Y ESTRATEGIA COMERCIAL", title_style))
-    story.append(Paragraph("AVAL MOTORS CR · PLATAFORMA DIGITAL DE PREMIOS Y PROMOCIONES", subtitle_style))
+    story.append(Paragraph("AVAL COMMUNITY CR · PLATAFORMA DIGITAL DE PREMIOS Y PROMOCIONES", subtitle_style))
     story.append(Paragraph("<b>Operada por:</b> Importadora Luxury Scents LTDA &nbsp;|&nbsp; <b>Jurisdicción:</b> República de Costa Rica &nbsp;|&nbsp; <b>Fecha:</b> Agosto 2026", meta_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=primary_color, spaceBefore=0, spaceAfter=14))
 
     # 1. Resumen Ejecutivo
     story.append(Paragraph("1. Resumen Ejecutivo y Objeto del Documento", h1_style))
     story.append(Paragraph(
-        "Este documento establece la <b>estructura jurídica, tributaria y operativa</b> para el lanzamiento, comercialización y administración de la plataforma digital <b>Aval Motors CR</b> en el territorio costarricense.",
+        "Este documento establece la <b>estructura jurídica, tributaria y operativa</b> para el lanzamiento, comercialización y administración de la plataforma digital <b>Aval Community CR</b> en el territorio costarricense.",
         body_style
     ))
     story.append(Paragraph("El objetivo central es garantizar que la plataforma opere bajo cuatro directrices inviolables:", body_style))
@@ -187,7 +187,7 @@ def build_pdf():
     table_data = [
         [
             Paragraph("<b>ACTIVIDAD ILEGAL / CLANDESTINA (JPS)</b>", ParagraphStyle('TH1', fontName='Helvetica-Bold', fontSize=9, textColor=colors.white, alignment=TA_CENTER)),
-            Paragraph("<b>MODELO LEGAL AVAL MOTORS CR (MEIC)</b>", ParagraphStyle('TH2', fontName='Helvetica-Bold', fontSize=9, textColor=colors.white, alignment=TA_CENTER))
+            Paragraph("<b>MODELO LEGAL AVAL COMMUNITY CR (MEIC)</b>", ParagraphStyle('TH2', fontName='Helvetica-Bold', fontSize=9, textColor=colors.white, alignment=TA_CENTER))
         ],
         [
             Paragraph("• Venta directa de apuestas / números de azar.<br/>• No existe bien, producto ni factura comercial.<br/>• Actividad clandestina sin respaldo notarial.<br/>• El consumidor paga única y exclusivamente por apostar.", ParagraphStyle('TD1', fontName='Helvetica', fontSize=8.5, leading=12, textColor=colors.HexColor("#7f1d1d"))),
@@ -213,7 +213,7 @@ def build_pdf():
     story.append(Paragraph("3. ¿Qué es exactamente el 'Token' y qué adquiere el cliente?", h1_style))
     story.append(Paragraph("<b>A. Producto Comercial Adquirido por el Consumidor:</b>", h2_style))
     story.append(Paragraph(
-        "El cliente realiza su pago comercial por la adquisición de una <b>Membresía Digital / Cuponera de Beneficios Aval Motors</b> emitida por Importadora Luxury Scents LTDA, la cual le otorga descuentos exclusivos en comercios automotrices aliados (autolavados, lubricentros, repuestos, accesorios) y catálogo de perfumería.",
+        "El cliente realiza su pago comercial por la adquisición de una <b>Membresía Digital / Cuponera de Beneficios Aval Community</b> emitida por Importadora Luxury Scents LTDA, la cual le otorga descuentos exclusivos en comercios automotrices aliados (autolavados, lubricentros, repuestos, accesorios) y catálogo de perfumería.",
         body_style
     ))
     story.append(Paragraph("<b>B. Naturaleza Jurídica del Token:</b>", h2_style))

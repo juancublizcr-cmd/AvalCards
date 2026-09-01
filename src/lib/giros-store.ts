@@ -1,4 +1,4 @@
-// Gestor de Giros / Raspas Disponibles (Modelo Híbrido Aval Motors CR)
+// Gestor de Giros / Raspas Disponibles (Modelo Híbrido Aval Community CR)
 
 export interface GirosInfo {
   giros: number;

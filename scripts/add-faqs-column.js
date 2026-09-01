@@ -21,7 +21,7 @@ ADD COLUMN IF NOT EXISTS faqs jsonb DEFAULT '[
   },
   {
     "pregunta": "¿Cómo se realiza la entrega del vehículo o beneficio principal?",
-    "respuesta": "La entrega se realiza de forma presencial con firma formal de traspaso legal ante Notario Público. Todos los costos de traspaso, marchamo y derechos corren por cuenta de Aval Motors CR e Importadora Luxury Scents LTDA."
+    "respuesta": "La entrega se realiza de forma presencial con firma formal de traspaso legal ante Notario Público. Todos los costos de traspaso, marchamo y derechos corren por cuenta de Aval Community CR e Importadora Luxury Scents LTDA."
   }
 ]'::jsonb;
 `;

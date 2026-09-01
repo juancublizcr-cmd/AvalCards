@@ -84,7 +84,7 @@ export function ReferidosSection({
     }
     const telFinal = tel.startsWith("506") ? tel : `506${tel}`;
     const texto = encodeURIComponent(
-      `¡Hola ${r.nombre || "campeón"}! Te contactamos de Aval Motors CR. Queremos agradecerte por tus ${r.totalCompras} compras referidas (₡${r.totalVentas.toLocaleString("es-CR")}). Has acumulado ${r.tokensBonoGanados} Tokens de bono y una comisión estimada de ₡${r.comisionGanada.toLocaleString("es-CR")}. ¡Sigue compartiendo!`
+      `¡Hola ${r.nombre || "campeón"}! Te contactamos de Aval Community CR. Queremos agradecerte por tus ${r.totalCompras} compras referidas (₡${r.totalVentas.toLocaleString("es-CR")}). Has acumulado ${r.tokensBonoGanados} Tokens de bono y una comisión estimada de ₡${r.comisionGanada.toLocaleString("es-CR")}. ¡Sigue compartiendo!`
     );
     window.open(`https://wa.me/${telFinal}?text=${texto}`, "_blank");
   };

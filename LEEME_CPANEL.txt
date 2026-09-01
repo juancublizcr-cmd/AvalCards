@@ -1,32 +1,32 @@
 ========================================================================
-AVAL MOTORS CR - GUÍA DE INSTALACIÓN EN CPANEL
+AVAL COMMUNITY CR - GUÍA DE INSTALACIÓN EN CPANEL
 ========================================================================
 
 Tienes 2 OPCIONES para instalar en cPanel según tu tipo de hosting:
 
 ------------------------------------------------------------------------
 OPCIÓN A: SUBIDA ESTÁTICA / RÁPIDA (Recomendado para hosting compartido)
-Archivo: avalmotors-cpanel-public_html.zip
+Archivo: avalcommunity-cpanel-public_html.zip
 ------------------------------------------------------------------------
 1. Entra a tu cPanel -> Administrador de Archivos (File Manager).
 2. Ve a la carpeta "public_html" (o la carpeta de tu dominio/subdominio).
-3. Sube el archivo "avalmotors-cpanel-public_html.zip".
+3. Sube el archivo "avalcommunity-cpanel-public_html.zip".
 4. Haz clic derecho sobre el .zip y selecciona "Extract" (Extraer aquí).
 5. ¡Listo! El archivo .htaccess ya incluye todas las reglas de SPA,
    compresión GZIP y redirecciones para que /validar, /checkout y /admin funcionen sin 404.
 
 ------------------------------------------------------------------------
 OPCIÓN B: APLICACIÓN NODE.JS CPANEL (Para SSR completo en cPanel)
-Archivo: avalmotors-cpanel-node.zip
+Archivo: avalcommunity-cpanel-node.zip
 ------------------------------------------------------------------------
 1. En cPanel, busca la herramienta "Setup Node.js App".
 2. Haz clic en "Create Application".
 3. Configura:
    - Node.js version: 18.x, 20.x o 22.x
    - Application mode: Production
-   - Application root: la carpeta donde subas el zip (ej. avalmotors)
+   - Application root: la carpeta donde subas el zip (ej. avalcommunity)
    - Application startup file: server.js (o app.js)
-4. Sube y extrae "avalmotors-cpanel-node.zip" en esa carpeta.
+4. Sube y extrae "avalcommunity-cpanel-node.zip" en esa carpeta.
 5. En la sección "Run NPM Install", haz clic para instalar dependencias de producción.
 6. Haz clic en "Restart" para iniciar la app.
 

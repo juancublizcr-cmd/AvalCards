@@ -48,6 +48,7 @@ async function prerender() {
     console.log("✓ Generado: 404.html");
 
     console.log("=== PRE-RENDER COMPLETADO EXITOSAMENTE ===");
+    process.exit(0);
   } catch (err) {
     console.error("Error durante el pre-render:", err);
     process.exit(1);

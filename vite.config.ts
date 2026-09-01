@@ -60,8 +60,8 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/admin/],
       },
       manifest: {
-        name: "Aval Motors CR",
-        short_name: "AvalMotors",
+        name: "Aval Community CR",
+        short_name: "AvalCommunity",
         description: "Rifas digitales de premios premium en Costa Rica.",
         theme_color: "#f97316",
         background_color: "#0a0a0a",
@@ -96,6 +96,16 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    port: 3000,
+    strictPort: false,
+    host: true,
+  },
+  preview: {
+    port: 3000,
+    strictPort: false,
+    host: true,
+  },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),

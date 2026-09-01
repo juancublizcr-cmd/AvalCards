@@ -18,13 +18,13 @@ export function ReglamentoNotarialSection({
   const premioNombre = sorteo.titulo || "Vehículo Toyota Prado VX 2026 0KM + $6,000 Cash";
 
   const textoEscritura = `================================================================================
-ESCRITURA NÚMERO CIENTO OCHENTA Y CUATRO (184).- PROTOCOLIZACIÓN DE REGLAMENTO OFICIAL DE PROMOCIÓN COMERCIAL PRIVADA "AVAL MOTORS CR".-
+ESCRITURA NÚMERO CIENTO OCHENTA Y CUATRO (184).- PROTOCOLIZACIÓN DE REGLAMENTO OFICIAL DE PROMOCIÓN COMERCIAL PRIVADA "AVAL COMMUNITY CR".-
 ================================================================================
 
 En la ciudad de San José, República de Costa Rica, al ser las diez horas del día quince de agosto de dos mil veintiséis.- Ante mí, [NOMBRE DEL NOTARIO PÚBLICO], Notario Público con oficina abierta en esta ciudad, comparece el señor [NOMBRE DEL REPRESENTANTE LEGAL], mayor de edad, [estado civil], [profesión u oficio], vecino de [lugar de residencia], portador de la cédula de identidad número [NÚMERO DE CÉDULA], actuando en su condición de Gerente / Apoderado Generalísimo sin límite de suma de la sociedad denominada "${razonSocial.toUpperCase()}", con cédula de persona jurídica número [CÉDULA JURÍDICA], personería que consta debidamente inscrita en la Sección Mercantil del Registro Nacional de Costa Rica, y al efecto DICE:
 
 PRIMERA: OBJETO DE LA COMPARECENCIA Y ACTIVIDAD COMERCIAL.-
-Que su representada "${razonSocial.toUpperCase()}" es una sociedad mercantil legalmente constituida que se dedica a la importación, comercialización y distribución de productos comerciales, fragancias de lujo, accesorios y prestación de servicios digitales. Que con el propósito exclusivo de promover e incentivar las ventas comerciales de su catálogo de productos y fidelizar a sus clientes, ha diseñado y organizado la PROMOCIÓN COMERCIAL PRIVADA denominada "AVAL MOTORS CR", la cual se regirá por las disposiciones de la Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor), su Reglamento Ejecutivo y el Código de Comercio de la República de Costa Rica.
+Que su representada "${razonSocial.toUpperCase()}" es una sociedad mercantil legalmente constituida que se dedica a la importación, comercialización y distribución de productos comerciales, fragancias de lujo, accesorios y prestación de servicios digitales. Que con el propósito exclusivo de promover e incentivar las ventas comerciales de su catálogo de productos y fidelizar a sus clientes, ha diseñado y organizado la PROMOCIÓN COMERCIAL PRIVADA denominada "AVAL COMMUNITY CR", la cual se regirá por las disposiciones de la Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor), su Reglamento Ejecutivo y el Código de Comercio de la República de Costa Rica.
 
 SEGUNDA: NATURALEZA JURÍDICA DE LOS "TOKENS" Y PRODUCTO ADQUIRIDO.-
 A) Se hace constar de forma expresa que "${razonSocial.toUpperCase()}" NO vende billetes de lotería, rifas clandestinas ni realiza actividades de intermediación de apuestas.
@@ -60,7 +60,7 @@ SÉPTIMA: FACULTAD DE MODIFICACIÓN Y MEJORAS EN BENEFICIO DE LA COMUNIDAD.-
 La empresa organizadora "${razonSocial.toUpperCase()}" se reserva el derecho expreso de actualizar, complementar, modificar o perfeccionar en cualquier momento las cláusulas operativas, dinámicas de fidelización, catálogo de premios e incentivos de la plataforma, siempre que dichas reformas tengan por objeto optimizar la experiencia, incrementar los beneficios comerciales de los participantes o velar por el interés colectivo de la comunidad de usuarios. Dichas modificaciones surtirán efectos legales plenos a partir de su publicación oficial en el sitio web de la plataforma.
 
 OCTAVA: ACEPTACIÓN Y PROTOCOLIZACIÓN.-
-El compareciente solicita al suscrito Notario protocolizar en todas sus partes el presente Reglamento Oficial de Promoción Comercial para que surta plenos efectos jurídicos, obligándose su representada a publicarlo íntegramente en la dirección electrónica oficial de la plataforma (https://avalmotors.cr/terminos) a disposición permanente de los consumidores y autoridades competentes.
+El compareciente solicita al suscrito Notario protocolizar en todas sus partes el presente Reglamento Oficial de Promoción Comercial para que surta plenos efectos jurídicos, obligándose su representada a publicarlo íntegramente en la dirección electrónica oficial de la plataforma (https://avalcommunity.cr/terminos) a disposición permanente de los consumidores y autoridades competentes.
 
 Leída la presente escritura al compareciente, la encuentra conforme, la aprueba y firmamos en la ciudad de San José, a las diez horas con cuarenta y cinco minutos del día quince de agosto de dos mil veintiséis.- DOY FE.-
 

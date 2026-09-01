@@ -84,7 +84,7 @@ export function JuegosExpressModal({
         <DialogContent className="max-w-md border border-amber-500/40 bg-zinc-950 text-foreground p-6 sm:p-8 shadow-[0_0_50px_rgba(245,158,11,0.25)]">
           <DialogHeader className="text-center sm:text-center">
             <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-400">
-              <Sparkles className="size-3.5" /> Juegos Express Aval Motors CR
+              <Sparkles className="size-3.5" /> Juegos Express Aval Community CR
             </div>
             <DialogTitle className="font-display text-3xl sm:text-4xl text-white tracking-wide mt-2">
               ¿Cómo deseas jugar hoy?

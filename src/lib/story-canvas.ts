@@ -1,6 +1,6 @@
 /**
  * Generador de Historias / Estados de WhatsApp e Instagram (1080x1920 - 9:16)
- * Aval Motors CR - Diseño Ultra HD Multi-Premio
+ * Aval Community CR - Diseño Ultra HD Multi-Premio
  */
 
 export type StoryData = {
@@ -47,7 +47,7 @@ export async function generarImagenHistoria(data: StoryData): Promise<string> {
   // 3. Header Branding
   ctx.fillStyle = "#ea580c";
   ctx.font = "900 38px sans-serif";
-  ctx.fillText("🔥 AVAL MOTORS CR 🔥", 540, 105);
+  ctx.fillText("🔥 AVAL COMMUNITY CR 🔥", 540, 105);
 
   ctx.fillStyle = "#a1a1aa";
   ctx.font = "700 20px sans-serif";
@@ -208,7 +208,7 @@ export async function generarImagenHistoria(data: StoryData): Promise<string> {
 
   ctx.fillStyle = "#71717a";
   ctx.font = "500 19px sans-serif";
-  ctx.fillText("Aval Motors CR · Importadora Luxury Scents LTDA", 540, c3Y + 360);
+  ctx.fillText("Aval Community CR · Importadora Luxury Scents LTDA", 540, c3Y + 360);
 
   return canvas.toDataURL("image/png");
 }

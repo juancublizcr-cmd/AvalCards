@@ -270,7 +270,7 @@ export function ConfigSection({
             <Input
               value={borrador.paypalEmail || ""}
               onChange={(e) => setBorrador({ ...borrador, paypalEmail: e.target.value })}
-              placeholder="pagos@avalmotors.cr"
+              placeholder="pagos@avalcommunity.cr"
             />
           </div>
           <div className="space-y-2">
@@ -326,14 +326,14 @@ export function ConfigSection({
             <Input
               value={borrador.applePayMerchantId || ""}
               onChange={(e) => setBorrador({ ...borrador, applePayMerchantId: e.target.value })}
-              placeholder="merchant.cr.avalmotors"
+              placeholder="merchant.cr.avalcommunity"
             />
           </div>
           <div className="space-y-2">
             <Label>Estado del Dominio Web</Label>
             <div className="rounded-md border border-border bg-zinc-900/90 px-3 py-2 text-xs font-mono text-emerald-400 flex items-center gap-2">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              avalmotors.cr (Verificado SSL)
+              avalcommunity.cr (Verificado SSL)
             </div>
           </div>
         </div>
@@ -365,7 +365,7 @@ export function ConfigSection({
           <Input
             value={borrador.googlePayMerchantId || ""}
             onChange={(e) => setBorrador({ ...borrador, googlePayMerchantId: e.target.value })}
-            placeholder="avalmotors-cr-google-pay"
+            placeholder="avalcommunity-cr-google-pay"
           />
         </div>
       </section>
@@ -595,7 +595,7 @@ export function ConfigSection({
               7.5 Banner de Instalación Rápida de la App (PWA)
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Muestra el aviso flotante para instalar Aval Motors CR en la pantalla de inicio de celulares Android y iPhone.
+              Muestra el aviso flotante para instalar Aval Community CR en la pantalla de inicio de celulares Android y iPhone.
             </p>
           </div>
           <div className="flex items-center gap-2">

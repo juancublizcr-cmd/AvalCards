@@ -100,5 +100,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`> Aval Motors CR servidor listo en puerto ${PORT}`);
+  console.log(`> Aval Community CR servidor listo en puerto ${PORT}`);
 });

@@ -1,5 +1,5 @@
 -- ============================================================
--- Aval Motors CR – Schema completo en Supabase
+-- Aval Community CR – Schema completo en Supabase
 -- Ejecutar en SQL Editor de tu proyecto Supabase
 -- ============================================================
 
@@ -40,7 +40,7 @@ ON CONFLICT (id) DO NOTHING;
 -- ── 3. Tabla sorteo_config (singleton id=1) ───────────────────
 CREATE TABLE IF NOT EXISTS sorteo_config (
   id          INTEGER PRIMARY KEY DEFAULT 1,
-  nombre      TEXT NOT NULL DEFAULT 'Sorteo JPS Aval Motors CR',
+  nombre      TEXT NOT NULL DEFAULT 'Sorteo JPS Aval Community CR',
   rango_min   TEXT NOT NULL DEFAULT '00000',
   rango_max   TEXT NOT NULL DEFAULT '99999',
   precio_base INTEGER NOT NULL DEFAULT 1000,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS site_config (
   id              INTEGER PRIMARY KEY DEFAULT 1,
   intentos_max    INTEGER NOT NULL DEFAULT 5,
   telefono_sinpe  TEXT NOT NULL DEFAULT '8888-8888',
-  razon_social    TEXT NOT NULL DEFAULT 'Aval Motors CR S.A.',
+  razon_social    TEXT NOT NULL DEFAULT 'Aval Community CR S.A.',
   ventas_activas  BOOLEAN NOT NULL DEFAULT TRUE,
   CONSTRAINT site_config_singleton CHECK (id = 1)
 );

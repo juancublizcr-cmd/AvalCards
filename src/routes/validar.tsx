@@ -52,13 +52,13 @@ import { Footer } from "@/components/Footer";
 export const Route = createFileRoute("/validar")({
   head: () => ({
     meta: [
-      { title: "Validar mis Tokens | Aval Motors CR" },
+      { title: "Validar mis Tokens | Aval Community CR" },
       {
         name: "description",
         content:
           "Consulta en vivo el estado de tus Tokens oficiales, tus números de cortesía y los comprobantes de tus órdenes.",
       },
-      { property: "og:title", content: "Validar mis Tokens | Aval Motors CR" },
+      { property: "og:title", content: "Validar mis Tokens | Aval Community CR" },
       {
         property: "og:description",
         content: "Revisa tus números de Tokens y el estado de validación de tu orden.",
@@ -202,7 +202,7 @@ function Validar() {
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-5 text-primary" />
             <span className="font-display text-xl tracking-widest">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
           <Link
@@ -480,7 +480,7 @@ function Validar() {
                     const tel = (resultados[0]?.telefono || "").replace(/\D/g, "");
                     const url = `${window.location.origin}/?ref=${tel}`;
                     const texto = encodeURIComponent(
-                      `¡Mae, estoy participando en Aval Motors CR! 🚗💨\n\nEntra con mi enlace y recibe +1 Token Extra GRATIS en tu compra:\n${url}`
+                      `¡Mae, estoy participando en Aval Community CR! 🚗💨\n\nEntra con mi enlace y recibe +1 Token Extra GRATIS en tu compra:\n${url}`
                     );
                     window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
                   }}
@@ -649,7 +649,7 @@ function Validar() {
                 <div className="flex justify-between items-start border-b border-zinc-800 pb-3">
                   <div>
                     <div className="font-display text-xl tracking-wide text-white">
-                      AVAL MOTORS CR
+                      AVAL COMMUNITY CR
                     </div>
                     <div className="text-[11px] text-amber-500 font-semibold uppercase tracking-wider">
                       Evento Promocional Oficial

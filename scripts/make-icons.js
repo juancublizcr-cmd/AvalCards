@@ -209,4 +209,4 @@ if (fs.existsSync("dist/client")) {
   fs.writeFileSync("dist/client/icons/icon-512.png", generated[512]);
 }
 
-console.log("✓ All Aval Motors flame favicons generated successfully!");
+console.log("✓ All Aval Community flame favicons generated successfully!");

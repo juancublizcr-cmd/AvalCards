@@ -53,7 +53,7 @@ export function exportarOrdenesExcel(ordenes: Orden[]): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `Reporte-Ventas-AvalMotors-${new Date().toISOString().split("T")[0]}.csv`;
+  link.download = `Reporte-Ventas-AvalCommunity-${new Date().toISOString().split("T")[0]}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -94,7 +94,7 @@ export function exportarClientesExcel(clientes: Cliente[]): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `Reporte-Clientes-AvalMotors-${new Date().toISOString().split("T")[0]}.csv`;
+  link.download = `Reporte-Clientes-AvalCommunity-${new Date().toISOString().split("T")[0]}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }

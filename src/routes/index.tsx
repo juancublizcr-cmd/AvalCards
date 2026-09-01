@@ -66,13 +66,13 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Aval Motors CR | ¡Estrena tu Toyota Prado 0KM!" },
+      { title: "Aval Community CR | ¡Estrena tu Toyota Prado 0KM!" },
       {
         name: "description",
         content:
           "Adquiere tus Tokens digitales y participa por una Toyota Prado 2026 0KM, moto de alta cilindrada o PS5 desde solo ₡1,000 por SINPE Móvil o Tarjeta. Evento promocional transparente.",
       },
-      { property: "og:title", content: "Aval Motors CR | ¡Estrena tu Toyota Prado 0KM!" },
+      { property: "og:title", content: "Aval Community CR | ¡Estrena tu Toyota Prado 0KM!" },
       {
         property: "og:description",
         content: "La plataforma de eventos promocionales y tokens digitales más transparente de Costa Rica.",
@@ -241,7 +241,7 @@ function IndexPage() {
     const tel = (rawTel.includes("8609") || !rawTel)
       ? "50686344772"
       : (rawTel.startsWith("506") ? rawTel : `506${rawTel}`);
-    const baseMsg = `Hola Aval Motors CR, me interesa información sobre el próximo gran evento y la preventa exclusiva de tokens. ${textoExtra}`;
+    const baseMsg = `Hola Aval Community CR, me interesa información sobre el próximo gran evento y la preventa exclusiva de tokens. ${textoExtra}`;
     const url = `https://wa.me/${tel}?text=${encodeURIComponent(baseMsg)}`;
     window.open(url, "_blank");
   };
@@ -295,7 +295,7 @@ function IndexPage() {
           <Link to="/" className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Flame className="size-5 sm:size-6 text-primary shrink-0" />
             <span className="font-display text-lg sm:text-2xl tracking-widest whitespace-nowrap">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
 
@@ -774,7 +774,7 @@ function IndexPage() {
               </div>
               <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 to-transparent p-6">
                 <h4 className="font-bold text-base text-primary flex items-center gap-2">
-                  <Award className="size-5" /> Garantía Aval Motors CR
+                  <Award className="size-5" /> Garantía Aval Community CR
                 </h4>
                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                   {sorteo.detalleGarantia || "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno."}

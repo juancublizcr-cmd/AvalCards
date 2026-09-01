@@ -3,7 +3,7 @@ import { FileText, Flame, Lock, MessageCircle, Phone, ShieldCheck } from "lucide
 
 export function Footer() {
   const abrirWhatsApp = (asunto: string) => {
-    const texto = encodeURIComponent(`Hola Aval Motors CR, tengo una consulta sobre: ${asunto}`);
+    const texto = encodeURIComponent(`Hola Aval Community CR, tengo una consulta sobre: ${asunto}`);
     window.open(`https://wa.me/50686344772?text=${texto}`, "_blank");
   };
 
@@ -15,7 +15,7 @@ export function Footer() {
           <Link to="/" className="inline-flex items-center gap-2">
             <Flame className="size-6 text-primary" />
             <span className="font-display text-2xl tracking-widest">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
@@ -90,7 +90,7 @@ export function Footer() {
       </div>
 
       <div className="mx-auto max-w-6xl px-5 mt-10 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-        <p>© {new Date().getFullYear()} Aval Motors CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.</p>
+        <p>© {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.</p>
         <div className="flex items-center gap-4">
           <Link to="/terminos" className="hover:text-foreground">Reglamento</Link>
           <Link to="/privacidad" className="hover:text-foreground">Privacidad</Link>

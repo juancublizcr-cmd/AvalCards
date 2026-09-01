@@ -16,7 +16,7 @@ export function FaqSection({ faqs }: { faqs?: FaqItem[] }) {
           ¿Tienes dudas? <span className="text-fire">Te explicamos</span>
         </h2>
         <p className="mx-auto mt-2 text-sm text-muted-foreground">
-          Todo lo que necesitas saber sobre cómo participar, validar y ser favorecido con Aval Motors CR.
+          Todo lo que necesitas saber sobre cómo participar, validar y ser favorecido con Aval Community CR.
         </p>
       </div>
 

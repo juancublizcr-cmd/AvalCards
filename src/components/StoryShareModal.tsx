@@ -49,7 +49,7 @@ export function StoryShareModal({
   const descargar = () => {
     if (!imagenUrl) return;
     const link = document.createElement("a");
-    link.download = `Historia-AvalMotors-${datos.nombre.replace(/\s+/g, "_")}.png`;
+    link.download = `Historia-AvalCommunity-${datos.nombre.replace(/\s+/g, "_")}.png`;
     link.href = imagenUrl;
     link.click();
     setDescargado(true);
@@ -62,11 +62,11 @@ export function StoryShareModal({
     if (!imagenUrl) return;
     try {
       const blob = await (await fetch(imagenUrl)).blob();
-      const file = new File([blob], "mi-historia-avalmotors.png", { type: "image/png" });
+      const file = new File([blob], "mi-historia-avalcommunity.png", { type: "image/png" });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: "¡Estoy participando por el Carro 0KM en Aval Motors CR!",
+          title: "¡Estoy participando por el Carro 0KM en Aval Community CR!",
           text: `¡Mae, entra con mi enlace para recibir +1 Token Extra de Regalo en tu compra! https://www.avalcomunity.com/?ref=${datos.telefono.replace(/\D/g, "")}`,
         });
       } else {

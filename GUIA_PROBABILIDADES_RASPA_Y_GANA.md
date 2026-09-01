@@ -1,11 +1,11 @@
 # 🎰 GUÍA OFICIAL DE CONTROL DE PROBABILIDADES Y RENTABILIDAD
-## AVAL MOTORS CR · SISTEMA DE RASPA Y GANA DIGITAL EXPRESS
+## AVAL COMMUNITY CR · SISTEMA DE RASPA Y GANA DIGITAL EXPRESS
 
 ---
 
 ### 1. 🧠 ¿CÓMO FUNCIONA EL MOTOR MATEMÁTICO?
 
-El sistema de Raspa y Gana Digital de Aval Motors CR utiliza un algoritmo ponderado transparente y configurable en tiempo real desde la consola de administración (`/admin`).
+El sistema de Raspa y Gana Digital de Aval Community CR utiliza un algoritmo ponderado transparente y configurable en tiempo real desde la consola de administración (`/admin`).
 
 Cada premio registrado en el panel tiene un valor numérico denominado **`Peso / Probabilidad`**. El sistema suma todos los pesos activos y calcula la probabilidad porcentual exacta mediante la fórmula:
 
@@ -107,4 +107,4 @@ En lugar de tener una sola casilla de peso `80`, puedes colocar **4 frases difer
 4. Presiona el botón naranja **`Guardar Cambios`**. El sorteador se actualiza en el acto en toda la plataforma.
 
 ---
-*Aval Motors CR · Importadora Luxury Scents LTDA · Documento Confidencial de Operación Interna 2026*
+*Aval Community CR · Importadora Luxury Scents LTDA · Documento Confidencial de Operación Interna 2026*

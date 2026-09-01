@@ -395,7 +395,7 @@ export function RuletaModal({
     if (!premioGanado) return;
     const tipoGiro = esModoDemo ? "Modo Demostración" : "Giro Oficial";
     const texto = encodeURIComponent(
-      `¡Hola Aval Motors CR! 🎡 Acabo de jugar la Ruleta de la Fortuna (${tipoGiro} · Folio: #${ticketFolio}) y resulté GANADOR de: *${premioGanado.nombre}*. ¿Cómo coordino mi entrega / SINPE?`,
+      `¡Hola Aval Community CR! 🎡 Acabo de jugar la Ruleta de la Fortuna (${tipoGiro} · Folio: #${ticketFolio}) y resulté GANADOR de: *${premioGanado.nombre}*. ¿Cómo coordino mi entrega / SINPE?`,
     );
     const tel = telefonoSoporte.replace(/\D/g, "");
     window.open(`https://wa.me/506${tel}?text=${texto}`, "_blank");

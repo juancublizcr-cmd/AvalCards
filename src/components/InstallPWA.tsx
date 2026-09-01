@@ -50,7 +50,7 @@ export function InstallPWA() {
         <Download className="size-5 text-primary" />
       </div>
       <div className="flex-1 text-sm">
-        <p className="font-semibold">Instala Aval Motors CR</p>
+        <p className="font-semibold">Instala Aval Community CR</p>
         <p className="text-xs text-muted-foreground">Accede rápido desde tu pantalla de inicio</p>
       </div>
       <button

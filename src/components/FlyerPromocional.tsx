@@ -58,7 +58,7 @@ export function FlyerPromocional({
     ? "50686344772"
     : (rawTel.startsWith("506") ? rawTel : `506${rawTel}`);
   const mensaje = encodeURIComponent(
-    `¡Hola Aval Motors CR! Quiero apartar mi lugar en la preventa exclusiva del evento promocional y recibir información de los tokens.`
+    `¡Hola Aval Community CR! Quiero apartar mi lugar en la preventa exclusiva del evento promocional y recibir información de los tokens.`
   );
   const whatsappUrl = `https://wa.me/${telFinal}?text=${mensaje}`;
 
@@ -77,7 +77,7 @@ export function FlyerPromocional({
           <Link to="/" className="flex items-center gap-2">
             <Flame className="size-6 text-primary" />
             <span className="font-display text-xl sm:text-2xl tracking-widest text-white">
-              AVAL <span className="text-primary">MOTORS CR</span>
+              AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
         </div>
@@ -175,7 +175,7 @@ export function FlyerPromocional({
 
       {/* 3. Footer Minimalista */}
       <footer className="relative z-10 border-t border-white/10 py-4 text-center text-xs text-zinc-500">
-        <p>© {new Date().getFullYear()} Aval Motors CR · Importadora Luxury Scents LTDA. · Costa Rica</p>
+        <p>© {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA. · Costa Rica</p>
       </footer>
     </div>
   );
