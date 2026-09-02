@@ -197,4 +197,14 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
      - Generador de tiquetes oficiales en Canvas PNG (`ticket-canvas.ts`).
      - Flyer promocional y módulo de escrutinio oficial (`EscrutinioSection.tsx`).
 
+---
 
+## 🚀 Hito 14: Corrección de Persistencia en Base de Datos y Sincronización Inmediata de Precios
+
+1. **Corrección de Esquema en Supabase (`sorteo_config`):**
+   - Corrección del nombre de columna `detalle_features` (snake_case) en `upsertSorteo`, resolviendo el error de guardado en el panel administrativo.
+   - Implementación de mecanismo de reintento automático (*retry*) con campos mínimos garantizados (`id`, `nombre`, `rango_min`, `rango_max`, `precio_base`, `fecha`) para asegurar la persistencia en caso de inconsistencias en columnas secundarias.
+
+2. **Eliminación Total de Fallbacks Estáticos:**
+   - Removidos todos los fallbacks numéricos residuales (`5000`, `1000`) en `PremiosSection.tsx`, `admin-store.ts` y `src/routes/index.tsx`.
+   - Priorización directa de la base de datos Supabase sobre el almacenamiento local, garantizando que los cambios de precio en el panel de administración se reflejen de inmediato en toda la aplicación.
