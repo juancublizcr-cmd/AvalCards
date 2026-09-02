@@ -125,7 +125,7 @@ function formatearFechaLarga(fechaStr: string) {
 }
 
 function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
-  const base = Number(sorteoActual.precioBase) || (sorteoActual.modalidadVenta === "fijo_3x5000" ? 5000 : 1000);
+  const base = Number(sorteoActual.precioBase) || 2500;
   if (sorteoActual.modalidadVenta === "fijo_3x5000") {
     return [{ cantidad: 3, precio: base }];
   }

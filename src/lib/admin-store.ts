@@ -278,7 +278,7 @@ export const SORTEO_DEFAULT: Sorteo = {
   nombre: "Evento Promocional Aval Community CR",
   rangoMin: "00000",
   rangoMax: "99999",
-  precioBase: 1000,
+  precioBase: 2500,
   fecha: "2026-09-27",
   detalleTitulo: "Toyota Prado 2026: Lujo, Potencia y Confort",
   detalleSubtitulo: "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre.",
@@ -427,9 +427,9 @@ export async function fetchSorteo(): Promise<Sorteo> {
     }
 
     const nombreLimpio = (data.nombre ?? SORTEO_DEFAULT.nombre).replace(/\[MOD:[^\]]+\]/g, "").trim();
-    const precioBaseFinal = extra.precioBase !== undefined
-      ? Number(extra.precioBase)
-      : (data.precio_base !== null && data.precio_base !== undefined ? Number(data.precio_base) : SORTEO_DEFAULT.precioBase);
+    const precioBaseFinal = (data.precio_base !== null && data.precio_base !== undefined)
+      ? Number(data.precio_base)
+      : (extra.precioBase !== undefined ? Number(extra.precioBase) : SORTEO_DEFAULT.precioBase);
 
     return {
       nombre: nombreLimpio || SORTEO_DEFAULT.nombre,
