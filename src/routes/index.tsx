@@ -383,7 +383,7 @@ function IndexPage() {
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> por solo ₡{(paquetes[0]?.precio || 5000).toLocaleString("es-CR")}?
+              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> por solo ₡{(sorteo.precioBase || paquetes[0]?.precio || 2500).toLocaleString("es-CR")}?
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">

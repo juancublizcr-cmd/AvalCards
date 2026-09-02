@@ -409,6 +409,7 @@ export async function fetchSorteo(): Promise<Sorteo> {
     if (error || !data) {
       return {
         ...SORTEO_DEFAULT,
+        precioBase: extra.precioBase ?? SORTEO_DEFAULT.precioBase,
         modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
         raspaConfig: extra.raspaConfig ?? SORTEO_DEFAULT.raspaConfig,
       };
@@ -426,12 +427,15 @@ export async function fetchSorteo(): Promise<Sorteo> {
     }
 
     const nombreLimpio = (data.nombre ?? SORTEO_DEFAULT.nombre).replace(/\[MOD:[^\]]+\]/g, "").trim();
+    const precioBaseFinal = extra.precioBase !== undefined
+      ? Number(extra.precioBase)
+      : (data.precio_base !== null && data.precio_base !== undefined ? Number(data.precio_base) : SORTEO_DEFAULT.precioBase);
 
     return {
       nombre: nombreLimpio || SORTEO_DEFAULT.nombre,
       rangoMin: data.rango_min ?? SORTEO_DEFAULT.rangoMin,
       rangoMax: data.rango_max ?? SORTEO_DEFAULT.rangoMax,
-      precioBase: data.precio_base ?? SORTEO_DEFAULT.precioBase,
+      precioBase: precioBaseFinal,
       fecha: data.fecha ?? "",
       modalidadVenta: modDetectada,
       detalleTitulo: data.detalle_titulo ?? SORTEO_DEFAULT.detalleTitulo,
@@ -446,6 +450,7 @@ export async function fetchSorteo(): Promise<Sorteo> {
   } catch {
     return {
       ...SORTEO_DEFAULT,
+      precioBase: extra.precioBase ?? SORTEO_DEFAULT.precioBase,
       modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
       raspaConfig: extra.raspaConfig ?? SORTEO_DEFAULT.raspaConfig,
     };
@@ -456,6 +461,7 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem("aval_sorteo_config_extra", JSON.stringify({
+        precioBase: Number(s.precioBase) || 2500,
         raspaConfig: s.raspaConfig,
         modalidadVenta: s.modalidadVenta,
       }));
@@ -470,7 +476,7 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     nombre: nombreConTag,
     rango_min: s.rangoMin,
     rango_max: s.rangoMax,
-    precio_base: Number(s.precioBase) || (s.modalidadVenta === "fijo_3x5000" ? 5000 : 1000),
+    precio_base: Number(s.precioBase) || 2500,
     fecha: s.fecha,
     detalle_titulo: s.detalleTitulo,
     detalle_subtitulo: s.detalleSubtitulo,
