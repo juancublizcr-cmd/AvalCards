@@ -173,3 +173,28 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Configuración del puerto predeterminado en `3000` en `vite.config.ts` (tanto para `server` como para `preview`), liberando el puerto 5173.
    - Optimización del script de pre-renderizado HTML estático (`scripts/prerender.js`) para finalización limpia de procesos de compilación en producción.
 
+---
+
+## 🚀 Hito 13: Dinamización Integral de Precios Promocionales y Configuración Administrativa de SuperTokens
+
+1. **Precios y Paquetes 100% Dinámicos:**
+   - Se eliminaron todos los valores estáticos (`5000`, `1500`, etc.) del landing page (`src/routes/index.tsx`), modales de selección (`src/components/StickersModal.tsx`), checkout y tarjetas de compra.
+   - El precio del paquete promocional (3 Tokens) y los paquetes escalonados ahora se calculan en tiempo real a partir del campo "Precio base por Token (₡)" configurado en `/admin` -> **Premios y Sorteo Oficial**.
+
+2. **Panel de Configuración de SuperTokens (`/admin` -> Configuración):**
+   - Agregada la sección **👑 8. Configuración de SuperTokens** en `ConfigSection.tsx` con controles para:
+     - Estado del SuperToken (Activar / Pausar).
+     - Precio adicional por SuperToken en colones (₡ CRC).
+     - Monto del premio en efectivo en dólares ($ USD Cash extra para el 1° lugar).
+   - Persistencia completa en Supabase y estado centralizado en `admin-store.ts`.
+
+3. **Propagación en Tiempo Real en Toda la Plataforma:**
+   - Actualización dinámica del bono en dólares y desglose en colones en:
+     - Hero del Landing Page y tarjetas de premios.
+     - Modal de selección de números (`StickersModal.tsx`).
+     - Pasarela de Checkout y comprobante de pago (`checkout.tsx`).
+     - Consulta y verificación de tiquetes digitales (`validar.tsx`).
+     - Generador de tiquetes oficiales en Canvas PNG (`ticket-canvas.ts`).
+     - Flyer promocional y módulo de escrutinio oficial (`EscrutinioSection.tsx`).
+
+

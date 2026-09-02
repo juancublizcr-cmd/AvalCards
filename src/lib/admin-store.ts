@@ -143,6 +143,10 @@ export type Config = {
   miniSorteoFecha?: string;
   miniSorteoPremio?: string;
   pwaBannerActivo?: boolean;
+  // SuperToken
+  supertokenActivo?: boolean;
+  supertokenPrecio?: number;
+  supertokenPremioUsd?: number;
 };
 
 export type ReferenteStat = {
@@ -329,6 +333,9 @@ export const CONFIG_DEFAULT: Config = {
   miniSorteoFecha: "Viernes 7:00 PM",
   miniSorteoPremio: "₡50,000 en Gasolina Delta / Uno",
   pwaBannerActivo: true,
+  supertokenActivo: true,
+  supertokenPrecio: 1500,
+  supertokenPremioUsd: 6000,
 };
 
 // ────────────────────────────────────────────────────────────
@@ -414,8 +421,6 @@ export async function fetchSorteo(): Promise<Sorteo> {
       modDetectada = "fijo_3x5000";
     } else if (data.nombre && data.nombre.includes("[MOD:escalonado]")) {
       modDetectada = "escalonado";
-    } else if (data.precio_base === 5000) {
-      modDetectada = "fijo_3x5000";
     } else if (extra.modalidadVenta) {
       modDetectada = extra.modalidadVenta;
     }
@@ -465,12 +470,12 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     nombre: nombreConTag,
     rango_min: s.rangoMin,
     rango_max: s.rangoMax,
-    precio_base: s.modalidadVenta === "fijo_3x5000" ? 5000 : (s.precioBase || 1000),
+    precio_base: Number(s.precioBase) || (s.modalidadVenta === "fijo_3x5000" ? 5000 : 1000),
     fecha: s.fecha,
     detalle_titulo: s.detalleTitulo,
     detalle_subtitulo: s.detalleSubtitulo,
     detalle_imagen: s.detalleImagen,
-    detalle_features: s.detalleFeatures,
+    detalleFeatures: s.detalleFeatures,
     detalle_garantia: s.detalleGarantia,
     ganadores_testimonios: s.ganadoresTestimonios,
     faqs: s.faqs,
@@ -607,6 +612,9 @@ export async function fetchConfig(): Promise<Config> {
       miniSorteoFecha: extra.miniSorteoFecha || CONFIG_DEFAULT.miniSorteoFecha,
       miniSorteoPremio: extra.miniSorteoPremio || CONFIG_DEFAULT.miniSorteoPremio,
       pwaBannerActivo: extra.pwaBannerActivo ?? CONFIG_DEFAULT.pwaBannerActivo,
+      supertokenActivo: extra.supertokenActivo ?? CONFIG_DEFAULT.supertokenActivo,
+      supertokenPrecio: extra.supertokenPrecio ?? CONFIG_DEFAULT.supertokenPrecio,
+      supertokenPremioUsd: extra.supertokenPremioUsd ?? CONFIG_DEFAULT.supertokenPremioUsd,
     };
   } catch {
     return CONFIG_DEFAULT;
@@ -645,6 +653,9 @@ export async function upsertConfig(c: Config): Promise<void> {
       miniSorteoFecha: c.miniSorteoFecha,
       miniSorteoPremio: c.miniSorteoPremio,
       pwaBannerActivo: c.pwaBannerActivo,
+      supertokenActivo: c.supertokenActivo,
+      supertokenPrecio: c.supertokenPrecio,
+      supertokenPremioUsd: c.supertokenPremioUsd,
     }));
   } catch {}
 

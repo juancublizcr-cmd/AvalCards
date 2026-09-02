@@ -422,17 +422,17 @@ export function PremiosSection({
                 <span>📦</span> Paquetes Estándar (Multi-Paquete)
               </div>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Muestra los 4 paquetes escalonados clásicos: <strong>4 Tokens (₡4k)</strong>, <strong>8 Tokens (₡8k)</strong>, <strong>12 Tokens (₡12k)</strong> y <strong>24 Tokens (₡24k)</strong>.
+                Muestra los 4 paquetes escalonados según el precio base por token: <strong>4 Tokens</strong>, <strong>8 Tokens</strong>, <strong>12 Tokens</strong> y <strong>24 Tokens</strong>.
               </p>
               <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-mono font-bold text-primary">
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">4 = ₡4k</span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">8 = ₡8k</span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">12 = ₡12k</span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">24 = ₡24k</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">4 = ₡{((borrador.precioBase || 1000) * 4).toLocaleString("es-CR")}</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">8 = ₡{((borrador.precioBase || 1000) * 8).toLocaleString("es-CR")}</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">12 = ₡{((borrador.precioBase || 1000) * 12).toLocaleString("es-CR")}</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">24 = ₡{((borrador.precioBase || 1000) * 24).toLocaleString("es-CR")}</span>
               </div>
             </div>
 
-            {/* Opción 2: Paquete Especial 3 Tokens por ₡5,000 */}
+            {/* Opción 2: Paquete Especial 3 Tokens por Precio Base */}
             <div
               onClick={() => setBorrador({ ...borrador, modalidadVenta: "fijo_3x5000" })}
               className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative ${
@@ -447,14 +447,14 @@ export function PremiosSection({
                 </span>
               )}
               <div className="font-bold text-sm text-amber-400 flex items-center gap-2">
-                <span>🔥</span> Sorteo Especial (3 Tokens por ₡5,000)
+                <span>🔥</span> Paquete Promocional Único (3 Tokens por ₡{(borrador.precioBase || 5000).toLocaleString("es-CR")})
               </div>
               <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
-                Muestra el paquete promocional único de <strong>3 Tokens Digitales por ₡5,000 CRC</strong>. Mantiene activos los SuperTokens y Referidos.
+                Muestra el paquete promocional único de <strong>3 Tokens Digitales por ₡{(borrador.precioBase || 5000).toLocaleString("es-CR")} CRC</strong>. Mantiene activos los SuperTokens y Referidos.
               </p>
               <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-mono font-bold text-amber-400">
                 <span className="px-2.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/40">
-                  🎟️ 3 Tokens = ₡5,000 CRC
+                  🎟️ 3 Tokens = ₡{(borrador.precioBase || 5000).toLocaleString("es-CR")} CRC
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-secondary/80 border text-muted-foreground text-[10px]">
                   +SuperToken & Referidos activos

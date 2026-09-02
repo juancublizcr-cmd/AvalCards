@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Award,
+  Calendar,
   CheckCircle2,
   Compass,
   Coins,
@@ -114,6 +115,28 @@ function useCuentaRegresiva(fechaObjetivo: string) {
   return t;
 }
 
+function formatearFechaLarga(fechaStr: string) {
+  try {
+    const d = new Date(fechaStr + "T00:00:00");
+    return d.toLocaleDateString("es-CR", { day: "numeric", month: "long", year: "numeric" });
+  } catch {
+    return fechaStr;
+  }
+}
+
+function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
+  const base = Number(sorteoActual.precioBase) || (sorteoActual.modalidadVenta === "fijo_3x5000" ? 5000 : 1000);
+  if (sorteoActual.modalidadVenta === "fijo_3x5000") {
+    return [{ cantidad: 3, precio: base }];
+  }
+  return [
+    { cantidad: 4, precio: base * 4 },
+    { cantidad: 8, precio: base * 8 },
+    { cantidad: 12, precio: base * 12 },
+    { cantidad: 24, precio: base * 24 },
+  ];
+}
+
 function IndexPage() {
   const loaderData = Route.useLoaderData();
   const [paquete, setPaquete] = useState<Paquete | null>(null);
@@ -124,16 +147,7 @@ function IndexPage() {
   const [fechaSorteo, setFechaSorteo] = useState(loaderData?.sorteo?.fecha || "2026-09-27");
   const [paquetes, setPaquetes] = useState<Paquete[]>(() => {
     const sorteoActual = loaderData?.sorteo || SORTEO_DEFAULT;
-    if (sorteoActual.modalidadVenta === "fijo_3x5000") {
-      return [{ cantidad: 3, precio: 5000 }];
-    }
-    const base = sorteoActual.precioBase || 1000;
-    return [
-      { cantidad: 4, precio: base * 4 },
-      { cantidad: 8, precio: base * 8 },
-      { cantidad: 12, precio: base * 12 },
-      { cantidad: 24, precio: base * 24 },
-    ];
+    return calcularPaquetes(sorteoActual);
   });
   const [progreso, setProgreso] = useState(() => {
     if (loaderData?.inventario && loaderData.inventario.total > 0) {
@@ -210,19 +224,7 @@ function IndexPage() {
         if (sorteoData) {
           setSorteo(sorteoData);
           if (sorteoData.fecha) setFechaSorteo(sorteoData.fecha);
-          if (sorteoData.modalidadVenta === "fijo_3x5000") {
-            setPaquetes([
-              { cantidad: 3, precio: 5000 },
-            ]);
-          } else {
-            const base = sorteoData.precioBase || 1000;
-            setPaquetes([
-              { cantidad: 4, precio: base * 4 },
-              { cantidad: 8, precio: base * 8 },
-              { cantidad: 12, precio: base * 12 },
-              { cantidad: 24, precio: base * 24 },
-            ]);
-          }
+          setPaquetes(calcularPaquetes(sorteoData));
         }
 
         if (inventarioData && inventarioData.total > 0) {
@@ -376,12 +378,12 @@ function IndexPage() {
                 {config.ventasActivas ? "Evento Promocional Oficial Costa Rica" : "🔥 PREVENTA EXCLUSIVA 2026"}
               </div>
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
-                <Crown className="size-3.5" /> SuperToken: +$6,000 USD Cash si ganas ({premios[0]?.nombre || "1° Lugar"})
+                <Crown className="size-3.5" /> SuperToken: +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash si ganas ({premios[0]?.nombre || "1° Lugar"})
               </div>
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> por solo ₡1,000?
+              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> por solo ₡{(paquetes[0]?.precio || 5000).toLocaleString("es-CR")}?
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -406,7 +408,7 @@ function IndexPage() {
               </div>
 
               <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg">
-                <Crown className="size-4 text-amber-500" /> Bono $6,000 USD con SuperToken
+                <Crown className="size-4 text-amber-500" /> Bono ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD con SuperToken
               </div>
 
               <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg">
@@ -534,7 +536,7 @@ function IndexPage() {
                     <div className="absolute top-4 right-4 flex gap-1.5 z-10">
                       {isMayor && (
                         <span className="rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold uppercase flex items-center gap-1">
-                          <Crown className="size-3" /> +$6,000 USD
+                          <Crown className="size-3" /> +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD
                         </span>
                       )}
                       <span
@@ -565,7 +567,7 @@ function IndexPage() {
                       </p>
                       {isMayor && (
                         <p className="text-xs font-semibold text-amber-500 mt-1 flex items-center gap-1">
-                          <Crown className="size-3.5" /> Opción SuperToken: ¡$6,000 USD Cash extra!
+                          <Crown className="size-3.5" /> Opción SuperToken: ¡${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash extra!
                         </p>
                       )}
                     </div>
@@ -581,50 +583,55 @@ function IndexPage() {
           {/* Contador y Progreso */}
           <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] text-center mb-16">
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Timer className="size-4 text-primary" /> El evento cierra en
+              <Calendar className="size-4 text-primary" />
+              <span>
+                Gran Sorteo Oficial: <strong>{formatearFechaLarga(fechaSorteo)}</strong>
+              </span>
             </div>
-            <div className="mt-4 flex justify-center gap-3">
+
+            {/* Cuenta Regresiva Estilizada */}
+            <div className="mt-6 grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
               {[
-                { v: t.d, l: "Días" },
-                { v: t.h, l: "Horas" },
-                { v: t.m, l: "Min" },
-                { v: t.s, l: "Seg" },
-              ].map((u) => (
+                { label: "Días", val: t.d },
+                { label: "Horas", val: t.h },
+                { label: "Min", val: t.m },
+                { label: "Seg", val: t.s },
+              ].map((item, idx) => (
                 <div
-                  key={u.l}
-                  className="w-20 rounded-xl border border-border bg-secondary/50 py-3"
+                  key={idx}
+                  className="rounded-xl border border-border bg-secondary/50 p-2 sm:p-3 text-center"
                 >
-                  <div className="font-display text-3xl text-primary">
-                    {String(u.v).padStart(2, "0")}
+                  <div className="font-mono text-2xl sm:text-4xl font-black text-primary">
+                    {String(item.val).padStart(2, "0")}
                   </div>
-                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
-                    {u.l}
+                  <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">
+                    {item.label}
                   </div>
                 </div>
               ))}
             </div>
 
-            {progreso > 0 && (
-              <div className="mt-8 text-left">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Progreso de colocación</span>
-                  <span className="font-semibold text-primary">{progreso}% de Tokens asignados</span>
-                </div>
-                <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-secondary">
-                  <div
-                    className="h-full rounded-full bg-[image:var(--gradient-fire)] transition-all duration-700"
-                    style={{ width: `${progreso}%` }}
-                  />
-                </div>
+            {/* Barra de Progreso de Disponibilidad */}
+            <div className="mt-8 space-y-2 max-w-md mx-auto">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Disponibilidad de Tokens</span>
+                <span className="font-bold text-foreground">{progreso}% Vendido</span>
               </div>
-            )}
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full bg-[image:var(--gradient-fire)] transition-all duration-700"
+                  style={{ width: `${progreso}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-muted-foreground text-center pt-1">
+                ⚡ Alta demanda · Los números se asignan en tiempo real
+              </p>
+            </div>
           </div>
 
           <div className="text-center max-w-2xl mx-auto">
             <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-              {paquetes.length === 1
-                ? "🔥 Paquete Oficial del Evento"
-                : config.ventasActivas
+              {config.ventasActivas
                 ? "Elige tu Paquete Digital"
                 : "🔥 Preventa Exclusiva de Tokens"}
             </span>
@@ -637,7 +644,7 @@ function IndexPage() {
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               {paquetes.length === 1
-                ? "Participa con tu paquete especial de 3 combinaciones oficiales por ₡5,000. Puedes generarlos al azar o elegir tus números favoritos."
+                ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${(paquetes[0]?.precio || 5000).toLocaleString("es-CR")}. Puedes generarlos al azar o elegir tus números favoritos.`
                 : config.ventasActivas
                 ? "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos."
                 : "La venta directa abrirá muy pronto. ¡Contáctanos por WhatsApp para apartar tus números antes del lanzamiento público!"}
@@ -646,20 +653,20 @@ function IndexPage() {
 
           <div className={`mt-12 ${paquetes.length === 1 ? "max-w-md mx-auto" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4"}`}>
             {paquetes.map((p) => {
-              const es3x5000 = p.cantidad === 3 && p.precio === 5000;
-              const esPopular = p.cantidad === 12 && p.precio === 12000;
+              const esUnico = paquetes.length === 1;
+              const esPopular = p.cantidad === 12;
 
               return (
                 <button
                   key={p.cantidad}
                   onClick={() => abrir(p)}
                   className={`w-full group relative cursor-pointer rounded-2xl border bg-[image:var(--gradient-surface)] p-7 text-left transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-[var(--shadow-fire)] ${
-                    es3x5000 ? "border-amber-500/60 bg-gradient-to-b from-amber-500/15 via-card to-card shadow-[0_0_40px_rgba(245,158,11,0.2)]" : "border-border"
+                    esUnico ? "border-amber-500/60 bg-gradient-to-b from-amber-500/15 via-card to-card shadow-[0_0_40px_rgba(245,158,11,0.2)]" : "border-border"
                   }`}
                 >
-                  {es3x5000 ? (
+                  {esUnico ? (
                     <span className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-3.5 py-1 text-xs font-black text-black shadow-md">
-                      🔥 Paquete Especial Único 3x₡5,000
+                      🔥 Paquete Especial Único {p.cantidad}x₡{p.precio.toLocaleString("es-CR")}
                     </span>
                   ) : esPopular ? (
                     <span className="absolute -top-3 right-4 rounded-full bg-[image:var(--gradient-fire)] px-3 py-1 text-[11px] font-semibold text-primary-foreground">
@@ -816,6 +823,7 @@ function IndexPage() {
         open={open}
         onOpenChange={setOpen}
         premioMayor={premios[0]?.nombre}
+        config={config}
       />
 
       <JuegosExpressModal

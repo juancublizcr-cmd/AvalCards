@@ -351,7 +351,7 @@ function Checkout() {
 
           {seleccion?.supertoken && (
             <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/15 px-4 py-1 text-xs font-bold text-amber-500 shadow-sm">
-              <Crown className="size-4" /> SuperToken Activo · Califica para 1° Lugar + $6,000 USD Cash
+              <Crown className="size-4" /> SuperToken Activo · Califica para 1° Lugar + ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash
             </div>
           )}
 
@@ -533,7 +533,7 @@ function Checkout() {
           <h1 className="font-display text-4xl tracking-wide">Finaliza tu compra</h1>
           {seleccion?.supertoken && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-500">
-              <Crown className="size-3.5" /> SuperToken (+$6,000 USD)
+              <Crown className="size-3.5" /> SuperToken (+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD)
             </span>
           )}
         </div>

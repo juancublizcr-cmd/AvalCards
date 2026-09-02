@@ -26,13 +26,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { fetchNumerosOcupados, guardarSeleccion } from "@/lib/orders";
-import { buscarPremioInstantaneo, fetchConfig, type PremioInstantaneo } from "@/lib/admin-store";
+import {
+  buscarPremioInstantaneo,
+  fetchConfig,
+  type Config,
+  CONFIG_DEFAULT,
+  type PremioInstantaneo,
+} from "@/lib/admin-store";
 import { calcularGirosPorTokens } from "@/lib/giros-store";
 import { toast } from "sonner";
 
 export type Paquete = { cantidad: number; precio: number };
-
-const COSTO_SUPERTOKEN_POR_UNIDAD = 500; // ₡500 extra por token
 
 function generarNumeroDisponible(excluir: Set<string>): string {
   let intentos = 0;
@@ -62,12 +66,15 @@ export function StickersModal({
   open,
   onOpenChange,
   premioMayor,
+  config: configProp,
 }: {
   paquete: Paquete | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
   premioMayor?: string;
+  config?: Config;
 }) {
+  const [config, setConfig] = useState<Config>(configProp || CONFIG_DEFAULT);
   const [modo, setModo] = useState<"azar" | "manual">("azar");
   const [numeros, setNumeros] = useState<string[]>([]);
   const [ocupados, setOcupados] = useState<Set<string>>(new Set());
@@ -77,9 +84,26 @@ export function StickersModal({
   const [instantaneo, setInstantaneo] = useState<PremioInstantaneo | null>(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (configProp) {
+      setConfig(configProp);
+    } else {
+      void fetchConfig().then((c) => {
+        if (c) setConfig(c);
+      });
+    }
+  }, [configProp]);
+
   const precioBase = paquete?.precio ?? 0;
-  const extraSupertoken = supertoken && paquete ? paquete.cantidad * COSTO_SUPERTOKEN_POR_UNIDAD : 0;
+  const supertokenPrecioTotal = config.supertokenPrecio ?? 1500;
+  const costoSupertoken = paquete
+    ? paquete.cantidad === 3
+      ? supertokenPrecioTotal
+      : Math.round((supertokenPrecioTotal / 3) * paquete.cantidad)
+    : 0;
+  const extraSupertoken = supertoken && paquete ? costoSupertoken : 0;
   const precioFinal = precioBase + extraSupertoken;
+  const premioUsd = config.supertokenPremioUsd ?? 6000;
 
   const celebrar = async (nums: string[]) => {
     try {
@@ -105,7 +129,7 @@ export function StickersModal({
         setModo("azar");
         setSupertoken(false);
         setBuscando(false);
-        void fetchConfig().then((c) => setIntentos(c.intentosMax)).catch(() => setIntentos(5));
+        setIntentos(config.intentosMax || 5);
         void celebrar(nums);
       });
     }
@@ -233,8 +257,8 @@ export function StickersModal({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Upgrade SuperToken ($6,000 USD Cash) con Switch interactivo */}
-        {paquete && (
+        {/* Upgrade SuperToken ($ USD Cash) con Switch interactivo */}
+        {paquete && config.supertokenActivo !== false && (
           <div
             onClick={() => setSupertoken(!supertoken)}
             className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 transition-all duration-300 select-none overflow-hidden ${
@@ -258,11 +282,11 @@ export function StickersModal({
                       Activar SuperToken
                     </span>
                     <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide text-amber-400 border border-amber-500/40 shrink-0">
-                      +$6,000 USD CASH
+                      +${premioUsd.toLocaleString()} USD CASH
                     </span>
                   </div>
                   <p className="mt-1 text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
-                    Si ganas el <strong>1° Lugar ({premioMayor || "Vehículo 0KM"})</strong>, ¡te llevas también <strong>$6,000 en efectivo</strong>!
+                    Si ganas el <strong>1° Lugar ({premioMayor || "Vehículo 0KM"})</strong>, ¡te llevas también <strong>${premioUsd.toLocaleString()} en efectivo</strong>!
                   </p>
                 </div>
               </div>
@@ -280,7 +304,7 @@ export function StickersModal({
                   />
                 </div>
                 <span className={`text-[10px] sm:text-[11px] font-bold ${supertoken ? "text-amber-400 font-mono" : "text-muted-foreground"}`}>
-                  {supertoken ? `+₡${extraSupertoken.toLocaleString("es-CR")}` : `+₡${(paquete.cantidad * COSTO_SUPERTOKEN_POR_UNIDAD).toLocaleString("es-CR")}`}
+                  {supertoken ? `+₡${extraSupertoken.toLocaleString("es-CR")}` : `+₡${costoSupertoken.toLocaleString("es-CR")}`}
                 </span>
               </div>
             </div>
@@ -290,7 +314,7 @@ export function StickersModal({
               <span className="text-[11px] text-muted-foreground">
                 {supertoken
                   ? `₡${precioBase.toLocaleString("es-CR")} (Paquete) + ₡${extraSupertoken.toLocaleString("es-CR")} (SuperToken)`
-                  : `Opción extra (+$6,000 USD si ganas)`}
+                  : `Opción extra (+$${premioUsd.toLocaleString()} USD si ganas)`}
               </span>
               <span className="font-bold text-foreground text-xs">
                 Total: <strong className={supertoken ? "text-amber-400 text-sm font-mono" : "text-primary text-sm font-mono"}>₡{precioFinal.toLocaleString("es-CR")}</strong>

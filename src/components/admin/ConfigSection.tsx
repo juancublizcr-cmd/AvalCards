@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Coins,
   CreditCard,
+  Crown,
   Globe,
   Key,
   Loader2,
@@ -604,6 +605,63 @@ export function ConfigSection({
               checked={borrador.pwaBannerActivo ?? true}
               onCheckedChange={(v) => setBorrador({ ...borrador, pwaBannerActivo: v })}
             />
+          </div>
+        </div>
+      </section>
+
+      {/* 8. CONFIGURACIÓN DE SUPERTOKENS */}
+      <section className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-amber-400">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 font-black text-sm">👑</span>
+              8. Configuración de SuperTokens (Opción Extra y Premio Cash)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Controla el precio adicional que pagan los clientes al activar SuperToken y el monto en efectivo USD extra que ganan con el 1° Lugar.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.supertokenActivo ? "Activo" : "Inactivo"}</span>
+            <Switch
+              checked={borrador.supertokenActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, supertokenActivo: v })}
+              className="data-[state=checked]:bg-amber-500"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">
+              Precio Adicional por SuperToken (₡ CRC)
+            </Label>
+            <Input
+              type="number"
+              value={borrador.supertokenPrecio ?? 1500}
+              onChange={(e) => setBorrador({ ...borrador, supertokenPrecio: Number(e.target.value) })}
+              placeholder="1500"
+              className="border-amber-500/40 font-bold font-mono text-primary"
+            />
+            <span className="text-[11px] text-muted-foreground block">
+              Monto en colones que se sumará al total cuando el usuario activa el switch de SuperToken.
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">
+              Monto del Premio en Efectivo SuperToken ($ USD Cash)
+            </Label>
+            <Input
+              type="number"
+              value={borrador.supertokenPremioUsd ?? 6000}
+              onChange={(e) => setBorrador({ ...borrador, supertokenPremioUsd: Number(e.target.value) })}
+              placeholder="6000"
+              className="border-amber-500/40 font-bold font-mono text-amber-400"
+            />
+            <span className="text-[11px] text-muted-foreground block">
+              Monto en dólares estadounidenses anunciado en toda la web (ej: 6000 para +$6,000 USD).
+            </span>
           </div>
         </div>
       </section>

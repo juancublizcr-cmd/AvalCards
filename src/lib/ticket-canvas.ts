@@ -3,10 +3,19 @@ import type { Orden } from "@/lib/orders";
 /**
  * Genera y descarga una imagen PNG de alta resolución con el Tiquete Digital Oficial de Aval Community CR
  */
-export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lugar"): Promise<void> {
+export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lugar", supertokenPremioUsd?: number): Promise<void> {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
+
+  let extraUsd = supertokenPremioUsd;
+  if (!extraUsd && typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("aval_site_config_extra");
+      if (raw) extraUsd = JSON.parse(raw).supertokenPremioUsd;
+    } catch {}
+  }
+  const finalPremioUsd = extraUsd || 6000;
 
   // Dimensiones HD (1200 x 1600 para tarjeta vertical de lujo)
   const width = 1080;
@@ -38,15 +47,14 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
   ctx.fillText("AVAL COMMUNITY CR", width / 2, 130);
 
   ctx.fillStyle = "#f97316";
-  ctx.font = "bold 24px sans-serif, Arial";
-  ctx.letterSpacing = "3px";
-  ctx.fillText("COMPROBANTE DIGITAL OFICIAL DE PARTICIPACIÓN", width / 2, 175);
+  ctx.font = "bold 20px sans-serif, Arial";
+  ctx.fillText("EVENTO PROMOCIONAL OFICIAL · CERTIFICADO DIGITAL", width / 2, 175);
 
   ctx.strokeStyle = "#3f3f46";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(100, 210);
-  ctx.lineTo(width - 100, 210);
+  ctx.moveTo(100, 205);
+  ctx.lineTo(width - 100, 205);
   ctx.stroke();
 
   // 4. Badge SuperToken si aplica
@@ -64,7 +72,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
     ctx.fillStyle = "#000000";
     ctx.font = "bold 26px sans-serif, Arial";
     ctx.textAlign = "center";
-    ctx.fillText("👑 SUPERTOKEN ACTIVO · CALIFICA PARA +$6,000 USD CASH", width / 2, currentY + 4);
+    ctx.fillText(`👑 SUPERTOKEN ACTIVO · CALIFICA PARA +$${finalPremioUsd.toLocaleString()} USD CASH`, width / 2, currentY + 4);
     currentY += 85;
   }
 

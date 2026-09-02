@@ -35,12 +35,15 @@ import {
 } from "@/components/ui/dialog";
 import { buscarPorTelefono, fetchReferidosPorTelefono, obtenerInfoReferente, type Orden } from "@/lib/orders";
 import {
+  fetchConfig,
   fetchInstantaneos,
   fetchPremios,
   fetchSorteo,
+  type Config,
   type PremioInstantaneo,
   type Premio,
   type Sorteo,
+  CONFIG_DEFAULT,
   PREMIOS_DEFAULT,
   SORTEO_DEFAULT,
 } from "@/lib/admin-store";
@@ -88,8 +91,15 @@ function Validar() {
   const [premiosInstantaneos, setPremiosInstantaneos] = useState<PremioInstantaneo[]>([]);
   const [premios, setPremios] = useState<Premio[]>(PREMIOS_DEFAULT);
   const [sorteo, setSorteo] = useState<Sorteo>(SORTEO_DEFAULT);
+  const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
   const [modalHistoria, setModalHistoria] = useState(false);
   const [datosHistoria, setDatosHistoria] = useState<any>(null);
+
+  useEffect(() => {
+    void fetchConfig().then((c) => {
+      if (c) setConfig(c);
+    });
+  }, []);
 
   const ejecutarBusqueda = async (clean: string) => {
     if (!clean) return;
@@ -277,7 +287,7 @@ function Validar() {
                       </span>
                       {tg.supertoken && (
                         <span className="rounded-md bg-yellow-400 text-black px-2 py-0.5 font-bold text-xs flex items-center gap-1">
-                          <Crown className="size-3" /> + $6,000 USD Cash Extra
+                          <Crown className="size-3" /> + ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash Extra
                         </span>
                       )}
                     </div>
@@ -572,7 +582,7 @@ function Validar() {
                         </h2>
                         {o.supertoken && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-500">
-                            <Crown className="size-3" /> SuperToken ($6,000 USD)
+                            <Crown className="size-3" /> SuperToken (+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD)
                           </span>
                         )}
                       </div>
@@ -667,7 +677,7 @@ function Validar() {
                   <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 p-3 text-xs text-amber-300 shadow-sm">
                     <Crown className="size-4 text-amber-400 shrink-0" />
                     <span>
-                      <strong className="text-amber-200">SuperToken Activo:</strong> Califica para el 1° Lugar + <strong className="text-yellow-300">$6,000 USD en Efectivo</strong>.
+                      <strong className="text-amber-200">SuperToken Activo:</strong> Califica para el 1° Lugar + <strong className="text-yellow-300">${(config.supertokenPremioUsd || 6000).toLocaleString()} USD en Efectivo</strong>.
                     </span>
                   </div>
                 )}

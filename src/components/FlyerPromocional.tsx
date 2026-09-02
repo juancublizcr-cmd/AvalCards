@@ -114,7 +114,7 @@ export function FlyerPromocional({
               <Key className="size-3.5 text-primary" /> 0KM · Año 2026
             </div>
             <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-lg bg-amber-500 text-black px-3 py-1 text-[11px] font-black uppercase shadow-lg">
-              <Crown className="size-3.5" /> +$6,000 USD Bono
+              <Crown className="size-3.5" /> +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Bono
             </div>
           </div>
         </div>
