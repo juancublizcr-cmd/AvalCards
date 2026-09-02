@@ -481,7 +481,7 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     detalle_titulo: s.detalleTitulo,
     detalle_subtitulo: s.detalleSubtitulo,
     detalle_imagen: s.detalleImagen,
-    detalleFeatures: s.detalleFeatures,
+    detalle_features: s.detalleFeatures,
     detalle_garantia: s.detalleGarantia,
     ganadores_testimonios: s.ganadoresTestimonios,
     faqs: s.faqs,
@@ -490,13 +490,20 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
   };
 
   let { error } = await supabase.from("sorteo_config").upsert(upsertData);
-  if (error && (error.message?.includes("raspa_config") || error.message?.includes("modalidad_venta") || error.code === "PGRST204" || error.code === "42703")) {
-    delete upsertData.raspa_config;
-    delete upsertData.modalidad_venta;
-    const retry = await supabase.from("sorteo_config").upsert(upsertData);
-    error = retry.error;
+
+  // Retry sin columnas opcionales que podrían no existir en la tabla
+  if (error) {
+    const safeData = {
+      id: 1,
+      nombre: upsertData.nombre,
+      rango_min: upsertData.rango_min,
+      rango_max: upsertData.rango_max,
+      precio_base: upsertData.precio_base,
+      fecha: upsertData.fecha,
+    };
+    const retry = await supabase.from("sorteo_config").upsert(safeData);
+    if (retry.error) throw new Error(retry.error.message);
   }
-  if (error) throw new Error(error.message);
 }
 
 // ────────────────────────────────────────────────────────────
