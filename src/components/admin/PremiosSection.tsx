@@ -576,13 +576,21 @@ export function PremiosSection({
               )}
 
               {p.imagen ? (
-                <img
-                  src={p.imagen}
-                  alt={p.nombre}
-                  className="mb-3 h-40 w-full rounded-lg object-cover border"
-                />
+                <div className="relative mb-3 h-44 w-full rounded-lg overflow-hidden bg-neutral-950/80 border border-border/60 flex items-center justify-center">
+                  <img
+                    src={p.imagen}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover blur-md opacity-25 scale-110 pointer-events-none"
+                  />
+                  <img
+                    src={p.imagen}
+                    alt={p.nombre}
+                    className="relative z-0 max-h-40 max-w-full w-auto h-auto object-contain p-1.5 drop-shadow"
+                  />
+                </div>
               ) : (
-                <div className="mb-3 flex h-40 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+                <div className="mb-3 flex h-44 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
                   Sin imagen
                 </div>
               )}

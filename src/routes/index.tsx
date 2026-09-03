@@ -521,8 +521,8 @@ function IndexPage() {
 
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {premios.map((p, idx) => {
-                const isMayor = p.nivel === "Premio Mayor" || idx === 0;
-                const isSegundo = p.nivel === "Segundo Premio" || idx === 1;
+                const isMayor = p.nivel === "Premio Mayor" || (idx === 0 && !premios.some(x => x.nivel === "Premio Mayor"));
+                const isSegundo = p.nivel === "Segundo Premio" || (idx === 1 && !premios.some(x => x.nivel === "Segundo Premio"));
                 const tagLugar = isMayor ? "1° Lugar" : isSegundo ? "2° Lugar" : "3° Lugar";
                 const defaultImg = isMayor ? pradoImg : isSegundo ? motoImg : consolaImg;
 
@@ -530,7 +530,7 @@ function IndexPage() {
                   <div
                     key={p.id || idx}
                     className={`rounded-2xl border bg-card p-4 shadow-[var(--shadow-card)] relative overflow-hidden flex flex-col justify-between ${
-                      isMayor ? "border-primary/50" : "border-border"
+                      isMayor ? "border-amber-500/50 bg-gradient-to-b from-amber-500/5 to-card" : "border-border"
                     }`}
                   >
                     <div className="absolute top-4 right-4 flex gap-1.5 z-10">
@@ -542,7 +542,9 @@ function IndexPage() {
                       <span
                         className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase ${
                           isMayor
-                            ? "bg-primary/20 text-primary border border-primary/40"
+                            ? "bg-amber-500 text-black border border-amber-400"
+                            : isSegundo
+                            ? "bg-slate-500/20 text-slate-300 border border-slate-500/40"
                             : "bg-secondary text-muted-foreground border border-border"
                         }`}
                       >
@@ -550,11 +552,20 @@ function IndexPage() {
                       </span>
                     </div>
 
-                    <img
-                      src={p.imagen || defaultImg}
-                      alt={p.nombre}
-                      className="rounded-xl h-48 w-full object-cover"
-                    />
+                    {/* Contenedor adaptativo para que la imagen se amolde al 100% sin recortarse */}
+                    <div className="relative h-56 w-full rounded-xl overflow-hidden bg-neutral-950/80 border border-border/50 flex items-center justify-center group">
+                      <img
+                        src={p.imagen || defaultImg}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover blur-lg opacity-25 scale-110 pointer-events-none"
+                      />
+                      <img
+                        src={p.imagen || defaultImg}
+                        alt={p.nombre}
+                        className="relative z-0 max-h-52 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
 
                     <div className="mt-4">
                       <h3 className="font-bold text-xl">{p.nombre}</h3>
@@ -567,7 +578,7 @@ function IndexPage() {
                       </p>
                       {isMayor && (
                         <p className="text-xs font-semibold text-amber-500 mt-1 flex items-center gap-1">
-                          <Crown className="size-3.5" /> Opción SuperToken: ¡${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash extra!
+                          <Crown className="size-3.5" /> Opción SuperToken: ¡+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash extra!
                         </p>
                       )}
                     </div>
@@ -772,11 +783,17 @@ function IndexPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-2xl border border-border shadow-lg">
+              <div className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group">
+                <img
+                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-25 scale-110 pointer-events-none"
+                />
                 <img
                   src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
                   alt={sorteo.detalleTitulo || "Entrega Detallada"}
-                  className="w-full h-80 object-cover"
+                  className="relative z-0 max-h-76 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
                 />
               </div>
               <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 to-transparent p-6">
