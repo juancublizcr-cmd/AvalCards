@@ -222,3 +222,14 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 2. **Persistencia Definitiva de Ficha Técnica y Características:**
    - Se eliminó el campo inexistente `modalidad_venta` del payload directo de `sorteo_config`, el cual provocaba el error `PGRST204` en Supabase y activaba un fallback que omitía los campos `detalle_*`.
    - Todos los campos de Ficha Técnica (`detalle_titulo`, `detalle_subtitulo`, `detalle_imagen`, `detalle_features`, `detalle_garantia`) se guardan y leen directamente en Supabase y se respaldan en `localStorage`, evitando que se restablezcan a valores anteriores al recargar la página.
+
+---
+
+## 🚀 Hito 16: Adaptación y Encuadre Óptimo de Imágenes de Premios y Showcase
+
+1. **Hero Showcase de Alto Impacto Sin Recortes:**
+   - Reemplazo de recorte forzado (`object-cover`) por contenedor adaptativo con `object-contain`, fondo ambiental difuminado (`blur-2xl opacity-20`) y sombras de profundidad (`drop-shadow`).
+   - El vehículo o entrega principal se visualiza en su totalidad al 100% (llantas, cúpula, retrovisores, alerones) sin cortes de encuadre.
+
+2. **Cuadrícula de Entregas y Ficha Técnica Detallada:**
+   - Las 3 tarjetas de premios (Premio Mayor, Segundo y Tercer Premio) y la sección de Ficha Técnica integran contenedores fluidos que amoldan consolas (PlayStation 5), motocicletas y vehículos con proporciones reales, eliminando bordes toscos o ampliaciones artificiales.
