@@ -233,3 +233,14 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 2. **Cuadrícula de Entregas y Ficha Técnica Detallada:**
    - Las 3 tarjetas de premios (Premio Mayor, Segundo y Tercer Premio) y la sección de Ficha Técnica integran contenedores fluidos que amoldan consolas (PlayStation 5), motocicletas y vehículos con proporciones reales, eliminando bordes toscos o ampliaciones artificiales.
+
+---
+
+## 🚀 Hito 17: Visor Lightbox y Zoom en Pantalla Completa para Fotografías de Premios
+
+1. **Ampliación Interactiva con 1 Clic (Modal Lightbox Ultra-HD):**
+   - Se implementó un visor modal a pantalla completa con soporte táctil, teclado (ESC) y cierre por clic exterior.
+   - Al hacer clic en la fotografía principal del Hero Showcase, en cualquiera de las 3 tarjetas de entregas destacadas o en la Ficha Técnica, la imagen se abre en gran formato sin recortes, acompañada de su título oficial y badge de posición (1° Lugar, 2° Lugar, etc.).
+
+2. **Indicadores de Interacción y Usabilidad Visual:**
+   - Se integró cursor de lupa (`cursor-zoom-in`) y badges dinámicos con icono de zoom (`🔍 Clic para ampliar`) al pasar el cursor sobre las fotos para guiar al usuario.

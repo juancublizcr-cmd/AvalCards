@@ -13,12 +13,20 @@ import {
   Gauge,
   Gift,
   Key,
+  Maximize2,
   ShieldCheck,
   Sparkles,
   Star,
   Timer,
+  ZoomIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { StickersModal, type Paquete } from "@/components/StickersModal";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
 import { GanadoresSection } from "@/components/GanadoresSection";
@@ -157,6 +165,7 @@ function IndexPage() {
     return 87;
   });
   const [openRaspa, setOpenRaspa] = useState(false);
+  const [fotoZoom, setFotoZoom] = useState<{ url: string; titulo: string; nivel?: string } | null>(null);
 
   const t = useCuentaRegresiva(fechaSorteo);
 
@@ -392,34 +401,48 @@ function IndexPage() {
                 : config.promoSubtitulo || "Estamos afinando los últimos detalles. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!"}
             </p>
 
-            {/* Imagen Principal Showcase con Badges Flotantes */}
-            <div className="relative mx-auto mt-12 max-w-5xl group">
-              <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-neutral-950 p-2 sm:p-4 shadow-[var(--shadow-card)] transition-transform duration-500 group-hover:scale-[1.01] relative min-h-[340px] sm:min-h-[480px] flex items-center justify-center">
+            {/* Imagen Principal Showcase con Badges Flotantes y Clic para Ampliar */}
+            <div
+              className="relative mx-auto mt-12 max-w-5xl group cursor-zoom-in"
+              onClick={() =>
+                setFotoZoom({
+                  url: premios[0]?.imagen || pradoImg,
+                  titulo: premios[0]?.nombre || "Gran Entrega 2026",
+                  nivel: "1° Lugar · Premio Mayor",
+                })
+              }
+            >
+              <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-neutral-950 p-2 sm:p-4 shadow-[var(--shadow-card)] transition-all duration-500 group-hover:scale-[1.01] group-hover:border-primary/70 relative min-h-[340px] sm:min-h-[480px] flex items-center justify-center">
                 {/* Fondo difuminado para rellenar los bordes con los tonos reales de la foto */}
                 <img
                   src={premios[0]?.imagen || pradoImg}
                   alt=""
                   aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none"
+                  className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
                 />
                 {/* Vehículo completo que se amolda al 100% sin recortarse */}
                 <img
                   src={premios[0]?.imagen || pradoImg}
                   alt={premios[0]?.nombre || "Gran Entrega 2026"}
-                  className="relative z-0 max-h-[460px] sm:max-h-[520px] max-w-full w-auto h-auto object-contain mx-auto rounded-2xl brightness-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+                  className="relative z-0 max-h-[460px] sm:max-h-[520px] max-w-full w-auto h-auto object-contain mx-auto rounded-2xl brightness-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105"
                 />
+
+                {/* Botón flotante para indicar que se puede ampliar */}
+                <div className="absolute bottom-4 left-6 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-lg transition-transform duration-300 group-hover:scale-105">
+                  <ZoomIn className="size-3.5 text-amber-400" /> Clic para ampliar en grande
+                </div>
               </div>
 
               {/* Badges Flotantes de Lujo */}
-              <div className="absolute -top-4 left-6 hidden sm:flex items-center gap-2 rounded-xl border border-primary/40 bg-card/90 px-4 py-2 text-xs font-bold text-foreground backdrop-blur shadow-lg">
+              <div className="absolute -top-4 left-6 hidden sm:flex items-center gap-2 rounded-xl border border-primary/40 bg-card/90 px-4 py-2 text-xs font-bold text-foreground backdrop-blur shadow-lg pointer-events-none">
                 <Key className="size-4 text-primary" /> 0 Kilómetros · Año 2026
               </div>
 
-              <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg">
+              <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg pointer-events-none">
                 <Crown className="size-4 text-amber-500" /> Bono ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD con SuperToken
               </div>
 
-              <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg">
+              <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg pointer-events-none">
                 <ShieldCheck className="size-4 text-success" /> Traspaso y Marchamo Incluidos
               </div>
             </div>
@@ -563,14 +586,26 @@ function IndexPage() {
                       </span>
                     </div>
 
-                    {/* Foto que llena de forma atractiva la parte superior de la tarjeta */}
-                    <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900">
+                    {/* Foto que llena de forma atractiva la parte superior de la tarjeta con Clic para Ampliar */}
+                    <div
+                      className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
+                      onClick={() =>
+                        setFotoZoom({
+                          url: p.imagen || defaultImg,
+                          titulo: p.nombre,
+                          nivel: tagLugar,
+                        })
+                      }
+                    >
                       <img
                         src={p.imagen || defaultImg}
                         alt={p.nombre}
-                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105 brightness-[1.02]"
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
+                      <div className="absolute bottom-2.5 right-3 opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1 backdrop-blur shadow-md">
+                        <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
+                      </div>
                     </div>
 
                     <div className="p-5 flex-1 flex flex-col justify-between">
@@ -793,7 +828,16 @@ function IndexPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group">
+              <div
+                className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group cursor-zoom-in"
+                onClick={() =>
+                  setFotoZoom({
+                    url: sorteo.detalleImagen || premios[0]?.imagen || pradoImg,
+                    titulo: sorteo.detalleTitulo || "Entrega Detallada",
+                    nivel: "Ficha Técnica",
+                  })
+                }
+              >
                 <img
                   src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
                   alt=""
@@ -805,6 +849,9 @@ function IndexPage() {
                   alt={sorteo.detalleTitulo || "Entrega Detallada"}
                   className="relative z-0 max-h-76 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
                 />
+                <div className="absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3 py-1 text-[11px] font-semibold text-zinc-300 border border-white/15 backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
+                </div>
               </div>
               <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 to-transparent p-6">
                 <h4 className="font-bold text-base text-primary flex items-center gap-2">
@@ -858,6 +905,41 @@ function IndexPage() {
         onOpenChange={setOpenRaspa}
         config={sorteo.raspaConfig}
       />
+
+      {/* MODAL LIGHTBOX / ZOOM DE FOTO EN PANTALLA COMPLETA */}
+      <Dialog open={!!fotoZoom} onOpenChange={(v) => { if (!v) setFotoZoom(null); }}>
+        <DialogContent className="max-w-5xl w-[95vw] border border-amber-500/40 bg-zinc-950/95 p-3 sm:p-5 shadow-[0_0_80px_rgba(0,0,0,0.95)] backdrop-blur-2xl text-foreground">
+          <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/50 text-left">
+            <div>
+              {fotoZoom?.nivel && (
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/40">
+                  {fotoZoom.nivel}
+                </span>
+              )}
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground mt-1">
+                {fotoZoom?.titulo}
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+
+          <div className="relative mt-2 flex items-center justify-center min-h-[50vh] max-h-[75vh] w-full overflow-hidden rounded-xl bg-black/80 p-2">
+            <img
+              src={fotoZoom?.url}
+              alt={fotoZoom?.titulo}
+              className="max-h-[72vh] max-w-full w-auto h-auto object-contain rounded-lg drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+            />
+          </div>
+
+          <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+            <span className="text-amber-500/90 font-medium flex items-center gap-1.5">
+              <Sparkles className="size-3.5 text-amber-400" /> Aval Community CR · Entrega Oficial Certificada
+            </span>
+            <span className="text-[11px] text-zinc-400 hidden sm:inline">
+              Presiona ESC o haz clic afuera para cerrar
+            </span>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
