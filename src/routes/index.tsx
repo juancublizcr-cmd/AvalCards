@@ -537,55 +537,57 @@ function IndexPage() {
                 return (
                   <div
                     key={p.id || idx}
-                    className={`rounded-2xl border bg-card p-4 shadow-[var(--shadow-card)] relative overflow-hidden flex flex-col justify-between ${
-                      isMayor ? "border-amber-500/50 bg-gradient-to-b from-amber-500/5 to-card" : "border-border"
+                    className={`group rounded-2xl border bg-card overflow-hidden shadow-[var(--shadow-card)] relative flex flex-col justify-between transition-all duration-300 hover:border-primary/40 hover:shadow-xl ${
+                      isMayor
+                        ? "border-amber-500/50 shadow-[0_0_25px_rgba(245,158,11,0.12)]"
+                        : "border-border"
                     }`}
                   >
-                    <div className="absolute top-4 right-4 flex gap-1.5 z-10">
+                    {/* Badges Flotantes de Posición y SuperToken */}
+                    <div className="absolute top-3 right-3 flex gap-1.5 z-10">
                       {isMayor && (
-                        <span className="rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold uppercase flex items-center gap-1">
-                          <Crown className="size-3" /> +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD
+                        <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                          <Crown className="size-3 text-amber-400" /> +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD
                         </span>
                       )}
                       <span
-                        className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase ${
+                        className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase backdrop-blur shadow-md ${
                           isMayor
                             ? "bg-amber-500 text-black border border-amber-400"
                             : isSegundo
-                            ? "bg-slate-500/20 text-slate-300 border border-slate-500/40"
-                            : "bg-secondary text-muted-foreground border border-border"
+                            ? "bg-black/80 text-slate-200 border border-slate-500/60"
+                            : "bg-black/80 text-zinc-300 border border-white/20"
                         }`}
                       >
                         {tagLugar}
                       </span>
                     </div>
 
-                    {/* Contenedor adaptativo para que la imagen se amolde al 100% sin recortarse */}
-                    <div className="relative h-56 w-full rounded-xl overflow-hidden bg-neutral-950/80 border border-border/50 flex items-center justify-center group">
-                      <img
-                        src={p.imagen || defaultImg}
-                        alt=""
-                        aria-hidden="true"
-                        className="absolute inset-0 w-full h-full object-cover blur-lg opacity-25 scale-110 pointer-events-none"
-                      />
+                    {/* Foto que llena de forma atractiva la parte superior de la tarjeta */}
+                    <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900">
                       <img
                         src={p.imagen || defaultImg}
                         alt={p.nombre}
-                        className="relative z-0 max-h-52 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105 brightness-[1.02]"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
                     </div>
 
-                    <div className="mt-4">
-                      <h3 className="font-bold text-xl">{p.nombre}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {isMayor
-                          ? "Vehículo 0 KM con traspaso y marchamo incluidos."
-                          : isSegundo
-                          ? "Deportiva para dominar la calle y la pista con estilo."
-                          : "Consola de última generación con controles y juegos incluidos."}
-                      </p>
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-bold text-xl leading-snug group-hover:text-primary transition-colors">
+                          {p.nombre}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                          {isMayor
+                            ? "Vehículo 0 KM con traspaso y marchamo incluidos."
+                            : isSegundo
+                            ? "Deportiva para dominar la calle y la pista con estilo."
+                            : "Consola de última generación con controles y juegos incluidos."}
+                        </p>
+                      </div>
                       {isMayor && (
-                        <p className="text-xs font-semibold text-amber-500 mt-1 flex items-center gap-1">
+                        <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
                           <Crown className="size-3.5" /> Opción SuperToken: ¡+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash extra!
                         </p>
                       )}
