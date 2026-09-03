@@ -394,11 +394,19 @@ function IndexPage() {
 
             {/* Imagen Principal Showcase con Badges Flotantes */}
             <div className="relative mx-auto mt-12 max-w-5xl group">
-              <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-b from-card to-background p-2 shadow-[var(--shadow-card)] transition-transform duration-500 group-hover:scale-[1.01]">
+              <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-neutral-950 p-2 sm:p-4 shadow-[var(--shadow-card)] transition-transform duration-500 group-hover:scale-[1.01] relative min-h-[340px] sm:min-h-[480px] flex items-center justify-center">
+                {/* Fondo difuminado para rellenar los bordes con los tonos reales de la foto */}
+                <img
+                  src={premios[0]?.imagen || pradoImg}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none"
+                />
+                {/* Vehículo completo que se amolda al 100% sin recortarse */}
                 <img
                   src={premios[0]?.imagen || pradoImg}
                   alt={premios[0]?.nombre || "Gran Entrega 2026"}
-                  className="w-full rounded-2xl object-cover max-h-[520px] brightness-105"
+                  className="relative z-0 max-h-[460px] sm:max-h-[520px] max-w-full w-auto h-auto object-contain mx-auto rounded-2xl brightness-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
                 />
               </div>
 
