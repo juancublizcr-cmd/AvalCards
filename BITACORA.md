@@ -208,3 +208,17 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 2. **Eliminación Total de Fallbacks Estáticos:**
    - Removidos todos los fallbacks numéricos residuales (`5000`, `1000`) en `PremiosSection.tsx`, `admin-store.ts` y `src/routes/index.tsx`.
    - Priorización directa de la base de datos Supabase sobre el almacenamiento local, garantizando que los cambios de precio en el panel de administración se reflejen de inmediato en toda la aplicación.
+
+---
+
+## 🚀 Hito 15: Reordenamiento Automático de Premios y Persistencia Definitiva de Ficha Técnica
+
+1. **Reordenamiento Automático e Inmediato de Premios por Nivel:**
+   - Al asignar "Premio Mayor" a cualquier entrega, el sistema reubica automáticamente dicho premio en la **Posición #1** (`orden: 1`), realizando un intercambio (*swap*) ordenado con el premio anterior sin duplicar niveles.
+   - "Segundo Premio" se ubica en **Posición #2** (`orden: 2`) y "Tercer Premio" en **Posición #3** (`orden: 3`).
+   - Se agregaron badges visuales distintivos (`👑 1° Lugar · Premio Mayor`, `🥈 2° Lugar · Segundo Premio`, `🥉 3° Lugar · Tercer Premio`) en las tarjetas del panel administrativo.
+   - La función `fetchPremios()` y `upsertPremios()` garantizan un ordenamiento determinista estricto tanto en Supabase como en la landing page.
+
+2. **Persistencia Definitiva de Ficha Técnica y Características:**
+   - Se eliminó el campo inexistente `modalidad_venta` del payload directo de `sorteo_config`, el cual provocaba el error `PGRST204` en Supabase y activaba un fallback que omitía los campos `detalle_*`.
+   - Todos los campos de Ficha Técnica (`detalle_titulo`, `detalle_subtitulo`, `detalle_imagen`, `detalle_features`, `detalle_garantia`) se guardan y leen directamente en Supabase y se respaldan en `localStorage`, evitando que se restablezcan a valores anteriores al recargar la página.

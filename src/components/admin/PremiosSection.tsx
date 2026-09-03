@@ -96,6 +96,12 @@ export function PremiosSection({
   const [guardandoGanadores, setGuardandoGanadores] = useState(false);
   const [guardandoFaqs, setGuardandoFaqs] = useState(false);
 
+  const NIVEL_ORDEN: Record<Nivel, number> = {
+    "Premio Mayor": 1,
+    "Segundo Premio": 2,
+    "Tercer Premio": 3,
+  };
+
   const actualizar = async (id: string, cambios: Partial<Premio>) => {
     const next = premios.map((p) => (p.id === id ? { ...p, ...cambios } : p));
     setPremios(next);
@@ -107,12 +113,61 @@ export function PremiosSection({
     }
   };
 
+  const cambiarNivel = async (id: string, nuevoNivel: Nivel) => {
+    const actual = premios.find((p) => p.id === id);
+    if (!actual) return;
+
+    const nivelAnterior = actual.nivel;
+
+    // Si ya tiene ese nivel, no hacer nada
+    if (nivelAnterior === nuevoNivel) return;
+
+    // 1. Intercambiar nivel con el premio que ya lo tenía (para que no queden duplicados)
+    const premiosConNivel = premios.map((p) => {
+      if (p.id === id) {
+        return { ...p, nivel: nuevoNivel };
+      }
+      if (p.nivel === nuevoNivel) {
+        return { ...p, nivel: nivelAnterior };
+      }
+      return p;
+    });
+
+    // 2. Reordenar automáticamente: Premio Mayor (1°), Segundo Premio (2°), Tercer Premio (3°)
+    const reordenados = [...premiosConNivel]
+      .map((p) => ({
+        ...p,
+        orden: NIVEL_ORDEN[p.nivel] ?? 99,
+      }))
+      .sort((a, b) => (NIVEL_ORDEN[a.nivel] ?? 99) - (NIVEL_ORDEN[b.nivel] ?? 99));
+
+    setPremios(reordenados);
+
+    try {
+      await upsertPremios(reordenados);
+      toast.success(`¡Posición actualizada automáticamente!`, {
+        description: `${reordenados[0]?.nombre || "El premio"} ahora está de 1° como Premio Mayor.`,
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al guardar reordenamiento de premios");
+    }
+  };
+
   const guardarTodosLosPremios = async () => {
     setGuardandoPremios(true);
     try {
-      await upsertPremios(premios);
+      const reordenados = [...premios]
+        .map((p) => ({
+          ...p,
+          orden: NIVEL_ORDEN[p.nivel] ?? 99,
+        }))
+        .sort((a, b) => (NIVEL_ORDEN[a.nivel] ?? 99) - (NIVEL_ORDEN[b.nivel] ?? 99));
+
+      setPremios(reordenados);
+      await upsertPremios(reordenados);
       toast.success("¡Cambios guardados perfectamente!", {
-        description: "Los vehículos, nombres y fotos quedaron 100% actualizados en la web.",
+        description: "Los vehículos, posiciones y fotos quedaron 100% actualizados en la web.",
       });
     } catch (err) {
       console.error(err);
@@ -494,7 +549,32 @@ export function PremiosSection({
 
         <div className="mt-4 grid gap-4 lg:grid-cols-3">
           {premios.map((p) => (
-            <div key={p.id} className="rounded-xl border border-border bg-secondary/30 p-4">
+            <div key={p.id} className="rounded-xl border border-border bg-secondary/30 p-4 relative">
+              {p.nivel === "Premio Mayor" && (
+                <div className="mb-2.5 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 text-xs font-bold text-amber-400">
+                    👑 1° Lugar · Premio Mayor
+                  </span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400/80">Principal</span>
+                </div>
+              )}
+              {p.nivel === "Segundo Premio" && (
+                <div className="mb-2.5 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 border border-slate-500/40 px-2.5 py-0.5 text-xs font-bold text-slate-300">
+                    🥈 2° Lugar · Segundo Premio
+                  </span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Posición #2</span>
+                </div>
+              )}
+              {p.nivel === "Tercer Premio" && (
+                <div className="mb-2.5 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 border border-orange-500/40 px-2.5 py-0.5 text-xs font-bold text-orange-400">
+                    🥉 3° Lugar · Tercer Premio
+                  </span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Posición #3</span>
+                </div>
+              )}
+
               {p.imagen ? (
                 <img
                   src={p.imagen}
@@ -518,7 +598,7 @@ export function PremiosSection({
                   <Label>Posición / Nivel</Label>
                   <Select
                     value={p.nivel}
-                    onValueChange={(v) => { void actualizar(p.id, { nivel: v as Nivel }); }}
+                    onValueChange={(v) => { void cambiarNivel(p.id, v as Nivel); }}
                   >
                     <SelectTrigger>
                       <SelectValue />

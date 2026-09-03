@@ -343,28 +343,52 @@ export const CONFIG_DEFAULT: Config = {
 // ────────────────────────────────────────────────────────────
 
 export async function fetchPremios(): Promise<Premio[]> {
+  const NIVEL_ORDEN: Record<string, number> = {
+    "Premio Mayor": 1,
+    "Segundo Premio": 2,
+    "Tercer Premio": 3,
+  };
+
   try {
     const { data, error } = await supabase
       .from("premios")
-      .select("*")
-      .order("orden", { ascending: true });
+      .select("*");
     if (error || !data || data.length === 0) {
       return PREMIOS_DEFAULT;
     }
-    // Si algún premio en DB no tiene URL de imagen aún, asignar asset default
-    return data.map((p, idx) => ({
+
+    // Ordenar de forma determinista: Premio Mayor (1), Segundo Premio (2), Tercer Premio (3)
+    const ordenados = (data as Premio[]).sort((a, b) => {
+      const ordA = NIVEL_ORDEN[a.nivel] ?? a.orden ?? 99;
+      const ordB = NIVEL_ORDEN[b.nivel] ?? b.orden ?? 99;
+      return ordA - ordB;
+    });
+
+    return ordenados.map((p, idx) => ({
       ...p,
+      orden: NIVEL_ORDEN[p.nivel] ?? idx + 1,
       imagen: p.imagen || PREMIOS_DEFAULT[idx % PREMIOS_DEFAULT.length]?.imagen || "",
-    })) as Premio[];
+    }));
   } catch {
     return PREMIOS_DEFAULT;
   }
 }
 
 export async function upsertPremios(premios: Premio[]): Promise<void> {
+  const NIVEL_ORDEN: Record<string, number> = {
+    "Premio Mayor": 1,
+    "Segundo Premio": 2,
+    "Tercer Premio": 3,
+  };
+
+  const normalizados = premios.map((p, idx) => ({
+    ...p,
+    orden: NIVEL_ORDEN[p.nivel] ?? idx + 1,
+  }));
+
   const { error } = await supabase
     .from("premios")
-    .upsert(premios, { onConflict: "id" });
+    .upsert(normalizados, { onConflict: "id" });
   if (error) throw new Error(error.message);
 }
 
@@ -438,20 +462,25 @@ export async function fetchSorteo(): Promise<Sorteo> {
       precioBase: precioBaseFinal,
       fecha: data.fecha ?? "",
       modalidadVenta: modDetectada,
-      detalleTitulo: data.detalle_titulo ?? SORTEO_DEFAULT.detalleTitulo,
-      detalleSubtitulo: data.detalle_subtitulo ?? SORTEO_DEFAULT.detalleSubtitulo,
-      detalleImagen: data.detalle_imagen ?? SORTEO_DEFAULT.detalleImagen,
-      detalleFeatures: (data.detalle_features as FeatureDetalle[]) ?? SORTEO_DEFAULT.detalleFeatures,
-      detalleGarantia: data.detalle_garantia ?? SORTEO_DEFAULT.detalleGarantia,
-      ganadoresTestimonios: (data.ganadores_testimonios as TestimonioGanador[]) ?? SORTEO_DEFAULT.ganadoresTestimonios,
-      faqs: (data.faqs as FaqItem[]) ?? SORTEO_DEFAULT.faqs,
-      raspaConfig: extra.raspaConfig ?? (data.raspa_config as RaspaConfig) ?? SORTEO_DEFAULT.raspaConfig,
+      detalleTitulo: data.detalle_titulo || extra.detalleTitulo || SORTEO_DEFAULT.detalleTitulo,
+      detalleSubtitulo: data.detalle_subtitulo || extra.detalleSubtitulo || SORTEO_DEFAULT.detalleSubtitulo,
+      detalleImagen: data.detalle_imagen || extra.detalleImagen || SORTEO_DEFAULT.detalleImagen,
+      detalleFeatures: (data.detalle_features as FeatureDetalle[]) || extra.detalleFeatures || SORTEO_DEFAULT.detalleFeatures,
+      detalleGarantia: data.detalle_garantia || extra.detalleGarantia || SORTEO_DEFAULT.detalleGarantia,
+      ganadoresTestimonios: (data.ganadores_testimonios as TestimonioGanador[]) || SORTEO_DEFAULT.ganadoresTestimonios,
+      faqs: (data.faqs as FaqItem[]) || SORTEO_DEFAULT.faqs,
+      raspaConfig: (data.raspa_config as RaspaConfig) || extra.raspaConfig || SORTEO_DEFAULT.raspaConfig,
     };
   } catch {
     return {
       ...SORTEO_DEFAULT,
       precioBase: extra.precioBase ?? SORTEO_DEFAULT.precioBase,
       modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
+      detalleTitulo: extra.detalleTitulo ?? SORTEO_DEFAULT.detalleTitulo,
+      detalleSubtitulo: extra.detalleSubtitulo ?? SORTEO_DEFAULT.detalleSubtitulo,
+      detalleImagen: extra.detalleImagen ?? SORTEO_DEFAULT.detalleImagen,
+      detalleFeatures: extra.detalleFeatures ?? SORTEO_DEFAULT.detalleFeatures,
+      detalleGarantia: extra.detalleGarantia ?? SORTEO_DEFAULT.detalleGarantia,
       raspaConfig: extra.raspaConfig ?? SORTEO_DEFAULT.raspaConfig,
     };
   }
@@ -464,6 +493,11 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
         precioBase: Number(s.precioBase) || 2500,
         raspaConfig: s.raspaConfig,
         modalidadVenta: s.modalidadVenta,
+        detalleTitulo: s.detalleTitulo,
+        detalleSubtitulo: s.detalleSubtitulo,
+        detalleImagen: s.detalleImagen,
+        detalleFeatures: s.detalleFeatures,
+        detalleGarantia: s.detalleGarantia,
       }));
     } catch {}
   }
@@ -486,23 +520,12 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     ganadores_testimonios: s.ganadoresTestimonios,
     faqs: s.faqs,
     raspa_config: s.raspaConfig,
-    modalidad_venta: s.modalidadVenta,
   };
 
-  let { error } = await supabase.from("sorteo_config").upsert(upsertData);
-
-  // Retry sin columnas opcionales que podrían no existir en la tabla
+  const { error } = await supabase.from("sorteo_config").upsert(upsertData);
   if (error) {
-    const safeData = {
-      id: 1,
-      nombre: upsertData.nombre,
-      rango_min: upsertData.rango_min,
-      rango_max: upsertData.rango_max,
-      precio_base: upsertData.precio_base,
-      fecha: upsertData.fecha,
-    };
-    const retry = await supabase.from("sorteo_config").upsert(safeData);
-    if (retry.error) throw new Error(retry.error.message);
+    console.error("Error al guardar sorteo_config en Supabase:", error);
+    throw new Error(error.message);
   }
 }
 
