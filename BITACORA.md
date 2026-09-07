@@ -244,3 +244,16 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 2. **Indicadores de Interacción y Usabilidad Visual:**
    - Se integró cursor de lupa (`cursor-zoom-in`) y badges dinámicos con icono de zoom (`🔍 Clic para ampliar`) al pasar el cursor sobre las fotos para guiar al usuario.
+
+---
+
+## 🚀 Hito 18: Triple Modalidad de Venta en Admin y Destacado del Paquete Más Vendido (₡8 000)
+
+1. **Selector de 3 Modalidades Oficiales en el Panel de Administración:**
+   - **Modalidad 1 (Estándar ₡1 000/token):** 4 Tokens (₡4 000), 8 Tokens (₡8 000 - Más Popular), 12 Tokens (₡12 000) y 24 Tokens (₡24 000) con montos redondos limpios sin decimales.
+   - **Modalidad 2 (Múltiplos de 3 - Competencia PRO):** Cuadrícula de 8 paquetes desde 3 hasta 24 stickers (3 por ₡4 000, 6 por ₡8 000 [EL MEJOR / MÁS VENDIDO], 9 por ₡12 000, etc.).
+   - **Modalidad 3 (Paquete Único Promo Flash):** Venta directa de 1 solo paquete promocional cerrado de 3 tokens por el precio base elegido.
+
+2. **Destacado Superior en el Hero y Coherencia de Precios:**
+   - Se añadió badge dinámico superior en el Hero: `🔥 Más Popular: 6 Tokens por ₡8 000` (o `8 Tokens por ₡8 000` según modalidad activa).
+   - El título principal ahora anuncia el precio de entrada real `desde solo ₡4 000` (o ₡1 000 en estándar), eliminando completamente montos quebrados como `₡1 333` o `₡5 332`.

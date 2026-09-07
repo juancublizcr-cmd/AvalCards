@@ -133,15 +133,38 @@ function formatearFechaLarga(fechaStr: string) {
 }
 
 function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
-  const base = Number(sorteoActual.precioBase) || 2500;
-  if (sorteoActual.modalidadVenta === "fijo_3x5000") {
-    return [{ cantidad: 3, precio: base }];
+  const mod = sorteoActual.modalidadVenta || "escalonado";
+
+  if (mod === "fijo_3x5000") {
+    const precio = Number(sorteoActual.precioBase) >= 2000 ? Number(sorteoActual.precioBase) : 4000;
+    return [{ cantidad: 3, precio }];
   }
+
+  if (mod === "multiplos_3") {
+    // Si el admin puso un monto >= 2500, se usa ese como base para cada 3 tokens; sino el estándar ₡4.000
+    const baseTrio = Number(sorteoActual.precioBase) >= 2500 ? Number(sorteoActual.precioBase) : 4000;
+    return [
+      { cantidad: 3, precio: baseTrio, popular: false },
+      { cantidad: 6, precio: baseTrio * 2, popular: true, tag: "EL MEJOR · MÁS VENDIDO" },
+      { cantidad: 9, precio: baseTrio * 3, popular: false },
+      { cantidad: 12, precio: baseTrio * 4, popular: false },
+      { cantidad: 15, precio: baseTrio * 5, popular: false },
+      { cantidad: 18, precio: baseTrio * 6, popular: false },
+      { cantidad: 21, precio: baseTrio * 7, popular: false },
+      { cantidad: 24, precio: baseTrio * 8, popular: false },
+    ];
+  }
+
+  // "escalonado" clásico (₡1 000 por token estándar)
+  const baseToken = Number(sorteoActual.precioBase) > 0 && Number(sorteoActual.precioBase) <= 2500
+    ? Number(sorteoActual.precioBase)
+    : 1000;
+
   return [
-    { cantidad: 4, precio: base * 4 },
-    { cantidad: 8, precio: base * 8 },
-    { cantidad: 12, precio: base * 12 },
-    { cantidad: 24, precio: base * 24 },
+    { cantidad: 4, precio: baseToken * 4, popular: false },
+    { cantidad: 8, precio: baseToken * 8, popular: true, tag: "MÁS POPULAR" },
+    { cantidad: 12, precio: baseToken * 12, popular: false },
+    { cantidad: 24, precio: baseToken * 24, popular: false },
   ];
 }
 
@@ -381,18 +404,27 @@ function IndexPage() {
           <div className="pointer-events-none absolute top-1/3 right-0 size-[25rem] rounded-full bg-amber-500/10 blur-[120px]" />
 
           <div className="relative mx-auto max-w-6xl px-5 text-center">
+            {/* Badges de Conversión en el Hero */}
             <div className="flex flex-wrap items-center justify-center gap-2">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
                 <Sparkles className="size-3.5" />{" "}
                 {config.ventasActivas ? "Evento Promocional Oficial Costa Rica" : "🔥 PREVENTA EXCLUSIVA 2026"}
               </div>
+
+              {/* Badge del Paquete Más Popular destacado arriba (₡8 000) */}
+              {paquetes.length > 1 && (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-bold text-amber-400 shadow-md">
+                  <Flame className="size-3.5 text-amber-400" /> Más Popular: {(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡{((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000).toLocaleString("es-CR")}
+                </div>
+              )}
+
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
-                <Crown className="size-3.5" /> SuperToken: +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash si ganas ({premios[0]?.nombre || "1° Lugar"})
+                <Crown className="size-3.5" /> SuperToken: +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash ({premios[0]?.nombre || "1° Lugar"})
               </div>
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> por solo ₡{(sorteo.precioBase || paquetes[0]?.precio || 2500).toLocaleString("es-CR")}?
+              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> desde solo ₡{(paquetes[0]?.precio || 4000).toLocaleString("es-CR")}?
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -710,14 +742,19 @@ function IndexPage() {
           <div className={`mt-12 ${paquetes.length === 1 ? "max-w-md mx-auto" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4"}`}>
             {paquetes.map((p) => {
               const esUnico = paquetes.length === 1;
-              const esPopular = p.cantidad === 12;
+              const esPopular = p.popular || (sorteo.modalidadVenta === "multiplos_3" ? p.cantidad === 6 : p.cantidad === 8);
+              const tagTexto = p.tag || (sorteo.modalidadVenta === "multiplos_3" && p.cantidad === 6 ? "EL MEJOR · MÁS VENDIDO" : "Más popular");
 
               return (
                 <button
                   key={p.cantidad}
                   onClick={() => abrir(p)}
-                  className={`w-full group relative cursor-pointer rounded-2xl border bg-[image:var(--gradient-surface)] p-7 text-left transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-[var(--shadow-fire)] ${
-                    esUnico ? "border-amber-500/60 bg-gradient-to-b from-amber-500/15 via-card to-card shadow-[0_0_40px_rgba(245,158,11,0.2)]" : "border-border"
+                  className={`w-full group relative cursor-pointer rounded-2xl border bg-[image:var(--gradient-surface)] p-6 sm:p-7 text-left transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-[var(--shadow-fire)] ${
+                    esUnico
+                      ? "border-amber-500/60 bg-gradient-to-b from-amber-500/15 via-card to-card shadow-[0_0_40px_rgba(245,158,11,0.2)]"
+                      : esPopular
+                      ? "border-amber-500/80 bg-gradient-to-b from-amber-500/15 via-card to-card shadow-[0_0_30px_rgba(245,158,11,0.25)] ring-1 ring-amber-500/30"
+                      : "border-border"
                   }`}
                 >
                   {esUnico ? (
@@ -725,17 +762,21 @@ function IndexPage() {
                       🔥 Paquete Especial Único {p.cantidad}x₡{p.precio.toLocaleString("es-CR")}
                     </span>
                   ) : esPopular ? (
-                    <span className="absolute -top-3 right-4 rounded-full bg-[image:var(--gradient-fire)] px-3 py-1 text-[11px] font-semibold text-primary-foreground">
-                      Más popular
+                    <span className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1 text-[11px] font-black text-black shadow-md flex items-center gap-1">
+                      <Flame className="size-3 fill-black text-black" /> {tagTexto}
                     </span>
                   ) : null}
 
-                  <div className="font-display text-5xl sm:text-6xl text-primary">{p.cantidad}</div>
-                  <div className="text-sm uppercase tracking-widest text-muted-foreground mt-1">
-                    Tokens Digitales Oficiales
+                  <div className={`font-display text-5xl sm:text-6xl ${esPopular ? "text-amber-400" : "text-primary"}`}>
+                    {p.cantidad}
                   </div>
-                  <div className="mt-4 text-3xl font-bold text-foreground">₡{p.precio.toLocaleString("es-CR")}</div>
-                  <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-primary group-hover:translate-x-0.5 transition-transform">
+                  <div className="text-xs sm:text-sm uppercase tracking-widest text-muted-foreground mt-1">
+                    {sorteo.modalidadVenta === "multiplos_3" ? "Stickers / Tokens" : "Tokens Digitales Oficiales"}
+                  </div>
+                  <div className="mt-4 text-2xl sm:text-3xl font-bold text-foreground">
+                    ₡{p.precio.toLocaleString("es-CR")}
+                  </div>
+                  <div className="mt-6 inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary group-hover:translate-x-0.5 transition-transform">
                     {config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
                   </div>
                 </button>

@@ -36,7 +36,7 @@ import {
 import { calcularGirosPorTokens } from "@/lib/giros-store";
 import { toast } from "sonner";
 
-export type Paquete = { cantidad: number; precio: number };
+export type Paquete = { cantidad: number; precio: number; popular?: boolean; tag?: string };
 
 function generarNumeroDisponible(excluir: Set<string>): string {
   let intentos = 0;

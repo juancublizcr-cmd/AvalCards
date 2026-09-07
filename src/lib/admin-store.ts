@@ -72,7 +72,7 @@ export type RaspaConfig = {
   ruletaPremios?: PremioRuleta[];
 };
 
-export type ModalidadVenta = "escalonado" | "fijo_3x5000";
+export type ModalidadVenta = "escalonado" | "multiplos_3" | "fijo_3x5000";
 
 export type Sorteo = {
   nombre: string;
@@ -442,6 +442,8 @@ export async function fetchSorteo(): Promise<Sorteo> {
     let modDetectada: ModalidadVenta = "escalonado";
     if (data.modalidad_venta) {
       modDetectada = data.modalidad_venta as ModalidadVenta;
+    } else if (data.nombre && data.nombre.includes("[MOD:multiplos_3]")) {
+      modDetectada = "multiplos_3";
     } else if (data.nombre && data.nombre.includes("[MOD:fijo_3x5000]")) {
       modDetectada = "fijo_3x5000";
     } else if (data.nombre && data.nombre.includes("[MOD:escalonado]")) {

@@ -458,11 +458,11 @@ export function PremiosSection({
           <Label className="text-sm font-bold flex items-center gap-2">
             <Ticket className="size-4 text-primary" /> Modalidad de Venta y Paquetes de Tokens en la Web:
           </Label>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 lg:grid-cols-3">
             {/* Opción 1: Paquetes Estándar Escalonados */}
             <div
               onClick={() => setBorrador({ ...borrador, modalidadVenta: "escalonado" })}
-              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative ${
+              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative flex flex-col justify-between ${
                 (borrador.modalidadVenta || "escalonado") === "escalonado"
                   ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(234,88,12,0.2)]"
                   : "border-border bg-secondary/30 hover:border-border/80"
@@ -473,24 +473,58 @@ export function PremiosSection({
                   <CheckCircle2 className="size-3.5 stroke-[3]" />
                 </span>
               )}
-              <div className="font-bold text-sm text-foreground flex items-center gap-2">
-                <span>📦</span> Paquetes Estándar (Multi-Paquete)
+              <div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <span>📦</span> Paquetes Estándar (₡1 000/token)
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Muestra 4 paquetes escalonados clásicos: <strong>4</strong>, <strong>8</strong>, <strong>12</strong> y <strong>24 Tokens</strong>.
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Muestra los 4 paquetes escalonados según el precio base por token: <strong>4 Tokens</strong>, <strong>8 Tokens</strong>, <strong>12 Tokens</strong> y <strong>24 Tokens</strong>.
-              </p>
-              <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-mono font-bold text-primary">
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">4 = ₡{((borrador.precioBase || 2500) * 4).toLocaleString("es-CR")}</span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">8 = ₡{((borrador.precioBase || 2500) * 8).toLocaleString("es-CR")}</span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">12 = ₡{((borrador.precioBase || 2500) * 12).toLocaleString("es-CR")}</span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary border">24 = ₡{((borrador.precioBase || 2500) * 24).toLocaleString("es-CR")}</span>
+              <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-mono font-bold text-primary">
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">4 = ₡{((borrador.precioBase > 0 && borrador.precioBase <= 2500 ? borrador.precioBase : 1000) * 4).toLocaleString("es-CR")}</span>
+                <span className="px-2 py-0.5 rounded-md bg-primary/20 border border-primary/40 text-primary">8 = ₡{((borrador.precioBase > 0 && borrador.precioBase <= 2500 ? borrador.precioBase : 1000) * 8).toLocaleString("es-CR")} ⭐</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">12 = ₡{((borrador.precioBase > 0 && borrador.precioBase <= 2500 ? borrador.precioBase : 1000) * 12).toLocaleString("es-CR")}</span>
+                <span className="px-2 py-0.5 rounded-md bg-secondary border">24 = ₡{((borrador.precioBase > 0 && borrador.precioBase <= 2500 ? borrador.precioBase : 1000) * 24).toLocaleString("es-CR")}</span>
               </div>
             </div>
 
-            {/* Opción 2: Paquete Especial 3 Tokens por Precio Base */}
+            {/* Opción 2: Múltiplos de 3 (Estilo Competencia) */}
+            <div
+              onClick={() => setBorrador({ ...borrador, modalidadVenta: "multiplos_3" })}
+              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative flex flex-col justify-between ${
+                borrador.modalidadVenta === "multiplos_3"
+                  ? "border-emerald-500 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+                  : "border-border bg-secondary/30 hover:border-border/80"
+              }`}
+            >
+              {borrador.modalidadVenta === "multiplos_3" && (
+                <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-emerald-500 text-black">
+                  <CheckCircle2 className="size-3.5 stroke-[3]" />
+                </span>
+              )}
+              <div>
+                <div className="font-bold text-sm text-emerald-400 flex items-center gap-2">
+                  <span>⭐</span> Múltiplos de 3 (Competencia PRO)
+                </div>
+                <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                  Paquetes de 3 en 3 (desde 3 hasta 24 stickers). Destaca el paquete de <strong>6 Tokens por ₡8 000</strong> como el más vendido.
+                </p>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-mono font-bold text-emerald-400">
+                <span className="px-1.5 py-0.5 rounded-md bg-secondary border">3=₡4.000</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/30 border border-emerald-500/50 text-white font-black">6=₡8.000 🔥</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-secondary border">9=₡12k</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-secondary border">12=₡16k</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-secondary border">18=₡24k</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-secondary border">24=₡32k</span>
+              </div>
+            </div>
+
+            {/* Opción 3: Paquete Especial 3 Tokens por Precio Base */}
             <div
               onClick={() => setBorrador({ ...borrador, modalidadVenta: "fijo_3x5000" })}
-              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative ${
+              className={`cursor-pointer rounded-2xl border-2 p-4 transition-all relative flex flex-col justify-between ${
                 borrador.modalidadVenta === "fijo_3x5000"
                   ? "border-amber-500 bg-amber-500/15 shadow-[0_0_20px_rgba(245,158,11,0.25)]"
                   : "border-border bg-secondary/30 hover:border-border/80"
@@ -501,18 +535,17 @@ export function PremiosSection({
                   <CheckCircle2 className="size-3.5 stroke-[3]" />
                 </span>
               )}
-              <div className="font-bold text-sm text-amber-400 flex items-center gap-2">
-                <span>🔥</span> Paquete Promocional Único (3 Tokens por ₡{(borrador.precioBase || 2500).toLocaleString("es-CR")})
+              <div>
+                <div className="font-bold text-sm text-amber-400 flex items-center gap-2">
+                  <span>🔥</span> Paquete Promocional Único (Flash)
+                </div>
+                <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                  Un solo botón de compra rápida para <strong>3 Tokens Digitales</strong> cerrados por ₡{(borrador.precioBase >= 2000 ? borrador.precioBase : 4000).toLocaleString("es-CR")}.
+                </p>
               </div>
-              <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
-                Muestra el paquete promocional único de <strong>3 Tokens Digitales por ₡{(borrador.precioBase || 2500).toLocaleString("es-CR")} CRC</strong>. Mantiene activos los SuperTokens y Referidos.
-              </p>
-              <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-mono font-bold text-amber-400">
+              <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-mono font-bold text-amber-400">
                 <span className="px-2.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/40">
-                  🎟️ 3 Tokens = ₡{(borrador.precioBase || 2500).toLocaleString("es-CR")} CRC
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-secondary/80 border text-muted-foreground text-[10px]">
-                  +SuperToken & Referidos activos
+                  🎟️ 3 Tokens = ₡{(borrador.precioBase >= 2000 ? borrador.precioBase : 4000).toLocaleString("es-CR")} CRC
                 </span>
               </div>
             </div>
