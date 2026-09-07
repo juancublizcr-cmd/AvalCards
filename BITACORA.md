@@ -20,7 +20,7 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
   - Configuración de `vercel.json` con soporte SPA routing y caché inmutable de assets en CDN (`/assets/`).
   - Creación de `.npmrc` con `legacy-peer-deps=true` para garantizar compatibilidad total en builds de Vercel.
 - **Configuración de Dominio Propio en Namecheap:**
-  - Dominio: `avalcomunity.com` / `www.avalcomunity.com`
+  - Dominio: `avalcommunity.com` / `www.avalcommunity.com`
   - Registro DNS Tipo A apuntado a `216.198.79.1`
   - Registro CNAME `www` apuntado al servidor edge de Vercel.
   - Certificado SSL automático emitido y validado 100% activo.
@@ -270,3 +270,16 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 2. **Sincronización Total con 1 Clic:**
    - Al presionar *"Guardar Fecha y Configuración"*, se guardan atómicamente la configuración del sorteo, las modalidades y el valor del SuperToken en Supabase y `localStorage`.
+
+---
+
+## 🚀 Hito 20: SuperToken Tarifa Plana Fija y Actualización de Dominio a www.avalcommunity.com
+
+1. **SuperToken Tarifa Plana Fija (₡1 000 flat):**
+   - Se transformó el cálculo del SuperToken en el carrito/checkout de una multiplicación proporcional a una tarifa fija única (flat fee).
+   - Sin importar si el usuario compra 3, 6, 12 o 24 tokens, la activación del SuperToken cobra únicamente la tarifa plana configurada en el Admin (por defecto ₡1 000 CRC), maximizando la tasa de conversión y ventas.
+
+2. **Actualización Completa de Dominio Oficial:**
+   - Actualización de todos los generadores de comprobantes (`ticket-canvas.ts`), historias para redes (`story-canvas.ts` y `StoryShareModal.tsx`) y metadatos hacia el dominio oficial `https://www.avalcommunity.com` (con doble 'm').
+   - Despliegue completado al repositorio oficial `juancublizcr-cmd/AvalCards` para compilación y despliegue automático en Vercel.
+
