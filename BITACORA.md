@@ -257,3 +257,16 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 2. **Destacado Superior en el Hero y Coherencia de Precios:**
    - Se añadió badge dinámico superior en el Hero: `🔥 Más Popular: 6 Tokens por ₡8 000` (o `8 Tokens por ₡8 000` según modalidad activa).
    - El título principal ahora anuncia el precio de entrada real `desde solo ₡4 000` (o ₡1 000 en estándar), eliminando completamente montos quebrados como `₡1 333` o `₡5 332`.
+
+---
+
+## 🚀 Hito 19: Panel de Modificación Directa del SuperToken en la Sección Principal de Sorteos
+
+1. **Campos Directos de Edición del SuperToken en Premios y Sorteo:**
+   - Se integró una tarjeta dorada dedicada para el SuperToken dentro del panel principal de Sorteos (`PremiosSection`).
+   - **Costo Adicional del SuperToken (₡ CRC):** Permite cambiar de inmediato el monto en colones cobrado al activar SuperToken (ej: ₡1 000 o ₡1 500).
+   - **Bono Extra en Efectivo ($ USD):** Permite modificar el premio en dólares (ej: $6 000 USD Cash) que gana el 1° Lugar.
+   - **Interruptor Activo/Inactivo:** Permite habilitar o deshabilitar el SuperToken con un clic.
+
+2. **Sincronización Total con 1 Clic:**
+   - Al presionar *"Guardar Fecha y Configuración"*, se guardan atómicamente la configuración del sorteo, las modalidades y el valor del SuperToken en Supabase y `localStorage`.

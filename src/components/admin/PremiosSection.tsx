@@ -3,6 +3,8 @@ import {
   Award,
   Calendar,
   CheckCircle2,
+  Coins,
+  Crown,
   FileText,
   Gamepad2,
   Gift,
@@ -41,6 +43,8 @@ import {
   subirImagenPremio,
   upsertPremios,
   upsertSorteo,
+  upsertConfig,
+  type Config,
   type FaqItem,
   type FeatureDetalle,
   type ModalidadVenta,
@@ -57,11 +61,15 @@ export function PremiosSection({
   setPremios,
   sorteo,
   setSorteo,
+  config,
+  setConfig,
 }: {
   premios: Premio[];
   setPremios: (p: Premio[]) => void;
   sorteo: Sorteo;
   setSorteo: (s: Sorteo) => void;
+  config?: Config;
+  setConfig?: (c: Config) => void;
 }) {
   const [borrador, setBorrador] = useState<Sorteo>({
     ...sorteo,
@@ -83,6 +91,19 @@ export function PremiosSection({
       modalidadVenta: sorteo.modalidadVenta || prev.modalidadVenta || "escalonado",
     }));
   }, [sorteo]);
+
+  const [supertokenPrecio, setSupertokenPrecio] = useState<number>(config?.supertokenPrecio ?? 1500);
+  const [supertokenPremioUsd, setSupertokenPremioUsd] = useState<number>(config?.supertokenPremioUsd ?? 6000);
+  const [supertokenActivo, setSupertokenActivo] = useState<boolean>(config?.supertokenActivo ?? true);
+
+  useEffect(() => {
+    if (config) {
+      setSupertokenPrecio(config.supertokenPrecio ?? 1500);
+      setSupertokenPremioUsd(config.supertokenPremioUsd ?? 6000);
+      setSupertokenActivo(config.supertokenActivo ?? true);
+    }
+  }, [config]);
+
   const [guardandoSorteo, setGuardandoSorteo] = useState(false);
   const [guardandoRaspa, setGuardandoRaspa] = useState(false);
   const [subiendoImagen, setSubiendoImagen] = useState<string | null>(null);
@@ -353,12 +374,24 @@ export function PremiosSection({
     try {
       await upsertSorteo(borrador);
       setSorteo(borrador);
-      toast.success("¡Configuración y Ficha Técnica guardadas perfectamente!", {
-        description: "El contador, textos y ficha técnica se sincronizaron con éxito.",
+
+      if (config && setConfig) {
+        const nuevoConfig: Config = {
+          ...config,
+          supertokenPrecio,
+          supertokenPremioUsd,
+          supertokenActivo,
+        };
+        await upsertConfig(nuevoConfig);
+        setConfig(nuevoConfig);
+      }
+
+      toast.success("¡Configuración del evento y SuperToken guardados con éxito!", {
+        description: `SuperToken: ₡${supertokenPrecio.toLocaleString()} CRC · Premio: +$${supertokenPremioUsd.toLocaleString()} USD Cash`,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Error al guardar evento");
+      toast.error("Error al guardar evento", { description: err?.message });
     } finally {
       setGuardandoSorteo(false);
     }
@@ -548,6 +581,70 @@ export function PremiosSection({
                   🎟️ 3 Tokens = ₡{(borrador.precioBase >= 2000 ? borrador.precioBase : 4000).toLocaleString("es-CR")} CRC
                 </span>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CONFIGURACIÓN Y VALOR DEL SUPERTOKEN */}
+        <div className="pt-3 border-t border-border space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/40 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shrink-0">
+                <Crown className="size-5" />
+              </span>
+              <div>
+                <Label className="text-sm font-bold text-amber-400 flex items-center gap-1.5">
+                  👑 Valor y Configuración del SuperToken Oficial
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Modifica cuánto cuesta activar el SuperToken y el bono en efectivo en dólares que gana el 1° Lugar.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto bg-black/40 px-3 py-1.5 rounded-full border border-border">
+              <span className="text-xs font-bold text-zinc-200">
+                {supertokenActivo ? "🟢 SuperToken Activo" : "🔴 Inactivo"}
+              </span>
+              <Switch
+                checked={supertokenActivo}
+                onCheckedChange={setSupertokenActivo}
+                className="data-[state=checked]:bg-amber-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5 rounded-xl border border-border bg-secondary/30 p-3.5">
+              <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Coins className="size-4 text-amber-500" /> Costo Adicional del SuperToken (₡ CRC)
+              </Label>
+              <Input
+                type="number"
+                value={supertokenPrecio}
+                onChange={(e) => setSupertokenPrecio(Number(e.target.value))}
+                placeholder="1000"
+                className="font-bold font-mono text-primary border-primary/50 text-base"
+              />
+              <span className="text-[11px] text-muted-foreground block">
+                Precio en colones que se sumará a la orden cuando el usuario activa la casilla de SuperToken al comprar.
+              </span>
+            </div>
+
+            <div className="space-y-1.5 rounded-xl border border-border bg-secondary/30 p-3.5">
+              <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Crown className="size-4 text-amber-400" /> Bono Extra si gana 1° Lugar ($ USD Cash)
+              </Label>
+              <Input
+                type="number"
+                value={supertokenPremioUsd}
+                onChange={(e) => setSupertokenPremioUsd(Number(e.target.value))}
+                placeholder="6000"
+                className="font-bold font-mono text-amber-400 border-amber-500/50 text-base"
+              />
+              <span className="text-[11px] text-muted-foreground block">
+                Monto en USD anunciado en la cabecera, tiquetes y modal (ej: 6000 para +$6 000 USD).
+              </span>
             </div>
           </div>
         </div>

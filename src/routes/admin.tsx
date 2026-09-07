@@ -223,6 +223,8 @@ function Admin() {
                   setPremios={setPremios}
                   sorteo={sorteo}
                   setSorteo={setSorteo}
+                  config={config}
+                  setConfig={setConfig}
                 />
               ) : null}
               {seccion === "raspa" ? (
