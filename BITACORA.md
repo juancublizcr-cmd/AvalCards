@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 2 de Septiembre de 2026 - 10:55 PM (Versión Estable con Visor Lightbox y Tarjetas Full-Bleed)  
+**Última actualización:** 7 de Septiembre de 2026 - 12:43 AM (SuperToken Tarifa Plana Fija, Editor Admin y Dominio avalcommunity.com Oficial)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -281,5 +281,10 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 2. **Actualización Completa de Dominio Oficial:**
    - Actualización de todos los generadores de comprobantes (`ticket-canvas.ts`), historias para redes (`story-canvas.ts` y `StoryShareModal.tsx`) y metadatos hacia el dominio oficial `https://www.avalcommunity.com` (con doble 'm').
-   - Despliegue completado al repositorio oficial `juancublizcr-cmd/AvalCards` para compilación y despliegue automático en Vercel.
+
+3. **Migración y Despliegue en Repositorio Oficial (`juancublizcr-cmd/AvalCards`):**
+   - Repositorio remoto apuntado y sincronizado al 100% con `https://github.com/juancublizcr-cmd/AvalCards`.
+   - Pipeline de despliegue continuo de Vercel disparado exitosamente para el dominio `www.avalcommunity.com`.
+   - Limpieza de credenciales de acceso para garantizar total seguridad en el entorno local y remoto.
+
 
