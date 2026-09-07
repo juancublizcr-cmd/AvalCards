@@ -95,12 +95,9 @@ export function StickersModal({
   }, [configProp]);
 
   const precioBase = paquete?.precio ?? 0;
-  const supertokenPrecioTotal = config.supertokenPrecio ?? 1500;
-  const costoSupertoken = paquete
-    ? paquete.cantidad === 3
-      ? supertokenPrecioTotal
-      : Math.round((supertokenPrecioTotal / 3) * paquete.cantidad)
-    : 0;
+  // Tarifa plana fija: mismo costo de SuperToken para cualquier paquete
+  const supertokenPrecioTotal = config.supertokenPrecio ?? 1000;
+  const costoSupertoken = paquete ? supertokenPrecioTotal : 0;
   const extraSupertoken = supertoken && paquete ? costoSupertoken : 0;
   const precioFinal = precioBase + extraSupertoken;
   const premioUsd = config.supertokenPremioUsd ?? 6000;

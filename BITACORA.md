@@ -1,7 +1,7 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
 **Última actualización:** 2 de Septiembre de 2026 - 10:55 PM (Versión Estable con Visor Lightbox y Tarjetas Full-Bleed)  
-**Dominio Oficial:** [https://www.avalcomunity.com](https://www.avalcomunity.com)  
+**Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
 

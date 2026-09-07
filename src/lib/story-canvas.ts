@@ -189,7 +189,7 @@ export async function generarImagenHistoria(data: StoryData): Promise<string> {
   ctx.fillText("Recibe +1 Token Extra de Regalo en tu compra:", 540, c3Y + 120);
 
   const telLimpio = data.telefono.replace(/\D/g, "");
-  const linkRef = `www.avalcomunity.com/?ref=${telLimpio}`;
+  const linkRef = `www.avalcommunity.com/?ref=${telLimpio}`;
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
   ctx.strokeStyle = "rgba(245, 158, 11, 0.4)";
