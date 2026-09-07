@@ -68,7 +68,7 @@ export function AdminSidebarContent({
     <div className="flex h-full w-full flex-col bg-card">
       <div className="border-b border-border px-5 py-5">
         <Link to="/" className="flex items-center gap-2" onClick={onItemClick}>
-          <Flame className="size-5 text-primary" />
+          <img src="/isotipo.png" alt="Aval Community CR" className="size-6 object-contain shrink-0" />
           <span className="font-display text-2xl tracking-wide">
             Aval <span className="text-primary">Community CR</span>
           </span>

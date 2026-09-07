@@ -113,11 +113,8 @@ function Login() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-6 rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-card)]">
         <div className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <Flame className="size-8 text-primary" />
-            <span className="font-display text-3xl tracking-wide">
-              Aval <span className="text-primary">Community CR</span>
-            </span>
+          <Link to="/" className="inline-block">
+            <img src="/logo.png" alt="Aval Community CR" className="mx-auto h-20 w-auto object-contain" />
           </Link>
           <h1 className="mt-4 text-xl font-bold">Consola Administrativa</h1>
           <p className="mt-1 text-sm text-muted-foreground">

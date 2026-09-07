@@ -13,7 +13,7 @@ export function Footer() {
         {/* Col 1: Marca e info */}
         <div className="md:col-span-2 space-y-3">
           <Link to="/" className="inline-flex items-center gap-2">
-            <Flame className="size-6 text-primary" />
+            <img src="/isotipo.png" alt="Aval Community CR" className="size-6 sm:size-7 object-contain shrink-0" />
             <span className="font-display text-2xl tracking-widest">
               AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>

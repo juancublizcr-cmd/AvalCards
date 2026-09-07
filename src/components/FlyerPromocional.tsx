@@ -75,7 +75,7 @@ export function FlyerPromocional({
       <header className="relative z-10 border-b border-white/10 bg-black/50 backdrop-blur-md px-4 py-3.5">
         <div className="mx-auto max-w-5xl flex items-center justify-center">
           <Link to="/" className="flex items-center gap-2">
-            <Flame className="size-6 text-primary" />
+            <img src="/isotipo.png" alt="Aval Community CR" className="size-6 sm:size-7 object-contain shrink-0" />
             <span className="font-display text-xl sm:text-2xl tracking-widest text-white">
               AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>

@@ -326,8 +326,8 @@ function IndexPage() {
       {/* Header Sticky */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 gap-2">
-          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <Flame className="size-5 sm:size-6 text-primary shrink-0" />
+          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            <img src="/isotipo.png" alt="Aval Community CR" className="size-6 sm:size-7 object-contain shrink-0" />
             <span className="font-display text-lg sm:text-2xl tracking-widest whitespace-nowrap">
               AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>

@@ -517,7 +517,7 @@ function Checkout() {
       <header className="border-b border-border/60">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <Flame className="size-5 text-primary" />
+            <img src="/isotipo.png" alt="Aval Community CR" className="size-6 object-contain shrink-0" />
             <span className="font-display text-xl tracking-widest">
               AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
