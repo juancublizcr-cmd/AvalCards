@@ -1064,16 +1064,21 @@ export function ConfigSection({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs font-bold text-foreground">Prompt del Sistema / Conocimiento Base</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-foreground">Prompt del Sistema / Conocimiento Base</Label>
+              <span className="text-[10px] font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                🚀 Modo Cerrador de Ventas Activo
+              </span>
+            </div>
             <textarea
-              rows={4}
+              rows={5}
               value={borrador.aiSystemPrompt || ""}
               onChange={(e) => setBorrador({ ...borrador, aiSystemPrompt: e.target.value })}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-sans text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               placeholder="Instrucciones para la IA..."
             />
             <span className="text-[11px] text-muted-foreground block">
-              Define la personalidad, reglas de negocio y respuestas clave que la IA debe respetar.
+              Configurado con técnicas de cierre comercial (llamados a la acción al Checkout/SINPE) y filtro de seguridad que bloquea automáticamente consultas técnicas internas o sobre cómo fue programada la app.
             </span>
           </div>
         </div>

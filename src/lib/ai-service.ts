@@ -34,30 +34,26 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   }
 
   if (q.includes("sinpe") || q.includes("pago") || q.includes("pagar") || q.includes("transfer")) {
-    return `💳 **Método Oficial SINPE Móvil:**\n\n1. Transfiere al número oficial: **${telSinpe}** a nombre de **${razonSocial}**.\n2. En el detalle del pase coloca tu nombre y número de teléfono.\n3. Ve a la pantalla de [Checkout](/checkout), sube la captura de tu comprobante y ¡listo! Tus tokens quedarán apartados de inmediato.`;
+    return `💳 **Método Oficial SINPE Móvil (Rápido y Seguro):**\n\n1. Envía tu pago al número oficial: **${telSinpe}** a nombre de **${razonSocial}**.\n2. En el detalle del pase indica tu nombre y teléfono.\n3. Entra a [Apartar Tokens en Checkout](/checkout), sube tu comprobante y tus números quedan asignados al instante.\n\n🔥 **¡Los cupos son limitados!** ¿Te gustaría apartar 3 tokens para tener triple oportunidad o prefieres el paquete de 5 con bonificación extra?`;
   }
 
   if (q.includes("validar") || q.includes("token") || q.includes("número") || q.includes("numero") || q.includes("comprobante")) {
-    return `🎟️ **Consulta y Validación de Tokens:**\n\nPuedes verificar el estado de tus compras y tus números asignados en cualquier momento ingresando a la sección de [Validar Tokens](/validar). Solo debes ingresar tu número de teléfono registrado.`;
+    return `🎟️ **Consulta y Validación de Tokens:**\n\nPuedes consultar tus números y el estado de tu orden en cualquier momento en [Validar Tokens](/validar) ingresando tu número de teléfono registrado.\n\n💡 **Tip Ganador**: Cada token adicional multiplica tus probabilidades de llevarte la Toyota Prado 2026 0KM. ¿Deseas asegurar más números hoy en el [Checkout de Compra](/checkout)?`;
   }
 
-  if (q.includes("legal") || q.includes("estafa") || q.includes("segur") || q.includes("notario") || q.includes("loteria") || q.includes("lotería")) {
-    return `⚖️ **Garantía y Legalidad en Costa Rica:**\n\n• La actividad se rige formalmente bajo la **Ley N° 7472** (Protección al Consumidor) organizada por **${razonSocial}**.\n• Los sorteos se auditan estrictamente con los números oficiales de la **Lotería Nacional de Costa Rica** (JPS).\n• Los premios mayores se entregan en persona ante **Notario Público**, con todos los gastos de traspaso, marchamo y derechos 100% cubiertos.`;
-  }
-
-  if (q.includes("raspa") || q.includes("ruleta") || q.includes("juego") || q.includes("express")) {
-    return `🎡 **Juegos Express (Raspa y Ruleta):**\n\n¡Puedes ganar dinero en SINPE Móvil y tokens al instante!\n• En la pantalla principal toca el botón **"Raspa y Gana"** o **"Ruleta de la Fortuna"** para participar.\n• Si resultas premiado, el sistema te acredita el beneficio de inmediato.`;
+  if (q.includes("legal") || q.includes("estafa") || q.includes("segur") || q.includes("loteria") || q.includes("lotería")) {
+    return `⚖️ **100% Legal, Auditado y Transparente en Costa Rica:**\n\n• Actividad formal bajo la **Ley N° 7472** (Protección al Consumidor) organizada por **${razonSocial}**.\n• El ganador se define directamente con el sorteo oficial de la **Lotería Nacional (JPS)**, garantizando imparcialidad absoluta.\n• La entrega del vehículo 0KM se realiza con traspaso formal y marchamo 100% pagos.\n\n🚗 **¡Tu oportunidad de estrenar está aquí!** ¿Cuántos números de la suerte te apartamos hoy en el [Checkout](/checkout)?`;
   }
 
   if (q.includes("referid") || q.includes("amigo") || q.includes("compa") || q.includes("enlace") || q.includes("link")) {
-    return `🎁 **Programa de Referidos ("Invita a un Compa"):**\n\nComparte tu enlace exclusivo con tus amigos. Cada vez que ellos compren tokens con tu enlace, tú ganas **comisiones en efectivo SINPE** o tokens de regalo, y tu amigo recibe **+1 Token Extra GRATIS** en su compra.`;
+    return `🎁 **Gana Tokens y Premios con el Programa de Amigos:**\n\n¡Es facilísimo! Comparte tu enlace con tus compas y por cada compra que hagan, tú ganas comisiones en efectivo SINPE o tokens de regalo, y ellos reciben **+1 Token Extra GRATIS**.\n\n¿Quieres apartar tus primeros tokens hoy para empezar a compartir tu enlace? [Ir al Checkout](/checkout)`;
   }
 
   if (q.includes("humano") || q.includes("persona") || q.includes("asesor") || q.includes("whatsapp") || q.includes("contacto")) {
-    return `📲 **Atención Humana por WhatsApp:**\n\nCon gusto te atiende un asesor de nuestro equipo comercial y de soporte. Puedes escribirnos directamente a nuestro WhatsApp oficial: [Haz clic aquí para chatear](https://wa.me/${promoWa}?text=Hola%20Aval%20Community%20CR,%20necesito%20ayuda%20con%20mi%20orden).`;
+    return `📲 **Atención Personalizada por WhatsApp:**\n\nCon gusto te atiende un asesor de nuestro equipo comercial para ayudarte a apartar tus números de inmediato. Puedes escribirnos directamente: [Chatear con un Asesor en WhatsApp](https://wa.me/${promoWa}?text=Hola%20Aval%20Community%20CR,%20quiero%20comprar%20tokens%20y%20deseo%20asesor%C3%ADa%20personalizada).`;
   }
 
-  return `¡Pura vida! En Aval Community CR puedes adquirir tus tokens promocionales para estrenar premios premium como vehículos 0KM.\n\nPuedes consultarme sobre:\n• **Cómo pagar por SINPE Móvil**\n• **Cómo validar tus números de tokens**\n• **Reglas del sorteo y legalidad**\n\nO si prefieres, escríbenos directamente a nuestro WhatsApp de soporte: [Chatear en WhatsApp](https://wa.me/${promoWa}).`;
+  return `¡Pura vida! En Aval Community CR estás a un paso de estrenar una espectacular **Toyota Prado 2026 0KM** con marchamo pago y traspaso formal incluido.\n\n🔥 **Opciones de Compra Rápida:**\n• Pago seguro en 60 segundos por **SINPE Móvil oficial: ${telSinpe}**\n• Paquetes con tokens de bonificación extra de regalo\n\n¿Te gustaría que te ayude a apartar tus números ahora mismo en el [Checkout de Compra](/checkout)?`;
 }
 
 // ────────────────────────────────────────────────────────────
@@ -225,13 +221,18 @@ export async function enviarMensajeIA(
     return RESPUESTA_SOLO_VENTAS;
   }
 
-  const promptBase = config.aiSystemPrompt || "Eres el Asistente Oficial de Aval Community CR.";
-  const systemPrompt = `${promptBase}\n\n[REGLAS ESTRICTAS DE SEGURIDAD Y ROL COMERCIAL]:
-Eres única y exclusivamente un VENDEDOR E IMPULSADOR DE VENTAS de Aval Community CR para el público general.
-Tienes TERMINANTEMENTE PROHIBIDO responder dudas sobre cómo está hecha, programada o desarrollada esta app web, qué tecnologías usa, bases de datos, código fuente, servidores o APIs.
-Si te preguntan algo técnico o sobre la programación de la app, responde cordial y brevemente:
-"¡Pura vida! Mi labor es exclusivamente comercial: asesorarte para que consigas tus tokens oficiales y participes por el vehículo 0KM y grandes premios. ¿Te gustaría conocer las opciones de compra de hoy?"
-Tu objetivo primordial es orientar en compras de tokens, pagos por SINPE Móvil o pasarelas oficiales, explicar las reglas del sorteo oficial y motivar al cliente a participar.`;
+  const promptBase = config.aiSystemPrompt || "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR.";
+  const systemPrompt = `${promptBase}
+
+[ROL OBLIGATORIO: CLOSER / IMPULSADOR DE VENTAS 24/7]:
+1. Tu objetivo número uno en cada interacción es CONVERTIR al visitante en un COMPRADOR DE TOKENS.
+2. Cada respuesta tuya DEBE conducir al cierre de la venta con un llamado a la acción (CTA) persuasivo hacia el [Checkout de Compra](/checkout) o el pago por SINPE Móvil al ${config.telefonoSinpe || "8634-4772"}.
+3. Aplica cierres de alternativa: nunca preguntes "¿quieres comprar?", pregunta "¿Te gustaría arrancar con 3 tokens para tener triple oportunidad o prefieres el paquete de 5 con bonificación extra?".
+4. Despierta emoción y deseo: habla de la sensación de estrenar la Toyota Prado 2026 0KM, sacada de agencia, con marchamo pago y traspaso notarial 100% cubierto.
+5. Crea sentido de urgencia y oportunidad: recuerda que los cupos son limitados y que asegurar los números hoy garantiza su participación.
+6. Maneja objeciones con total contundencia: recuerda la transparencia de la Lotería Nacional de Costa Rica (JPS) y la formalidad legal de Importadora Luxury Scents LTDA.
+7. Si el cliente tiene dudas sobre su pago o desea atención guiada, motívalo a escribir al WhatsApp oficial.
+8. REGLA ESTRICTA DE SEGURIDAD: Jamás respondas temas sobre programación, código, base de datos o arquitectura interna de la app. Eres exclusivamente un vendedor comercial.`;
 
   try {
     if (proveedor === "openai") {
