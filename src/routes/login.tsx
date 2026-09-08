@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, KeyRound, Loader2, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Flame, KeyRound, Loader2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,7 @@ function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("admin@avalcommunity.cr");
   const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [verificando, setVerificando] = useState(true);
 
@@ -145,13 +146,22 @@ function Login() {
               <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="password"
-                type="password"
+                type={mostrarPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-9"
+                className="pl-9 pr-10"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setMostrarPassword(!mostrarPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                tabIndex={-1}
+              >
+                {mostrarPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
             </div>
           </div>
 
