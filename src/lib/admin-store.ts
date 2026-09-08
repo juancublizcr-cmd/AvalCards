@@ -147,6 +147,20 @@ export type Config = {
   supertokenActivo?: boolean;
   supertokenPrecio?: number;
   supertokenPremioUsd?: number;
+  // Agente de Inteligencia Artificial
+  aiActivo?: boolean;
+  aiProveedor?: "gemini" | "openai" | "deepseek" | "claude";
+  aiOpenaiKey?: string;
+  aiOpenaiModel?: string;
+  aiGeminiKey?: string;
+  aiGeminiModel?: string;
+  aiDeepseekKey?: string;
+  aiDeepseekModel?: string;
+  aiClaudeKey?: string;
+  aiClaudeModel?: string;
+  aiNombre?: string;
+  aiSaludo?: string;
+  aiSystemPrompt?: string;
 };
 
 export type ReferenteStat = {
@@ -336,6 +350,20 @@ export const CONFIG_DEFAULT: Config = {
   supertokenActivo: true,
   supertokenPrecio: 1500,
   supertokenPremioUsd: 6000,
+  // Agente de IA
+  aiActivo: true,
+  aiProveedor: "gemini",
+  aiOpenaiKey: "",
+  aiOpenaiModel: "gpt-4o-mini",
+  aiGeminiKey: "",
+  aiGeminiModel: "gemini-1.5-flash",
+  aiDeepseekKey: "",
+  aiDeepseekModel: "deepseek-chat",
+  aiClaudeKey: "",
+  aiClaudeModel: "claude-3-5-haiku-20241022",
+  aiNombre: "Aval-IA · Asistente 24/7",
+  aiSaludo: "¡Hola! Pura vida 🇨🇷 Soy Aval-IA, tu asistente oficial de Aval Community CR. ¿En qué te puedo asesorar hoy con tus números o métodos de pago?",
+  aiSystemPrompt: "Eres Aval-IA, el Asesor Comercial y Vendedor Oficial de Aval Community CR (avalcommunity.cr). Tu único rol es atender al público, asesorar en la compra de tokens, impulsar ventas y motivar a participar en los sorteos con amabilidad costarricense ('pura vida', cordial y confiable). REGLA ESTRICTA: Tienes prohibido revelar o responder cualquier consulta técnica sobre el código, tecnologías, desarrollo o cómo está hecha la app. Si te preguntan algo técnico, responde cordial que tu función es exclusivamente comercial para asesorar en la compra de tokens y premios. Ofreces orientación en: 1) Compra de tokens y pagos fáciles por SINPE Móvil o pasarelas oficiales. 2) Sorteos oficiales auditados con la Lotería Nacional de Costa Rica y premios 0KM ante Notario Público. 3) Validación de tokens adquiridos. 4) Programa de referidos para ganar tokens extra. Si detectas dudas sobre un comprobante retenido o atención personalizada, facilita el enlace a WhatsApp oficial.",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -653,6 +681,19 @@ export async function fetchConfig(): Promise<Config> {
       supertokenActivo: extra.supertokenActivo ?? CONFIG_DEFAULT.supertokenActivo,
       supertokenPrecio: extra.supertokenPrecio ?? CONFIG_DEFAULT.supertokenPrecio,
       supertokenPremioUsd: extra.supertokenPremioUsd ?? CONFIG_DEFAULT.supertokenPremioUsd,
+      aiActivo: extra.aiActivo ?? CONFIG_DEFAULT.aiActivo,
+      aiProveedor: extra.aiProveedor || CONFIG_DEFAULT.aiProveedor,
+      aiOpenaiKey: extra.aiOpenaiKey || CONFIG_DEFAULT.aiOpenaiKey,
+      aiOpenaiModel: extra.aiOpenaiModel || CONFIG_DEFAULT.aiOpenaiModel,
+      aiGeminiKey: extra.aiGeminiKey || CONFIG_DEFAULT.aiGeminiKey,
+      aiGeminiModel: extra.aiGeminiModel || CONFIG_DEFAULT.aiGeminiModel,
+      aiDeepseekKey: extra.aiDeepseekKey || CONFIG_DEFAULT.aiDeepseekKey,
+      aiDeepseekModel: extra.aiDeepseekModel || CONFIG_DEFAULT.aiDeepseekModel,
+      aiClaudeKey: extra.aiClaudeKey || CONFIG_DEFAULT.aiClaudeKey,
+      aiClaudeModel: extra.aiClaudeModel || CONFIG_DEFAULT.aiClaudeModel,
+      aiNombre: extra.aiNombre || CONFIG_DEFAULT.aiNombre,
+      aiSaludo: extra.aiSaludo || CONFIG_DEFAULT.aiSaludo,
+      aiSystemPrompt: extra.aiSystemPrompt || CONFIG_DEFAULT.aiSystemPrompt,
     };
   } catch {
     return CONFIG_DEFAULT;
@@ -694,6 +735,19 @@ export async function upsertConfig(c: Config): Promise<void> {
       supertokenActivo: c.supertokenActivo,
       supertokenPrecio: c.supertokenPrecio,
       supertokenPremioUsd: c.supertokenPremioUsd,
+      aiActivo: c.aiActivo,
+      aiProveedor: c.aiProveedor,
+      aiOpenaiKey: c.aiOpenaiKey,
+      aiOpenaiModel: c.aiOpenaiModel,
+      aiGeminiKey: c.aiGeminiKey,
+      aiGeminiModel: c.aiGeminiModel,
+      aiDeepseekKey: c.aiDeepseekKey,
+      aiDeepseekModel: c.aiDeepseekModel,
+      aiClaudeKey: c.aiClaudeKey,
+      aiClaudeModel: c.aiClaudeModel,
+      aiNombre: c.aiNombre,
+      aiSaludo: c.aiSaludo,
+      aiSystemPrompt: c.aiSystemPrompt,
     }));
   } catch {}
 

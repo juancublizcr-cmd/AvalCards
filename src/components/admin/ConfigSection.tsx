@@ -1,16 +1,21 @@
 import { useState } from "react";
 import {
+  Bot,
   Coins,
   CreditCard,
   Crown,
+  Eye,
+  EyeOff,
   Globe,
   Key,
   Loader2,
   Lock,
+  MessageSquare,
   Save,
   ShieldAlert,
   Smartphone,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -25,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { upsertConfig, type Config } from "@/lib/admin-store";
+import { probarConexionIA } from "@/lib/ai-service";
 
 export function ConfigSection({
   config,
@@ -35,6 +41,52 @@ export function ConfigSection({
 }) {
   const [borrador, setBorrador] = useState<Config>(config);
   const [guardando, setGuardando] = useState(false);
+  const [probandoIA, setProbandoIA] = useState(false);
+  const [mostrarKeys, setMostrarKeys] = useState<Record<string, boolean>>({});
+
+  const toggleMostrarKey = (k: string) => {
+    setMostrarKeys((prev) => ({ ...prev, [k]: !prev[k] }));
+  };
+
+  const ejecutarPruebaIA = async () => {
+    const prov = borrador.aiProveedor || "gemini";
+    let key = "";
+    let model = "";
+
+    if (prov === "openai") {
+      key = borrador.aiOpenaiKey || "";
+      model = borrador.aiOpenaiModel || "gpt-4o-mini";
+    } else if (prov === "gemini") {
+      key = borrador.aiGeminiKey || "";
+      model = borrador.aiGeminiModel || "gemini-1.5-flash";
+    } else if (prov === "deepseek") {
+      key = borrador.aiDeepseekKey || "";
+      model = borrador.aiDeepseekModel || "deepseek-chat";
+    } else if (prov === "claude") {
+      key = borrador.aiClaudeKey || "";
+      model = borrador.aiClaudeModel || "claude-3-5-haiku-20241022";
+    }
+
+    if (!key.trim()) {
+      toast.error(`Por favor ingresa la API Key de ${prov.toUpperCase()} antes de probar.`);
+      return;
+    }
+
+    setProbandoIA(true);
+    const toastId = toast.loading(`Probando conexión con ${prov.toUpperCase()} (${model})...`);
+    try {
+      const res = await probarConexionIA(prov, key, model);
+      if (res.ok) {
+        toast.success(res.mensaje, { id: toastId, duration: 5000 });
+      } else {
+        toast.error(res.mensaje, { id: toastId, duration: 6000 });
+      }
+    } catch (err: any) {
+      toast.error(`Error: ${err?.message || "No se pudo conectar"}`, { id: toastId });
+    } finally {
+      setProbandoIA(false);
+    }
+  };
 
   const guardar = async () => {
     setGuardando(true);
@@ -661,6 +713,367 @@ export function ConfigSection({
             />
             <span className="text-[11px] text-muted-foreground block">
               Monto en dólares estadounidenses anunciado en toda la web (ej: 6000 para +$6,000 USD).
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* 11. AGENTE DE INTELIGENCIA ARTIFICIAL (MULTI-PROVEEDOR) */}
+      <section className="rounded-2xl border border-primary/40 bg-gradient-to-br from-card via-card to-primary/5 p-6 shadow-[var(--shadow-card)] space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary shadow-inner">
+              <Bot className="size-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-foreground">Agente de Inteligencia Artificial (Burbuja Flotante)</h3>
+                <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary tracking-wide">
+                  MULTI-LLM
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Configura las API Keys de OpenAI, Gemini, DeepSeek o Claude para atender a tus clientes 24/7 en la plataforma.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{borrador.aiActivo ? "Burbuja Activa" : "Burbuja Inactiva"}</span>
+            <Switch
+              checked={borrador.aiActivo ?? true}
+              onCheckedChange={(v) => setBorrador({ ...borrador, aiActivo: v })}
+            />
+          </div>
+        </div>
+
+        {/* Proveedor activo y datos generales */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">Proveedor Activo de IA</Label>
+            <Select
+              value={borrador.aiProveedor || "gemini"}
+              onValueChange={(v: "gemini" | "openai" | "deepseek" | "claude") =>
+                setBorrador({ ...borrador, aiProveedor: v })
+              }
+            >
+              <SelectTrigger className="border-primary/50 font-semibold">
+                <SelectValue placeholder="Seleccionar Proveedor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gemini">✨ Google Gemini (Recomendado)</SelectItem>
+                <SelectItem value="openai">⚡ OpenAI (ChatGPT)</SelectItem>
+                <SelectItem value="deepseek">🐋 DeepSeek</SelectItem>
+                <SelectItem value="claude">🧠 Anthropic Claude</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-[11px] text-muted-foreground block">
+              El motor que procesará las conversaciones de los usuarios.
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">Nombre del Asistente</Label>
+            <Input
+              type="text"
+              value={borrador.aiNombre || "Aval-IA · Asistente 24/7"}
+              onChange={(e) => setBorrador({ ...borrador, aiNombre: e.target.value })}
+              placeholder="Aval-IA · Asistente 24/7"
+            />
+            <span className="text-[11px] text-muted-foreground block">
+              Nombre visible en la cabecera de la burbuja flotante.
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">Prueba de Conexión</Label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => { void ejecutarPruebaIA(); }}
+              disabled={probandoIA}
+              className="w-full gap-2 border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 font-bold"
+            >
+              {probandoIA ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Zap className="size-4 text-amber-400" />
+              )}
+              Probar Conexión Activa
+            </Button>
+            <span className="text-[11px] text-muted-foreground block">
+              Valida la API Key y modelo activo en tiempo real.
+            </span>
+          </div>
+        </div>
+
+        {/* Acordeón / Tarjetas de Credenciales de Proveedores */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* 1. Google Gemini */}
+          <div
+            className={`rounded-xl border p-4 transition-all ${
+              borrador.aiProveedor === "gemini"
+                ? "border-primary bg-primary/10 shadow-sm"
+                : "border-border/60 bg-card/60"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">✨</span>
+                <span className="font-bold text-sm">Google Gemini</span>
+              </div>
+              {borrador.aiProveedor === "gemini" && (
+                <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                  ACTIVO
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-[11px] font-semibold text-muted-foreground">Gemini API Key</Label>
+                  <button
+                    type="button"
+                    onClick={() => toggleMostrarKey("gemini")}
+                    className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                  >
+                    {mostrarKeys["gemini"] ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+                    {mostrarKeys["gemini"] ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+                <Input
+                  type={mostrarKeys["gemini"] ? "text" : "password"}
+                  value={borrador.aiGeminiKey || ""}
+                  onChange={(e) => setBorrador({ ...borrador, aiGeminiKey: e.target.value })}
+                  placeholder="AIzaSy..."
+                  className="font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-semibold text-muted-foreground">Modelo</Label>
+                <Select
+                  value={borrador.aiGeminiModel || "gemini-1.5-flash"}
+                  onValueChange={(v) => setBorrador({ ...borrador, aiGeminiModel: v })}
+                >
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Modelo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gemini-1.5-flash">gemini-1.5-flash (Ultrarrápido & Económico)</SelectItem>
+                    <SelectItem value="gemini-2.0-flash">gemini-2.0-flash (Última Generación)</SelectItem>
+                    <SelectItem value="gemini-1.5-pro">gemini-1.5-pro (Máxima Capacidad)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. OpenAI */}
+          <div
+            className={`rounded-xl border p-4 transition-all ${
+              borrador.aiProveedor === "openai"
+                ? "border-primary bg-primary/10 shadow-sm"
+                : "border-border/60 bg-card/60"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">⚡</span>
+                <span className="font-bold text-sm">OpenAI (ChatGPT)</span>
+              </div>
+              {borrador.aiProveedor === "openai" && (
+                <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                  ACTIVO
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-[11px] font-semibold text-muted-foreground">OpenAI API Key</Label>
+                  <button
+                    type="button"
+                    onClick={() => toggleMostrarKey("openai")}
+                    className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                  >
+                    {mostrarKeys["openai"] ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+                    {mostrarKeys["openai"] ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+                <Input
+                  type={mostrarKeys["openai"] ? "text" : "password"}
+                  value={borrador.aiOpenaiKey || ""}
+                  onChange={(e) => setBorrador({ ...borrador, aiOpenaiKey: e.target.value })}
+                  placeholder="sk-proj-..."
+                  className="font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-semibold text-muted-foreground">Modelo</Label>
+                <Select
+                  value={borrador.aiOpenaiModel || "gpt-4o-mini"}
+                  onValueChange={(v) => setBorrador({ ...borrador, aiOpenaiModel: v })}
+                >
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Modelo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gpt-4o-mini">gpt-4o-mini (Recomendado & Rápido)</SelectItem>
+                    <SelectItem value="gpt-4o">gpt-4o (Omni Avanzado)</SelectItem>
+                    <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo (Clásico)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. DeepSeek */}
+          <div
+            className={`rounded-xl border p-4 transition-all ${
+              borrador.aiProveedor === "deepseek"
+                ? "border-primary bg-primary/10 shadow-sm"
+                : "border-border/60 bg-card/60"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🐋</span>
+                <span className="font-bold text-sm">DeepSeek</span>
+              </div>
+              {borrador.aiProveedor === "deepseek" && (
+                <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                  ACTIVO
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-[11px] font-semibold text-muted-foreground">DeepSeek API Key</Label>
+                  <button
+                    type="button"
+                    onClick={() => toggleMostrarKey("deepseek")}
+                    className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                  >
+                    {mostrarKeys["deepseek"] ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+                    {mostrarKeys["deepseek"] ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+                <Input
+                  type={mostrarKeys["deepseek"] ? "text" : "password"}
+                  value={borrador.aiDeepseekKey || ""}
+                  onChange={(e) => setBorrador({ ...borrador, aiDeepseekKey: e.target.value })}
+                  placeholder="sk-..."
+                  className="font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-semibold text-muted-foreground">Modelo</Label>
+                <Select
+                  value={borrador.aiDeepseekModel || "deepseek-chat"}
+                  onValueChange={(v) => setBorrador({ ...borrador, aiDeepseekModel: v })}
+                >
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Modelo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="deepseek-chat">deepseek-chat (V3 Conversacional)</SelectItem>
+                    <SelectItem value="deepseek-reasoner">deepseek-reasoner (R1 Razonamiento)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Anthropic Claude */}
+          <div
+            className={`rounded-xl border p-4 transition-all ${
+              borrador.aiProveedor === "claude"
+                ? "border-primary bg-primary/10 shadow-sm"
+                : "border-border/60 bg-card/60"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🧠</span>
+                <span className="font-bold text-sm">Anthropic Claude</span>
+              </div>
+              {borrador.aiProveedor === "claude" && (
+                <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                  ACTIVO
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-[11px] font-semibold text-muted-foreground">Claude API Key</Label>
+                  <button
+                    type="button"
+                    onClick={() => toggleMostrarKey("claude")}
+                    className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                  >
+                    {mostrarKeys["claude"] ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+                    {mostrarKeys["claude"] ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+                <Input
+                  type={mostrarKeys["claude"] ? "text" : "password"}
+                  value={borrador.aiClaudeKey || ""}
+                  onChange={(e) => setBorrador({ ...borrador, aiClaudeKey: e.target.value })}
+                  placeholder="sk-ant-..."
+                  className="font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-semibold text-muted-foreground">Modelo</Label>
+                <Select
+                  value={borrador.aiClaudeModel || "claude-3-5-haiku-20241022"}
+                  onValueChange={(v) => setBorrador({ ...borrador, aiClaudeModel: v })}
+                >
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Modelo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="claude-3-5-haiku-20241022">claude-3-5-haiku (Rápido y Preciso)</SelectItem>
+                    <SelectItem value="claude-3-5-sonnet-20241022">claude-3-5-sonnet (Alta Inteligencia)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Saludo inicial y Prompt del sistema */}
+        <div className="space-y-4 pt-2 border-t border-border/40">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">Mensaje de Saludo Inicial (Bienvenida)</Label>
+            <Input
+              type="text"
+              value={borrador.aiSaludo || ""}
+              onChange={(e) => setBorrador({ ...borrador, aiSaludo: e.target.value })}
+              placeholder="¡Hola! Pura vida 🇨🇷 Soy Aval-IA..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground">Prompt del Sistema / Conocimiento Base</Label>
+            <textarea
+              rows={4}
+              value={borrador.aiSystemPrompt || ""}
+              onChange={(e) => setBorrador({ ...borrador, aiSystemPrompt: e.target.value })}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-sans text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              placeholder="Instrucciones para la IA..."
+            />
+            <span className="text-[11px] text-muted-foreground block">
+              Define la personalidad, reglas de negocio y respuestas clave que la IA debe respetar.
             </span>
           </div>
         </div>

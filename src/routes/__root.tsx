@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
 import { toast } from "sonner";
 import { InstallPWA } from "../components/InstallPWA";
+import { AiAgentBubble } from "../components/AiAgentBubble";
 
 function NotFoundComponent() {
   return (
@@ -157,6 +158,7 @@ function RootComponent() {
       <Outlet />
       <Toaster position="top-center" richColors />
       <InstallPWA />
+      <AiAgentBubble />
     </QueryClientProvider>
   );
 }
