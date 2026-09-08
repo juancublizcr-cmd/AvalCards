@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 7 de Septiembre de 2026 - 09:00 PM (Identidad Oficial, Agente Flotante Aval-IA Multi-Proveedor, Dictado y Voz, Enciclopedia Total y Cerrador Proactivo)  
+**Última actualización:** 7 de Septiembre de 2026 - 09:32 PM (Hito 24: Desacoplamiento de Flotantes, Ojito en Login y Validación de Producción)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -341,6 +341,26 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - **Mini-Sorteos Semanales "Viernes de Tanque Lleno"**: ₡50,000 en combustible Delta/Uno (o SINPE equivalente) rifados todos los viernes automáticamente entre todos los participantes activos, sin pagar nada extra y manteniendo sus números activos para la Prado.
    - **Dominio de FAQs Oficiales**: Respuestas exactas sobre participación, determinación transparente de ganadores con la **Lotería Nacional de la Junta de Protección Social (JPS)**, validación en `/validar` y traspaso legal formal ante Notario Público bajo la Ley N° 7472.
    - **Ganchos de Venta Incitadores**: Integración sistemática en saludos y respuestas para despertar emoción (*"¡mira te ganas gasolina todos los viernes con tanque lleno!", "¿sabes de los supertokens?"*).
+
+---
+
+## 🚀 Hito 24: Desacoplamiento de Flotantes Inferiores, Visibilidad de Contraseña en Login y Auditoría Operativa
+
+1. **Desacoplamiento y Reorganización de Elementos Flotantes Inferiores:**
+   - Corrección del solapamiento entre el banner de instalación PWA (`PwaInstallPrompt.tsx`), la burbuja flotante del asistente inteligente (`AiAgentBubble.tsx`) y las alertas en vivo de compras (`FomoNotifications.tsx`).
+   - `PwaInstallPrompt`: Reposicionado a `bottom-22 left-3 right-3 sm:left-auto sm:bottom-6 sm:right-24 z-40 max-w-md`, garantizando total visibilidad y acceso táctil a los botones de "Instalar" y cerrar ("✕") tanto en dispositivos móviles como en pantallas de escritorio sin chocar con la burbuja de la IA.
+   - `FomoNotifications`: Limitado en ancho (`max-w-[calc(100%-5.5rem)]` en móvil y `sm:bottom-6 sm:left-6 sm:max-w-xs` en PC) para convivir fluidamente con el resto de componentes.
+   - Eliminación de llamada redundante `<InstallPWA />` en `__root.tsx` y ajuste de elevación de botones de acción rápida en `index.tsx`.
+
+2. **Seguridad y Usabilidad en Login Administrativo (`src/routes/login.tsx`):**
+   - Incorporación de botón interactivo de alternancia de visibilidad de contraseña (ícono de ojito `Eye` / `EyeOff` con Lucide React).
+   - Espaciado optimizado (`pl-9 pr-10`) para prevenir sobreescritura de texto sobre los iconos de candado y visibilidad.
+
+3. **Auditoría Integral y Checklist Operativo de Producción:**
+   - Verificación de la consola administrativa (`/admin`) y persistencia de pasarelas de pago (SINPE Móvil, TiloPay, PayPal, Cripto).
+   - Comprobación del ciclo de vida de compilación limpia de Vite/PWA (`dist/`) y sincronización automática con Vercel Edge Network.
+
+
 
 
 
