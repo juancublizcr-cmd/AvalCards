@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 7 de Septiembre de 2026 - 12:43 AM (SuperToken Tarifa Plana Fija, Editor Admin y Dominio avalcommunity.com Oficial)  
+**Última actualización:** 7 de Septiembre de 2026 - 09:00 PM (Identidad Oficial, Agente Flotante Aval-IA Multi-Proveedor, Dictado y Voz, Enciclopedia Total y Cerrador Proactivo)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -286,5 +286,61 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Repositorio remoto apuntado y sincronizado al 100% con `https://github.com/juancublizcr-cmd/AvalCards`.
    - Pipeline de despliegue continuo de Vercel disparado exitosamente para el dominio `www.avalcommunity.com`.
    - Limpieza de credenciales de acceso para garantizar total seguridad en el entorno local y remoto.
+
+---
+
+## 🚀 Hito 21: Identidad de Marca Oficial, Isotipo Transparente y Favicon Multi-Resolución
+
+1. **Recorte y Procesamiento de Assets de Marca:**
+   - Procesamiento del isotipo oficial con fondo transparente de alta precisión (`public/isotipo.png`).
+   - Actualización del logotipo institucional para versiones oscura y clara (`public/logo.png`, `public/logo-dark-text.png`).
+   - Generación de toda la suite de favicons multi-resolución: `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `icons/icon-192x192.png`, `icons/icon-512x512.png` y `icons/icon.svg`.
+
+2. **Integración Global en la Aplicación:**
+   - Reemplazo del isotipo y logo en la barra de navegación pública (`IndexPage`), pie de página (`Footer`), panel lateral de administración (`AdminSidebar`), Flyer Promocional de preventa y pantalla de `Checkout`.
+   - Inyección de cache-busting en `index.html` para forzar la actualización inmediata en navegadores de clientes y PWA.
+
+---
+
+## 🚀 Hito 22: Agente de Inteligencia Artificial Flotante Multi-Proveedor y Control en Admin
+
+1. **Burbuja Flotante Interactiva Global (`AiAgentBubble.tsx`):**
+   - Montaje global en la raíz (`__root.tsx`) accesible desde todas las rutas de la plataforma.
+   - Botón flotante circular con el isotipo oficial de Aval Community CR y pulso verde "En línea".
+   - Interfaz de chat glassmorphism con auto-scroll, chips de acciones rápidas (`💳 Pagar por SINPE`, `🎟️ Validar Tokens`, `⚖️ Legalidad`, `🎁 Ganar Tokens Gratis`) y enlace directo de traspaso a WhatsApp oficial con mensaje precargado.
+
+2. **Soporte Multi-Proveedor LLM y Panel Admin (`ConfigSection.tsx`):**
+   - Sección dedicada (Sección 11) en el Panel de Administración para gestionar la IA.
+   - Selector de proveedor activo: **Google Gemini**, **OpenAI**, **DeepSeek** y **Anthropic Claude**.
+   - Almacenamiento seguro de API keys con toggles para ocultar/mostrar claves (`Eye / EyeOff`).
+   - Selector de modelo por proveedor (`gemini-1.5-flash`, `gpt-4o-mini`, `deepseek-chat`, `claude-3-5-haiku`, etc.).
+   - Herramienta de testeo en vivo con botón **"Probar Conexión Activa"** (`probarConexionIA`).
+   - Editor en tiempo real de mensaje de bienvenida y prompt del sistema con persistencia en Supabase.
+
+3. **Interacción Avanzada por Voz (Web Speech API):**
+   - 🎙️ **Dictado por Voz**: Integración de `SpeechRecognition` para que el usuario pueda hablarle al asistente con transcripción automática en tiempo real.
+   - 🔊 **Lectura en Voz Alta (Text-to-Speech)**: Botón de altavoz en cada respuesta para escuchar las respuestas habladas en español con síntesis de voz nativa.
+
+---
+
+## 🚀 Hito 23: Aval-IA como Cerrador de Ventas Proactivo y Base de Conocimiento Total de la Plataforma
+
+1. **Identidad y Rol Comercial de Alto Rendimiento:**
+   - Bautizado oficialmente como **Aval-IA**, configurado con amabilidad costarricense ("pura vida") pero con mentalidad de cerrador de tratos (sales closer).
+   - Enfoque exclusivo de atención al público: cada respuesta conduce estratégicamente al cierre mediante preguntas de alternativa ("¿prefieres 8 o 12 tokens?") y llamados a la acción directos al [Checkout](/checkout) o al SINPE Móvil oficial al `8634-4772`.
+
+2. **Blindaje de Seguridad y Protección Anti-Técnica:**
+   - Interceptor en código (`esConsultaTecnicaInterna`) y directrices estrictas en el prompt que bloquean cualquier consulta sobre código, frameworks, Supabase, arquitectura o cómo fue desarrollada la plataforma.
+   - Desvío cordial automático que aclara que su función es 100% comercial y redirige de inmediato a las opciones de compra de tokens.
+
+3. **Enciclopedia y Dominio Total de la Plataforma (LLM y Motor Offline):**
+   - **6 Métodos de Pago**: SINPE Móvil Oficial al `8634-4772` (Importadora Luxury Scents LTDA.), Tarjetas Débito/Crédito TiloPay con aprobación instantánea automática, Apple Pay, Google Pay, PayPal y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay).
+   - **Lotes de Tickets**: 4 Tokens (₡4,000), 8 Tokens (₡8,000 - Más Popular), 12 Tokens (₡12,000) y 24 Tokens (₡24,000 VIP) con selección libre de combinaciones de 5 dígitos (00000 al 99999) o generadas al azar.
+   - **SuperToken ($6,000 USD Cash Extra)**: Multiplicador opcional por ₡1,500 en Checkout que otorga $6,000 USD en efectivo adicionales si el participante gana el 1° lugar.
+   - **Premios Oficiales**: Toyota Prado 2026 0KM full extras 4x4 (traspaso notarial y marchamo 100% pagos por la empresa), Moto Yamaha MT 0KM, PlayStation 5 o ₡1,000,000 SINPE, y juegos express con premios instantáneos de hasta ₡100,000.
+   - **Mini-Sorteos Semanales "Viernes de Tanque Lleno"**: ₡50,000 en combustible Delta/Uno (o SINPE equivalente) rifados todos los viernes automáticamente entre todos los participantes activos, sin pagar nada extra y manteniendo sus números activos para la Prado.
+   - **Dominio de FAQs Oficiales**: Respuestas exactas sobre participación, determinación transparente de ganadores con la **Lotería Nacional de la Junta de Protección Social (JPS)**, validación en `/validar` y traspaso legal formal ante Notario Público bajo la Ley N° 7472.
+   - **Ganchos de Venta Incitadores**: Integración sistemática en saludos y respuestas para despertar emoción (*"¡mira te ganas gasolina todos los viernes con tanque lleno!", "¿sabes de los supertokens?"*).
+
 
 
