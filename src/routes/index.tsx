@@ -381,7 +381,7 @@ function IndexPage() {
         <button
           type="button"
           onClick={() => setOpenRaspa(true)}
-          className="md:hidden fixed bottom-5 right-4 z-40 flex items-center gap-2 rounded-full border-2 border-amber-400 bg-zinc-950/95 px-4 py-2.5 text-xs font-black text-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.35)] backdrop-blur active:scale-95 transition-transform"
+          className="md:hidden fixed bottom-22 right-4 z-30 flex items-center gap-2 rounded-full border-2 border-amber-400 bg-zinc-950/95 px-3.5 py-2 text-xs font-black text-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.35)] backdrop-blur active:scale-95 transition-transform"
         >
           <span className="text-base">
             {sorteo.raspaConfig?.modo === "ruleta" ? "🎡" : sorteo.raspaConfig?.modo === "ambos" ? "✨" : "🎁"}

@@ -70,35 +70,35 @@ export function PwaInstallPrompt({ config }: { config: Config }) {
 
   return (
     <>
-      {/* Banner Flotante Inferior */}
+      {/* Banner Flotante Inferior (Espaciado inteligente sin colisión con Aval-IA) */}
       <aside
         aria-live="polite"
         aria-label="Instalar aplicación en tu dispositivo"
-        className="fixed bottom-4 right-4 z-40 max-w-md animate-in fade-in slide-in-from-bottom-5 duration-500"
+        className="fixed bottom-22 left-3 right-3 sm:left-auto sm:bottom-6 sm:right-24 z-40 max-w-md animate-in fade-in slide-in-from-bottom-5 duration-500"
       >
-        <div className="flex items-center gap-3.5 rounded-2xl border-2 border-primary/50 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-md text-foreground">
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-600 text-white font-black text-xl shadow-lg">
+        <div className="flex items-center gap-3 rounded-2xl border-2 border-primary/50 bg-zinc-950/95 p-3 sm:p-3.5 shadow-2xl backdrop-blur-md text-foreground">
+          <div className="flex size-10 sm:size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-amber-600 text-white font-black text-lg shadow-lg">
             🔥
           </div>
 
           <div className="flex-1 min-w-0 pr-1">
-            <div className="flex items-center gap-1.5 font-black text-sm text-foreground">
+            <div className="flex items-center gap-1.5 font-black text-xs sm:text-sm text-foreground">
               <span>Instalar App en tu Celular</span>
               <span className="rounded-full bg-emerald-500/20 text-emerald-400 font-extrabold text-[9px] px-2 py-0.2">
                 Gratis
               </span>
             </div>
-            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-              Accede a tus tokens en 1 toque y recibe alertas de ganadores al instante.
+            <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+              Acceso a tus tokens en 1 toque y alertas en tiempo real.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <Button
               variant="hero"
               size="sm"
               onClick={handleInstalar}
-              className="gap-1.5 font-bold shadow-md h-9 text-xs px-3"
+              className="gap-1 font-bold shadow-md h-8 sm:h-9 text-xs px-2.5 sm:px-3"
             >
               <Download className="size-3.5" /> Instalar
             </Button>

@@ -12,7 +12,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
 import { toast } from "sonner";
-import { InstallPWA } from "../components/InstallPWA";
 import { AiAgentBubble } from "../components/AiAgentBubble";
 
 function NotFoundComponent() {
@@ -157,7 +156,6 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster position="top-center" richColors />
-      <InstallPWA />
       <AiAgentBubble />
     </QueryClientProvider>
   );
