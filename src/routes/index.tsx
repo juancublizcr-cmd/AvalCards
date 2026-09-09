@@ -199,9 +199,14 @@ function IndexPage() {
     return calcularPaquetes(sorteoActual);
   });
   const [progreso, setProgreso] = useState(() => {
+    const cfg = loaderData?.config || CONFIG_DEFAULT;
+    if (typeof cfg.termometroPorcentajeManual === "number" && cfg.termometroPorcentajeManual > 0) {
+      return cfg.termometroPorcentajeManual;
+    }
     if (loaderData?.inventario && loaderData.inventario.total > 0) {
       const vendidos = loaderData.inventario.total - loaderData.inventario.disponibles;
-      return Math.round((vendidos / loaderData.inventario.total) * 100);
+      const meta = cfg.termometroMetaTokens && cfg.termometroMetaTokens > 0 ? cfg.termometroMetaTokens : 200;
+      return Math.min(98, Math.max(12, Math.round((vendidos / meta) * 100)));
     }
     return 87;
   });
@@ -278,8 +283,14 @@ function IndexPage() {
         }
 
         if (inventarioData && inventarioData.total > 0) {
-          const vendidos = inventarioData.total - inventarioData.disponibles;
-          setProgreso(Math.round((vendidos / inventarioData.total) * 100));
+          const cfgActual = configData || config;
+          if (typeof cfgActual.termometroPorcentajeManual === "number" && cfgActual.termometroPorcentajeManual > 0) {
+            setProgreso(cfgActual.termometroPorcentajeManual);
+          } else {
+            const vendidos = inventarioData.total - inventarioData.disponibles;
+            const meta = cfgActual.termometroMetaTokens && cfgActual.termometroMetaTokens > 0 ? cfgActual.termometroMetaTokens : 200;
+            setProgreso(Math.min(98, Math.max(12, Math.round((vendidos / meta) * 100))));
+          }
         }
       } catch (err) {
         console.error("Error cargando datos:", err);
@@ -791,8 +802,11 @@ function IndexPage() {
             {/* Barra de Progreso de Disponibilidad */}
             <div className="mt-8 space-y-2 max-w-md mx-auto">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Disponibilidad de Tokens</span>
-                <span className="font-bold text-foreground" suppressHydrationWarning>{progreso}% Vendido</span>
+                <span className="flex items-center gap-1 font-medium">
+                  <Flame className="size-3.5 text-amber-500 fill-amber-500" />
+                  {config.termometroFaseTitulo || "Disponibilidad Preventa · Fase 1"}
+                </span>
+                <span className="font-bold text-foreground font-mono" suppressHydrationWarning>{`${progreso}% Asignado`}</span>
               </div>
               <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
                 <div

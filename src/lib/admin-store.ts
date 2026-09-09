@@ -143,6 +143,10 @@ export type Config = {
   miniSorteoFecha?: string;
   miniSorteoPremio?: string;
   pwaBannerActivo?: boolean;
+  // Termómetro Comercial de Disponibilidad
+  termometroFaseTitulo?: string;
+  termometroMetaTokens?: number;
+  termometroPorcentajeManual?: number;
   // SuperToken
   supertokenActivo?: boolean;
   supertokenPrecio?: number;
@@ -347,6 +351,9 @@ export const CONFIG_DEFAULT: Config = {
   miniSorteoFecha: "Viernes 7:00 PM",
   miniSorteoPremio: "₡50,000 en Gasolina Delta / Uno",
   pwaBannerActivo: true,
+  termometroFaseTitulo: "Disponibilidad Preventa · Fase 1",
+  termometroMetaTokens: 200,
+  termometroPorcentajeManual: 87,
   supertokenActivo: true,
   supertokenPrecio: 1500,
   supertokenPremioUsd: 6000,

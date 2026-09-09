@@ -153,6 +153,49 @@ export function ConfigSection({
           </div>
         </div>
 
+        {/* TERMÓMETRO COMERCIAL DE LA LANDING (FASES) */}
+        <div className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 space-y-4">
+          <div className="flex items-center gap-2 text-amber-500 font-bold text-sm">
+            <Flame className="size-4" /> Termómetro de Disponibilidad en Landing (Estrategia por Fases)
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Etiqueta de la Fase</Label>
+              <Input
+                value={borrador.termometroFaseTitulo ?? "Disponibilidad Preventa · Fase 1"}
+                placeholder="Disponibilidad Preventa · Fase 1"
+                onChange={(e) => setBorrador({ ...borrador, termometroFaseTitulo: e.target.value })}
+              />
+              <p className="text-[10px] text-muted-foreground">Texto mostrado junto a la barra.</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs">Meta de Tokens de la Fase</Label>
+              <Input
+                type="number"
+                min={50}
+                max={100000}
+                value={borrador.termometroMetaTokens ?? 200}
+                onChange={(e) => setBorrador({ ...borrador, termometroMetaTokens: Number(e.target.value) })}
+              />
+              <p className="text-[10px] text-muted-foreground">Ej. 200 tokens. Calcula el % dinámico con las ventas reales.</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs">% Fijo Manual (Opcional)</Label>
+              <Input
+                type="number"
+                min={0}
+                max={99}
+                placeholder="Dejar en 0 para cálculo dinámico"
+                value={borrador.termometroPorcentajeManual ?? 87}
+                onChange={(e) => setBorrador({ ...borrador, termometroPorcentajeManual: Number(e.target.value) })}
+              />
+              <p className="text-[10px] text-muted-foreground">Fuerza un % fijo (ej. 87%). Si pones 0, calcula por ventas.</p>
+            </div>
+          </div>
+        </div>
+
         {/* DETALLES DEL MODO PROMOCIONAL */}
         {!borrador.ventasActivas && (
           <div className="mt-4 rounded-xl border-2 border-amber-500/40 bg-amber-500/10 p-4 space-y-4">
