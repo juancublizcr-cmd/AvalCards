@@ -376,15 +376,7 @@ function IndexPage() {
               variant="ghost"
               size="sm"
               asChild
-              className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-neutral-300 hover:text-white"
-            >
-              <a href="#consulta-tokens">Verificar Token</a>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
+              className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-neutral-300 hover:text-white"
             >
               <Link to="/validar">Validar Tokens</Link>
             </Button>

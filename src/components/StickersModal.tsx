@@ -317,16 +317,6 @@ export function StickersModal({
                 Total: <strong className={supertoken ? "text-amber-400 text-sm font-mono" : "text-primary text-sm font-mono"}>₡{precioFinal.toLocaleString("es-CR")}</strong>
               </span>
             </div>
-
-            {/* Bono Modelo Híbrido */}
-            <div className="mt-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 flex items-center justify-between text-[11px]">
-              <span className="font-bold text-amber-400 flex items-center gap-1.5">
-                <Sparkles className="size-3.5" /> Bono Exclusivo Incluido:
-              </span>
-              <span className="font-mono font-bold text-white">
-                +{calcularGirosPorTokens(paquete?.cantidad || 4)} Giros GRATIS (Ruleta / Raspa)
-              </span>
-            </div>
           </div>
         )}
 
