@@ -172,7 +172,7 @@ export function ResumenSection({
         <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm">
           <Anillo porcentaje={totalStickersVendidos > 0 ? Math.min(100, Math.round((totalStickersVendidos / 100000) * 100)) : 0} />
           <div>
-            <div className="text-sm text-muted-foreground">Stickers Vendidos</div>
+            <div className="text-sm text-muted-foreground">Tokens Vendidos</div>
             <div className="mt-1 text-lg font-semibold">{totalStickersVendidos.toLocaleString("es-CR")}</div>
             <div className="text-xs text-muted-foreground">aprobados en total</div>
             {stickersPendientes > 0 ? (

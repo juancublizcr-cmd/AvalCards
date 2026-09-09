@@ -119,7 +119,7 @@ export function ConfigSection({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Intentos de cambio de stickers</Label>
+            <Label>Intentos de cambio de Tokens</Label>
             <Input
               type="number"
               min={0}

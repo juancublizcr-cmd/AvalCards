@@ -240,7 +240,7 @@ export function PagosSection({
                 <td className="px-5 py-4">{badgeMetodo(o.metodo_pago)}</td>
                 <td className="px-5 py-4 font-mono">{o.telefono}</td>
                 <td className="px-5 py-4">
-                  <div>{o.cantidad} stickers</div>
+                  <div>{o.cantidad} Tokens</div>
                   <div className="text-xs text-muted-foreground">
                     ₡{o.precio.toLocaleString("es-CR")}
                   </div>
@@ -315,7 +315,7 @@ export function PagosSection({
         <SheetContent side="right" className="admin-light w-full overflow-y-auto sm:max-w-xl">
           <SheetHeader>
             <SheetTitle>Detalle de Transacción · {detalle?.id}</SheetTitle>
-            <SheetDescription>Revisión de cobro, comprobante y stickers</SheetDescription>
+            <SheetDescription>Revisión de cobro, comprobante y Tokens</SheetDescription>
           </SheetHeader>
           {detalle ? (
             <div className="space-y-4 px-4 pb-6">
@@ -325,7 +325,7 @@ export function PagosSection({
                 <Dato label="Correo" valor={detalle.email} />
                 <Dato
                   label="Monto"
-                  valor={`₡${detalle.precio.toLocaleString("es-CR")} · ${detalle.cantidad} stickers`}
+                  valor={`₡${detalle.precio.toLocaleString("es-CR")} · ${detalle.cantidad} Tokens`}
                 />
                 <Dato
                   label="Método de Pago"

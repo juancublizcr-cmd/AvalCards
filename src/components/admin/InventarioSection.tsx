@@ -202,7 +202,7 @@ export function InventarioSection({
       <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
         <h2 className="font-semibold">Números premiados instantáneos</h2>
         <p className="text-sm text-muted-foreground">
-          Si un cliente recibe uno de estos stickers al azar, verá confeti y el aviso de premio
+          Si un cliente recibe uno de estos tokens al azar, verá confeti y el aviso de premio
           instantáneo.
         </p>
         <div className="mt-4 flex flex-wrap items-end gap-3">
