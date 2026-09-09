@@ -1,4 +1,4 @@
-import { AlertTriangle, Download, FileSpreadsheet, TrendingUp, Trophy, Wallet } from "lucide-react";
+import { AlertTriangle, Download, FileSpreadsheet, ShoppingCart, TrendingUp, Trophy, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -169,16 +169,16 @@ export function ResumenSection({
           </div>
         </div>
 
-        <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm">
+        <div className="flex items-center gap-5 rounded-xl border border-border bg-card p-5 shadow-sm">
           <Anillo porcentaje={totalStickersVendidos > 0 ? Math.min(100, Math.round((totalStickersVendidos / 100000) * 100)) : 0} />
-          <div>
-            <div className="text-sm font-semibold text-muted-foreground">Tokens Vendidos</div>
-            <div className="mt-1 text-3xl font-black font-display text-primary tracking-tight">
+          <div className="space-y-1">
+            <div className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Tokens Vendidos</div>
+            <div className="text-3xl sm:text-4xl font-black font-display text-primary tracking-tight leading-none py-1">
               {totalStickersVendidos.toLocaleString("es-CR")}
             </div>
             <div className="text-xs text-muted-foreground font-medium">aprobados en total</div>
             {stickersPendientes > 0 ? (
-              <div className="text-xs font-bold text-amber-500 mt-1">
+              <div className="text-xs font-bold text-amber-500 pt-1">
                 +{stickersPendientes} pendientes
               </div>
             ) : null}
@@ -206,14 +206,21 @@ export function ResumenSection({
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            Último Ganador / Venta <Trophy className="size-4 text-primary" />
+          <div className="flex items-center justify-between text-xs uppercase tracking-wider font-bold text-muted-foreground">
+            Última Venta Registrada <ShoppingCart className="size-4 text-primary" />
           </div>
-          <div className="mt-2 text-xl font-bold">{ultimo?.nombre ?? "Sin ventas aún"}</div>
-          <div className="mt-1 font-mono text-2xl font-bold text-primary">
-            {ultimo?.numeros?.[0] ?? "-----"}
+          <div className="mt-2 text-lg font-bold text-foreground truncate">{ultimo?.nombre ?? "Sin ventas aún"}</div>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="font-mono text-sm font-bold text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded">
+              {ultimo ? `${ultimo.cantidad} Tokens · ₡${ultimo.precio.toLocaleString("es-CR")}` : "---"}
+            </span>
+            {ultimo?.supertoken && (
+              <span className="text-[10px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/40 px-1.5 py-0.5 rounded">
+                SuperToken
+              </span>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground">{ultimo?.telefono ?? ""}</p>
+          <p className="text-xs text-muted-foreground mt-1.5 font-mono">{ultimo?.telefono ? `Tel: ${ultimo.telefono}` : ""}</p>
         </div>
       </div>
 
