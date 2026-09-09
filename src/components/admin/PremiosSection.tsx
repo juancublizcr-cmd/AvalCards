@@ -541,7 +541,7 @@ export function PremiosSection({
                   <span>⭐</span> Múltiplos de 3 (Competencia PRO)
                 </div>
                 <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
-                  Paquetes de 3 en 3 (desde 3 hasta 24 stickers). Destaca el paquete de <strong>6 Tokens por ₡8 000</strong> como el más vendido.
+                  Paquetes de 3 en 3 (desde 3 hasta 24 tokens). Destaca el paquete de <strong>6 Tokens por ₡8 000</strong> como el más vendido.
                 </p>
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-mono font-bold text-emerald-400">

@@ -51,7 +51,7 @@ function PrivacidadPage() {
         <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 text-sm text-muted-foreground leading-relaxed shadow-sm">
           <h2 className="text-lg font-bold text-foreground">1. Recopilación de Información</h2>
           <p>
-            Para procesar tu participación y asignación de stickers digitales en nuestros eventos promocionales, recopilamos únicamente los datos indispensables de contacto: nombre completo, número de teléfono celular, correo electrónico y la captura del comprobante bancario por SINPE Móvil.
+            Para procesar tu participación y asignación de tokens digitales en nuestros eventos promocionales, recopilamos únicamente los datos indispensables de contacto: nombre completo, número de teléfono celular, correo electrónico y la captura del comprobante bancario por SINPE Móvil.
           </p>
 
           <h2 className="text-lg font-bold text-foreground pt-4">2. Finalidad del Uso de Datos</h2>

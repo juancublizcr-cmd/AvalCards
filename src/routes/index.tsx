@@ -41,6 +41,7 @@ import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import pradoImg from "@/assets/premio-prado.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
 import consolaImg from "@/assets/premio-consola.jpg";
+import { fetchOrdenes, type Orden } from "@/lib/orders";
 import {
   fetchPremios,
   fetchInventario,
@@ -58,19 +59,21 @@ import {
 export const Route = createFileRoute("/")({
   loader: async () => {
     try {
-      const [premios, inventario, sorteo, config] = await Promise.all([
+      const [premios, inventario, sorteo, config, ordenes] = await Promise.all([
         fetchPremios(),
         fetchInventario(),
         fetchSorteo(),
         fetchConfig(),
+        fetchOrdenes().catch(() => []),
       ]);
-      return { premios, inventario, sorteo, config };
+      return { premios, inventario, sorteo, config, ordenes };
     } catch {
       return {
         premios: PREMIOS_DEFAULT,
         inventario: { total: 0, disponibles: 0, fecha: "" },
         sorteo: SORTEO_DEFAULT,
         config: CONFIG_DEFAULT,
+        ordenes: [],
       };
     }
   },
@@ -186,6 +189,37 @@ function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
   ];
 }
 
+function calcularProgresoTermometro(
+  cfg: Config,
+  ordenes?: Orden[],
+  inventario?: { total: number; disponibles: number } | null
+): number {
+  if (typeof cfg.termometroPorcentajeManual === "number" && cfg.termometroPorcentajeManual > 0) {
+    return cfg.termometroPorcentajeManual;
+  }
+  const meta = cfg.termometroMetaTokens && cfg.termometroMetaTokens > 0 ? cfg.termometroMetaTokens : 500;
+
+  // 1. Prioridad: Conteo real de tokens de órdenes aprobadas en Supabase
+  if (ordenes && ordenes.length > 0) {
+    const tokensAprobados = ordenes
+      .filter((o) => o.estado === "aprobada")
+      .reduce((sum, o) => sum + (Number(o.cantidad) || 0), 0);
+    if (tokensAprobados > 0) {
+      return Math.min(98, Math.max(12, Math.round((tokensAprobados / meta) * 100)));
+    }
+  }
+
+  // 2. Respaldo: Inventario general
+  if (inventario && inventario.total > 0) {
+    const vendidos = inventario.total - inventario.disponibles;
+    if (vendidos > 0) {
+      return Math.min(98, Math.max(12, Math.round((vendidos / meta) * 100)));
+    }
+  }
+
+  return 41;
+}
+
 function IndexPage() {
   const loaderData = Route.useLoaderData();
   const [paquete, setPaquete] = useState<Paquete | null>(null);
@@ -200,15 +234,7 @@ function IndexPage() {
   });
   const [progreso, setProgreso] = useState(() => {
     const cfg = loaderData?.config || CONFIG_DEFAULT;
-    if (typeof cfg.termometroPorcentajeManual === "number" && cfg.termometroPorcentajeManual > 0) {
-      return cfg.termometroPorcentajeManual;
-    }
-    if (loaderData?.inventario && loaderData.inventario.total > 0) {
-      const vendidos = loaderData.inventario.total - loaderData.inventario.disponibles;
-      const meta = cfg.termometroMetaTokens && cfg.termometroMetaTokens > 0 ? cfg.termometroMetaTokens : 200;
-      return Math.min(98, Math.max(12, Math.round((vendidos / meta) * 100)));
-    }
-    return 87;
+    return calcularProgresoTermometro(cfg, loaderData?.ordenes, loaderData?.inventario);
   });
   const [openRaspa, setOpenRaspa] = useState(false);
   const [fotoZoom, setFotoZoom] = useState<{ url: string; titulo: string; nivel?: string } | null>(null);
@@ -263,13 +289,15 @@ function IndexPage() {
   useEffect(() => {
     async function cargar() {
       try {
-        const [premiosData, inventarioData, sorteoData, configData] = await Promise.all([
+        const [premiosData, inventarioData, sorteoData, configData, ordenesData] = await Promise.all([
           fetchPremios(),
           fetchInventario(),
           fetchSorteo(),
           fetchConfig(),
+          fetchOrdenes().catch(() => []),
         ]);
 
+        const cfgActual = configData || config;
         if (premiosData && premiosData.length > 0) {
           setPremios(premiosData);
         }
@@ -282,16 +310,7 @@ function IndexPage() {
           setPaquetes(calcularPaquetes(sorteoData));
         }
 
-        if (inventarioData && inventarioData.total > 0) {
-          const cfgActual = configData || config;
-          if (typeof cfgActual.termometroPorcentajeManual === "number" && cfgActual.termometroPorcentajeManual > 0) {
-            setProgreso(cfgActual.termometroPorcentajeManual);
-          } else {
-            const vendidos = inventarioData.total - inventarioData.disponibles;
-            const meta = cfgActual.termometroMetaTokens && cfgActual.termometroMetaTokens > 0 ? cfgActual.termometroMetaTokens : 200;
-            setProgreso(Math.min(98, Math.max(12, Math.round((vendidos / meta) * 100))));
-          }
-        }
+        setProgreso(calcularProgresoTermometro(cfgActual, ordenesData, inventarioData));
       } catch (err) {
         console.error("Error cargando datos:", err);
       }
@@ -874,7 +893,7 @@ function IndexPage() {
                     {p.cantidad}
                   </div>
                   <div className="text-xs sm:text-sm uppercase tracking-widest text-muted-foreground mt-1">
-                    {sorteo.modalidadVenta === "multiplos_3" ? "Stickers / Tokens" : "Tokens Digitales Oficiales"}
+                    Tokens Digitales Oficiales
                   </div>
                   <div className="mt-4 text-2xl sm:text-3xl font-bold text-foreground">
                     {`₡${formatNumber(p.precio)}`}

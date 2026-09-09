@@ -110,7 +110,7 @@ export function InventarioSection({
       setInstantaneos([...instantaneos.filter((p) => p.numero !== n), nuevo]);
       setNumero("");
       setPremio("");
-      toast.success(`Sticker ${n} premiado con ${premio.trim()}`);
+      toast.success(`Token ${n} premiado con ${premio.trim()}`);
     } catch (err) {
       console.error(err);
       toast.error("Error al agregar premio instantáneo");
@@ -158,7 +158,7 @@ export function InventarioSection({
             />
           </div>
           <div className="space-y-2">
-            <Label>Precio base por sticker (₡)</Label>
+            <Label>Precio base por token (₡)</Label>
             <Input
               type="number"
               value={borrador.precioBase}
@@ -175,7 +175,7 @@ export function InventarioSection({
 
         <div className="mt-5 flex flex-wrap gap-3">
           <Button onClick={generar} disabled={generando}>
-            <Database /> {generando ? "Generando..." : "Generar Inventario de Stickers"}
+            <Database /> {generando ? "Generando..." : "Generar Inventario de Tokens"}
           </Button>
           <Button variant="destructive" onClick={() => { void purgar(); }} disabled={generando}>
             <Trash2 /> Purgar inventario
