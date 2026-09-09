@@ -44,7 +44,7 @@ export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[]
   { id: "pagos", label: "Pagos y Transacciones", icono: CreditCard },
   { id: "sorteos", label: "Fecha del Evento y Premios", icono: Trophy },
   { id: "raspa", label: "Raspa y Gana Express", icono: Gift },
-  { id: "inventario", label: "Generador e Inventario", icono: Dices },
+  { id: "inventario", label: "Inventario de Tokens", icono: Dices },
   { id: "escrutinio", label: "Escrutinio del Sorteo", icono: Target },
   { id: "clientes", label: "Clientes (CRM)", icono: Users },
   { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
@@ -139,7 +139,7 @@ export function AdminSidebarContent({
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               <Search className="size-4 shrink-0 text-primary" />
-              <span className="flex-1">Validar Stickers</span>
+              <span className="flex-1">Validar Tokens</span>
               <ExternalLink className="size-3 text-muted-foreground" />
             </Link>
             <Link
