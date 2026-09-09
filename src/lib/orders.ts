@@ -262,7 +262,7 @@ export async function fetchNumerosOcupados(): Promise<Set<string>> {
   }
 }
 
-export type ResultadoBusquedaSticker = {
+export type ResultadoBusquedaToken = {
   consultado: boolean;
   numero: string;
   ocupado: boolean;
@@ -274,7 +274,9 @@ export type ResultadoBusquedaSticker = {
   };
 };
 
-export async function buscarPorSticker(termino: string): Promise<ResultadoBusquedaSticker> {
+export type ResultadoBusquedaSticker = ResultadoBusquedaToken;
+
+export async function buscarPorToken(termino: string): Promise<ResultadoBusquedaToken> {
   const digits = termino.replace(/\D/g, "");
   if (!digits) {
     return { consultado: false, numero: "", ocupado: false };
@@ -325,3 +327,5 @@ export async function buscarPorSticker(termino: string): Promise<ResultadoBusque
     };
   }
 }
+
+export const buscarPorSticker = buscarPorToken;

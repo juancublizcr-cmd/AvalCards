@@ -36,7 +36,7 @@ import { FlyerPromocional } from "@/components/FlyerPromocional";
 import { FomoNotifications } from "@/components/FomoNotifications";
 import { RankingReferidos } from "@/components/RankingReferidos";
 import { MiniSorteosSection } from "@/components/MiniSorteosSection";
-import { ConsultaStickerSection } from "@/components/ConsultaStickerSection";
+import { ConsultaTokensSection } from "@/components/ConsultaTokensSection";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import pradoImg from "@/assets/premio-prado.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
@@ -361,7 +361,7 @@ function IndexPage() {
               asChild
               className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-neutral-300 hover:text-white"
             >
-              <a href="#consulta-stickers">Buscar Sticker</a>
+              <a href="#consulta-tokens">Verificar Token</a>
             </Button>
             <Button
               variant="ghost"
@@ -920,8 +920,8 @@ function IndexPage() {
           </div>
         )}
 
-        {/* 04 / CONSULTA PÚBLICA DE STICKERS & VALIDACIÓN */}
-        <ConsultaStickerSection />
+        {/* 04 / CONSULTA PÚBLICA DE TOKENS & VALIDACIÓN */}
+        <ConsultaTokensSection />
 
         {/* GANADORES ANTERIORES Y TESTIMONIOS */}
         <GanadoresSection ganadores={sorteo.ganadoresTestimonios} />
