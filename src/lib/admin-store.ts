@@ -401,6 +401,12 @@ export const CONFIG_DEFAULT: Config = {
 // Premios
 // ────────────────────────────────────────────────────────────
 
+function toSupabaseNivel(nivel: string): "Premio Mayor" | "Segundo Premio" | "Tercer Premio" {
+  if (nivel === "1° Lugar (A Elección)" || nivel === "Premio Mayor") return "Premio Mayor";
+  if (nivel === "2° Lugar (A Elección)" || nivel === "Segundo Premio") return "Segundo Premio";
+  return "Tercer Premio";
+}
+
 export async function fetchPremios(): Promise<Premio[]> {
   const NIVEL_ORDEN: Record<string, number> = {
     "Premio Mayor": 1,
@@ -412,11 +418,14 @@ export async function fetchPremios(): Promise<Premio[]> {
     "Premio Extra": 4,
   };
 
+  let meta: Record<string, { nivel?: Nivel; activo?: boolean }> = {};
   let inactivos: string[] = [];
   if (typeof window !== "undefined") {
     try {
-      const raw = localStorage.getItem("aval_premios_inactivos");
-      if (raw) inactivos = JSON.parse(raw);
+      const rawMeta = localStorage.getItem("aval_premios_meta");
+      if (rawMeta) meta = JSON.parse(rawMeta);
+      const rawInact = localStorage.getItem("aval_premios_inactivos");
+      if (rawInact) inactivos = JSON.parse(rawInact);
     } catch {}
   }
 
@@ -425,7 +434,11 @@ export async function fetchPremios(): Promise<Premio[]> {
       .from("premios")
       .select("*");
     if (error || !data || data.length === 0) {
-      return PREMIOS_DEFAULT.map((p) => ({ ...p, activo: !inactivos.includes(p.id) }));
+      return PREMIOS_DEFAULT.map((p) => ({
+        ...p,
+        nivel: meta[p.id]?.nivel || p.nivel,
+        activo: meta[p.id]?.activo !== undefined ? meta[p.id].activo : !inactivos.includes(p.id),
+      }));
     }
 
     // Ordenar de forma determinista
@@ -435,14 +448,39 @@ export async function fetchPremios(): Promise<Premio[]> {
       return ordA - ordB;
     });
 
-    return ordenados.map((p, idx) => ({
-      ...p,
-      activo: (p as any).activo !== undefined ? (p as any).activo : !inactivos.includes(p.id),
-      orden: NIVEL_ORDEN[p.nivel] ?? idx + 1,
-      imagen: p.imagen || PREMIOS_DEFAULT[idx % PREMIOS_DEFAULT.length]?.imagen || "",
-    }));
+    return ordenados.map((p, idx) => {
+      const itemMeta = meta[p.id];
+      let nivelReal: Nivel = p.nivel as Nivel;
+      if (itemMeta?.nivel) {
+        nivelReal = itemMeta.nivel;
+      } else if (p.nivel === "Premio Mayor") {
+        nivelReal = "1° Lugar (A Elección)";
+      } else if (p.nivel === "Segundo Premio") {
+        nivelReal = "2° Lugar (A Elección)";
+      } else if (p.nivel === "Tercer Premio") {
+        nivelReal = "3° Lugar (Efectivo)";
+      }
+
+      const estaActivo = itemMeta?.activo !== undefined
+        ? itemMeta.activo
+        : (p as any).activo !== undefined
+        ? (p as any).activo
+        : !inactivos.includes(p.id);
+
+      return {
+        ...p,
+        nivel: nivelReal,
+        activo: estaActivo,
+        orden: NIVEL_ORDEN[nivelReal] ?? idx + 1,
+        imagen: p.imagen || PREMIOS_DEFAULT[idx % PREMIOS_DEFAULT.length]?.imagen || "",
+      };
+    });
   } catch {
-    return PREMIOS_DEFAULT.map((p) => ({ ...p, activo: !inactivos.includes(p.id) }));
+    return PREMIOS_DEFAULT.map((p) => ({
+      ...p,
+      nivel: meta[p.id]?.nivel || p.nivel,
+      activo: meta[p.id]?.activo !== undefined ? meta[p.id].activo : !inactivos.includes(p.id),
+    }));
   }
 }
 
@@ -459,7 +497,13 @@ export async function upsertPremios(premios: Premio[]): Promise<void> {
 
   if (typeof window !== "undefined") {
     try {
-      const inactivos = premios.filter((p) => p.activo === false).map((p) => p.id);
+      const meta: Record<string, { nivel: Nivel; activo: boolean }> = {};
+      const inactivos: string[] = [];
+      premios.forEach((p) => {
+        meta[p.id] = { nivel: p.nivel, activo: p.activo !== false };
+        if (p.activo === false) inactivos.push(p.id);
+      });
+      localStorage.setItem("aval_premios_meta", JSON.stringify(meta));
       localStorage.setItem("aval_premios_inactivos", JSON.stringify(inactivos));
     } catch {}
   }
@@ -467,18 +511,31 @@ export async function upsertPremios(premios: Premio[]): Promise<void> {
   const normalizados = premios.map((p, idx) => ({
     id: p.id,
     nombre: p.nombre,
-    nivel: p.nivel,
-    imagen: p.imagen,
+    nivel: toSupabaseNivel(p.nivel),
+    imagen: p.imagen || "",
     orden: NIVEL_ORDEN[p.nivel] ?? idx + 1,
   }));
 
   const { error } = await supabase
     .from("premios")
     .upsert(normalizados, { onConflict: "id" });
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("Error al guardar premios en Supabase:", error);
+    throw new Error(error.message);
+  }
 }
 
 export async function deletePremio(id: string): Promise<void> {
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("aval_premios_meta");
+      if (raw) {
+        const meta = JSON.parse(raw);
+        delete meta[id];
+        localStorage.setItem("aval_premios_meta", JSON.stringify(meta));
+      }
+    } catch {}
+  }
   const { error } = await supabase.from("premios").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }

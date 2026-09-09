@@ -143,25 +143,11 @@ export function PremiosSection({
   const cambiarNivel = async (id: string, nuevoNivel: Nivel) => {
     const actual = premios.find((p) => p.id === id);
     if (!actual) return;
+    if (actual.nivel === nuevoNivel) return;
 
-    const nivelAnterior = actual.nivel;
-
-    // Si ya tiene ese nivel, no hacer nada
-    if (nivelAnterior === nuevoNivel) return;
-
-    // 1. Intercambiar nivel con el premio que ya lo tenía (para que no queden duplicados)
-    const premiosConNivel = premios.map((p) => {
-      if (p.id === id) {
-        return { ...p, nivel: nuevoNivel };
-      }
-      if (p.nivel === nuevoNivel) {
-        return { ...p, nivel: nivelAnterior };
-      }
-      return p;
-    });
-
-    // 2. Reordenar automáticamente: Premio Mayor (1°), Segundo Premio (2°), Tercer Premio (3°)
-    const reordenados = [...premiosConNivel]
+    // Actualizar nivel sin forzar intercambio destructivo (para permitir varios vehículos en 1° Lugar a elección)
+    const next = premios.map((p) => (p.id === id ? { ...p, nivel: nuevoNivel } : p));
+    const reordenados = [...next]
       .map((p) => ({
         ...p,
         orden: NIVEL_ORDEN[p.nivel] ?? 99,
@@ -172,12 +158,12 @@ export function PremiosSection({
 
     try {
       await upsertPremios(reordenados);
-      toast.success(`¡Posición actualizada automáticamente!`, {
-        description: `${reordenados[0]?.nombre || "El premio"} ahora está de 1° como Premio Mayor.`,
+      toast.success(`Nivel asignado con éxito`, {
+        description: `${actual.nombre} ahora está como ${nuevoNivel}.`,
       });
     } catch (err) {
       console.error(err);
-      toast.error("Error al guardar reordenamiento de premios");
+      toast.error("Error al guardar nivel de la entrega");
     }
   };
 
