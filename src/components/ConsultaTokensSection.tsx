@@ -42,7 +42,7 @@ export function ConsultaTokensSection() {
         {/* Columna Izquierda: Identidad de Marca Aval Community CR */}
         <div className="lg:col-span-6 space-y-4">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 text-xs uppercase tracking-widest text-primary font-medium">
-            <Search className="size-3.5" /> 04 · Consulta y Verificación Pública
+            <Search className="size-3.5" /> Consulta y Verificación Notarial
           </span>
 
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-wide uppercase leading-tight text-white">

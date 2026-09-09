@@ -673,6 +673,76 @@ function IndexPage() {
           </div>
         </section>
 
+        {/* FICHA TÉCNICA DEL CARRO / PREMIO DETALLADO */}
+        <section className="py-20 mx-auto max-w-6xl px-5 border-t border-border/40">
+          <div className="grid gap-12 lg:grid-cols-2 items-center">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                Gran Entrega Detallada
+              </span>
+              <h2 className="mt-2 font-display text-4xl sm:text-5xl leading-tight uppercase">
+                {sorteo.detalleTitulo || "Toyota Prado 2026: Lujo, Potencia y Confort"}
+              </h2>
+              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+                {sorteo.detalleSubtitulo || "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre."}
+              </p>
+
+              <div className="mt-8 space-y-4">
+                {(sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT).map((c: { titulo: string; desc: string }, i: number) => {
+                  const Icono = featureIcons[i % featureIcons.length] || Gauge;
+                  return (
+                    <div key={i} className="flex items-start gap-4 rounded-xl border border-border bg-secondary/40 p-4">
+                      <div className="rounded-lg bg-primary/10 p-2.5 text-primary shrink-0">
+                        <Icono className="size-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm">{c.titulo}</h4>
+                        <p className="text-xs text-muted-foreground mt-0.5">{c.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div
+                className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group cursor-zoom-in"
+                onClick={() =>
+                  setFotoZoom({
+                    url: sorteo.detalleImagen || premios[0]?.imagen || pradoImg,
+                    titulo: sorteo.detalleTitulo || "Entrega Detallada",
+                    nivel: "Ficha Técnica",
+                  })
+                }
+              >
+                <img
+                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-25 scale-110 pointer-events-none"
+                />
+                <img
+                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
+                  alt={sorteo.detalleTitulo || "Entrega Detallada"}
+                  className="relative z-0 max-h-76 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+                <div className="absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3 py-1 text-[11px] font-semibold text-zinc-300 border border-white/15 backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
+                </div>
+              </div>
+              <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 to-transparent p-6">
+                <h4 className="font-bold text-base text-primary flex items-center gap-2">
+                  <Award className="size-5" /> Garantía Aval Community CR
+                </h4>
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                  {sorteo.detalleGarantia || "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ZONA DE COMPRA Y CUENTA REGRESIVA */}
         <section id="paquetes-compra" className="py-20 mx-auto max-w-6xl px-5 scroll-mt-20">
           {/* Contador y Progreso */}
@@ -839,76 +909,6 @@ function IndexPage() {
               <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
                 {config.ventasActivas ? "Comenzar y Elegir mis Tokens →" : "🔥 Consultar Preventa por WhatsApp →"}
               </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* FICHA TÉCNICA DEL CARRO */}
-        <section className="py-20 mx-auto max-w-6xl px-5">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                Gran Entrega Detallada
-              </span>
-              <h2 className="mt-2 font-display text-4xl sm:text-5xl leading-tight uppercase">
-                {sorteo.detalleTitulo || "Toyota Prado 2026: Lujo, Potencia y Confort"}
-              </h2>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                {sorteo.detalleSubtitulo || "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre."}
-              </p>
-
-              <div className="mt-8 space-y-4">
-                {(sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT).map((c: { titulo: string; desc: string }, i: number) => {
-                  const Icono = featureIcons[i % featureIcons.length] || Gauge;
-                  return (
-                    <div key={i} className="flex items-start gap-4 rounded-xl border border-border bg-secondary/40 p-4">
-                      <div className="rounded-lg bg-primary/10 p-2.5 text-primary shrink-0">
-                        <Icono className="size-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-sm">{c.titulo}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">{c.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div
-                className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group cursor-zoom-in"
-                onClick={() =>
-                  setFotoZoom({
-                    url: sorteo.detalleImagen || premios[0]?.imagen || pradoImg,
-                    titulo: sorteo.detalleTitulo || "Entrega Detallada",
-                    nivel: "Ficha Técnica",
-                  })
-                }
-              >
-                <img
-                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-25 scale-110 pointer-events-none"
-                />
-                <img
-                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
-                  alt={sorteo.detalleTitulo || "Entrega Detallada"}
-                  className="relative z-0 max-h-76 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
-                />
-                <div className="absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3 py-1 text-[11px] font-semibold text-zinc-300 border border-white/15 backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
-                </div>
-              </div>
-              <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 to-transparent p-6">
-                <h4 className="font-bold text-base text-primary flex items-center gap-2">
-                  <Award className="size-5" /> Garantía Aval Community CR
-                </h4>
-                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                  {sorteo.detalleGarantia || "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno."}
-                </p>
-              </div>
             </div>
           </div>
         </section>
