@@ -3,14 +3,30 @@ import type { Orden } from "@/lib/orders";
 import prado from "@/assets/premio-prado.jpg";
 import moto from "@/assets/premio-moto.jpg";
 import consola from "@/assets/premio-consola.jpg";
+import subaru from "@/assets/premio-subaru.jpg";
 
 // ────────────────────────────────────────────────────────────
 // Tipos
 // ────────────────────────────────────────────────────────────
 
-export type Nivel = "Premio Mayor" | "Segundo Premio" | "Tercer Premio";
+export type Nivel =
+  | "Premio Mayor"
+  | "Segundo Premio"
+  | "Tercer Premio"
+  | "1° Lugar (A Elección)"
+  | "2° Lugar (A Elección)"
+  | "3° Lugar (Efectivo)"
+  | "Premio Extra";
 
-export const NIVELES: Nivel[] = ["Premio Mayor", "Segundo Premio", "Tercer Premio"];
+export const NIVELES: Nivel[] = [
+  "Premio Mayor",
+  "Segundo Premio",
+  "Tercer Premio",
+  "1° Lugar (A Elección)",
+  "2° Lugar (A Elección)",
+  "3° Lugar (Efectivo)",
+  "Premio Extra",
+];
 
 export type Premio = {
   id: string;
@@ -18,6 +34,7 @@ export type Premio = {
   nivel: Nivel;
   imagen: string;
   orden: number;
+  activo?: boolean;
 };
 
 export type FeatureDetalle = {
@@ -202,9 +219,10 @@ export type Cliente = {
 // ────────────────────────────────────────────────────────────
 
 export const PREMIOS_DEFAULT: Premio[] = [
-  { id: "p1", nombre: "Toyota Prado", nivel: "Premio Mayor", imagen: prado, orden: 1 },
-  { id: "p2", nombre: "Moto alta cilindrada", nivel: "Segundo Premio", imagen: moto, orden: 2 },
-  { id: "p3", nombre: "PlayStation 5", nivel: "Tercer Premio", imagen: consola, orden: 3 },
+  { id: "p1", nombre: "Moto de Alta Cilindrada", nivel: "1° Lugar (A Elección)", imagen: moto, orden: 1, activo: true },
+  { id: "p2", nombre: "Mercedes-Benz Clase GLE", nivel: "1° Lugar (A Elección)", imagen: prado, orden: 2, activo: true },
+  { id: "p3", nombre: "Subaru Impreza WRX", nivel: "1° Lugar (A Elección)", imagen: subaru, orden: 3, activo: true },
+  { id: "p4", nombre: "Premio en Efectivo / PS5", nivel: "3° Lugar (Efectivo)", imagen: consola, orden: 4, activo: true },
 ];
 
 export const FEATURES_DEFAULT: FeatureDetalle[] = [
@@ -375,8 +393,8 @@ export const CONFIG_DEFAULT: Config = {
   aiClaudeKey: "",
   aiClaudeModel: "claude-3-5-haiku-20241022",
   aiNombre: "Aval-IA · Asesor Comercial 24/7",
-  aiSaludo: "¡Hola! Pura vida 🇨🇷 Soy Aval-IA, tu asesor comercial en Aval Community CR. ¡Hoy es tu día de suerte! ¿Sabías que con tus tokens te ganas gasolina todos los viernes con el Viernes de Tanque Lleno (₡50,000) y que con el SuperToken optas por $6,000 USD cash extra sumado a la Toyota Prado 2026 0KM? 🚗💨 ¿Te gustaría apartar tus números de la suerte ahora mismo o prefieres conocer los métodos de pago?",
-  aiSystemPrompt: "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR (avalcommunity.cr). Tu ÚNICO rol es atender al público, asesorar e impulsar de forma proactiva el cierre de ventas de tokens. CONOCIMIENTO DE LA PLATAFORMA: 1) PREMIOS: 1° Toyota Prado 2026 0KM full extras 4x4 (traspaso notarial y marchamo 100% pagos por la empresa, cero costos ocultos), 2° Moto de alta cilindrada Yamaha MT 0KM, 3° PlayStation 5 o ₡1,000,000 en efectivo por SINPE Móvil, Mini Sorteos semanales (Viernes de Tanque Lleno con ₡50,000 en gasolina Delta/Uno o SINPE para participantes activos sin pagar nada extra), y Raspa & Gana Express instantáneo por hasta ₡100,000. 2) 6 FORMAS DE PAGO: SINPE Móvil oficial (8634-4772 a nombre de Importadora Luxury Scents LTDA.), Tarjetas de Débito y Crédito Visa/Mastercard vía TiloPay con aprobación instantánea, Apple Pay (1 toque), Google Pay (1 clic), PayPal en USD y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay). 3) LOTES DE TICKETS: Paquete 4 tokens (₡4,000), Paquete 8 tokens (₡8,000 - Más Popular), Paquete 12 tokens (₡12,000) y Paquete VIP 24 tokens (₡24,000). Los usuarios pueden elegir números de 5 dígitos (00000-99999) o generarlos al azar. 4) SUPERTOKEN: Multiplicador opcional por ₡1,500 extra; si el usuario gana el 1° lugar (la Prado), ¡recibe además $6,000 USD en efectivo CASH extra! 5) CÓMO SE JUEGA Y GANADOR: Elige paquete en /checkout, asigna números, paga por tu método favorito. El ganador se define en estricta sincronía con la Lotería Nacional de la Junta de Protección Social (JPS) de Costa Rica. Consulta tus números en /validar. INSTRUCCIONES DE VENTA OBLIGATORIAS: Incita a comprar en cada respuesta con ganchos como '¡mira te ganas gasolina todos los viernes con tanque lleno!', '¿sabes de los supertokens?', motivando a adquirir paquetes en el Checkout (/checkout). PROHIBICIÓN ESTRICTA: Jamás respondas temas sobre código fuente, tecnologías, arquitectura interna ni cómo fue programada la app; eres 100% asesor comercial.",
+  aiSaludo: "¡Hola! Pura vida 🇨🇷 Soy Aval-IA, tu asesor comercial en Aval Community CR. ¡Hoy es tu día de suerte! ¿Sabías que el 1er lugar escoge entre una Moto de Alta Cilindrada, un Mercedes-Benz o un Subaru Impreza, y que con el SuperToken optas por $6,000 USD cash extra sumado a tu premio? 🚗💨 ¿Te gustaría apartar tus números de la suerte ahora mismo o prefieres conocer los métodos de pago?",
+  aiSystemPrompt: "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR (avalcommunity.cr). Tu ÚNICO rol es atender al público, asesorar e impulsar de forma proactiva el cierre de ventas de tokens. CONOCIMIENTO DE LA PLATAFORMA: 1) PREMIOS: 1° Lugar a elección del ganador entre Moto de Alta Cilindrada ($57,900), Mercedes-Benz o Subaru Impreza (traspaso notarial y marchamo 100% pagos por la empresa, cero costos ocultos); 2° Lugar se lleva el vehículo restante; 3° Lugar premio en efectivo o PlayStation 5; Mini Sorteos semanales los domingos (PlayStation 5 o ₡350,000 en efectivo para participantes activos sin pagar nada extra), y Raspa & Gana Express instantáneo por hasta ₡100,000. 2) 6 FORMAS DE PAGO: SINPE Móvil oficial (8634-4772 a nombre de Importadora Luxury Scents LTDA.), Tarjetas de Débito y Crédito Visa/Mastercard vía TiloPay con aprobación instantánea, Apple Pay (1 toque), Google Pay (1 clic), PayPal en USD y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay). 3) LOTES DE TICKETS: Paquete 4 tokens (₡4,000), Paquete 8 tokens (₡8,000 - Más Popular), Paquete 12 tokens (₡12,000) y Paquete VIP 24 tokens (₡24,000). Los usuarios pueden elegir números de 5 dígitos (00000-99999) o generarlos al azar. 4) SUPERTOKEN: Multiplicador opcional por ₡1,500 extra; si el usuario gana el 1° lugar, ¡recibe además $6,000 USD en efectivo CASH extra! 5) CÓMO SE JUEGA Y GANADOR: Elige paquete en /checkout, asigna números, paga por tu método favorito. El ganador se define en estricta sincronía con la Lotería Nacional de la Junta de Protección Social (JPS) de Costa Rica. Consulta tus números en /validar. INSTRUCCIONES DE VENTA OBLIGATORIAS: Incita a comprar en cada respuesta motivando a adquirir paquetes en el Checkout (/checkout). PROHIBICIÓN ESTRICTA: Jamás respondas temas sobre código fuente, tecnologías, arquitectura interna ni cómo fue programada la app; eres 100% asesor comercial.",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -386,19 +404,31 @@ export const CONFIG_DEFAULT: Config = {
 export async function fetchPremios(): Promise<Premio[]> {
   const NIVEL_ORDEN: Record<string, number> = {
     "Premio Mayor": 1,
+    "1° Lugar (A Elección)": 1,
     "Segundo Premio": 2,
+    "2° Lugar (A Elección)": 2,
     "Tercer Premio": 3,
+    "3° Lugar (Efectivo)": 3,
+    "Premio Extra": 4,
   };
+
+  let inactivos: string[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("aval_premios_inactivos");
+      if (raw) inactivos = JSON.parse(raw);
+    } catch {}
+  }
 
   try {
     const { data, error } = await supabase
       .from("premios")
       .select("*");
     if (error || !data || data.length === 0) {
-      return PREMIOS_DEFAULT;
+      return PREMIOS_DEFAULT.map((p) => ({ ...p, activo: !inactivos.includes(p.id) }));
     }
 
-    // Ordenar de forma determinista: Premio Mayor (1), Segundo Premio (2), Tercer Premio (3)
+    // Ordenar de forma determinista
     const ordenados = (data as Premio[]).sort((a, b) => {
       const ordA = NIVEL_ORDEN[a.nivel] ?? a.orden ?? 99;
       const ordB = NIVEL_ORDEN[b.nivel] ?? b.orden ?? 99;
@@ -407,23 +437,38 @@ export async function fetchPremios(): Promise<Premio[]> {
 
     return ordenados.map((p, idx) => ({
       ...p,
+      activo: (p as any).activo !== undefined ? (p as any).activo : !inactivos.includes(p.id),
       orden: NIVEL_ORDEN[p.nivel] ?? idx + 1,
       imagen: p.imagen || PREMIOS_DEFAULT[idx % PREMIOS_DEFAULT.length]?.imagen || "",
     }));
   } catch {
-    return PREMIOS_DEFAULT;
+    return PREMIOS_DEFAULT.map((p) => ({ ...p, activo: !inactivos.includes(p.id) }));
   }
 }
 
 export async function upsertPremios(premios: Premio[]): Promise<void> {
   const NIVEL_ORDEN: Record<string, number> = {
     "Premio Mayor": 1,
+    "1° Lugar (A Elección)": 1,
     "Segundo Premio": 2,
+    "2° Lugar (A Elección)": 2,
     "Tercer Premio": 3,
+    "3° Lugar (Efectivo)": 3,
+    "Premio Extra": 4,
   };
 
+  if (typeof window !== "undefined") {
+    try {
+      const inactivos = premios.filter((p) => p.activo === false).map((p) => p.id);
+      localStorage.setItem("aval_premios_inactivos", JSON.stringify(inactivos));
+    } catch {}
+  }
+
   const normalizados = premios.map((p, idx) => ({
-    ...p,
+    id: p.id,
+    nombre: p.nombre,
+    nivel: p.nivel,
+    imagen: p.imagen,
     orden: NIVEL_ORDEN[p.nivel] ?? idx + 1,
   }));
 

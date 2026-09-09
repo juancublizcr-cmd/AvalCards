@@ -41,6 +41,7 @@ import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import pradoImg from "@/assets/premio-prado.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
 import consolaImg from "@/assets/premio-consola.jpg";
+import subaruImg from "@/assets/premio-subaru.jpg";
 import { fetchOrdenes, type Orden } from "@/lib/orders";
 import {
   fetchPremios,
@@ -269,7 +270,9 @@ function IndexPage() {
       ? "Transfiere a nuestra cuenta oficial o paga con tarjeta para validación inmediata."
       : `Aceptamos ${nombresMetodos.join(", ")} con validación inmediata y máxima seguridad.`;
 
-  const premioMayorActual = premios[0]?.nombre || sorteo.titulo || "el Premio Mayor";
+  const premiosVisibles = premios.filter((p) => p.activo !== false);
+  const primerPremioVisible = premiosVisibles[0] || premios[0];
+  const premioMayorActual = primerPremioVisible?.nombre || sorteo.titulo || "el Premio Mayor";
   const descPaso3 = `El sorteo se determina con los resultados oficiales de la Lotería Nacional (JPS). Si aciertas tu número, te llevas ${premioMayorActual} (vehículo 0KM, moto, casa, dinero en efectivo o el premio activo).`;
 
   const pasos = [
@@ -471,7 +474,7 @@ function IndexPage() {
 
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
                 <Crown className="size-3.5" />
-                <span>{`SuperToken: +$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash (${premios[0]?.nombre || "1° Lugar"})`}</span>
+                <span>{`SuperToken: +$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash (${primerPremioVisible?.nombre || "1° Lugar"})`}</span>
               </div>
             </div>
 
@@ -480,7 +483,7 @@ function IndexPage() {
                 sorteo.heroTitulo
               ) : (
                 <>
-                  ¿Te imaginas estrenar tu <span className="text-fire">{premios[0]?.nombre || "Moto Alta Cilindrada"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
+                  ¿Te imaginas estrenar tu <span className="text-fire">{primerPremioVisible?.nombre || "Moto Alta Cilindrada"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
                 </>
               )}
             </h1>
@@ -496,8 +499,8 @@ function IndexPage() {
               className="relative mx-auto mt-12 max-w-5xl group cursor-zoom-in"
               onClick={() =>
                 setFotoZoom({
-                  url: premios[0]?.imagen || pradoImg,
-                  titulo: premios[0]?.nombre || "Gran Entrega 2026",
+                  url: primerPremioVisible?.imagen || pradoImg,
+                  titulo: primerPremioVisible?.nombre || "Gran Entrega 2026",
                   nivel: "1° Lugar · Premio Mayor",
                 })
               }
@@ -505,15 +508,15 @@ function IndexPage() {
               <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-neutral-950 p-2 sm:p-4 shadow-[var(--shadow-card)] transition-all duration-500 group-hover:scale-[1.01] group-hover:border-primary/70 relative min-h-[340px] sm:min-h-[480px] flex items-center justify-center">
                 {/* Fondo difuminado para rellenar los bordes con los tonos reales de la foto */}
                 <img
-                  src={premios[0]?.imagen || pradoImg}
+                  src={primerPremioVisible?.imagen || pradoImg}
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
                 />
                 {/* Vehículo completo que se amolda al 100% sin recortarse */}
                 <img
-                  src={premios[0]?.imagen || pradoImg}
-                  alt={premios[0]?.nombre || "Gran Entrega 2026"}
+                  src={primerPremioVisible?.imagen || pradoImg}
+                  alt={primerPremioVisible?.nombre || "Gran Entrega 2026"}
                   className="relative z-0 max-h-[460px] sm:max-h-[520px] max-w-full w-auto h-auto object-contain mx-auto rounded-2xl brightness-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105"
                 />
 
@@ -626,116 +629,191 @@ function IndexPage() {
           </section>
         )}
 
-        {/* LAS 3 ENTREGAS DE LA EDICIÓN */}
-        <section className="bg-secondary/40 py-20 border-y border-border">
-          <div className="mx-auto max-w-6xl px-5">
-            <div className="text-center max-w-2xl mx-auto">
-              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                Más oportunidades de ser favorecido
-              </span>
-              <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-                Tres Entregas Espectaculares
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Con cada paquete adquieres triple oportunidad según las combinaciones oficiales.
-              </p>
-            </div>
-
-            {/* Banner Dinámico de Dinámica / Regla de Premiación */}
-            {sorteo.reglaPremios && (
-              <div className="mt-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
-                <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400">
-                  <Award className="size-4 text-amber-400" /> Dinámica Oficial de Premiación
-                </div>
-                <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
-                  {sorteo.reglaPremios}
+        {/* LAS ENTREGAS DE LA EDICIÓN (CUADRÍCULA DINÁMICA AUTO-ADAPTABLE) */}
+        {premiosVisibles.length > 0 && (
+          <section className="bg-secondary/40 py-20 border-y border-border">
+            <div className="mx-auto max-w-7xl px-5">
+              <div className="text-center max-w-2xl mx-auto">
+                <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                  Más oportunidades de ser favorecido
+                </span>
+                <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
+                  {premiosVisibles.length === 1
+                    ? "Gran Entrega Destacada"
+                    : premiosVisibles.length === 2
+                    ? "Dos Entregas Espectaculares"
+                    : premiosVisibles.length === 3
+                    ? "Tres Entregas Espectaculares"
+                    : premiosVisibles.length === 4
+                    ? "Cuatro Entregas de Lujo"
+                    : `${premiosVisibles.length} Entregas Espectaculares`}
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {premiosVisibles.length === 1
+                    ? "Con cada paquete de Tokens participas directamente por la Gran Entrega según las combinaciones oficiales."
+                    : premiosVisibles.length === 2
+                    ? "Con cada paquete adquieres doble oportunidad según las combinaciones oficiales."
+                    : premiosVisibles.length === 3
+                    ? "Con cada paquete adquieres triple oportunidad según las combinaciones oficiales."
+                    : `Con cada paquete adquieres múltiples oportunidades (${premiosVisibles.length} entregas) según las combinaciones oficiales.`}
                 </p>
               </div>
-            )}
 
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {premios.map((p, idx) => {
-                const isMayor = p.nivel === "Premio Mayor" || (idx === 0 && !premios.some(x => x.nivel === "Premio Mayor"));
-                const isSegundo = p.nivel === "Segundo Premio" || (idx === 1 && !premios.some(x => x.nivel === "Segundo Premio"));
-                const tagLugar = isMayor ? "1° Lugar" : isSegundo ? "2° Lugar" : "3° Lugar";
-                const defaultImg = isMayor ? pradoImg : isSegundo ? motoImg : consolaImg;
-
-                return (
-                  <div
-                    key={p.id || idx}
-                    className={`group rounded-2xl border bg-card overflow-hidden shadow-[var(--shadow-card)] relative flex flex-col justify-between transition-all duration-300 hover:border-primary/40 hover:shadow-xl ${
-                      isMayor
-                        ? "border-amber-500/50 shadow-[0_0_25px_rgba(245,158,11,0.12)]"
-                        : "border-border"
-                    }`}
-                  >
-                    {/* Badges Flotantes de Posición y SuperToken */}
-                    <div className="absolute top-3 right-3 flex gap-1.5 z-10">
-                      {isMayor && (
-                        <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
-                          <Crown className="size-3 text-amber-400" /> {`+$${formatNumber(config.supertokenPremioUsd || 6000)} USD`}
-                        </span>
-                      )}
-                      <span
-                        className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase backdrop-blur shadow-md ${
-                          isMayor
-                            ? "bg-amber-500 text-black border border-amber-400"
-                            : isSegundo
-                            ? "bg-black/80 text-slate-200 border border-slate-500/60"
-                            : "bg-black/80 text-zinc-300 border border-white/20"
-                        }`}
-                      >
-                        {tagLugar}
-                      </span>
-                    </div>
-
-                    {/* Foto que llena de forma atractiva la parte superior de la tarjeta con Clic para Ampliar */}
-                    <div
-                      className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
-                      onClick={() =>
-                        setFotoZoom({
-                          url: p.imagen || defaultImg,
-                          titulo: p.nombre,
-                          nivel: tagLugar,
-                        })
-                      }
-                    >
-                      <img
-                        src={p.imagen || defaultImg}
-                        alt={p.nombre}
-                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
-                      <div className="absolute bottom-2.5 right-3 opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1 backdrop-blur shadow-md">
-                        <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
-                      </div>
-                    </div>
-
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-bold text-xl leading-snug group-hover:text-primary transition-colors">
-                          {p.nombre}
-                        </h3>
-                        <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                          {isMayor
-                            ? "Vehículo 0 KM con traspaso y marchamo incluidos."
-                            : isSegundo
-                            ? "Deportiva para dominar la calle y la pista con estilo."
-                            : "Consola de última generación con controles y juegos incluidos."}
-                        </p>
-                      </div>
-                      {isMayor && (
-                        <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
-                          <Crown className="size-3.5" /> {`Opción SuperToken: ¡+$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash extra!`}
-                        </p>
-                      )}
-                    </div>
+              {/* Banner Dinámico de Dinámica / Regla de Premiación */}
+              {sorteo.reglaPremios && (
+                <div className="mt-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
+                  <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400">
+                    <Award className="size-4 text-amber-400" /> Dinámica Oficial de Premiación
                   </div>
-                );
-              })}
+                  <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
+                    {sorteo.reglaPremios}
+                  </p>
+                </div>
+              )}
+
+              <div
+                className={`mt-12 grid gap-6 ${
+                  premiosVisibles.length === 1
+                    ? "max-w-md mx-auto"
+                    : premiosVisibles.length === 2
+                    ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"
+                    : premiosVisibles.length === 3
+                    ? "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
+                    : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto"
+                }`}
+              >
+                {premiosVisibles.map((p, idx) => {
+                  const nivelStr = (p.nivel || "").trim();
+                  const isEleccion1 = nivelStr === "1° Lugar (A Elección)";
+                  const isEleccion2 = nivelStr === "2° Lugar (A Elección)";
+                  const isEfectivo3 = nivelStr === "3° Lugar (Efectivo)";
+                  const isExtra = nivelStr === "Premio Extra";
+                  const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (idx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
+                  const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (idx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
+
+                  const tagLugar = isEleccion1
+                    ? "1° Lugar · A Elección"
+                    : isEleccion2
+                    ? "2° Lugar · Restante"
+                    : isEfectivo3
+                    ? "3° Lugar · Efectivo"
+                    : isExtra
+                    ? "Premio Extra"
+                    : isMayor
+                    ? "1° Lugar"
+                    : isSegundo
+                    ? "2° Lugar"
+                    : "3° Lugar";
+
+                  const nombreLower = (p.nombre || "").toLowerCase();
+                  const defaultImg =
+                    nombreLower.includes("subaru") || nombreLower.includes("impreza")
+                      ? subaruImg
+                      : nombreLower.includes("moto")
+                      ? motoImg
+                      : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo")
+                      ? consolaImg
+                      : isMayor
+                      ? pradoImg
+                      : isSegundo
+                      ? motoImg
+                      : consolaImg;
+
+                  const tagBadgeClass =
+                    isMayor || isEleccion1
+                      ? "bg-amber-500 text-black border border-amber-400 font-bold"
+                      : isEleccion2
+                      ? "bg-blue-600 text-white border border-blue-400 font-bold"
+                      : isSegundo
+                      ? "bg-black/80 text-slate-200 border border-slate-500/60 font-bold"
+                      : isEfectivo3
+                      ? "bg-emerald-600 text-white border border-emerald-400 font-bold"
+                      : isExtra
+                      ? "bg-purple-600 text-white border border-purple-400 font-bold"
+                      : "bg-black/80 text-zinc-300 border border-white/20 font-bold";
+
+                  const cardBorderClass =
+                    isMayor || isEleccion1
+                      ? "border-amber-500/50 shadow-[0_0_25px_rgba(245,158,11,0.12)]"
+                      : isEleccion2
+                      ? "border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                      : isEfectivo3
+                      ? "border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                      : "border-border";
+
+                  return (
+                    <div
+                      key={p.id || idx}
+                      className={`group rounded-2xl border bg-card overflow-hidden shadow-[var(--shadow-card)] relative flex flex-col justify-between transition-all duration-300 hover:border-primary/40 hover:shadow-xl ${cardBorderClass}`}
+                    >
+                      {/* Badges Flotantes de Posición y SuperToken */}
+                      <div className="absolute top-3 right-3 flex gap-1.5 z-10">
+                        {(isMayor || isEleccion1) && (
+                          <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                            <Crown className="size-3 text-amber-400" /> {`+$${formatNumber(config.supertokenPremioUsd || 6000)} USD`}
+                          </span>
+                        )}
+                        <span
+                          className={`rounded-full px-3 py-0.5 text-[11px] uppercase backdrop-blur shadow-md ${tagBadgeClass}`}
+                        >
+                          {tagLugar}
+                        </span>
+                      </div>
+
+                      {/* Foto que llena de forma atractiva la parte superior de la tarjeta con Clic para Ampliar */}
+                      <div
+                        className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
+                        onClick={() =>
+                          setFotoZoom({
+                            url: p.imagen || defaultImg,
+                            titulo: p.nombre,
+                            nivel: tagLugar,
+                          })
+                        }
+                      >
+                        <img
+                          src={p.imagen || defaultImg}
+                          alt={p.nombre}
+                          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
+                        <div className="absolute bottom-2.5 right-3 opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1 backdrop-blur shadow-md">
+                          <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
+                        </div>
+                      </div>
+
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="font-bold text-xl leading-snug group-hover:text-primary transition-colors">
+                            {p.nombre}
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                            {isEleccion1
+                              ? "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos."
+                              : isEleccion2
+                              ? "Vehículo adjudicado al 2° Lugar (el restante no seleccionado) 100% legal y listo para rodar."
+                              : isEfectivo3
+                              ? "Premio oficial en efectivo entregado por transferencia bancaria / SINPE o consola de última generación."
+                              : isMayor
+                              ? "Vehículo 0 KM con traspaso y marchamo incluidos."
+                              : isSegundo
+                              ? "Deportiva para dominar la calle y la pista con estilo."
+                              : "Consola de última generación con controles y juegos incluidos."}
+                          </p>
+                        </div>
+                        {(isMayor || isEleccion1) && (
+                          <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
+                            <Crown className="size-3.5" /> {`Opción SuperToken: ¡+$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash extra!`}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* FICHA TÉCNICA DEL CARRO / PREMIO DETALLADO */}
         <section className="py-20 mx-auto max-w-6xl px-5 border-t border-border/40">
@@ -745,7 +823,7 @@ function IndexPage() {
                 Gran Entrega Detallada
               </span>
               <h2 className="mt-2 font-display text-4xl sm:text-5xl leading-tight uppercase">
-                {sorteo.detalleTitulo || (premios[0]?.nombre ? `${premios[0].nombre}: Entrega Oficial y Garantizada` : "Vehículos de Alta Gama y Premios Oficiales")}
+                {sorteo.detalleTitulo || (primerPremioVisible?.nombre ? `${primerPremioVisible.nombre}: Entrega Oficial y Garantizada` : "Vehículos de Alta Gama y Premios Oficiales")}
               </h2>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
                 {sorteo.detalleSubtitulo || "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido."}

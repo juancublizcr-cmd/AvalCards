@@ -121,8 +121,12 @@ export function PremiosSection({
 
   const NIVEL_ORDEN: Record<Nivel, number> = {
     "Premio Mayor": 1,
+    "1° Lugar (A Elección)": 1,
     "Segundo Premio": 2,
+    "2° Lugar (A Elección)": 2,
     "Tercer Premio": 3,
+    "3° Lugar (Efectivo)": 3,
+    "Premio Extra": 4,
   };
 
   const actualizar = async (id: string, cambios: Partial<Premio>) => {
@@ -212,24 +216,34 @@ export function PremiosSection({
     }
   };
 
+  const toggleActivo = async (id: string, activo: boolean) => {
+    const next = premios.map((p) => (p.id === id ? { ...p, activo } : p));
+    setPremios(next);
+    try {
+      await upsertPremios(next);
+      toast.success(activo ? "Premio conectado a la landing page" : "Premio desconectado (oculto de la landing)");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const agregar = async () => {
-    if (premios.length >= 3) return;
-    const usados = premios.map((p) => p.nivel);
-    const nivel = NIVELES.find((n) => !usados.includes(n)) ?? "Tercer Premio";
+    if (premios.length >= 8) return;
     const next: Premio[] = [
       ...premios,
       {
         id: `p${Date.now()}`,
-        nombre: "Nuevo premio",
-        nivel,
-        imagen: "",
+        nombre: "Subaru Impreza WRX",
+        nivel: "1° Lugar (A Elección)",
+        imagen: "/premio-subaru.jpg",
         orden: premios.length + 1,
+        activo: true,
       },
     ];
     setPremios(next);
     try {
       await upsertPremios(next);
-      toast.success("Nueva entrega agregada. Recuerda subirle una foto y guardar cambios.");
+      toast.success("Nueva entrega agregada (Subaru Impreza WRX). Puedes personalizarla cuando desees.");
     } catch (err) {
       console.error(err);
       toast.error("Error al agregar premio");
@@ -705,41 +719,60 @@ export function PremiosSection({
               <Trophy className="size-5 text-amber-500" /> Vehículos y Entregas Destacadas
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Hasta 3 entregas. La cuadrícula pública se adapta automáticamente con las fotos que subas.
+              Administra los vehículos y entregas. Puedes agregar el Subaru Impreza, conectar o desconectar entregas con el switch. La cuadrícula de la landing se auto-acomoda automáticamente.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => { void agregar(); }} disabled={premios.length >= 3}>
+          <Button variant="outline" size="sm" onClick={() => { void agregar(); }} disabled={premios.length >= 8}>
             <Plus className="size-4" /> Agregar Entrega
           </Button>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-3">
-          {premios.map((p) => (
-            <div key={p.id} className="rounded-xl border border-border bg-secondary/30 p-4 relative">
-              {p.nivel === "Premio Mayor" && (
-                <div className="mb-2.5 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 text-xs font-bold text-amber-400">
-                    👑 1° Lugar · Premio Mayor
-                  </span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400/80">Principal</span>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {premios.map((p) => {
+            const estaActivo = p.activo !== false;
+
+            return (
+              <div
+                key={p.id}
+                className={`rounded-xl border p-4 relative transition-all ${
+                  estaActivo
+                    ? "border-border bg-secondary/30"
+                    : "border-dashed border-border/60 bg-secondary/10 opacity-75"
+                }`}
+              >
+                {/* Header de la tarjeta con Switch de Activo/Desconectado */}
+                <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-border/50 pb-2">
+                  <div className="flex items-center gap-1.5">
+                    {p.nivel === "Premio Mayor" || p.nivel === "1° Lugar (A Elección)" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-500/40 px-2 py-0.5 text-[11px] font-bold text-amber-400">
+                        👑 1° Lugar · A Elección
+                      </span>
+                    ) : p.nivel === "Segundo Premio" || p.nivel === "2° Lugar (A Elección)" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/15 border border-slate-500/40 px-2 py-0.5 text-[11px] font-bold text-slate-300">
+                        🥈 2° Lugar · Restante
+                      </span>
+                    ) : p.nivel === "Tercer Premio" || p.nivel === "3° Lugar (Efectivo)" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/15 border border-orange-500/40 px-2 py-0.5 text-[11px] font-bold text-orange-400">
+                        🥉 3° Lugar · Efectivo
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 border border-primary/40 px-2 py-0.5 text-[11px] font-bold text-primary">
+                        ⭐ {p.nivel}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Switch para Conectar o Desconectar el Premio */}
+                  <div className="flex items-center gap-1.5" title={estaActivo ? "Visible en la landing page" : "Oculto de la landing page"}>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${estaActivo ? "text-emerald-400" : "text-muted-foreground"}`}>
+                      {estaActivo ? "Activo" : "Oculto"}
+                    </span>
+                    <Switch
+                      checked={estaActivo}
+                      onCheckedChange={(v) => { void toggleActivo(p.id, v); }}
+                    />
+                  </div>
                 </div>
-              )}
-              {p.nivel === "Segundo Premio" && (
-                <div className="mb-2.5 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 border border-slate-500/40 px-2.5 py-0.5 text-xs font-bold text-slate-300">
-                    🥈 2° Lugar · Segundo Premio
-                  </span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Posición #2</span>
-                </div>
-              )}
-              {p.nivel === "Tercer Premio" && (
-                <div className="mb-2.5 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 border border-orange-500/40 px-2.5 py-0.5 text-xs font-bold text-orange-400">
-                    🥉 3° Lugar · Tercer Premio
-                  </span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Posición #3</span>
-                </div>
-              )}
 
               {p.imagen ? (
                 <div className="relative mb-3 h-48 w-full rounded-lg overflow-hidden bg-neutral-900 border border-border/60">
@@ -810,7 +843,8 @@ export function PremiosSection({
                 </div>
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
 
         {/* Botón de Guardar Cambios de Premios y Vehículos */}
