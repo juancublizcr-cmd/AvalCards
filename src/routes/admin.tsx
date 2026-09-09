@@ -196,7 +196,7 @@ function Admin() {
 
               <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex">
                 <Link to="/validar">
-                  <Search className="size-4" /> Validar Stickers
+                  <Search className="size-4" /> Validar Tokens
                 </Link>
               </Button>
               <Button variant="default" size="sm" asChild className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm">

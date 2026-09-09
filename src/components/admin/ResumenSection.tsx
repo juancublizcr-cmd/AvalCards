@@ -172,11 +172,13 @@ export function ResumenSection({
         <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm">
           <Anillo porcentaje={totalStickersVendidos > 0 ? Math.min(100, Math.round((totalStickersVendidos / 100000) * 100)) : 0} />
           <div>
-            <div className="text-sm text-muted-foreground">Tokens Vendidos</div>
-            <div className="mt-1 text-lg font-semibold">{totalStickersVendidos.toLocaleString("es-CR")}</div>
-            <div className="text-xs text-muted-foreground">aprobados en total</div>
+            <div className="text-sm font-semibold text-muted-foreground">Tokens Vendidos</div>
+            <div className="mt-1 text-3xl font-black font-display text-primary tracking-tight">
+              {totalStickersVendidos.toLocaleString("es-CR")}
+            </div>
+            <div className="text-xs text-muted-foreground font-medium">aprobados en total</div>
             {stickersPendientes > 0 ? (
-              <div className="text-[11px] font-semibold text-amber-500 mt-0.5">
+              <div className="text-xs font-bold text-amber-500 mt-1">
                 +{stickersPendientes} pendientes
               </div>
             ) : null}
@@ -245,7 +247,7 @@ export function ResumenSection({
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-          <h3 className="font-semibold">Paquetes de Stickers más Vendidos</h3>
+          <h3 className="font-semibold">Paquetes de Tokens más Vendidos</h3>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={paquetes}>
