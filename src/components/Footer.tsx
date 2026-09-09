@@ -95,7 +95,7 @@ export function Footer() {
       </div>
 
       <div className="mx-auto max-w-6xl px-5 mt-10 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-        <p>© {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.</p>
+        <p suppressHydrationWarning>© 2026 Aval Community CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.</p>
         <div className="flex items-center gap-4">
           <Link to="/terminos" className="hover:text-foreground">Reglamento</Link>
           <Link to="/privacidad" className="hover:text-foreground">Privacidad</Link>

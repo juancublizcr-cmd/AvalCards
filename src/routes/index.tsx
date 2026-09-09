@@ -124,12 +124,24 @@ function useCuentaRegresiva(fechaObjetivo: string) {
   return t;
 }
 
+const MESES_ES = [
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+];
+
 function formatearFechaLarga(fechaStr: string) {
   try {
-    const d = new Date(fechaStr + "T00:00:00");
-    return d.toLocaleDateString("es-CR", { day: "numeric", month: "long", year: "numeric" });
+    const clean = (fechaStr || "2026-09-27").split("T")[0];
+    const parts = clean.split("-").map(Number);
+    if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
+      const mesNombre = MESES_ES[parts[1] - 1] || "septiembre";
+      return `${parts[2]} de ${mesNombre} de ${parts[0]}`;
+    }
+    const d = new Date(clean + "T12:00:00Z");
+    const mesNombre = MESES_ES[d.getUTCMonth()] || "septiembre";
+    return `${d.getUTCDate()} de ${mesNombre} de ${d.getUTCFullYear()}`;
   } catch {
-    return fechaStr;
+    return fechaStr || "27 de septiembre de 2026";
   }
 }
 
@@ -749,8 +761,8 @@ function IndexPage() {
           <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] text-center mb-16">
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Calendar className="size-4 text-primary" />
-              <span>
-                Gran Sorteo Oficial: <strong>{formatearFechaLarga(fechaSorteo)}</strong>
+              <span suppressHydrationWarning>
+                Gran Sorteo Oficial: <strong suppressHydrationWarning>{formatearFechaLarga(fechaSorteo)}</strong>
               </span>
             </div>
 
@@ -766,7 +778,7 @@ function IndexPage() {
                   key={idx}
                   className="rounded-xl border border-border bg-secondary/50 p-2 sm:p-3 text-center"
                 >
-                  <div className="font-mono text-2xl sm:text-4xl font-black text-primary">
+                  <div className="font-mono text-2xl sm:text-4xl font-black text-primary" suppressHydrationWarning>
                     {String(item.val).padStart(2, "0")}
                   </div>
                   <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">
@@ -780,7 +792,7 @@ function IndexPage() {
             <div className="mt-8 space-y-2 max-w-md mx-auto">
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Disponibilidad de Tokens</span>
-                <span className="font-bold text-foreground">{progreso}% Vendido</span>
+                <span className="font-bold text-foreground" suppressHydrationWarning>{progreso}% Vendido</span>
               </div>
               <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
                 <div
