@@ -79,13 +79,13 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Aval Community CR | ¡Estrena tu Toyota Prado 0KM!" },
+      { title: "Aval Community CR | Eventos Promocionales Oficiales" },
       {
         name: "description",
         content:
-          "Adquiere tus Tokens digitales y participa por una Toyota Prado 2026 0KM, moto de alta cilindrada o PS5 desde solo ₡1,000 por SINPE Móvil o Tarjeta. Evento promocional transparente.",
+          "Adquiere tus Tokens digitales oficiales y participa por vehículos de alta gama y premios en efectivo desde solo ₡4,000. 100% auditado con la Lotería Nacional de la JPS.",
       },
-      { property: "og:title", content: "Aval Community CR | ¡Estrena tu Toyota Prado 0KM!" },
+      { property: "og:title", content: "Aval Community CR | Eventos Promocionales Oficiales" },
       {
         property: "og:description",
         content: "La plataforma de eventos promocionales y tokens digitales más transparente de Costa Rica.",
@@ -476,7 +476,13 @@ function IndexPage() {
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
+              {sorteo.heroTitulo ? (
+                sorteo.heroTitulo
+              ) : (
+                <>
+                  ¿Te imaginas estrenar tu <span className="text-fire">{premios[0]?.nombre || "Moto Alta Cilindrada"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
+                </>
+              )}
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -635,6 +641,18 @@ function IndexPage() {
               </p>
             </div>
 
+            {/* Banner Dinámico de Dinámica / Regla de Premiación */}
+            {sorteo.reglaPremios && (
+              <div className="mt-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
+                <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400">
+                  <Award className="size-4 text-amber-400" /> Dinámica Oficial de Premiación
+                </div>
+                <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
+                  {sorteo.reglaPremios}
+                </p>
+              </div>
+            )}
+
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {premios.map((p, idx) => {
                 const isMayor = p.nivel === "Premio Mayor" || (idx === 0 && !premios.some(x => x.nivel === "Premio Mayor"));
@@ -727,10 +745,10 @@ function IndexPage() {
                 Gran Entrega Detallada
               </span>
               <h2 className="mt-2 font-display text-4xl sm:text-5xl leading-tight uppercase">
-                {sorteo.detalleTitulo || "Toyota Prado 2026: Lujo, Potencia y Confort"}
+                {sorteo.detalleTitulo || (premios[0]?.nombre ? `${premios[0].nombre}: Entrega Oficial y Garantizada` : "Vehículos de Alta Gama y Premios Oficiales")}
               </h2>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                {sorteo.detalleSubtitulo || "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre."}
+                {sorteo.detalleSubtitulo || "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido."}
               </p>
 
               <div className="mt-8 space-y-4">

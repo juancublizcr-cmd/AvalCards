@@ -646,11 +646,11 @@ export function ConfigSection({
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
             <div className="flex items-center gap-2.5 font-black text-base text-amber-500">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 font-black text-sm">⛽</span>
-              7.4 Mini-Sorteos Semanales (Gasolina / Supermercado)
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 font-black text-sm">🎮</span>
+              7.4 Mini-Sorteos Semanales (Domingos de PlayStation / Efectivo)
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Rifas semanales automáticas de calentamiento para mantener la emoción viva cada viernes.
+              Sorteos automáticos con el mismo Token de los clientes para mantener las compras activas todas las semanas.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -662,13 +662,26 @@ export function ConfigSection({
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label>Día del Sorteo Semanal</Label>
+            <select
+              value={borrador.miniSorteoDia ?? 0}
+              onChange={(e) => setBorrador({ ...borrador, miniSorteoDia: Number(e.target.value) })}
+              className="w-full h-9 rounded-md border border-input bg-background px-3 text-xs"
+            >
+              <option value={0}>Todos los Domingos (7:00 PM)</option>
+              <option value={5}>Todos los Viernes (7:00 PM)</option>
+              <option value={6}>Todos los Sábados (7:00 PM)</option>
+              <option value={2}>Todos los Martes (7:00 PM)</option>
+            </select>
+          </div>
           <div className="space-y-2">
             <Label>Título del Mini-Sorteo Semanal</Label>
             <Input
               value={borrador.miniSorteoTitulo || ""}
               onChange={(e) => setBorrador({ ...borrador, miniSorteoTitulo: e.target.value })}
-              placeholder="⛽ Viernes de Tanque Lleno (₡50,000 en Combustible)"
+              placeholder="🎮 Domingos de PlayStation 5 Extra (Con tu mismo Token)"
             />
           </div>
           <div className="space-y-2">
@@ -676,7 +689,7 @@ export function ConfigSection({
             <Input
               value={borrador.miniSorteoPremio || ""}
               onChange={(e) => setBorrador({ ...borrador, miniSorteoPremio: e.target.value })}
-              placeholder="₡50,000 en Gasolina Delta / Uno"
+              placeholder="PlayStation 5 o ₡350,000 en Efectivo por SINPE"
             />
           </div>
         </div>

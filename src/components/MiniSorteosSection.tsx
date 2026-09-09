@@ -11,14 +11,15 @@ export function MiniSorteosSection({ config }: { config: Config }) {
 
     const calcular = () => {
       const ahora = new Date();
-      // Calcular el próximo viernes a las 19:00 (7 PM)
-      const proximoViernes = new Date(ahora);
-      const diaSemana = ahora.getDay(); // 0: dom, 5: vie
-      const diasHastaViernes = (5 - diaSemana + 7) % 7 || (ahora.getHours() >= 19 ? 7 : 0);
-      proximoViernes.setDate(ahora.getDate() + diasHastaViernes);
-      proximoViernes.setHours(19, 0, 0, 0);
+      // Día configurado (0: Domingo por defecto, 5: Viernes, etc.)
+      const diaObjetivo = typeof config.miniSorteoDia === "number" ? config.miniSorteoDia : 0;
+      const proximoSorteo = new Date(ahora);
+      const diaSemana = ahora.getDay();
+      const diasHasta = (diaObjetivo - diaSemana + 7) % 7 || (ahora.getHours() >= 19 ? 7 : 0);
+      proximoSorteo.setDate(ahora.getDate() + diasHasta);
+      proximoSorteo.setHours(19, 0, 0, 0);
 
-      const diff = proximoViernes.getTime() - ahora.getTime();
+      const diff = proximoSorteo.getTime() - ahora.getTime();
       if (diff <= 0) {
         setTiempoRestante({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
         return;
@@ -35,7 +36,7 @@ export function MiniSorteosSection({ config }: { config: Config }) {
     calcular();
     const interval = setInterval(calcular, 1000);
     return () => clearInterval(interval);
-  }, [config.miniSorteosActivo]);
+  }, [config.miniSorteosActivo, config.miniSorteoDia]);
 
   if (config.miniSorteosActivo === false) return null;
 
@@ -47,13 +48,13 @@ export function MiniSorteosSection({ config }: { config: Config }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-400">
-            <Fuel className="size-3.5" /> MINI-SORTEOS SEMANALES DE CALENTAMIENTO
+            <Gift className="size-3.5" /> MINI-SORTEOS SEMANALES CON TU MISMO TOKEN
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-foreground mt-2 flex items-center gap-2">
-            ⛽ {config.miniSorteoTitulo || "Viernes de Tanque Lleno (₡50,000 en Combustible)"}
+            {config.miniSorteoTitulo || "🎮 Domingos de PlayStation 5 Extra (Con tu mismo Token)"}
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            ¡No tienes que esperar meses! Todos los viernes se rifan premios semanales entre todos los participantes activos.
+            {config.miniSorteoFecha || "¡No tienes que esperar meses! Todos los domingos a las 7:00 PM con tu mismo Token participas por premios semanales con la Lotería de la JPS."}
           </p>
         </div>
 

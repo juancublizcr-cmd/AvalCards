@@ -74,8 +74,10 @@ export function PremiosSection({
   const [borrador, setBorrador] = useState<Sorteo>({
     ...sorteo,
     modalidadVenta: sorteo.modalidadVenta || "escalonado",
-    detalleTitulo: sorteo.detalleTitulo || "Toyota Prado 2026: Lujo, Potencia y Confort",
-    detalleSubtitulo: sorteo.detalleSubtitulo || "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre.",
+    heroTitulo: sorteo.heroTitulo || "",
+    reglaPremios: sorteo.reglaPremios || "El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo.",
+    detalleTitulo: sorteo.detalleTitulo || "Vehículos de Alta Gama y Premios Oficiales",
+    detalleSubtitulo: sorteo.detalleSubtitulo || "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido.",
     detalleImagen: sorteo.detalleImagen || "",
     detalleFeatures: sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT,
     detalleGarantia: sorteo.detalleGarantia || "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno.",
@@ -483,6 +485,40 @@ export function PremiosSection({
               onChange={(e) => setBorrador({ ...borrador, precioBase: Number(e.target.value) })}
               placeholder="1000"
             />
+          </div>
+        </div>
+
+        {/* TITULAR HERO Y REGLA DE PREMIACIÓN */}
+        <div className="pt-3 border-t border-border space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label className="font-bold text-sm flex items-center gap-1.5">
+                <Sparkles className="size-4 text-amber-500" /> Titular Principal en Landing (Hero)
+              </Label>
+              <Input
+                value={borrador.heroTitulo || ""}
+                onChange={(e) => setBorrador({ ...borrador, heroTitulo: e.target.value })}
+                placeholder="¿Te imaginas estrenar tu Moto de Alta Cilindrada desde solo ₡4 000?"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Opcional. Si lo dejas vacío, el sistema generará automáticamente: "¿Te imaginas estrenar tu [Premio Mayor]...?"
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="font-bold text-sm flex items-center gap-1.5 text-primary">
+                <Trophy className="size-4 text-primary" /> Dinámica / Regla de Premiación de esta Edición
+              </Label>
+              <Textarea
+                rows={2}
+                value={borrador.reglaPremios || ""}
+                onChange={(e) => setBorrador({ ...borrador, reglaPremios: e.target.value })}
+                placeholder="El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo."
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Se muestra en una tarjeta destacada arriba de los premios en la página principal para explicar cómo ganan.
+              </p>
+            </div>
           </div>
         </div>
 

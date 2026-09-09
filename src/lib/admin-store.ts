@@ -81,6 +81,8 @@ export type Sorteo = {
   precioBase: number;
   fecha: string;
   modalidadVenta?: ModalidadVenta;
+  heroTitulo?: string;
+  reglaPremios?: string;
   detalleTitulo?: string;
   detalleSubtitulo?: string;
   detalleImagen?: string;
@@ -139,6 +141,7 @@ export type Config = {
   rankingFechaCierre?: string;
   generadorHistoriasActivo?: boolean;
   miniSorteosActivo?: boolean;
+  miniSorteoDia?: number;
   miniSorteoTitulo?: string;
   miniSorteoFecha?: string;
   miniSorteoPremio?: string;
@@ -298,8 +301,10 @@ export const SORTEO_DEFAULT: Sorteo = {
   rangoMax: "99999",
   precioBase: 2500,
   fecha: "2026-09-27",
-  detalleTitulo: "Toyota Prado 2026: Lujo, Potencia y Confort",
-  detalleSubtitulo: "Un vehículo 0 kilómetros, sacado de agencia con garantía total de fábrica y entregado formalmente a tu nombre.",
+  heroTitulo: "",
+  reglaPremios: "El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo.",
+  detalleTitulo: "Vehículos de Alta Gama y Premios Oficiales",
+  detalleSubtitulo: "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido.",
   detalleImagen: "",
   detalleFeatures: FEATURES_DEFAULT,
   detalleGarantia: "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno.",
@@ -320,23 +325,23 @@ export const CONFIG_DEFAULT: Config = {
   referidosActivo: true,
   referidosBonoTokens: 1,
   referidosComisionPct: 10,
-  referidosMensajeShare: "¡Mae, estoy participando por el vehículo 0KM en Aval Community CR! Entra con mi enlace para recibir +1 Token Extra de Regalo en tu compra: ",
+  referidosMensajeShare: "¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!",
   sinpeActivo: true,
   tilopayActivo: true,
-  tilopayMerchantId: "",
-  tilopayApiKey: "",
-  tilopayApiPassword: "",
-  tilopaySandbox: true,
+  tilopayMerchantId: "36737",
+  tilopayApiKey: "4l0b31649987",
+  tilopayApiPassword: "pass",
+  tilopaySandbox: false,
   cryptoActivo: true,
-  cryptoWalletUsdt: "TY9v6eZzK8jL3p4q1r2s5t6u7v8w9x0y1z",
-  cryptoRed: "TRC20",
-  cryptoBinanceId: "",
+  cryptoWalletUsdt: "0x71C...TuWalletUSDT",
+  cryptoRed: "TRC20 (Tron)",
+  cryptoBinanceId: "123456789",
   paypalActivo: true,
-  paypalClientId: "",
-  paypalEmail: "pagos@avalcommunity.cr",
-  paypalSandbox: true,
+  paypalClientId: "TU_PAYPAL_CLIENT_ID_AQUI",
+  paypalEmail: "pagos@avalcommunity.com",
+  paypalSandbox: false,
   applePayActivo: true,
-  applePayMerchantId: "merchant.cr.avalcommunity",
+  applePayMerchantId: "merchant.com.avalcommunity.cr",
   googlePayActivo: true,
   googlePayMerchantId: "avalcommunity-cr-google-pay",
   fomoActivo: true,
@@ -347,9 +352,10 @@ export const CONFIG_DEFAULT: Config = {
   rankingFechaCierre: "Último día del mes · 11:59 PM",
   generadorHistoriasActivo: true,
   miniSorteosActivo: true,
-  miniSorteoTitulo: "⛽ Viernes de Tanque Lleno (₡50,000 en Combustible)",
-  miniSorteoFecha: "Viernes 7:00 PM",
-  miniSorteoPremio: "₡50,000 en Gasolina Delta / Uno",
+  miniSorteoDia: 0,
+  miniSorteoTitulo: "🎮 Domingos de PlayStation 5 Extra (Con tu mismo Token)",
+  miniSorteoFecha: "Todos los Domingos 7:00 PM con la Lotería de la JPS",
+  miniSorteoPremio: "PlayStation 5 o ₡350,000 en Efectivo por SINPE Móvil",
   pwaBannerActivo: true,
   termometroFaseTitulo: "Progreso de la Edición",
   termometroMetaTokens: 5000,
@@ -499,6 +505,8 @@ export async function fetchSorteo(): Promise<Sorteo> {
       precioBase: precioBaseFinal,
       fecha: data.fecha ?? "",
       modalidadVenta: modDetectada,
+      heroTitulo: data.hero_titulo || extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "",
+      reglaPremios: data.regla_premios || extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "",
       detalleTitulo: data.detalle_titulo || extra.detalleTitulo || SORTEO_DEFAULT.detalleTitulo,
       detalleSubtitulo: data.detalle_subtitulo || extra.detalleSubtitulo || SORTEO_DEFAULT.detalleSubtitulo,
       detalleImagen: data.detalle_imagen || extra.detalleImagen || SORTEO_DEFAULT.detalleImagen,
@@ -513,6 +521,8 @@ export async function fetchSorteo(): Promise<Sorteo> {
       ...SORTEO_DEFAULT,
       precioBase: extra.precioBase ?? SORTEO_DEFAULT.precioBase,
       modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
+      heroTitulo: extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "",
+      reglaPremios: extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "",
       detalleTitulo: extra.detalleTitulo ?? SORTEO_DEFAULT.detalleTitulo,
       detalleSubtitulo: extra.detalleSubtitulo ?? SORTEO_DEFAULT.detalleSubtitulo,
       detalleImagen: extra.detalleImagen ?? SORTEO_DEFAULT.detalleImagen,
@@ -530,6 +540,8 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
         precioBase: Number(s.precioBase) || 2500,
         raspaConfig: s.raspaConfig,
         modalidadVenta: s.modalidadVenta,
+        heroTitulo: s.heroTitulo,
+        reglaPremios: s.reglaPremios,
         detalleTitulo: s.detalleTitulo,
         detalleSubtitulo: s.detalleSubtitulo,
         detalleImagen: s.detalleImagen,
@@ -679,8 +691,8 @@ export async function fetchConfig(): Promise<Config> {
       rankingPremioSegundo: extra.rankingPremioSegundo || CONFIG_DEFAULT.rankingPremioSegundo,
       rankingPremioTercero: extra.rankingPremioTercero || CONFIG_DEFAULT.rankingPremioTercero,
       rankingFechaCierre: extra.rankingFechaCierre || CONFIG_DEFAULT.rankingFechaCierre,
-      generadorHistoriasActivo: extra.generadorHistoriasActivo ?? CONFIG_DEFAULT.generadorHistoriasActivo,
       miniSorteosActivo: extra.miniSorteosActivo ?? CONFIG_DEFAULT.miniSorteosActivo,
+      miniSorteoDia: extra.miniSorteoDia ?? CONFIG_DEFAULT.miniSorteoDia,
       miniSorteoTitulo: extra.miniSorteoTitulo || CONFIG_DEFAULT.miniSorteoTitulo,
       miniSorteoFecha: extra.miniSorteoFecha || CONFIG_DEFAULT.miniSorteoFecha,
       miniSorteoPremio: extra.miniSorteoPremio || CONFIG_DEFAULT.miniSorteoPremio,
@@ -738,6 +750,7 @@ export async function upsertConfig(c: Config): Promise<void> {
       rankingFechaCierre: c.rankingFechaCierre,
       generadorHistoriasActivo: c.generadorHistoriasActivo,
       miniSorteosActivo: c.miniSorteosActivo,
+      miniSorteoDia: c.miniSorteoDia,
       miniSorteoTitulo: c.miniSorteoTitulo,
       miniSorteoFecha: c.miniSorteoFecha,
       miniSorteoPremio: c.miniSorteoPremio,
