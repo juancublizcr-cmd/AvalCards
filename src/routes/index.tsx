@@ -351,7 +351,10 @@ function IndexPage() {
     }
     const el = document.getElementById("paquetes-compra");
     if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+      const rect = el.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetY = rect.top + scrollTop - 90;
+      window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
     } else {
       abrir(paquetes[2] || paquetes[0] || { cantidad: 12, precio: 12000 });
     }
@@ -541,8 +544,46 @@ function IndexPage() {
               </div>
             </div>
 
+            {/* Termómetro de Disponibilidad y Cuenta Regresiva Oficial en el Hero */}
+            <div className="mx-auto mt-10 max-w-2xl rounded-2xl border-2 border-amber-500/40 bg-zinc-950/90 p-5 shadow-[0_0_35px_rgba(245,158,11,0.15)] backdrop-blur text-left">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <span className="font-black uppercase tracking-wider text-emerald-400 text-xs">
+                    {config.ventasActivas ? "Ventas Abiertas en Vivo" : "Preventa Exclusiva"}
+                  </span>
+                </div>
+                <span className="font-mono text-lg sm:text-xl font-black text-amber-400 flex items-center gap-1.5" suppressHydrationWarning>
+                  <Flame className="size-5 text-amber-500 fill-amber-500" />
+                  {`${progreso}% Vendido`}
+                </span>
+              </div>
+
+              {/* Barra Brillante */}
+              <div className="mt-3.5 h-4 w-full overflow-hidden rounded-full bg-secondary/80 p-0.5 border border-amber-500/30">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+                  style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
+                />
+              </div>
+
+              {/* Fecha y Contador en vivo */}
+              <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5" suppressHydrationWarning>
+                  <Calendar className="size-3.5 text-primary" />
+                  Cierre Estimado: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)}</strong>
+                </span>
+                <span className="font-mono font-bold text-amber-400 text-xs sm:text-sm" suppressHydrationWarning>
+                  ⏳ Faltan: {t.d}d {t.h}h {t.m}m {t.s}s
+                </span>
+              </div>
+            </div>
+
             {/* CTA Principal de Conversión */}
-            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
                 variant="hero"
                 size="xl"
@@ -886,7 +927,7 @@ function IndexPage() {
         </section>
 
         {/* ZONA DE COMPRA Y CUENTA REGRESIVA */}
-        <section id="paquetes-compra" className="py-20 mx-auto max-w-6xl px-5 scroll-mt-20">
+        <section id="paquetes-compra" className="py-20 mx-auto max-w-6xl px-5 scroll-mt-28">
           {/* Contador y Progreso */}
           <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-[var(--shadow-card)] text-center mb-16 space-y-6">
             {/* Header del contador y estado */}
