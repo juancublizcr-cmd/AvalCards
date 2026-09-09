@@ -145,6 +145,11 @@ function formatearFechaLarga(fechaStr: string) {
   }
 }
 
+function formatNumber(val: number | string): string {
+  const num = Math.round(Number(val) || 0);
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
 function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
   const mod = sorteoActual.modalidadVenta || "escalonado";
 
@@ -295,7 +300,7 @@ function IndexPage() {
 
   const abrir = (p: Paquete) => {
     if (!config.ventasActivas) {
-      abrirWhatsAppPreventa(`Me interesa apartar el paquete de ${p.cantidad} Tokens (₡${p.precio.toLocaleString("es-CR")}).`);
+      abrirWhatsAppPreventa(`Me interesa apartar el paquete de ${p.cantidad} Tokens (₡${formatNumber(p.precio)}).`);
       return;
     }
     setPaquete(p);
@@ -433,17 +438,19 @@ function IndexPage() {
               {/* Badge del Paquete Más Popular destacado arriba (₡8 000) */}
               {paquetes.length > 1 && (
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-bold text-amber-400 shadow-md">
-                  <Flame className="size-3.5 text-amber-400" /> Más Popular: {(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡{((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000).toLocaleString("es-CR")}
+                  <Flame className="size-3.5 text-amber-400" />
+                  <span>{`Más Popular: ${(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡${formatNumber((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000)}`}</span>
                 </div>
               )}
 
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
-                <Crown className="size-3.5" /> SuperToken: +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash ({premios[0]?.nombre || "1° Lugar"})
+                <Crown className="size-3.5" />
+                <span>{`SuperToken: +$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash (${premios[0]?.nombre || "1° Lugar"})`}</span>
               </div>
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span> desde solo ₡{(paquetes[0]?.precio || 4000).toLocaleString("es-CR")}?
+              ¿Te imaginas estrenar un <span className="text-fire">{premios[0]?.nombre || "Toyota Prado 0KM"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -490,7 +497,8 @@ function IndexPage() {
               </div>
 
               <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg pointer-events-none">
-                <Crown className="size-4 text-amber-500" /> Bono ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD con SuperToken
+                <Crown className="size-4 text-amber-500" />
+                <span>{`Bono $${formatNumber(config.supertokenPremioUsd || 6000)} USD con SuperToken`}</span>
               </div>
 
               <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg pointer-events-none">
@@ -578,7 +586,7 @@ function IndexPage() {
                     }}
                     className="w-full md:w-auto shadow-[var(--shadow-fire)] font-bold text-sm px-6 py-6 shrink-0 gap-2 border border-amber-400/40 cursor-pointer"
                   >
-                    <Sparkles className="size-4" /> ¡JUGAR AHORA (₡{(sorteo.raspaConfig?.precio || 1000).toLocaleString("es-CR")})!
+                    <Sparkles className="size-4" /> {`¡JUGAR AHORA (₡${formatNumber(sorteo.raspaConfig?.precio || 1000)})!`}
                   </Button>
                 </div>
               </div>
@@ -621,7 +629,7 @@ function IndexPage() {
                     <div className="absolute top-3 right-3 flex gap-1.5 z-10">
                       {isMayor && (
                         <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
-                          <Crown className="size-3 text-amber-400" /> +${(config.supertokenPremioUsd || 6000).toLocaleString()} USD
+                          <Crown className="size-3 text-amber-400" /> {`+$${formatNumber(config.supertokenPremioUsd || 6000)} USD`}
                         </span>
                       )}
                       <span
@@ -674,7 +682,7 @@ function IndexPage() {
                       </div>
                       {isMayor && (
                         <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
-                          <Crown className="size-3.5" /> Opción SuperToken: ¡+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash extra!
+                          <Crown className="size-3.5" /> {`Opción SuperToken: ¡+$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash extra!`}
                         </p>
                       )}
                     </div>
@@ -821,7 +829,7 @@ function IndexPage() {
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               {paquetes.length === 1
-                ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${(paquetes[0]?.precio || 5000).toLocaleString("es-CR")}. Puedes generarlos al azar o elegir tus números favoritos.`
+                ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${formatNumber(paquetes[0]?.precio || 5000)}. Puedes generarlos al azar o elegir tus números favoritos.`
                 : config.ventasActivas
                 ? "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos."
                 : "La venta directa abrirá muy pronto. ¡Contáctanos por WhatsApp para apartar tus números antes del lanzamiento público!"}
@@ -848,7 +856,7 @@ function IndexPage() {
                 >
                   {esUnico ? (
                     <span className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-3.5 py-1 text-xs font-black text-black shadow-md">
-                      🔥 Paquete Especial Único {p.cantidad}x₡{p.precio.toLocaleString("es-CR")}
+                      {`🔥 Paquete Especial Único ${p.cantidad}x₡${formatNumber(p.precio)}`}
                     </span>
                   ) : esPopular ? (
                     <span className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1 text-[11px] font-black text-black shadow-md flex items-center gap-1">
@@ -863,7 +871,7 @@ function IndexPage() {
                     {sorteo.modalidadVenta === "multiplos_3" ? "Stickers / Tokens" : "Tokens Digitales Oficiales"}
                   </div>
                   <div className="mt-4 text-2xl sm:text-3xl font-bold text-foreground">
-                    ₡{p.precio.toLocaleString("es-CR")}
+                    {`₡${formatNumber(p.precio)}`}
                   </div>
                   <div className="mt-6 inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary group-hover:translate-x-0.5 transition-transform">
                     {config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
