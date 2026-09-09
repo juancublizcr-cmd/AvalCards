@@ -132,7 +132,6 @@ function Validar() {
       } catch {}
 
       setBuscado(true);
-      sessionStorage.setItem("aval_ultimo_telefono", clean);
 
       const numerosCliente = new Set(res.flatMap((o) => o.numeros));
       const ganados = instant.filter((p) => numerosCliente.has(p.numero));
@@ -154,12 +153,6 @@ function Validar() {
   useEffect(() => {
     void fetchPremios().then((p) => { if (p && p.length > 0) setPremios(p); }).catch(() => {});
     void fetchSorteo().then((s) => { if (s) setSorteo(s); }).catch(() => {});
-
-    const guardado = typeof window !== "undefined" ? sessionStorage.getItem("aval_ultimo_telefono") : null;
-    if (guardado) {
-      setTelefono(guardado);
-      void ejecutarBusqueda(guardado);
-    }
   }, []);
 
   const buscar = async (e: React.FormEvent) => {

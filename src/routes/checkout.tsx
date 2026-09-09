@@ -471,10 +471,6 @@ function Checkout() {
               size="xl"
               className="w-full"
               onClick={() => {
-                const tel = form.telefono.trim();
-                if (tel) {
-                  sessionStorage.setItem("aval_ultimo_telefono", tel);
-                }
                 void navigate({ to: "/validar" });
               }}
             >
