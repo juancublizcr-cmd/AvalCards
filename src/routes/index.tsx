@@ -197,7 +197,7 @@ function calcularProgresoTermometro(
   if (typeof cfg.termometroPorcentajeManual === "number" && cfg.termometroPorcentajeManual > 0) {
     return cfg.termometroPorcentajeManual;
   }
-  const meta = cfg.termometroMetaTokens && cfg.termometroMetaTokens > 0 ? cfg.termometroMetaTokens : 500;
+  const meta = cfg.termometroMetaTokens && cfg.termometroMetaTokens > 0 ? cfg.termometroMetaTokens : 5000;
 
   // 1. Prioridad: Conteo real de tokens de órdenes aprobadas en Supabase
   if (ordenes && ordenes.length > 0) {
@@ -205,7 +205,9 @@ function calcularProgresoTermometro(
       .filter((o) => o.estado === "aprobada")
       .reduce((sum, o) => sum + (Number(o.cantidad) || 0), 0);
     if (tokensAprobados > 0) {
-      return Math.min(98, Math.max(12, Math.round((tokensAprobados / meta) * 100)));
+      const raw = (tokensAprobados / meta) * 100;
+      const formatted = raw < 10 ? Math.round(raw * 10) / 10 : Math.round(raw);
+      return Math.min(98, Math.max(0.5, formatted));
     }
   }
 
@@ -213,11 +215,13 @@ function calcularProgresoTermometro(
   if (inventario && inventario.total > 0) {
     const vendidos = inventario.total - inventario.disponibles;
     if (vendidos > 0) {
-      return Math.min(98, Math.max(12, Math.round((vendidos / meta) * 100)));
+      const raw = (vendidos / meta) * 100;
+      const formatted = raw < 10 ? Math.round(raw * 10) / 10 : Math.round(raw);
+      return Math.min(98, Math.max(0.5, formatted));
     }
   }
 
-  return 41;
+  return 4.1;
 }
 
 function IndexPage() {
@@ -788,54 +792,97 @@ function IndexPage() {
         {/* ZONA DE COMPRA Y CUENTA REGRESIVA */}
         <section id="paquetes-compra" className="py-20 mx-auto max-w-6xl px-5 scroll-mt-20">
           {/* Contador y Progreso */}
-          <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] text-center mb-16">
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="size-4 text-primary" />
-              <span suppressHydrationWarning>
-                Gran Sorteo Oficial: <strong suppressHydrationWarning>{formatearFechaLarga(fechaSorteo)}</strong>
-              </span>
-            </div>
-
-            {/* Cuenta Regresiva Estilizada */}
-            <div className="mt-6 grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
-              {[
-                { label: "Días", val: t.d },
-                { label: "Horas", val: t.h },
-                { label: "Min", val: t.m },
-                { label: "Seg", val: t.s },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-xl border border-border bg-secondary/50 p-2 sm:p-3 text-center"
-                >
-                  <div className="font-mono text-2xl sm:text-4xl font-black text-primary" suppressHydrationWarning>
-                    {String(item.val).padStart(2, "0")}
-                  </div>
-                  <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">
-                    {item.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Barra de Progreso de Disponibilidad */}
-            <div className="mt-8 space-y-2 max-w-md mx-auto">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span className="flex items-center gap-1 font-medium">
-                  <Flame className="size-3.5 text-amber-500 fill-amber-500" />
-                  {config.termometroFaseTitulo || "Disponibilidad Preventa · Fase 1"}
+          <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-[var(--shadow-card)] text-center mb-16 space-y-6">
+            {/* Header del contador y estado */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <span className="font-bold text-foreground font-mono" suppressHydrationWarning>{`${progreso}% Asignado`}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+                  {config.ventasActivas ? "Ventas Abiertas" : "Preventa Exclusiva"}
+                </span>
               </div>
-              <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Calendar className="size-3.5 text-primary" />
+                <span suppressHydrationWarning>
+                  Cierre Estimado: <strong className="text-foreground" suppressHydrationWarning>{formatearFechaLarga(fechaSorteo)}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Cuenta Regresiva */}
+            <div>
+              <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-3 font-semibold">
+                Tiempo restante para la fecha estimada
+              </p>
+              <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
+                {[
+                  { label: "Días", val: t.d },
+                  { label: "Horas", val: t.h },
+                  { label: "Min", val: t.m },
+                  { label: "Seg", val: t.s },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-2xl border border-border/80 bg-secondary/50 p-2.5 sm:p-3.5 text-center shadow-inner"
+                  >
+                    <div className="font-mono text-2xl sm:text-4xl font-black text-primary tracking-tight" suppressHydrationWarning>
+                      {String(item.val).padStart(2, "0")}
+                    </div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">
+                      {item.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Barra de Progreso del Evento */}
+            <div className="space-y-2.5 max-w-xl mx-auto pt-2">
+              <div className="flex items-end justify-between text-xs">
+                <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-muted-foreground">
+                  <Flame className="size-4 text-amber-500 fill-amber-500" />
+                  {config.termometroFaseTitulo || "Progreso de la Edición"}
+                </span>
+                <span className="font-mono text-base sm:text-lg font-black text-foreground" suppressHydrationWarning>
+                  {`${progreso}% Vendido`}
+                </span>
+              </div>
+              <div className="h-3 w-full overflow-hidden rounded-full bg-secondary/80 p-0.5 border border-border/50">
                 <div
-                  className="h-full rounded-full bg-[image:var(--gradient-fire)] transition-all duration-700"
-                  style={{ width: `${progreso}%` }}
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-sm"
+                  style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
                 />
               </div>
-              <p className="text-[11px] text-muted-foreground text-center pt-1">
-                ⚡ Alta demanda · Los números se asignan en tiempo real
+              <p className="text-[11px] text-muted-foreground text-center">
+                ⚡ Asignación oficial en tiempo real · 100% verificado en Supabase
               </p>
+            </div>
+
+            {/* Tarjetas de Transparencia y Reglas (Estándar Competencia) */}
+            <div className="grid sm:grid-cols-2 gap-3.5 text-left pt-4 border-t border-border/60">
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 className="size-3 text-emerald-400" /> Si llegamos al 100%
+                </span>
+                <h4 className="font-bold text-sm text-foreground">Cierre Inmediato del Sorteo</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  La edición se cierra y el ganador se define oficialmente con el sorteo de Lotería Nacional de la JPS más cercano.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-1.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                  <ShieldCheck className="size-3 text-amber-400" /> Garantía de Cumplimiento
+                </span>
+                <h4 className="font-bold text-sm text-foreground">La Edición Continúa</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.
+                </p>
+              </div>
             </div>
           </div>
 

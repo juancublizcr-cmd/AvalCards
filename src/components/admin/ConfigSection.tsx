@@ -160,25 +160,25 @@ export function ConfigSection({
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Etiqueta de la Fase</Label>
+              <Label className="text-xs">Etiqueta del Progreso</Label>
               <Input
-                value={borrador.termometroFaseTitulo ?? "Disponibilidad Preventa · Fase 1"}
-                placeholder="Disponibilidad Preventa · Fase 1"
+                value={borrador.termometroFaseTitulo ?? "Progreso de la Edición"}
+                placeholder="Progreso de la Edición"
                 onChange={(e) => setBorrador({ ...borrador, termometroFaseTitulo: e.target.value })}
               />
-              <p className="text-[10px] text-muted-foreground">Texto mostrado junto a la barra.</p>
+              <p className="text-[10px] text-muted-foreground">Texto mostrado junto a la barra de avance.</p>
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs">Meta de Tokens de la Fase</Label>
+              <Label className="text-xs">Meta Total de Tokens</Label>
               <Input
                 type="number"
                 min={50}
                 max={100000}
-                value={borrador.termometroMetaTokens ?? 200}
+                value={borrador.termometroMetaTokens ?? 5000}
                 onChange={(e) => setBorrador({ ...borrador, termometroMetaTokens: Number(e.target.value) })}
               />
-              <p className="text-[10px] text-muted-foreground">Ej. 200 tokens. Calcula el % dinámico con las ventas reales.</p>
+              <p className="text-[10px] text-muted-foreground">Ej. 5 000 tokens. Con 205 tokens reales calcula 4.1% automáticamente.</p>
             </div>
 
             <div className="space-y-1.5">
@@ -188,10 +188,10 @@ export function ConfigSection({
                 min={0}
                 max={99}
                 placeholder="Dejar en 0 para cálculo dinámico"
-                value={borrador.termometroPorcentajeManual ?? 87}
+                value={borrador.termometroPorcentajeManual ?? 0}
                 onChange={(e) => setBorrador({ ...borrador, termometroPorcentajeManual: Number(e.target.value) })}
               />
-              <p className="text-[10px] text-muted-foreground">Fuerza un % fijo (ej. 87%). Si pones 0, calcula por ventas.</p>
+              <p className="text-[10px] text-muted-foreground">Fuerza un % fijo. Si lo dejas en 0, calcula dinámicamente con ventas reales.</p>
             </div>
           </div>
         </div>
