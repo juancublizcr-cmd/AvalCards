@@ -51,6 +51,7 @@ import { descargarTiqueteImagen } from "@/lib/ticket-canvas";
 import { StoryShareModal } from "@/components/StoryShareModal";
 import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
+import { ConsultaStickerSection } from "@/components/ConsultaStickerSection";
 
 export const Route = createFileRoute("/validar")({
   head: () => ({
@@ -794,6 +795,9 @@ function Validar() {
         alCerrar={() => setModalHistoria(false)}
         datos={datosHistoria}
       />
+
+      {/* Consulta Pública Directa de Stickers */}
+      <ConsultaStickerSection />
 
       <Footer />
     </div>

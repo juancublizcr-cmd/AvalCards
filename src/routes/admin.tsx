@@ -22,6 +22,7 @@ import {
 } from "@/lib/admin-store";
 import { AdminSidebar, SECCIONES, type AdminSeccion } from "@/components/admin/AdminSidebar";
 import { ResumenSection } from "@/components/admin/ResumenSection";
+import { RematesSection } from "@/components/admin/RematesSection";
 import { PagosSection } from "@/components/admin/PagosSection";
 import { PremiosSection } from "@/components/admin/PremiosSection";
 import { RaspaSection } from "@/components/admin/RaspaSection";
@@ -53,7 +54,13 @@ export const Route = createFileRoute("/admin")({
 
 function Admin() {
   const navigate = useNavigate();
-  const [seccion, setSeccion] = useState<AdminSeccion>("resumen");
+  const [seccion, setSeccion] = useState<AdminSeccion>(() => {
+    if (typeof window !== "undefined") {
+      const s = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+      if (s && SECCIONES.some((sec) => sec.id === s)) return s;
+    }
+    return "resumen";
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -214,6 +221,7 @@ function Admin() {
               {seccion === "resumen" ? (
                 <ResumenSection ordenes={ordenes} onIrAPagos={() => setSeccion("pagos")} />
               ) : null}
+              {seccion === "remates" ? <RematesSection /> : null}
               {seccion === "pagos" ? (
                 <PagosSection ordenes={ordenes} onEstado={cambiarEstado} />
               ) : null}

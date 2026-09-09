@@ -15,6 +15,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ReembolsoRouteImport } from './routes/reembolso'
+import { Route as RematesRouteImport } from './routes/remates'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as ValidarRouteImport } from './routes/validar'
 
@@ -48,6 +49,11 @@ const ReembolsoRoute = ReembolsoRouteImport.update({
   path: '/reembolso',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RematesRoute = RematesRouteImport.update({
+  id: '/remates',
+  path: '/remates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminosRoute = TerminosRouteImport.update({
   id: '/terminos',
   path: '/terminos',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
+  '/remates': typeof RematesRoute
   '/terminos': typeof TerminosRoute
   '/validar': typeof ValidarRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
+  '/remates': typeof RematesRoute
   '/terminos': typeof TerminosRoute
   '/validar': typeof ValidarRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
+  '/remates': typeof RematesRoute
   '/terminos': typeof TerminosRoute
   '/validar': typeof ValidarRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacidad'
     | '/reembolso'
+    | '/remates'
     | '/terminos'
     | '/validar'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacidad'
     | '/reembolso'
+    | '/remates'
     | '/terminos'
     | '/validar'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacidad'
     | '/reembolso'
+    | '/remates'
     | '/terminos'
     | '/validar'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacidadRoute: typeof PrivacidadRoute
   ReembolsoRoute: typeof ReembolsoRoute
+  RematesRoute: typeof RematesRoute
   TerminosRoute: typeof TerminosRoute
   ValidarRoute: typeof ValidarRoute
 }
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReembolsoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/remates': {
+      id: '/remates'
+      path: '/remates'
+      fullPath: '/remates'
+      preLoaderRoute: typeof RematesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminos': {
       id: '/terminos'
       path: '/terminos'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacidadRoute: PrivacidadRoute,
   ReembolsoRoute: ReembolsoRoute,
+  RematesRoute: RematesRoute,
   TerminosRoute: TerminosRoute,
   ValidarRoute: ValidarRoute,
 }

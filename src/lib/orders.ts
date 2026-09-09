@@ -261,3 +261,67 @@ export async function fetchNumerosOcupados(): Promise<Set<string>> {
     return new Set();
   }
 }
+
+export type ResultadoBusquedaSticker = {
+  consultado: boolean;
+  numero: string;
+  ocupado: boolean;
+  orden?: {
+    id: string;
+    nombreAnonimo: string;
+    estado: "pendiente" | "aprobada" | "rechazada";
+    fecha: string;
+  };
+};
+
+export async function buscarPorSticker(termino: string): Promise<ResultadoBusquedaSticker> {
+  const digits = termino.replace(/\D/g, "");
+  if (!digits) {
+    return { consultado: false, numero: "", ocupado: false };
+  }
+
+  const padded5 = digits.padStart(5, "0");
+  const variantes = Array.from(new Set([digits, padded5]));
+
+  try {
+    const { data, error } = await supabase
+      .from("ordenes")
+      .select("id, nombre, estado, fecha, numeros")
+      .neq("estado", "rechazada");
+
+    if (!error && data) {
+      for (const item of data) {
+        if (Array.isArray(item.numeros)) {
+          const match = item.numeros.find((n: string) => variantes.includes(String(n).trim()));
+          if (match) {
+            const p = (item.nombre || "Participante").trim().split(" ");
+            const anonimo = p.length > 1 ? `${p[0]} ${(p[1] ?? "")[0] || ""}***` : `${p[0] || "Cliente"}***`;
+            return {
+              consultado: true,
+              numero: String(match).padStart(5, "0"),
+              ocupado: true,
+              orden: {
+                id: item.id,
+                nombreAnonimo: anonimo,
+                estado: item.estado,
+                fecha: item.fecha,
+              },
+            };
+          }
+        }
+      }
+    }
+
+    return {
+      consultado: true,
+      numero: padded5,
+      ocupado: false,
+    };
+  } catch {
+    return {
+      consultado: true,
+      numero: padded5,
+      ocupado: false,
+    };
+  }
+}

@@ -43,6 +43,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/remates" className="text-amber-500 font-semibold hover:text-amber-400 transition-colors">
+                Sala de Remates VIP
+              </Link>
+            </li>
+            <li>
               <Link to="/validar" className="hover:text-primary transition-colors">
                 Validar mis Tokens
               </Link>

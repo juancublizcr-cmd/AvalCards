@@ -36,6 +36,7 @@ import { FlyerPromocional } from "@/components/FlyerPromocional";
 import { FomoNotifications } from "@/components/FomoNotifications";
 import { RankingReferidos } from "@/components/RankingReferidos";
 import { MiniSorteosSection } from "@/components/MiniSorteosSection";
+import { ConsultaStickerSection } from "@/components/ConsultaStickerSection";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import pradoImg from "@/assets/premio-prado.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
@@ -302,18 +303,6 @@ function IndexPage() {
     }
   };
 
-  // MODO PROMOCIONAL / PRÓXIMAMENTE: Oculta toda la tienda y muestra SOLO el Flyer Promocional
-  if (!config.ventasActivas) {
-    return (
-      <FlyerPromocional
-        premioMayor={premios[0]}
-        config={config}
-        sorteo={sorteo}
-        tiempo={t}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Barra de Notificación Superior */}
@@ -356,6 +345,24 @@ function IndexPage() {
                 )}
               </Button>
             )}
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 font-semibold"
+            >
+              <Link to="/remates">
+                <span className="mr-1">🏷️</span> Remates VIP
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-neutral-300 hover:text-white"
+            >
+              <a href="#consulta-stickers">Buscar Sticker</a>
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -912,6 +919,9 @@ function IndexPage() {
             <MiniSorteosSection config={config} />
           </div>
         )}
+
+        {/* 04 / CONSULTA PÚBLICA DE STICKERS & VALIDACIÓN */}
+        <ConsultaStickerSection />
 
         {/* GANADORES ANTERIORES Y TESTIMONIOS */}
         <GanadoresSection ganadores={sorteo.ganadoresTestimonios} />

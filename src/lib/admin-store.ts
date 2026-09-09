@@ -308,7 +308,7 @@ export const CONFIG_DEFAULT: Config = {
   intentosMax: 5,
   telefonoSinpe: "8634-4772",
   razonSocial: "Importadora Luxury Scents LTDA.",
-  ventasActivas: false, // Inicia en modo promocional para que el admin lo active cuando guste
+  ventasActivas: true, // Tienda y secciones activas por defecto
   promoTitulo: "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!",
   promoSubtitulo: "Estamos afinando los últimos detalles de la plataforma. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!",
   promoBotonTexto: "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA EXCLUSIVA)!",

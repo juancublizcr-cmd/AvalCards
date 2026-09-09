@@ -27,6 +27,7 @@ async function prerender() {
       { path: "/terminos", file: "terminos.html" },
       { path: "/privacidad", file: "privacidad.html" },
       { path: "/reembolso", file: "reembolso.html" },
+      { path: "/remates", file: "remates.html" },
     ];
 
     if (!fs.existsSync(CLIENT_DIR)) {
