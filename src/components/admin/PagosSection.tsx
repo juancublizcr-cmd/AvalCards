@@ -141,16 +141,87 @@ export function PagosSection({
     );
   };
 
+  const metricasPagos = useMemo(() => {
+    const aprobadas = ordenes.filter((o) => o.estado === "aprobada");
+    const pendientes = ordenes.filter((o) => o.estado === "pendiente");
+    const tokensVendidos = aprobadas.reduce((sum, o) => sum + (o.cantidad || 0), 0);
+    const totalRecaudado = aprobadas.reduce((sum, o) => sum + (o.precio || 0), 0);
+    const tokensPendientes = pendientes.reduce((sum, o) => sum + (o.cantidad || 0), 0);
+    const montoPendiente = pendientes.reduce((sum, o) => sum + (o.precio || 0), 0);
+
+    return {
+      aprobadasCount: aprobadas.length,
+      pendientesCount: pendientes.length,
+      tokensVendidos,
+      totalRecaudado,
+      tokensPendientes,
+      montoPendiente,
+    };
+  }, [ordenes]);
+
   return (
-    <div className="rounded-xl border border-border bg-card shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
-        <div>
-          <h2 className="font-semibold text-lg">Registro de Pagos y Transacciones</h2>
-          <p className="text-xs text-muted-foreground">
-            {filtradas.length} transacción(es) · SINPE, Tarjetas, PayPal, Apple Pay, Google Pay y Cripto
+    <div className="space-y-6">
+      {/* TARJETAS MÉTRICAS EN GRANDE DE TOKENS Y PAGOS */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border-2 border-primary/40 bg-gradient-to-br from-card via-card to-primary/10 p-5 shadow-sm">
+          <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-primary inline-block" /> Tokens Vendidos
+          </span>
+          <div className="mt-2 text-4xl font-black font-display text-primary tracking-tight">
+            {metricasPagos.tokensVendidos.toLocaleString("es-CR")}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Tokens asignados y aprobados en total
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-emerald-500 inline-block" /> Total Recaudado
+          </span>
+          <div className="mt-2 text-3xl font-black text-foreground">
+            ₡{metricasPagos.totalRecaudado.toLocaleString("es-CR")}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            En {metricasPagos.aprobadasCount} transacción(es) confirmadas
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-amber-500 inline-block" /> Tokens en Revisión
+          </span>
+          <div className="mt-2 text-3xl font-black text-amber-400">
+            {metricasPagos.tokensPendientes.toLocaleString("es-CR")}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {metricasPagos.pendientesCount} orden(es) por aprobar
+            {metricasPagos.montoPendiente > 0 && ` (₡${metricasPagos.montoPendiente.toLocaleString("es-CR")})`}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-blue-500 inline-block" /> Total de Órdenes
+          </span>
+          <div className="mt-2 text-3xl font-black text-foreground">
+            {ordenes.length}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Registradas en Supabase
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+          <div>
+            <h2 className="font-semibold text-lg">Registro de Pagos y Transacciones</h2>
+            <p className="text-xs text-muted-foreground">
+              {filtradas.length} transacción(es) · SINPE, Tarjetas, PayPal, Apple Pay, Google Pay y Cripto
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleExportarExcel} className="gap-1.5 border-emerald-500/40 text-emerald-500 hover:bg-emerald-500/10">
             <FileSpreadsheet className="size-4 text-emerald-500" /> Exportar a Excel
           </Button>
@@ -387,7 +458,7 @@ export function PagosSection({
               )}
 
               <div>
-                <p className="mb-2 text-sm font-medium">Stickers Asignados ({detalle.cantidad})</p>
+                <p className="mb-2 text-sm font-medium">Tokens Asignados ({detalle.cantidad})</p>
                 <div className="grid grid-cols-4 gap-1.5">
                   {detalle.numeros.map((n) => (
                     <span
@@ -422,6 +493,7 @@ export function PagosSection({
           ) : null}
         </SheetContent>
       </Sheet>
+      </div>
     </div>
   );
 }
