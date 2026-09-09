@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 7 de Septiembre de 2026 - 09:32 PM (Hito 24: Desacoplamiento de Flotantes, Ojito en Login y Validación de Producción)  
+**Última actualización:** 8 de Septiembre de 2026 - 11:55 PM (Hito 25: Dinámica Real de Selección de Vehículos, Subaru Impreza WRX, Cuadrícula Auto-Adaptable y Compatibilidad con Supabase)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -360,7 +360,39 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Verificación de la consola administrativa (`/admin`) y persistencia de pasarelas de pago (SINPE Móvil, TiloPay, PayPal, Cripto).
    - Comprobación del ciclo de vida de compilación limpia de Vite/PWA (`dist/`) y sincronización automática con Vercel Edge Network.
 
+---
 
+## 🚀 Hito 25: Dinámica Real de Selección de Vehículos, Subaru Impreza WRX, Cuadrícula Auto-Adaptable y Compatibilidad con Supabase
 
+1. **Dinámica Real de Elección de Vehículos y Flexibilidad Multi-Vehículo:**
+   - Implementación de la regla comercial oficial:
+     - **1° Lugar (A Elección)**: El ganador escoge su favorito entre la **Moto de Alta Cilindrada ($57,900)**, el **Mercedes-Benz Clase GLE ($30,000)** o el **Subaru Impreza WRX**.
+     - **2° Lugar (Restante)**: Se adjudica el vehículo restante no elegido por el 1° lugar.
+     - **3° Lugar (Efectivo)**: Premio en efectivo garantizado o PlayStation 5.
+   - Ajuste en el selector administrativo para permitir que varios vehículos compartan la condición de `1° Lugar (A Elección)` simultáneamente sin forzar intercambios destructivos.
 
+2. **Integración Fotográfica Oficial del Subaru Impreza WRX:**
+   - Generación e incorporación del recurso visual en alta resolución con iluminación de estudio showroom (`src/assets/premio-subaru.jpg` y `public/premio-subaru.jpg`).
+   - Soporte para ampliación y zoom en modal de alta definición al hacer clic desde las tarjetas de premios.
+   - Inserción directa y vinculación del nuevo registro en la tabla `premios` de Supabase (`p_subaru_impreza`).
 
+3. **Cuadrícula Auto-Adaptable Inteligente en la Landing Page (`/`):**
+   - Transformación de la grilla de premios rígida a una cuadrícula dinámica que se recalcula automáticamente según la cantidad de entregas activas:
+     - **1 entrega**: Columna centralizada destacada (`max-w-md mx-auto`).
+     - **2 entregas**: Distribución simétrica balanceada de 2 columnas (`grid-cols-2`).
+     - **3 entregas**: Cuadrícula de 3 columnas (`grid-cols-3`).
+     - **4 o más entregas**: Cuadrícula responsive de 4 columnas (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`).
+   - Títulos y subtítulos de sección auto-generados dinámicamente según la cantidad visible (*"Gran Entrega Destacada"*, *"Dos Entregas Espectaculares"*, *"Tres Entregas Espectaculares"*, *"Cuatro Entregas de Lujo"*).
+   - El Hero Showcase principal detecta automáticamente el primer vehículo activo para evitar caídas o espacios en blanco si un vehículo es desactivado.
+   - Badges visuales con código cromático premium (`1° Lugar · A Elección` en oro, `2° Lugar · Restante` en azul eléctrico, `3° Lugar · Efectivo` en esmeralda).
+
+4. **Interruptores Activo / Oculto en Tiempo Real (`/admin`):**
+   - Agregado switch individual para cada entrega en el panel de administración para conectar o desconectar premios de la landing page al instante sin tener que borrarlos de la base de datos.
+   - Ampliación del límite de entregas de 3 a 8 en el administrador.
+
+5. **Resolución de Restricción SQL (`CHECK constraint`) en Supabase:**
+   - Diagnóstico del error `violates check constraint "premios_nivel_check"` originado por la restricción nativa de PostgreSQL en la columna `nivel` (`IN ('Premio Mayor', 'Segundo Premio', 'Tercer Premio')`).
+   - Implementación de capa de normalización (`toSupabaseNivel`) que mapea de forma transparente los niveles a los valores aceptados por Supabase mientras almacena los niveles reales y estados activos en metadatos y memoria.
+   - Corrección de sintaxis de cierre JSX en `PremiosSection.tsx`.
+   - Limpieza exhaustiva de menciones obsoletas a "Toyota Prado" en textos, SEO, metatags y base de conocimientos de Aval-IA.
+   - Compilación completa validada (`npm run build` y pre-renderizado HTML) y despliegue exitoso en GitHub y Vercel Edge.
