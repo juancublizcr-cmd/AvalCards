@@ -140,16 +140,18 @@ function Checkout() {
     }
   }, [form.telefono]);
 
+  const telReferido = form.telefono.replace(/\D/g, "") || ordenCreadaId || "amigo";
+  const enlaceReferido = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${telReferido}`;
+
   const copiarEnlaceReferido = () => {
-    const tel = form.telefono.replace(/\D/g, "") || ordenCreadaId || "amigo";
-    const url = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${tel}`;
-    void navigator.clipboard.writeText(url);
+    void navigator.clipboard.writeText(enlaceReferido);
     setCopiadoRef(true);
     toast.success("Enlace de referido copiado", {
       description: "¡Pégalo en tus grupos de WhatsApp o redes para ganar Tokens!",
     });
     setTimeout(() => setCopiadoRef(false), 2500);
   };
+
 
   const copiarSinpe = () => {
     const tel = config.telefonoSinpe.replace(/\D/g, "");
@@ -433,7 +435,7 @@ function Checkout() {
                 onClick={copiarEnlaceReferido}
                 className="h-8 text-xs font-bold border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 shrink-0"
               >
-                {copiadoEnlace ? "¡Copiado!" : "Copiar"}
+                {copiadoRef ? "¡Copiado!" : "Copiar"}
               </Button>
             </div>
 
