@@ -76,7 +76,7 @@ function SponsorsPage() {
   const [telefonoClienteCanje, setTelefonoClienteCanje] = useState("");
   const [validandoCupon, setValidandoCupon] = useState(false);
   const [estadoValidacionCupon, setEstadoValidacionCupon] = useState<{
-    status: "disponible" | "agotado" | "no_encontrado";
+    status: "disponible" | "agotado" | "no_encontrado" | "cooldown";
     mensaje: string;
     ordenId?: string;
     canjePrevio?: CanjeSponsorRecord;
@@ -160,22 +160,7 @@ function SponsorsPage() {
               ))
         );
 
-        // 1. Si ya tiene canjes en este comercio y no tiene órdenes extras disponibles
-        if (canjesEnEsteComercio.length > 0 && validas.length <= canjesEnEsteComercio.length) {
-          const ultimo = canjesEnEsteComercio[0];
-          setEstadoValidacionCupon({
-            status: "agotado",
-            mensaje: `🚫 Ya utilizaste el beneficio de tu compra en ${cuponActivo.nombreComercio} ${
-              ultimo
-                ? `el ${new Date(ultimo.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })} (${ultimo.servicio})`
-                : ""
-            }. Recuerda que aún puedes utilizar tu cupón en los demás comercios afiliados, o adquirir una nueva orden de tokens para canjear de nuevo aquí.`,
-            canjePrevio: ultimo,
-          });
-          return;
-        }
-
-        // 2. Si no tiene compras registradas
+        // 1. Si no tiene compras registradas en absoluto
         if (validas.length === 0) {
           setEstadoValidacionCupon({
             status: "no_encontrado",
@@ -184,7 +169,52 @@ function SponsorsPage() {
           return;
         }
 
-        // 3. Buscar orden disponible para este comercio
+        // 2. Verificar frecuencia periódica (cooldown) por comercio (por defecto 7 días = 1 por semana)
+        const ultimo = canjesEnEsteComercio[0];
+        const diasIntervalo = cuponActivo.diasIntervaloCanje ?? 7;
+        let enCooldown = false;
+        let fechaDesbloqueoStr = "";
+
+        if (ultimo?.fecha) {
+          const fechaUltimoMs = new Date(ultimo.fecha).getTime();
+          const fechaDesbloqueoMs = fechaUltimoMs + diasIntervalo * 24 * 60 * 60 * 1000;
+          const ahoraMs = Date.now();
+          if (fechaDesbloqueoMs > ahoraMs) {
+            enCooldown = true;
+            const fechaDesbloqueo = new Date(fechaDesbloqueoMs);
+            fechaDesbloqueoStr = fechaDesbloqueo.toLocaleDateString("es-CR", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            });
+          }
+        }
+
+        if (enCooldown && ultimo) {
+          const fechaUltimoStr = new Date(ultimo.fecha).toLocaleDateString("es-CR", {
+            day: "numeric",
+            month: "short",
+          });
+          setEstadoValidacionCupon({
+            status: "cooldown",
+            mensaje: `⏳ Próximo canje disponible a partir del ${fechaDesbloqueoStr}. Ya utilizaste tu beneficio en ${cuponActivo.nombreComercio} el ${fechaUltimoStr} (${ultimo.servicio || "Servicio"}). Por política de frecuencia, se permite 1 canje cada ${diasIntervalo === 7 ? "semana" : `${diasIntervalo} días`} por usuario.`,
+            canjePrevio: ultimo,
+          });
+          return;
+        }
+
+        // 3. Si ya gastó todas sus compras en este comercio y no tiene órdenes adicionales disponibles
+        if (canjesEnEsteComercio.length >= validas.length) {
+          setEstadoValidacionCupon({
+            status: "agotado",
+            mensaje: `🚫 Ya utilizaste el beneficio de tu compra en ${cuponActivo.nombreComercio}. Aunque el tiempo de espera concluyó, necesitas adquirir una nueva orden de tokens para canjear de nuevo aquí.`,
+            canjePrevio: ultimo,
+          });
+          return;
+        }
+
+        // 4. Buscar orden disponible para este comercio
         const ordenDisponible = validas.find(
           (ord) => !canjesEnEsteComercio.some((c) => c.ordenId === ord.id)
         );
@@ -196,14 +226,9 @@ function SponsorsPage() {
             ordenId: ordenDisponible.id,
           });
         } else {
-          const ultimo = canjesEnEsteComercio[0];
           setEstadoValidacionCupon({
             status: "agotado",
-            mensaje: `🚫 Ya utilizaste el beneficio de tu compra en ${cuponActivo.nombreComercio} ${
-              ultimo
-                ? `el ${new Date(ultimo.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })} (${ultimo.servicio})`
-                : ""
-            }. Recuerda que aún puedes utilizar tu cupón en los demás comercios afiliados, o adquirir una nueva orden de tokens para canjear de nuevo aquí.`,
+            mensaje: `🚫 Ya utilizaste el beneficio de tu compra en ${cuponActivo.nombreComercio}. Recuerda que aún puedes utilizar tu cupón en los demás comercios afiliados, o adquirir una nueva orden de tokens para canjear de nuevo aquí.`,
             canjePrevio: ultimo,
           });
         }
@@ -890,9 +915,24 @@ function SponsorsPage() {
                 </p>
               </div>
 
-              {/* Botones de Acción */}
+                {/* Botones de Acción */}
               <div className="space-y-2 pt-1">
-                {estadoValidacionCupon?.status === "agotado" ? (
+                {estadoValidacionCupon?.status === "cooldown" ? (
+                  <div className="space-y-2">
+                    <Button
+                      asChild
+                      className="w-full bg-zinc-900 hover:bg-zinc-800 text-amber-300 font-bold text-xs sm:text-sm h-11 border border-amber-500/40 rounded-xl cursor-pointer"
+                    >
+                      <Link to="/sponsors" onClick={() => setCuponActivo(null)}>
+                        <Store className="size-4 mr-2 text-amber-400 shrink-0" />
+                        Explorar Otros Comercios Aliados
+                      </Link>
+                    </Button>
+                    <p className="text-[10px] text-center text-amber-300/80 font-medium">
+                      ⏳ Tu cupón para este local estará disponible en la fecha programada. Recuerda que puedes usar tus tokens en los demás comercios de la red Aval.
+                    </p>
+                  </div>
+                ) : estadoValidacionCupon?.status === "agotado" ? (
                   <div className="space-y-2">
                     <Button
                       asChild

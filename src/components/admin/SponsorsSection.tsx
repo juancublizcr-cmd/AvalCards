@@ -1355,6 +1355,31 @@ export function SponsorsSection() {
                 </p>
               </div>
 
+              {/* SECCIÓN: POLÍTICA DE FRECUENCIA DE CANJE */}
+              <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/40">
+                <div className="space-y-0.5 max-w-[75%]">
+                  <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Calendar className="size-3.5 text-amber-500" /> Frecuencia Mínima entre Canjes (Días)
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Tiempo de espera obligatorio entre visitas de un mismo cliente (por defecto: 7 días = 1 por semana).
+                  </div>
+                </div>
+                <Input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={sponsorEditando.diasIntervaloCanje ?? 7}
+                  onChange={(e) =>
+                    setSponsorEditando({
+                      ...sponsorEditando,
+                      diasIntervaloCanje: parseInt(e.target.value) || 7,
+                    })
+                  }
+                  className="w-20 text-center font-bold text-xs"
+                />
+              </div>
+
               <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/40">
                 <div className="space-y-0.5">
                   <div className="text-xs font-bold text-foreground">⭐ Destacar en la Portada de Sponsors</div>

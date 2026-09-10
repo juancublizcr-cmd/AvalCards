@@ -51,6 +51,7 @@ export type ComercioSponsor = {
   passwordComercio?: string; // Contraseña personalizada
   emailComercio?: string; // Correo para recuperación de clave
   serviciosCanje?: string[]; // Servicios o productos configurados para el canje
+  diasIntervaloCanje?: number; // Frecuencia mínima entre canjes en días (default: 7 días = 1 por semana)
   activo: boolean;
   destacado: boolean;
   orden: number;

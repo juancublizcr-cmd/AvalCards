@@ -123,6 +123,9 @@ export function ComercioPortal() {
     canjesDisponibles: number;
     yaCanjeoHoy: boolean;
     ultimoCanje?: CanjeSponsorRecord;
+    enCooldown: boolean;
+    fechaDesbloqueoStr: string;
+    diasIntervalo: number;
   } | null>(null);
   const [ordenSeleccionadaId, setOrdenSeleccionadaId] = useState<string>("");
   const [permitirCanjeExcepcional, setPermitirCanjeExcepcional] = useState(false);
@@ -469,6 +472,26 @@ export function ComercioPortal() {
       const canjesDisponibles = Math.max(0, totalCompras - totalCanjes);
       const ultimoCanje = canjesEnEsteComercio[0];
 
+      const diasIntervalo = comercioActivo?.diasIntervaloCanje ?? 7;
+      let enCooldown = false;
+      let fechaDesbloqueoStr = "";
+
+      if (ultimoCanje?.fecha) {
+        const fechaUltimoMs = new Date(ultimoCanje.fecha).getTime();
+        const fechaDesbloqueoMs = fechaUltimoMs + diasIntervalo * 24 * 60 * 60 * 1000;
+        const ahoraMs = Date.now();
+        if (fechaDesbloqueoMs > ahoraMs) {
+          enCooldown = true;
+          const fechaDesbloqueo = new Date(fechaDesbloqueoMs);
+          fechaDesbloqueoStr = fechaDesbloqueo.toLocaleDateString("es-CR", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
+        }
+      }
+
       // Encontrar la primera orden que no haya sido canjeada aún en este local
       const primerOrdenDisponible = validas.find(
         (ord) => !canjesEnEsteComercio.some((c) => c.ordenId === ord.id)
@@ -493,6 +516,9 @@ export function ComercioPortal() {
         canjesDisponibles,
         yaCanjeoHoy,
         ultimoCanje,
+        enCooldown,
+        fechaDesbloqueoStr,
+        diasIntervalo,
       });
 
       const pct = comercioActivo
@@ -507,7 +533,11 @@ export function ComercioPortal() {
         }
       }
 
-      if (canjesDisponibles > 0) {
+      if (enCooldown) {
+        toast.warning(
+          `⏳ Período de espera: ${nombre} canjeó recientemente. Próximo canje disponible el ${fechaDesbloqueoStr}.`
+        );
+      } else if (canjesDisponibles > 0) {
         toast.success(
           tieneAprobadas
             ? `¡Cliente verificado! ${nombre} (${canjesDisponibles} canje${canjesDisponibles > 1 ? "s" : ""} disponible${canjesDisponibles > 1 ? "s" : ""})`
@@ -1180,8 +1210,21 @@ export function ComercioPortal() {
                           </div>
                         </div>
 
+                        {/* ALERTA DE COOLDOWN / FRECUENCIA SEMANAL */}
+                        {clienteValidado.enCooldown && (
+                          <div className="p-2.5 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-200 text-[11px] space-y-1">
+                            <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                              <Clock className="size-3.5" />
+                              <span>⏳ Período de espera activo (Límite: 1 canje por semana):</span>
+                            </div>
+                            <div className="text-[10px] pl-5">
+                              Próximo canje permitido a partir del: <strong className="text-amber-400 capitalize">{clienteValidado.fechaDesbloqueoStr}</strong>
+                            </div>
+                          </div>
+                        )}
+
                         {/* ALERTA DE CANJE PREVIO / HOY */}
-                        {clienteValidado.ultimoCanje && (
+                        {clienteValidado.ultimoCanje && !clienteValidado.enCooldown && (
                           <div
                             className={`p-2.5 rounded-xl border text-[11px] space-y-1 ${
                               clienteValidado.canjesDisponibles <= 0
@@ -1292,6 +1335,37 @@ export function ComercioPortal() {
                         <UserCheck className="size-8 text-muted-foreground/50 mx-auto" />
                         <div className="text-xs font-semibold text-muted-foreground">
                           Primero valida al cliente en el Paso 1 (Escaneando su QR o buscando su teléfono u orden).
+                        </div>
+                      </div>
+                    ) : clienteValidado.enCooldown && !permitirCanjeExcepcional ? (
+                      <div className="p-5 rounded-2xl border border-amber-500/40 bg-amber-500/10 space-y-3.5 text-center animate-in fade-in">
+                        <div className="size-12 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
+                          <Clock className="size-6" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <h3 className="text-sm font-black text-amber-300">
+                            Período de Espera Activo (1 Canje por Semana)
+                          </h3>
+                          <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                            El cliente <strong className="text-foreground">{clienteValidado.nombre}</strong> ya realizó un canje en este local {clienteValidado.ultimoCanje ? `el ${new Date(clienteValidado.ultimoCanje.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })}` : ""}.
+                          </p>
+                          <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 text-xs text-amber-300 font-bold max-w-xs mx-auto">
+                            Próximo canje disponible a partir del:<br />
+                            <span className="text-sm text-amber-400 capitalize">{clienteValidado.fechaDesbloqueoStr}</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">
+                            Política de frecuencia configurada: 1 canje cada {clienteValidado.diasIntervalo === 7 ? "semana (7 días)" : `${clienteValidado.diasIntervalo} días`}.
+                          </p>
+                        </div>
+
+                        <div className="pt-2 border-t border-border/50">
+                          <button
+                            type="button"
+                            onClick={() => setPermitirCanjeExcepcional(true)}
+                            className="text-[10px] text-muted-foreground hover:text-amber-400 underline cursor-pointer"
+                          >
+                            Autorizar canje antes de tiempo (Excepción manual del comercio)
+                          </button>
                         </div>
                       </div>
                     ) : clienteValidado.canjesDisponibles <= 0 && !permitirCanjeExcepcional ? (
