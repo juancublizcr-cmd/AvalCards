@@ -161,8 +161,18 @@ function SponsorsPage() {
 
   const getWhatsappUrl = (sponsor: ComercioSponsor, telUsuario?: string) => {
     const cleanTel = sponsor.telefonoWhatsapp.replace(/\D/g, "");
-    const infoTel = telUsuario?.trim() ? ` (Mi teléfono registrado es: ${telUsuario.trim()})` : "";
-    const msg = `¡Hola ${sponsor.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${sponsor.descuentoTexto}".${infoTel}\n\nPuedes comprobar la validez de mis Tokens en el validador oficial:\nhttps://avalcards.com/validar`;
+    const cleanUserTel = (telUsuario || "").replace(/\D/g, "").trim();
+    const infoTel = cleanUserTel ? ` (Mi teléfono registrado es: ${cleanUserTel})` : "";
+    const origin = typeof window !== "undefined" && window.location?.origin ? window.location.origin : "";
+    const urlValidar = origin
+      ? (cleanUserTel ? `${origin}/validar?buscar=${cleanUserTel}` : `${origin}/validar`)
+      : "";
+
+    const validadorTexto = urlValidar
+      ? `\n\nPuedes comprobar la validez de mis Tokens en el validador oficial de Aval Community CR:\n${urlValidar}`
+      : "";
+
+    const msg = `¡Hola ${sponsor.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${sponsor.descuentoTexto}".${infoTel}${validadorTexto}`;
     return `https://wa.me/506${cleanTel}?text=${encodeURIComponent(msg)}`;
   };
 

@@ -190,7 +190,11 @@ export function SponsorsLandingSection() {
               ) : (
                 <a
                   href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    `¡Hola ${s.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${s.descuentoTexto}".\n\nPuedes comprobar mis Tokens en el validador oficial:\nhttps://avalcards.com/validar`
+                    `¡Hola ${s.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${s.descuentoTexto}".${
+                      typeof window !== "undefined" && window.location?.origin
+                        ? `\n\nPuedes comprobar la validez de mis Tokens en el validador oficial:\n${window.location.origin}/validar`
+                        : ""
+                    }`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
