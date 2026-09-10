@@ -29,6 +29,7 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -784,39 +785,50 @@ export function SponsorsSection() {
                   return;
                 }
 
-                const headers = ["ID", "Fecha", "Hora", "Comercio", "Cliente", "Telefono", "Servicio", "Monto_Regular_CRC", "Monto_Cobrado_CRC", "Ahorro_CRC", "Descuento", "Notas"];
-                const rows = canjesFiltradosGlobal.map((c) => {
+                const data = canjesFiltradosGlobal.map((c) => {
                   const d = new Date(c.fecha);
-                  return [
-                    c.id,
-                    d.toLocaleDateString("es-CR"),
-                    d.toLocaleTimeString("es-CR"),
-                    `"${c.sponsorNombre.replace(/"/g, '""')}"`,
-                    `"${c.clienteNombre.replace(/"/g, '""')}"`,
-                    `"${c.clienteTelefono}"`,
-                    `"${c.servicio.replace(/"/g, '""')}"`,
-                    c.montoRegular || 0,
-                    c.montoCobrado || 0,
-                    c.ahorro || 0,
-                    `"${c.descuentoTexto.replace(/"/g, '""')}"`,
-                    `"${(c.notas || "").replace(/"/g, '""')}"`,
-                  ];
+                  return {
+                    "ID Canje": c.id,
+                    "Fecha": d.toLocaleDateString("es-CR"),
+                    "Hora": d.toLocaleTimeString("es-CR"),
+                    "Comercio / Sponsor": c.sponsorNombre,
+                    "Nombre Cliente": c.clienteNombre,
+                    "Teléfono": c.clienteTelefono,
+                    "Número de Placa": c.notas || "N/A",
+                    "Servicio / Producto": c.servicio,
+                    "Precio Regular (CRC)": c.montoRegular || 0,
+                    "Monto Cobrado (CRC)": c.montoCobrado || 0,
+                    "Ahorro Cliente (CRC)": c.ahorro || 0,
+                    "Beneficio Aplicado": c.descuentoTexto,
+                  };
                 });
 
-                const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", `Auditoria_Canjes_Global_${Date.now()}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                toast.success("¡Reporte consolidado descargado!");
+                const worksheet = XLSX.utils.json_to_sheet(data);
+
+                worksheet["!cols"] = [
+                  { wch: 18 }, // ID
+                  { wch: 14 }, // Fecha
+                  { wch: 12 }, // Hora
+                  { wch: 26 }, // Comercio
+                  { wch: 24 }, // Cliente
+                  { wch: 16 }, // Telefono
+                  { wch: 18 }, // Placa
+                  { wch: 28 }, // Servicio
+                  { wch: 20 }, // Regular
+                  { wch: 20 }, // Cobrado
+                  { wch: 20 }, // Ahorro
+                  { wch: 32 }, // Beneficio
+                ];
+
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Auditoría Global");
+
+                XLSX.writeFile(workbook, `Auditoria_Canjes_Global_${Date.now()}.xlsx`);
+                toast.success("¡Reporte consolidado de Excel (.xlsx) descargado!");
               }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 gap-1.5 shrink-0 cursor-pointer"
             >
-              <FileSpreadsheet className="size-4" /> Exportar Consolidado (CSV)
+              <FileSpreadsheet className="size-4" /> Exportar Consolidado (.xlsx)
             </Button>
           </div>
 

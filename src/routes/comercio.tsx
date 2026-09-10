@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import jsQR from "jsqr";
+import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -543,40 +544,52 @@ export function ComercioPortal() {
   const totalCobrado = canjesFiltrados.reduce((acc, c) => acc + (c.montoCobrado || 0), 0);
   const totalAhorro = canjesFiltrados.reduce((acc, c) => acc + (c.ahorro || 0), 0);
 
-  const exportarCSV = () => {
+  const exportarExcel = () => {
     if (canjesFiltrados.length === 0) {
       toast.error("No hay registros en el rango seleccionado para exportar.");
       return;
     }
 
-    const headers = ["ID", "Fecha", "Hora", "Cliente", "Telefono", "Servicio", "Monto_Regular_CRC", "Monto_Cobrado_CRC", "Ahorro_CRC", "Descuento_Aplicado", "Notas"];
-    const rows = canjesFiltrados.map((c) => {
+    const data = canjesFiltrados.map((c) => {
       const d = new Date(c.fecha);
-      return [
-        c.id,
-        d.toLocaleDateString("es-CR"),
-        d.toLocaleTimeString("es-CR"),
-        `"${c.clienteNombre.replace(/"/g, '""')}"`,
-        `"${c.clienteTelefono}"`,
-        `"${c.servicio.replace(/"/g, '""')}"`,
-        c.montoRegular || 0,
-        c.montoCobrado || 0,
-        c.ahorro || 0,
-        `"${c.descuentoTexto.replace(/"/g, '""')}"`,
-        `"${(c.notas || "").replace(/"/g, '""')}"`,
-      ];
+      return {
+        "ID Canje": c.id,
+        "Fecha": d.toLocaleDateString("es-CR"),
+        "Hora": d.toLocaleTimeString("es-CR"),
+        "Nombre Cliente": c.clienteNombre,
+        "Teléfono": c.clienteTelefono,
+        "Número de Placa": c.notas || "N/A",
+        "Servicio / Producto": c.servicio,
+        "Precio Regular (CRC)": c.montoRegular || 0,
+        "Monto Cobrado (CRC)": c.montoCobrado || 0,
+        "Ahorro Cliente (CRC)": c.ahorro || 0,
+        "Beneficio Aplicado": c.descuentoTexto,
+      };
     });
 
-    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Reporte_Canjes_${comercioActivo?.nombreComercio.replace(/\s+/g, "_")}_${filtroRango}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("¡Reporte CSV descargado con éxito!");
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Ajustar anchos de columnas
+    worksheet["!cols"] = [
+      { wch: 18 }, // ID
+      { wch: 14 }, // Fecha
+      { wch: 12 }, // Hora
+      { wch: 24 }, // Cliente
+      { wch: 16 }, // Telefono
+      { wch: 18 }, // Placa
+      { wch: 28 }, // Servicio
+      { wch: 20 }, // Regular
+      { wch: 20 }, // Cobrado
+      { wch: 20 }, // Ahorro
+      { wch: 32 }, // Beneficio
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Canjes Realizados");
+
+    const nombreArchivo = `Reporte_Canjes_${(comercioActivo?.nombreComercio || "Comercio").replace(/\s+/g, "_")}_${filtroRango}.xlsx`;
+    XLSX.writeFile(workbook, nombreArchivo);
+    toast.success("¡Hoja de Excel (.xlsx) descargada con éxito!");
   };
 
   return (
@@ -1135,13 +1148,13 @@ export function ComercioPortal() {
 
                         <div className="space-y-1">
                           <Label className="text-xs font-semibold text-muted-foreground">
-                            Placa / Factura / Notas (Opcional):
+                            Número de Placa:
                           </Label>
                           <Input
-                            placeholder="Ej. Placa: ABC-123 / Factura #9042"
+                            placeholder="Ej. ABC-123 o 123456"
                             value={notasCanje}
                             onChange={(e) => setNotasCanje(e.target.value)}
-                            className="text-xs bg-slate-950 border-border"
+                            className="text-xs bg-slate-950 border-border uppercase font-mono"
                           />
                         </div>
 
@@ -1182,10 +1195,10 @@ export function ComercioPortal() {
 
                     <Button
                       size="sm"
-                      onClick={exportarCSV}
+                      onClick={exportarExcel}
                       className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs h-8 gap-1.5 cursor-pointer shadow-md"
                     >
-                      <FileSpreadsheet className="size-3.5" /> Descargar Excel (CSV)
+                      <FileSpreadsheet className="size-3.5" /> Descargar Excel (.xlsx)
                     </Button>
                   </div>
 
@@ -1367,8 +1380,8 @@ export function ComercioPortal() {
                                 <Tag className="size-3" /> {c.servicio}
                               </div>
                               {c.notas && (
-                                <div className="text-[11px] text-muted-foreground italic">
-                                  Nota: {c.notas}
+                                <div className="text-[11px] text-muted-foreground">
+                                  Número de Placa: <strong className="font-mono text-foreground font-bold uppercase">{c.notas}</strong>
                                 </div>
                               )}
                             </div>
@@ -1550,6 +1563,12 @@ export function ComercioPortal() {
                   <span className="text-muted-foreground">Servicio:</span>
                   <span className="font-bold text-amber-400">{canjeExitosoModal.servicio}</span>
                 </div>
+                {canjeExitosoModal.notas && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Número de Placa:</span>
+                    <span className="font-mono font-bold text-foreground uppercase">{canjeExitosoModal.notas}</span>
+                  </div>
+                )}
                 {canjeExitosoModal.montoCobrado !== undefined && (
                   <div className="flex justify-between border-t border-border pt-1 font-bold">
                     <span className="text-muted-foreground">Cobrado con Descuento:</span>
