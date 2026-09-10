@@ -580,14 +580,20 @@ function SponsorsPage() {
               {/* ── SECCIÓN 2: OTROS COMERCIOS ALIADOS (acordeón colapsable) ── */}
               {sponsorsFiltrados.filter((s) => !s.destacado).length > 0 && (
                 <details className="group/otros" open={sponsorsFiltrados.filter((s) => s.destacado).length === 0}>
-                  <summary className="flex items-center gap-2 cursor-pointer list-none select-none mb-4">
-                    <span className="text-muted-foreground text-base">🏬</span>
-                    <h2 className="text-sm font-black uppercase tracking-wider text-muted-foreground group-open/otros:text-foreground transition-colors">
+                  <summary className="flex items-center gap-2.5 cursor-pointer list-none select-none mb-4 p-3 rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent hover:border-amber-500/60 transition-all group">
+                    <span className="text-base animate-pulse">🏬</span>
+                    <h2 className="text-sm font-black uppercase tracking-wider text-amber-300 animate-pulse flex items-center gap-2">
                       Otros Comercios Aliados
+                      <span className="relative flex size-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                        <span className="relative inline-flex size-2 rounded-full bg-amber-500"></span>
+                      </span>
                     </h2>
-                    <div className="flex-1 h-px bg-border/60" />
-                    <span className="text-[10px] text-muted-foreground font-semibold">{sponsorsFiltrados.filter((s) => !s.destacado).length} aliados</span>
-                    <ChevronDown className="size-4 text-muted-foreground transition-transform group-open/otros:rotate-180" />
+                    <div className="flex-1 h-px bg-amber-500/20" />
+                    <span className="text-[11px] text-amber-300 font-bold px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 animate-pulse">
+                      {sponsorsFiltrados.filter((s) => !s.destacado).length} aliados disponibles
+                    </span>
+                    <ChevronDown className="size-4 text-amber-400 transition-transform group-open/otros:rotate-180" />
                   </summary>
 
                   <div className="space-y-2">
