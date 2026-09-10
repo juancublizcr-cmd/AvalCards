@@ -367,16 +367,11 @@ function SponsorsPage() {
 
                     {/* Footer con Ubicación y Botón de WhatsApp */}
                     <div className="pt-4 mt-4 border-t border-border/70 space-y-3">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground gap-2">
-                        <span className="flex items-center gap-1 min-w-0">
-                          <MapPin className="size-3.5 text-primary shrink-0" />
-                          <span className="truncate">{s.provincia}</span>
+                      <div className="flex items-center text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-300">
+                          <MapPin className="size-3.5 text-amber-500 shrink-0" />
+                          <span className="break-words">{s.provincia}</span>
                         </span>
-                        {s.direccionFisica && (
-                          <span className="text-[10px] text-zinc-400 truncate max-w-[170px]" title={s.direccionFisica}>
-                            {s.direccionFisica}
-                          </span>
-                        )}
                       </div>
 
                     <Button
