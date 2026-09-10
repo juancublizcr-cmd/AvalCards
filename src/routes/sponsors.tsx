@@ -837,19 +837,19 @@ function SponsorsPage() {
               <div className="space-y-2 rounded-xl bg-muted/30 border border-border/70 p-3">
                 <div className="flex items-center justify-between">
                   <Label className="text-[11px] font-bold text-foreground">
-                    Tu Teléfono o Número de Orden Registrada (Opcional):
+                    Tu Número de Teléfono o WhatsApp:
                   </Label>
                   {validandoCupon && (
                     <span className="text-[10px] text-amber-400 font-semibold animate-pulse">
-                      Verificando...
+                      Verificando membresía...
                     </span>
                   )}
                 </div>
                 <Input
-                  placeholder="Ej: 8888-8888 o SG-8130"
+                  placeholder="Ej: 8888-8888"
                   value={telefonoClienteCanje}
                   onChange={(e) => setTelefonoClienteCanje(e.target.value)}
-                  className="h-9 text-xs bg-background uppercase font-mono"
+                  className="h-9 text-xs bg-background font-mono"
                 />
 
                 {estadoValidacionCupon && (
