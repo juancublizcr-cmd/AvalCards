@@ -103,6 +103,7 @@ export function ComercioPortal() {
     totalTokens: number;
     ordenes: Orden[];
     verificado: boolean;
+    estado?: string;
   } | null>(null);
   const [errorValidacion, setErrorValidacion] = useState("");
 
@@ -372,7 +373,7 @@ export function ComercioPortal() {
 
   // 4. Búsqueda y Validación de Cliente en Supabase
   const ejecutarBusquedaCliente = async (tel: string) => {
-    const cleanTel = tel.trim();
+    const cleanTel = tel.replace(/\D/g, "").trim();
     if (!cleanTel) {
       setErrorValidacion("Ingresa un número de teléfono válido.");
       return;
@@ -383,23 +384,27 @@ export function ComercioPortal() {
 
     try {
       const ordenes = await buscarPorTelefono(cleanTel);
-      const aprobadas = ordenes.filter((o) => o.estado === "aprobada");
+      const validas = ordenes.filter((o) => o.estado !== "rechazada");
 
-      if (aprobadas.length === 0) {
-        setErrorValidacion("No se encontraron compras activas o aprobadas para este número.");
+      if (validas.length === 0) {
+        setErrorValidacion("No se encontraron compras activas o registradas para este número.");
         setBuscandoCliente(false);
         return;
       }
 
-      const nombre = aprobadas[0].nombre || (aprobadas[0] as any).nombreCliente || "Miembro Aval";
-      const totalTokens = aprobadas.reduce((acc, o) => acc + (o.cantidad || (o as any).cantidadTokens || (o.numeros?.length || 1)), 0);
+      const tieneAprobadas = validas.some((o) => o.estado === "aprobada");
+      const estadoPrincipal = tieneAprobadas ? "aprobada" : "pendiente";
+      const primerOrdenConNombre = validas.find((o) => o.nombre || (o as any).nombreCliente);
+      const nombre = primerOrdenConNombre?.nombre || (primerOrdenConNombre as any)?.nombreCliente || "Miembro Aval";
+      const totalTokens = validas.reduce((acc, o) => acc + (o.cantidad || (o as any).cantidadTokens || (o.numeros?.length || 1)), 0);
 
       setClienteValidado({
         nombre,
         telefono: cleanTel,
         totalTokens,
-        ordenes: aprobadas,
+        ordenes: validas,
         verificado: true,
+        estado: estadoPrincipal,
       });
 
       if (comercioActivo?.descuentoPorcentaje && montoRegular) {
@@ -410,7 +415,11 @@ export function ComercioPortal() {
         }
       }
 
-      toast.success(`¡Cliente verificado! ${nombre} (${totalTokens} Tokens)`);
+      toast.success(
+        tieneAprobadas
+          ? `¡Cliente verificado! ${nombre} (${totalTokens} Tokens)`
+          : `¡Cliente localizado! ${nombre} (${totalTokens} Tokens - Orden Registrada)`
+      );
     } catch (err) {
       console.error(err);
       setErrorValidacion("Error al consultar la base de datos.");
@@ -971,20 +980,49 @@ export function ComercioPortal() {
 
                     {/* RESULTADO DE VALIDACIÓN DEL CLIENTE */}
                     {clienteValidado && (
-                      <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 space-y-2.5 animate-in fade-in zoom-in-95">
+                      <div
+                        className={`rounded-xl border p-3.5 space-y-2.5 animate-in fade-in zoom-in-95 ${
+                          clienteValidado.estado === "aprobada"
+                            ? "border-emerald-500/40 bg-emerald-500/10"
+                            : "border-amber-500/40 bg-amber-500/10"
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <CheckCircle2 className="size-4 text-emerald-400" />
-                            <span className="text-xs font-black text-emerald-300 uppercase tracking-wide">
-                              Miembro Activo Verificado
-                            </span>
+                            {clienteValidado.estado === "aprobada" ? (
+                              <>
+                                <CheckCircle2 className="size-4 text-emerald-400" />
+                                <span className="text-xs font-black text-emerald-300 uppercase tracking-wide">
+                                  Miembro Activo Verificado
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <Clock className="size-4 text-amber-400 animate-pulse" />
+                                <span className="text-xs font-black text-amber-300 uppercase tracking-wide">
+                                  Miembro Registrado (Pendiente)
+                                </span>
+                              </>
+                            )}
                           </div>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                              clienteValidado.estado === "aprobada"
+                                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                                : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                            }`}
+                          >
                             {clienteValidado.totalTokens} Tokens
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-emerald-500/20">
+                        <div
+                          className={`grid grid-cols-2 gap-2 text-xs pt-1 border-t ${
+                            clienteValidado.estado === "aprobada"
+                              ? "border-emerald-500/20"
+                              : "border-amber-500/20"
+                          }`}
+                        >
                           <div>
                             <div className="text-[10px] text-muted-foreground">Nombre:</div>
                             <div className="font-bold text-foreground truncate">{clienteValidado.nombre}</div>
