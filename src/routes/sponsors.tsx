@@ -182,11 +182,11 @@ function SponsorsPage() {
           const ultimo = canjesEnEsteComercio[0];
           setEstadoValidacionCupon({
             status: "agotado",
-            mensaje: `🚫 La orden ${term} ya utilizó su cupón en ${cuponActivo.nombreComercio} ${
+            mensaje: `🚫 Ya utilizaste el beneficio de tu compra en ${cuponActivo.nombreComercio} ${
               ultimo
-                ? `el ${new Date(ultimo.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })} (Servicio: ${ultimo.servicio})`
+                ? `el ${new Date(ultimo.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })} (${ultimo.servicio})`
                 : ""
-            }. Para solicitar un nuevo servicio con descuento, adquiere nuevos tokens en Aval Community.`,
+            }. Recuerda que aún puedes utilizar tu cupón en los demás comercios afiliados, o adquirir una nueva orden de tokens para canjear de nuevo aquí.`,
             canjePrevio: ultimo,
           });
         }
