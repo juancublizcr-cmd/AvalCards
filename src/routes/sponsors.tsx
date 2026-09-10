@@ -6,6 +6,7 @@ import {
   Ban,
   Building2,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   ExternalLink,
   Flame,
@@ -476,152 +477,158 @@ function SponsorsPage() {
               </Button>
             </div>
           ) : (
-            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {sponsorsFiltrados.map((s) => (
-                <div
-                  key={s.id}
-                  className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border bg-gradient-to-b from-card to-zinc-950 p-4 sm:p-5 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col justify-between ${
-                    s.destacado
-                      ? "border-amber-500/60 ring-1 ring-amber-500/30"
-                      : "border-border hover:border-border/80"
-                  }`}
-                >
-                  {/* Glow decorativo */}
-                  {s.destacado && (
-                    <div className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-amber-500/15 blur-2xl group-hover:bg-amber-500/25 transition-colors" />
-                  )}
+            <div className="space-y-10">
+              {/* ── SECCIÓN 1: COMERCIOS DESTACADOS ── */}
+              {sponsorsFiltrados.filter((s) => s.destacado).length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400 text-base">⭐</span>
+                    <h2 className="text-sm font-black uppercase tracking-wider text-amber-400">Comercios Destacados</h2>
+                    <div className="flex-1 h-px bg-amber-500/25" />
+                    <span className="text-[10px] text-muted-foreground font-semibold">{sponsorsFiltrados.filter((s) => s.destacado).length} aliados premium</span>
+                  </div>
+                  <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {sponsorsFiltrados.filter((s) => s.destacado).map((s) => (
+                      <div
+                        key={s.id}
+                        className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-500/60 ring-1 ring-amber-500/30 bg-gradient-to-b from-card to-zinc-950 p-4 sm:p-5 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col justify-between"
+                      >
+                        {/* Glow decorativo */}
+                        <div className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-amber-500/15 blur-2xl group-hover:bg-amber-500/25 transition-colors" />
 
-                  <div className="space-y-3.5">
-                    {/* Header de la tarjeta */}
-                    <div className="flex items-start justify-between gap-2.5">
-                      <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
-                        {s.logoUrl ? (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setImagenGrande({
-                                url: s.logoUrl || "",
-                                titulo: s.nombreComercio,
-                                categoria: getCatInfo(s.categoria).label,
-                              })
-                            }
-                            className="group/img relative size-12 sm:size-14 rounded-xl sm:rounded-2xl overflow-hidden border border-amber-500/40 bg-muted/40 shrink-0 shadow-md cursor-zoom-in transition-all hover:border-amber-400 hover:scale-105 active:scale-95"
-                            title="Haz clic para ver la imagen en grande"
-                          >
-                            <img
-                              src={s.logoUrl}
-                              alt={s.nombreComercio}
-                              className="size-full object-cover transition-transform duration-300 group-hover/img:scale-110"
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = "none";
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                              <ZoomIn className="size-3.5 sm:size-4 text-amber-300 drop-shadow" />
+                        <div className="space-y-3.5">
+                          {/* Header de la tarjeta */}
+                          <div className="flex items-start justify-between gap-2.5">
+                            <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+                              {s.logoUrl ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setImagenGrande({ url: s.logoUrl || "", titulo: s.nombreComercio, categoria: getCatInfo(s.categoria).label })}
+                                  className="group/img relative size-12 sm:size-14 rounded-xl sm:rounded-2xl overflow-hidden border border-amber-500/40 bg-muted/40 shrink-0 shadow-md cursor-zoom-in transition-all hover:border-amber-400 hover:scale-105 active:scale-95"
+                                  title="Haz clic para ver la imagen en grande"
+                                >
+                                  <img src={s.logoUrl} alt={s.nombreComercio} className="size-full object-cover transition-transform duration-300 group-hover/img:scale-110" onError={(e) => { (e.target as HTMLElement).style.display = "none"; }} />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                    <ZoomIn className="size-3.5 sm:size-4 text-amber-300 drop-shadow" />
+                                  </div>
+                                </button>
+                              ) : (
+                                <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl sm:rounded-2xl bg-amber-500/20 text-amber-400 text-xl sm:text-2xl font-black shadow-inner shrink-0">
+                                  {getCatInfo(s.categoria).icono}
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <span className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-wider block truncate">{getCatInfo(s.categoria).label}</span>
+                                <h3 className="font-black text-base sm:text-lg text-foreground group-hover:text-amber-400 transition-colors break-words leading-snug">{s.nombreComercio}</h3>
+                              </div>
                             </div>
-                          </button>
-                        ) : (
-                          <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl sm:rounded-2xl bg-amber-500/20 text-amber-400 text-xl sm:text-2xl font-black shadow-inner shrink-0">
-                            {getCatInfo(s.categoria).icono}
+                            <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[9px] sm:text-[10px] font-black text-amber-400 shrink-0">⭐ TOP SPONSOR</span>
                           </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-wider block truncate">
-                            {getCatInfo(s.categoria).label}
-                          </span>
-                          <h3 className="font-black text-base sm:text-lg text-foreground group-hover:text-amber-400 transition-colors break-words leading-snug">
-                            {s.nombreComercio}
-                          </h3>
+
+                          {/* Badge Principal del Descuento */}
+                          <div className="rounded-xl sm:rounded-2xl border border-amber-500/35 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent p-3 sm:p-3.5 space-y-1">
+                            <div className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                              <Percent className="size-3 shrink-0" /> Beneficio Exclusivo Aval
+                            </div>
+                            <div className="text-sm sm:text-base font-black text-amber-300 leading-snug break-words">{s.descuentoTexto}</div>
+                          </div>
+
+                          {s.descripcion && <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{s.descripcion}</p>}
+
+                          <div className="rounded-xl bg-zinc-900/90 border border-border/60 p-2.5 text-[10px] sm:text-[11px] text-zinc-300 leading-snug">
+                            <span className="text-amber-400 font-bold">Cómo canjear:</span> {s.condiciones}
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-3.5 mt-3.5 border-t border-border/70 space-y-2.5">
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-300">
+                              <MapPin className="size-3.5 text-amber-500 shrink-0" />
+                              <span className="break-words">{s.provincia}</span>
+                            </span>
+                          </div>
+                          {s.modalidadCanje === "cupon" ? (
+                            <Button type="button" onClick={() => setCuponActivo(s)} className="w-full bg-amber-500 hover:bg-amber-600 text-black font-black text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl cursor-pointer">
+                              <Ticket className="size-4 shrink-0" /> Ver Cupón Digital Oficial
+                            </Button>
+                          ) : s.modalidadCanje === "whatsapp" ? (
+                            <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl">
+                              <a href={getWhatsappUrl(s)} target="_blank" rel="noreferrer">
+                                <MessageSquare className="size-4 shrink-0" /> Canjear por WhatsApp
+                              </a>
+                            </Button>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button type="button" onClick={() => setCuponActivo(s)} className="bg-amber-500 hover:bg-amber-600 text-black font-black text-xs h-10 shadow-sm flex items-center justify-center gap-1 rounded-xl cursor-pointer">
+                                <Ticket className="size-3.5 shrink-0" /> Cupón Digital
+                              </Button>
+                              <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 shadow-sm flex items-center justify-center gap-1 rounded-xl">
+                                <a href={getWhatsappUrl(s)} target="_blank" rel="noreferrer">
+                                  <MessageSquare className="size-3.5 shrink-0" /> WhatsApp
+                                </a>
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
-
-                      {s.destacado && (
-                        <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[9px] sm:text-[10px] font-black text-amber-400 shrink-0">
-                          ⭐ TOP SPONSOR
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Badge Principal del Descuento */}
-                    <div className="rounded-xl sm:rounded-2xl border border-amber-500/35 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent p-3 sm:p-3.5 space-y-1">
-                      <div className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                        <Percent className="size-3 shrink-0" /> Beneficio Exclusivo Aval
-                      </div>
-                      <div className="text-sm sm:text-base font-black text-amber-300 leading-snug break-words">
-                        {s.descuentoTexto}
-                      </div>
-                    </div>
-
-                    {/* Descripción */}
-                    {s.descripcion && (
-                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                        {s.descripcion}
-                      </p>
-                    )}
-
-                    {/* Condiciones */}
-                    <div className="rounded-xl bg-zinc-900/90 border border-border/60 p-2.5 text-[10px] sm:text-[11px] text-zinc-300 leading-snug">
-                      <span className="text-amber-400 font-bold">Cómo canjear:</span> {s.condiciones}
-                    </div>
-                  </div>
-
-                  {/* Footer con Ubicación y Botón de Canje */}
-                  <div className="pt-3.5 mt-3.5 border-t border-border/70 space-y-2.5">
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-300">
-                        <MapPin className="size-3.5 text-amber-500 shrink-0" />
-                        <span className="break-words">{s.provincia}</span>
-                      </span>
-                    </div>
-
-                    {/* Botones de Acción Dinámicos según Modalidad */}
-                    {s.modalidadCanje === "cupon" ? (
-                      <Button
-                        type="button"
-                        onClick={() => setCuponActivo(s)}
-                        className="w-full bg-amber-500 hover:bg-amber-600 text-black font-black text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl cursor-pointer"
-                      >
-                        <Ticket className="size-4 shrink-0" /> Ver Cupón Digital Oficial
-                      </Button>
-                    ) : s.modalidadCanje === "whatsapp" ? (
-                      <Button
-                        asChild
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl"
-                      >
-                        <a
-                          href={getWhatsappUrl(s)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <MessageSquare className="size-4 shrink-0" /> Canjear por WhatsApp
-                        </a>
-                      </Button>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button
-                          type="button"
-                          onClick={() => setCuponActivo(s)}
-                          className="bg-amber-500 hover:bg-amber-600 text-black font-black text-xs h-10 shadow-sm flex items-center justify-center gap-1 rounded-xl cursor-pointer"
-                        >
-                          <Ticket className="size-3.5 shrink-0" /> Cupón Digital
-                        </Button>
-                        <Button
-                          asChild
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 shadow-sm flex items-center justify-center gap-1 rounded-xl"
-                        >
-                          <a
-                            href={getWhatsappUrl(s)}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <MessageSquare className="size-3.5 shrink-0" /> WhatsApp
-                          </a>
-                        </Button>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* ── SECCIÓN 2: OTROS COMERCIOS ALIADOS (acordeón colapsable) ── */}
+              {sponsorsFiltrados.filter((s) => !s.destacado).length > 0 && (
+                <details className="group/otros" open={sponsorsFiltrados.filter((s) => s.destacado).length === 0}>
+                  <summary className="flex items-center gap-2 cursor-pointer list-none select-none mb-4">
+                    <span className="text-muted-foreground text-base">🏬</span>
+                    <h2 className="text-sm font-black uppercase tracking-wider text-muted-foreground group-open/otros:text-foreground transition-colors">
+                      Otros Comercios Aliados
+                    </h2>
+                    <div className="flex-1 h-px bg-border/60" />
+                    <span className="text-[10px] text-muted-foreground font-semibold">{sponsorsFiltrados.filter((s) => !s.destacado).length} aliados</span>
+                    <ChevronDown className="size-4 text-muted-foreground transition-transform group-open/otros:rotate-180" />
+                  </summary>
+
+                  <div className="space-y-2">
+                    {sponsorsFiltrados.filter((s) => !s.destacado).map((s) => (
+                      <div key={s.id} className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 px-4 py-3 hover:bg-card hover:border-border transition-all group">
+                        {/* Logo pequeño */}
+                        {s.logoUrl ? (
+                          <img src={s.logoUrl} alt={s.nombreComercio} className="size-9 rounded-lg object-cover border border-border/60 shrink-0" onError={(e) => { (e.target as HTMLElement).style.display = "none"; }} />
+                        ) : (
+                          <div className="flex size-9 items-center justify-center rounded-lg bg-muted text-base shrink-0">{getCatInfo(s.categoria).icono}</div>
+                        )}
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-sm text-foreground truncate">{s.nombreComercio}</span>
+                            <span className="text-[10px] text-muted-foreground hidden sm:inline">{getCatInfo(s.categoria).label}</span>
+                          </div>
+                          <span className="text-xs text-amber-400 font-semibold">{s.descuentoTexto}</span>
+                          {s.provincia && <span className="text-[11px] text-muted-foreground ml-2">· {s.provincia}</span>}
+                        </div>
+
+                        {/* Botón compacto */}
+                        <div className="shrink-0">
+                          {s.modalidadCanje === "cupon" || s.modalidadCanje === "ambos" ? (
+                            <Button type="button" size="sm" onClick={() => setCuponActivo(s)} className="bg-amber-500/90 hover:bg-amber-500 text-black font-bold text-[11px] h-8 px-3 rounded-lg cursor-pointer">
+                              <Ticket className="size-3.5 mr-1" /> Ver Cupón
+                            </Button>
+                          ) : (
+                            <Button asChild size="sm" className="bg-emerald-700/90 hover:bg-emerald-600 text-white font-bold text-[11px] h-8 px-3 rounded-lg">
+                              <a href={getWhatsappUrl(s)} target="_blank" rel="noreferrer">
+                                <MessageSquare className="size-3.5 mr-1" /> WhatsApp
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
             </div>
           )}
         </section>
