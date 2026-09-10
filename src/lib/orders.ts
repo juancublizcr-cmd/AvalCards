@@ -163,7 +163,22 @@ export async function buscarPorTelefono(termino: string): Promise<Orden[]> {
   const t = termino.trim();
   if (!t) return [];
 
-  // Si busca por correo
+  // 1. Si busca por Número / ID de Orden (ej: SG-8130, 8130)
+  const cleanUpper = t.toUpperCase();
+  if (cleanUpper.startsWith("SG-") || /^[A-Z0-9_-]{3,20}$/i.test(t)) {
+    try {
+      const { data, error } = await supabase
+        .from("ordenes")
+        .select("*")
+        .or(`id.ilike.%${cleanUpper}%,id.eq.${cleanUpper},id.ilike.%SG-${cleanUpper}%`)
+        .order("fecha", { ascending: false });
+      if (!error && data && data.length > 0) return data.map(normalizarOrden);
+    } catch {
+      // Continuar con los demás métodos de búsqueda
+    }
+  }
+
+  // 2. Si busca por correo electrónico
   if (t.includes("@")) {
     try {
       const { data, error } = await supabase
@@ -177,8 +192,19 @@ export async function buscarPorTelefono(termino: string): Promise<Orden[]> {
     }
   }
 
+  // 3. Búsqueda por dígitos de teléfono o coincidencia en ID
   const digits = t.replace(/\D/g, "");
-  if (digits.length < 8) return [];
+  if (digits.length < 8) {
+    try {
+      const { data, error } = await supabase
+        .from("ordenes")
+        .select("*")
+        .or(`id.ilike.%${t}%,id.ilike.%SG-${t}%`)
+        .order("fecha", { ascending: false });
+      if (!error && data && data.length > 0) return data.map(normalizarOrden);
+    } catch {}
+    return [];
+  }
 
   try {
     const raw8 = digits.slice(-8);

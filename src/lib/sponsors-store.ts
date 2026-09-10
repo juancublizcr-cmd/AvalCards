@@ -748,6 +748,7 @@ export type CanjeSponsorRecord = {
   sponsorNombre: string;
   clienteTelefono: string;
   clienteNombre: string;
+  ordenId?: string; // Ej: SG-8130
   servicio: string;
   montoRegular?: number;
   montoCobrado?: number;

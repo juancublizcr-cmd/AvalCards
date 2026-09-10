@@ -124,6 +124,7 @@ export function ComercioPortal() {
     yaCanjeoHoy: boolean;
     ultimoCanje?: CanjeSponsorRecord;
   } | null>(null);
+  const [ordenSeleccionadaId, setOrdenSeleccionadaId] = useState<string>("");
   const [permitirCanjeExcepcional, setPermitirCanjeExcepcional] = useState(false);
   const [errorValidacion, setErrorValidacion] = useState("");
 
@@ -455,13 +456,24 @@ export function ComercioPortal() {
       const canjesEnEsteComercio = todosLosCanjes.filter(
         (c) =>
           c.sponsorId === comercioActivo?.id &&
-          c.clienteTelefono.replace(/\D/g, "") === cleanTel
+          (c.clienteTelefono.replace(/\D/g, "") === cleanTel ||
+            validas.some(
+              (v) =>
+                v.id === c.ordenId ||
+                (c.clienteTelefono && v.telefono && c.clienteTelefono.replace(/\D/g, "") === v.telefono.replace(/\D/g, ""))
+            ))
       );
 
       const totalCompras = validas.length;
       const totalCanjes = canjesEnEsteComercio.length;
       const canjesDisponibles = Math.max(0, totalCompras - totalCanjes);
       const ultimoCanje = canjesEnEsteComercio[0];
+
+      // Encontrar la primera orden que no haya sido canjeada aún en este local
+      const primerOrdenDisponible = validas.find(
+        (ord) => !canjesEnEsteComercio.some((c) => c.ordenId === ord.id)
+      );
+      setOrdenSeleccionadaId(primerOrdenDisponible?.id || validas[0]?.id || "");
 
       const hoyStr = new Date().toISOString().slice(0, 10);
       const yaCanjeoHoy = canjesEnEsteComercio.some(
@@ -549,6 +561,7 @@ export function ComercioPortal() {
         sponsorNombre: comercioActivo.nombreComercio,
         clienteTelefono: clienteValidado.telefono,
         clienteNombre: clienteValidado.nombre,
+        ordenId: ordenSeleccionadaId || clienteValidado.ordenes[0]?.id,
         servicio: servicioNombre.trim(),
         montoRegular: numRegular,
         montoCobrado: numCobrado,
@@ -1194,6 +1207,68 @@ export function ComercioPortal() {
                           </div>
                         )}
 
+                        {/* LISTADO DE ÓRDENES Y SELECCIÓN DE ORDEN PARA CANJE */}
+                        <div className="space-y-1.5 pt-2 border-t border-border/50">
+                          <div className="text-[10px] font-bold text-muted-foreground uppercase flex items-center justify-between">
+                            <span>Órdenes Registradas ({clienteValidado.ordenes.length}):</span>
+                            <span className="text-[9px] text-amber-400 font-semibold">Selecciona orden a canjear</span>
+                          </div>
+                          <div className="grid gap-1.5 max-h-40 overflow-y-auto pr-1">
+                            {clienteValidado.ordenes.map((ord) => {
+                              const canjeAsociado = clienteValidado.canjesPreviosComercio.find(
+                                (c) => c.ordenId === ord.id
+                              );
+                              const estaCanjeada = !!canjeAsociado;
+                              const isSelected = ordenSeleccionadaId === ord.id;
+
+                              return (
+                                <button
+                                  key={ord.id}
+                                  type="button"
+                                  disabled={estaCanjeada}
+                                  onClick={() => setOrdenSeleccionadaId(ord.id)}
+                                  className={`w-full p-2.5 rounded-xl border text-left flex items-center justify-between text-xs transition-all ${
+                                    estaCanjeada
+                                      ? "border-rose-500/20 bg-rose-950/20 opacity-70 cursor-not-allowed"
+                                      : isSelected
+                                      ? "border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/50 cursor-pointer shadow-sm"
+                                      : "border-border bg-slate-950/60 hover:border-border/80 cursor-pointer"
+                                  }`}
+                                >
+                                  <div className="space-y-0.5">
+                                    <div className="flex items-center gap-1.5 font-bold font-mono text-foreground">
+                                      <Ticket className="size-3.5 text-amber-400" />
+                                      #{ord.id}
+                                      <span className="text-[10px] font-normal text-muted-foreground font-sans">
+                                        ({ord.cantidad || ord.numeros?.length || 1} Tokens)
+                                      </span>
+                                    </div>
+                                    <div className="text-[9px] text-muted-foreground">
+                                      {new Date(ord.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short", year: "numeric" })}
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    {estaCanjeada ? (
+                                      <span className="text-[9px] font-bold text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded-full border border-rose-500/30 flex items-center gap-1">
+                                        <Ban className="size-2.5" /> Canjeada
+                                      </span>
+                                    ) : isSelected ? (
+                                      <span className="text-[9px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1">
+                                        <CheckCircle2 className="size-2.5" /> Seleccionada
+                                      </span>
+                                    ) : (
+                                      <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                                        Disponible
+                                      </span>
+                                    )}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
                         {clienteValidado.canjesDisponibles <= 0 && (
                           <div className="p-2.5 rounded-xl border border-rose-500/30 bg-rose-950/40 text-rose-300 text-[11px] leading-relaxed">
                             🚫 <strong>Sin canjes disponibles:</strong> Este cliente ya aprovechó el beneficio de sus compras activas. Para solicitar otro servicio con descuento, debe realizar una <strong>nueva compra de tokens</strong> en Aval Community.
@@ -1216,7 +1291,7 @@ export function ComercioPortal() {
                       <div className="p-8 text-center rounded-xl border border-dashed border-border/80 bg-slate-950/40 space-y-2">
                         <UserCheck className="size-8 text-muted-foreground/50 mx-auto" />
                         <div className="text-xs font-semibold text-muted-foreground">
-                          Primero valida al cliente en el Paso 1 (Escaneando su QR o buscando su teléfono).
+                          Primero valida al cliente en el Paso 1 (Escaneando su QR o buscando su teléfono u orden).
                         </div>
                       </div>
                     ) : clienteValidado.canjesDisponibles <= 0 && !permitirCanjeExcepcional ? (
@@ -1254,6 +1329,14 @@ export function ComercioPortal() {
                       </div>
                     ) : (
                       <form onSubmit={handleGuardarCanje} className="space-y-3.5">
+                        {ordenSeleccionadaId && (
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-amber-500/30 text-xs">
+                            <span className="text-muted-foreground text-[11px]">Orden aplicada:</span>
+                            <span className="font-mono font-black text-amber-400 flex items-center gap-1">
+                              <Ticket className="size-3.5" /> #{ordenSeleccionadaId}
+                            </span>
+                          </div>
+                        )}
                         {clienteValidado.canjesDisponibles <= 0 && permitirCanjeExcepcional && (
                           <div className="p-2.5 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[11px] flex items-center justify-between">
                             <span className="font-semibold flex items-center gap-1">

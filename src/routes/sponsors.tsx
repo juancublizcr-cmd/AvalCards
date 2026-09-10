@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  AlertTriangle,
   ArrowLeft,
+  Ban,
   Building2,
   CheckCircle2,
   ChevronRight,
@@ -40,11 +42,14 @@ import {
   CATEGORIAS_SPONSOR_LABELS,
   fetchSponsors,
   fetchCategoriasSponsors,
+  fetchCanjesSponsors,
   enviarSolicitudSponsor,
   type ComercioSponsor,
   type CategoriaSponsor,
   type CategoriaItem,
+  type CanjeSponsorRecord,
 } from "@/lib/sponsors-store";
+import { buscarPorTelefono, type Orden } from "@/lib/orders";
 
 export const Route = createFileRoute("/sponsors")({
   head: () => ({
@@ -69,6 +74,13 @@ function SponsorsPage() {
   const [imagenGrande, setImagenGrande] = useState<{ url: string; titulo: string; categoria: string } | null>(null);
   const [cuponActivo, setCuponActivo] = useState<ComercioSponsor | null>(null);
   const [telefonoClienteCanje, setTelefonoClienteCanje] = useState("");
+  const [validandoCupon, setValidandoCupon] = useState(false);
+  const [estadoValidacionCupon, setEstadoValidacionCupon] = useState<{
+    status: "disponible" | "agotado" | "no_encontrado";
+    mensaje: string;
+    ordenId?: string;
+    canjePrevio?: CanjeSponsorRecord;
+  } | null>(null);
 
   // Formulario para que nuevos comercios se afilien
   const [enviandoForm, setEnviandoForm] = useState(false);
@@ -117,6 +129,77 @@ function SponsorsPage() {
     };
   }, []);
 
+  // Validación en tiempo real de Orden / Teléfono para el Cupón
+  useEffect(() => {
+    if (!cuponActivo || !telefonoClienteCanje.trim()) {
+      setEstadoValidacionCupon(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      const term = telefonoClienteCanje.trim();
+      if (term.length < 3) return;
+
+      setValidandoCupon(true);
+      try {
+        const [ordenes, canjes] = await Promise.all([
+          buscarPorTelefono(term),
+          fetchCanjesSponsors(),
+        ]);
+
+        const validas = ordenes.filter((o) => o.estado !== "rechazada");
+        if (validas.length === 0) {
+          setEstadoValidacionCupon({
+            status: "no_encontrado",
+            mensaje: "No se encontró ninguna compra activa o número de orden registrado con estos datos.",
+          });
+          return;
+        }
+
+        const canjesEnEsteComercio = canjes.filter(
+          (c) =>
+            c.sponsorId === cuponActivo.id &&
+            (validas.some((v) => v.id === c.ordenId) ||
+              validas.some(
+                (v) =>
+                  c.clienteTelefono &&
+                  v.telefono &&
+                  c.clienteTelefono.replace(/\D/g, "") === v.telefono.replace(/\D/g, "")
+              ))
+        );
+
+        const ordenDisponible = validas.find(
+          (ord) => !canjesEnEsteComercio.some((c) => c.ordenId === ord.id)
+        );
+
+        if (ordenDisponible) {
+          setEstadoValidacionCupon({
+            status: "disponible",
+            mensaje: `✓ Orden #${ordenDisponible.id} activa (${ordenDisponible.cantidad || ordenDisponible.numeros?.length || 1} Tokens). Cupón 100% disponible para canje.`,
+            ordenId: ordenDisponible.id,
+          });
+        } else {
+          const ultimo = canjesEnEsteComercio[0];
+          setEstadoValidacionCupon({
+            status: "agotado",
+            mensaje: `🚫 La orden ${term} ya utilizó su cupón en ${cuponActivo.nombreComercio} ${
+              ultimo
+                ? `el ${new Date(ultimo.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })} (Servicio: ${ultimo.servicio})`
+                : ""
+            }. Para solicitar un nuevo servicio con descuento, adquiere nuevos tokens en Aval Community.`,
+            canjePrevio: ultimo,
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setValidandoCupon(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [telefonoClienteCanje, cuponActivo]);
+
   const getCatInfo = (catId: string) => {
     const found = categorias.find((c) => c.id === catId);
     if (found) return found;
@@ -161,18 +244,38 @@ function SponsorsPage() {
 
   const getWhatsappUrl = (sponsor: ComercioSponsor, telUsuario?: string) => {
     const cleanTel = sponsor.telefonoWhatsapp.replace(/\D/g, "");
-    const cleanUserTel = (telUsuario || "").replace(/\D/g, "").trim();
-    const infoTel = cleanUserTel ? ` (Mi teléfono registrado es: ${cleanUserTel})` : "";
+    const userVal = (telUsuario || "").trim();
+    const isOrder =
+      userVal.toUpperCase().startsWith("SG-") ||
+      (!userVal.includes("@") && userVal.length < 8 && userVal.length >= 3);
+    const cleanUserTel = userVal.replace(/\D/g, "").trim();
+
+    let infoText = "";
+    let buscarParam = "";
+
+    if (estadoValidacionCupon?.ordenId) {
+      infoText = ` (Mi Orden registrada es: #${estadoValidacionCupon.ordenId})`;
+      buscarParam = estadoValidacionCupon.ordenId;
+    } else if (isOrder) {
+      infoText = ` (Mi Orden registrada es: #${userVal.toUpperCase()})`;
+      buscarParam = userVal.toUpperCase();
+    } else if (cleanUserTel) {
+      infoText = ` (Mi teléfono registrado es: ${cleanUserTel})`;
+      buscarParam = cleanUserTel;
+    }
+
     const origin = typeof window !== "undefined" && window.location?.origin ? window.location.origin : "";
     const urlValidar = origin
-      ? (cleanUserTel ? `${origin}/validar?buscar=${cleanUserTel}` : `${origin}/validar`)
+      ? buscarParam
+        ? `${origin}/validar?buscar=${encodeURIComponent(buscarParam)}`
+        : `${origin}/validar`
       : "";
 
     const validadorTexto = urlValidar
       ? `\n\nPuedes comprobar la validez de mis Tokens en el validador oficial de Aval Community CR:\n${urlValidar}`
       : "";
 
-    const msg = `¡Hola ${sponsor.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${sponsor.descuentoTexto}".${infoTel}${validadorTexto}`;
+    const msg = `¡Hola ${sponsor.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${sponsor.descuentoTexto}".${infoText}${validadorTexto}`;
     return `https://wa.me/506${cleanTel}?text=${encodeURIComponent(msg)}`;
   };
 
@@ -732,15 +835,37 @@ function SponsorsPage() {
 
               {/* Verificación para el Comercio */}
               <div className="space-y-2 rounded-xl bg-muted/30 border border-border/70 p-3">
-                <Label className="text-[11px] font-bold text-foreground">
-                  Tu Teléfono o Número de Orden Registrada (Opcional):
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[11px] font-bold text-foreground">
+                    Tu Teléfono o Número de Orden Registrada (Opcional):
+                  </Label>
+                  {validandoCupon && (
+                    <span className="text-[10px] text-amber-400 font-semibold animate-pulse">
+                      Verificando...
+                    </span>
+                  )}
+                </div>
                 <Input
-                  placeholder="Ej: 8888-8888 o ORD-12345"
+                  placeholder="Ej: 8888-8888 o SG-8130"
                   value={telefonoClienteCanje}
                   onChange={(e) => setTelefonoClienteCanje(e.target.value)}
-                  className="h-9 text-xs bg-background"
+                  className="h-9 text-xs bg-background uppercase font-mono"
                 />
+
+                {estadoValidacionCupon && (
+                  <div
+                    className={`p-2.5 rounded-xl border text-[11px] leading-relaxed animate-in fade-in ${
+                      estadoValidacionCupon.status === "disponible"
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-semibold"
+                        : estadoValidacionCupon.status === "agotado"
+                        ? "border-rose-500/40 bg-rose-500/15 text-rose-300 font-semibold"
+                        : "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                    }`}
+                  >
+                    {estadoValidacionCupon.mensaje}
+                  </div>
+                )}
+
                 <p className="text-[10px] text-muted-foreground leading-tight">
                   Se incluirá en el mensaje de WhatsApp para que el comercio valide tu compra en el sistema en 2 segundos.
                 </p>
@@ -748,19 +873,36 @@ function SponsorsPage() {
 
               {/* Botones de Acción */}
               <div className="space-y-2 pt-1">
-                <Button
-                  asChild
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl"
-                >
-                  <a
-                    href={getWhatsappUrl(cuponActivo, telefonoClienteCanje)}
-                    target="_blank"
-                    rel="noreferrer"
+                {estadoValidacionCupon?.status === "agotado" ? (
+                  <div className="space-y-2">
+                    <Button
+                      asChild
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl"
+                    >
+                      <Link to="/#comprar">
+                        <Sparkles className="size-4 mr-2 shrink-0" />
+                        Comprar Nuevos Tokens para Canjear
+                      </Link>
+                    </Button>
+                    <p className="text-[10px] text-center text-muted-foreground">
+                      Cada orden de tokens incluye 1 canje con descuento en comercios aliados.
+                    </p>
+                  </div>
+                ) : (
+                  <Button
+                    asChild
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl"
                   >
-                    <MessageSquare className="size-4 mr-2 shrink-0" />
-                    Enviar WhatsApp con Verificación
-                  </a>
-                </Button>
+                    <a
+                      href={getWhatsappUrl(cuponActivo, telefonoClienteCanje)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MessageSquare className="size-4 mr-2 shrink-0" />
+                      Enviar WhatsApp con Verificación
+                    </a>
+                  </Button>
+                )}
 
                 <div className="flex items-center justify-between gap-2 pt-1">
                   <Button
