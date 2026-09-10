@@ -15,23 +15,40 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  CATEGORIAS_SPONSOR_DEFAULT,
   CATEGORIAS_SPONSOR_LABELS,
   fetchSponsors,
+  fetchCategoriasSponsors,
   type ComercioSponsor,
+  type CategoriaItem,
 } from "@/lib/sponsors-store";
 
 export function SponsorsLandingSection() {
   const [sponsors, setSponsors] = useState<ComercioSponsor[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaItem[]>(CATEGORIAS_SPONSOR_DEFAULT);
 
   useEffect(() => {
     async function load() {
       try {
-        const data = await fetchSponsors();
-        setSponsors(data.filter((s) => s.activo));
+        const [dataSponsors, dataCats] = await Promise.all([
+          fetchSponsors(),
+          fetchCategoriasSponsors(),
+        ]);
+        setSponsors(dataSponsors.filter((s) => s.activo));
+        setCategorias(dataCats);
       } catch {}
     }
     void load();
   }, []);
+
+  const getCatInfo = (catId: string) => {
+    const found = categorias.find((c) => c.id === catId);
+    if (found) return found;
+    if (CATEGORIAS_SPONSOR_LABELS[catId]) {
+      return { id: catId, label: CATEGORIAS_SPONSOR_LABELS[catId].label, icono: CATEGORIAS_SPONSOR_LABELS[catId].icono };
+    }
+    return { id: catId, label: catId, icono: "🏬" };
+  };
 
   if (sponsors.length === 0) return null;
 
@@ -50,7 +67,7 @@ export function SponsorsLandingSection() {
             Descuentos Oficiales en Comercios Aliados
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
-            Con tus mismos Tokens adquiridos, obtén <strong>descuentos de hasta 30% y beneficios inmediatos</strong> en
+            Con tus mismos Tokens adquiridos, obtén <strong>descuentos de hasta 50% y beneficios inmediatos</strong> en
             los mejores talleres mecánicos, autolavados, restaurantes, repuesteras y gimnasios de Costa Rica.
           </p>
         </div>
@@ -78,8 +95,7 @@ export function SponsorsLandingSection() {
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-0.5 text-[11px] font-semibold text-foreground">
-                  {CATEGORIAS_SPONSOR_LABELS[s.categoria]?.icono || "🏬"}{" "}
-                  {CATEGORIAS_SPONSOR_LABELS[s.categoria]?.label || s.categoria}
+                  {getCatInfo(s.categoria).icono} {getCatInfo(s.categoria).label}
                 </span>
 
                 {s.destacado && (
@@ -89,12 +105,32 @@ export function SponsorsLandingSection() {
                 )}
               </div>
 
-              <div>
-                <h3 className="font-black text-base text-foreground group-hover:text-amber-400 transition-colors line-clamp-1">
-                  {s.nombreComercio}
-                </h3>
-                <div className="mt-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 text-xs font-black text-amber-300">
-                  {s.descuentoTexto}
+              {/* Nombre, Descuento y Logo */}
+              <div className="flex items-start gap-3">
+                {s.logoUrl ? (
+                  <div className="size-12 rounded-xl overflow-hidden border border-border/80 bg-muted/50 shrink-0 shadow-sm">
+                    <img
+                      src={s.logoUrl}
+                      alt={s.nombreComercio}
+                      className="size-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="size-12 rounded-xl border border-amber-500/25 bg-amber-500/10 flex items-center justify-center text-xl shrink-0">
+                    {getCatInfo(s.categoria).icono}
+                  </div>
+                )}
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-black text-base text-foreground group-hover:text-amber-400 transition-colors line-clamp-1">
+                    {s.nombreComercio}
+                  </h3>
+                  <div className="mt-1 inline-block rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-300">
+                    {s.descuentoTexto}
+                  </div>
                 </div>
               </div>
 
@@ -104,8 +140,8 @@ export function SponsorsLandingSection() {
             </div>
 
             <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <MapPin className="size-3 text-primary" /> {s.provincia}
+              <span className="text-muted-foreground flex items-center gap-1 font-medium">
+                <MapPin className="size-3 text-primary shrink-0" /> {s.provincia}
               </span>
               <a
                 href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(

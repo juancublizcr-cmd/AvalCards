@@ -297,9 +297,22 @@ function SponsorsPage() {
                     {/* Header de la tarjeta */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 text-2xl font-black shadow-inner shrink-0">
-                          {getCatInfo(s.categoria).icono}
-                        </div>
+                        {s.logoUrl ? (
+                          <div className="size-14 rounded-2xl overflow-hidden border border-amber-500/30 bg-muted/40 shrink-0 shadow-md">
+                            <img
+                              src={s.logoUrl}
+                              alt={s.nombreComercio}
+                              className="size-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = "none";
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 text-2xl font-black shadow-inner shrink-0">
+                            {getCatInfo(s.categoria).icono}
+                          </div>
+                        )}
                         <div>
                           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                             {getCatInfo(s.categoria).label}

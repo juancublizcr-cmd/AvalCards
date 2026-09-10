@@ -217,7 +217,8 @@ export function SponsorsSection() {
 
     setGuardando(true);
     try {
-      const updated = await upsertSponsor(sponsorEditando);
+      const toSave = { ...sponsorEditando, canton: "" };
+      const updated = await upsertSponsor(toSave);
       setSponsors(updated);
       toast.success("Comercio aliado guardado exitosamente");
       setModalAbierto(false);
@@ -450,14 +451,33 @@ export function SponsorsSection() {
                     </div>
                   </div>
 
-                  {/* Nombre y Descuento */}
-                  <div>
-                    <h3 className="font-black text-base text-foreground line-clamp-1">
-                      {s.nombreComercio}
-                    </h3>
-                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-xs font-black text-amber-700 dark:text-amber-300">
-                      <Percent className="size-3.5 text-amber-600 dark:text-amber-400" />
-                      {s.descuentoTexto}
+                  {/* Nombre, Descuento y Logo */}
+                  <div className="flex items-start gap-3">
+                    {s.logoUrl ? (
+                      <div className="size-12 rounded-xl overflow-hidden border border-border/80 bg-muted/50 shrink-0 shadow-sm">
+                        <img
+                          src={s.logoUrl}
+                          alt={s.nombreComercio}
+                          className="size-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="size-12 rounded-xl border border-amber-500/25 bg-amber-500/10 flex items-center justify-center text-xl shrink-0">
+                        {getCatInfo(s.categoria).icono}
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-black text-base text-foreground line-clamp-1">
+                        {s.nombreComercio}
+                      </h3>
+                      <div className="mt-1 inline-flex items-center gap-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-700 dark:text-amber-300">
+                        <Percent className="size-3 text-amber-600 dark:text-amber-400" />
+                        {s.descuentoTexto}
+                      </div>
                     </div>
                   </div>
 
@@ -472,7 +492,7 @@ export function SponsorsSection() {
                   {/* Info de Contacto & Ubicación */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/70">
                     <span className="flex items-center gap-1 font-medium text-foreground">
-                      <MapPin className="size-3.5 text-primary" /> {s.provincia} {s.canton ? `· ${s.canton}` : ""}
+                      <MapPin className="size-3.5 text-primary shrink-0" /> {s.provincia}
                     </span>
                     <a
                       href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}`}
