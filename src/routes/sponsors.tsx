@@ -198,7 +198,7 @@ function SponsorsPage() {
           });
           setEstadoValidacionCupon({
             status: "cooldown",
-            mensaje: `⏳ Próximo canje disponible a partir del ${fechaDesbloqueoStr}. Ya utilizaste tu beneficio en ${cuponActivo.nombreComercio} el ${fechaUltimoStr} (${ultimo.servicio || "Servicio"}). Por política de frecuencia, se permite 1 canje cada ${diasIntervalo === 7 ? "semana" : `${diasIntervalo} días`} por usuario.`,
+            mensaje: `⏳ Próximo canje disponible a partir del ${fechaDesbloqueoStr}. Ya utilizaste tu beneficio el ${fechaUltimoStr} (${ultimo.servicio || "Servicio"}). Por política de frecuencia, se permite 1 canje cada semana por usuario.`,
             canjePrevio: ultimo,
           });
           return;
