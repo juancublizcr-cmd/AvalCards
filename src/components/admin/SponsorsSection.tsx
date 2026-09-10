@@ -471,7 +471,7 @@ export function SponsorsSection() {
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-black text-base text-foreground line-clamp-1">
+                      <h3 className="font-black text-base text-foreground break-words leading-snug">
                         {s.nombreComercio}
                       </h3>
                       <div className="mt-1 inline-flex items-center rounded-xl bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-700 dark:text-amber-300">

@@ -310,7 +310,7 @@ function SponsorsPage() {
                   <div className="space-y-4">
                     {/* Header de la tarjeta */}
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
                         {s.logoUrl ? (
                           <div className="size-14 rounded-2xl overflow-hidden border border-amber-500/30 bg-muted/40 shrink-0 shadow-md">
                             <img
@@ -327,11 +327,11 @@ function SponsorsPage() {
                             {getCatInfo(s.categoria).icono}
                           </div>
                         )}
-                        <div>
-                          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
                             {getCatInfo(s.categoria).label}
                           </span>
-                          <h3 className="font-black text-lg text-foreground group-hover:text-amber-400 transition-colors line-clamp-1">
+                          <h3 className="font-black text-base sm:text-lg text-foreground group-hover:text-amber-400 transition-colors break-words leading-snug">
                             {s.nombreComercio}
                           </h3>
                         </div>

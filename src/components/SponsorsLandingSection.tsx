@@ -139,7 +139,7 @@ export function SponsorsLandingSection() {
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-black text-base text-foreground group-hover:text-amber-400 transition-colors line-clamp-1">
+                  <h3 className="font-black text-base text-foreground group-hover:text-amber-400 transition-colors break-words leading-snug">
                     {s.nombreComercio}
                   </h3>
                   <div className="mt-1 inline-block rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-300">
