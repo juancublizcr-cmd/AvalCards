@@ -66,6 +66,8 @@ function SponsorsPage() {
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [busqueda, setBusqueda] = useState("");
   const [imagenGrande, setImagenGrande] = useState<{ url: string; titulo: string; categoria: string } | null>(null);
+  const [cuponActivo, setCuponActivo] = useState<ComercioSponsor | null>(null);
+  const [telefonoClienteCanje, setTelefonoClienteCanje] = useState("");
 
   // Formulario para que nuevos comercios se afilien
   const [enviandoForm, setEnviandoForm] = useState(false);
@@ -156,39 +158,51 @@ function SponsorsPage() {
     return matchCat && matchBusqueda;
   });
 
+  const getWhatsappUrl = (sponsor: ComercioSponsor, telUsuario?: string) => {
+    const cleanTel = sponsor.telefonoWhatsapp.replace(/\D/g, "");
+    const infoTel = telUsuario?.trim() ? ` (Mi teléfono registrado es: ${telUsuario.trim()})` : "";
+    const msg = `¡Hola ${sponsor.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${sponsor.descuentoTexto}".${infoTel}\n\nPuedes comprobar la validez de mis Tokens en el validador oficial:\nhttps://avalcards.com/validar`;
+    return `https://wa.me/506${cleanTel}?text=${encodeURIComponent(msg)}`;
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-amber-500 selection:text-black">
-      {/* NAVBAR SIMPLE */}
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-primary text-black font-black text-lg shadow-md group-hover:scale-105 transition-transform">
+      {/* NAVBAR ULTRA LIMPIO Y RESPONSIVE */}
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-lg">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2.5 sm:px-6 sm:py-3 gap-2">
+          {/* Logo & Marca */}
+          <Link to="/" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <div className="flex size-8 sm:size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-black font-black text-base sm:text-lg shadow-md shrink-0">
               A
             </div>
-            <div>
-              <span className="font-black text-sm tracking-tight text-foreground flex items-center gap-1">
+            <div className="min-w-0">
+              <span className="font-black text-xs sm:text-sm tracking-tight text-foreground block truncate">
                 AVAL <span className="text-amber-400">COMMUNITY</span>
               </span>
-              <span className="text-[10px] text-muted-foreground block -mt-1 font-semibold tracking-wider uppercase">
+              <span className="hidden sm:block text-[9px] text-muted-foreground -mt-0.5 font-semibold tracking-wider uppercase truncate">
                 Red de Beneficios Exclusivos
               </span>
             </div>
           </Link>
 
-          <div className="flex items-center gap-3">
+          {/* Acciones de Navegación */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               to="/"
-              className="text-xs font-bold text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+              className="text-xs font-bold text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors px-2 py-1 rounded-lg hover:bg-muted/50"
             >
-              <ArrowLeft className="size-3.5" /> Volver al Inicio
+              <ArrowLeft className="size-3.5 shrink-0" />
+              <span>Inicio</span>
             </Link>
             <Button
               size="sm"
               asChild
-              className="bg-amber-500 hover:bg-amber-600 text-black font-black text-xs shadow-md"
+              className="bg-amber-500 hover:bg-amber-600 text-black font-black text-[11px] sm:text-xs h-8 sm:h-9 px-2.5 sm:px-3.5 shadow-sm shrink-0 rounded-lg"
             >
               <a href="#afiliarse">
-                <Store className="size-3.5 mr-1" /> Afiliar mi Negocio
+                <Store className="size-3.5 mr-1 shrink-0" />
+                <span className="hidden xs:inline">Afiliar mi Negocio</span>
+                <span className="xs:hidden">Afiliar</span>
               </a>
             </Button>
           </div>
@@ -197,64 +211,67 @@ function SponsorsPage() {
 
       {/* HERO PRINCIPAL */}
       <main className="flex-1">
-        <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-amber-950/20 via-background to-background py-12 sm:py-16">
+        <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-amber-950/25 via-background to-background py-8 sm:py-14">
           <div className="pointer-events-none absolute -left-20 -top-20 size-80 rounded-full bg-amber-500/10 blur-3xl" />
           <div className="pointer-events-none absolute -right-20 top-20 size-80 rounded-full bg-primary/10 blur-3xl" />
 
-          <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 text-xs font-black text-amber-400 uppercase tracking-wider">
-              <Sparkles className="size-3.5" /> Comercios Aliados & Beneficios Oficiales
+          <div className="mx-auto max-w-4xl px-3 sm:px-6 text-center space-y-3.5 sm:space-y-4">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-[10px] sm:text-xs font-black text-amber-400 uppercase tracking-wider">
+              <Sparkles className="size-3 sm:size-3.5" /> Comercios Aliados & Beneficios Oficiales
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground max-w-3xl mx-auto leading-tight">
-              Descuentos y Beneficios Exclusivos para la{" "}
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground max-w-3xl mx-auto leading-tight">
+              Descuentos Exclusivos para la{" "}
               <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent">
                 Comunidad Aval
               </span>
             </h1>
 
-            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Por ser parte activa de Aval Community CR y adquirir tus Tokens, tienes acceso directo a
-              <strong> descuentos de hasta 30%, promociones especiales y cortesías</strong> en nuestra red de
-              talleres mecánicos, autolavados, gastronomía, repuesteras y gimnasios en todo Costa Rica.
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Con tus Tokens activos de Aval Community obtén <strong>descuentos inmediatos de hasta 50%</strong> en
+              los mejores lavacares, talleres, repuesteras, restaurantes y gimnasios de Costa Rica.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs font-semibold text-zinc-300">
-              <div className="flex items-center gap-1.5 rounded-full bg-zinc-900 border border-border px-3 py-1">
-                <ShieldCheck className="size-4 text-emerald-400" /> Válido con tus Tokens Activos
+            {/* Badges de Garantía */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 pt-1 text-[11px] sm:text-xs font-semibold text-zinc-300">
+              <div className="flex items-center gap-1 rounded-full bg-zinc-900/90 border border-border/80 px-2.5 py-1">
+                <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
+                <span>Válido con Tokens Activos</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-zinc-900 border border-border px-3 py-1">
-                <Zap className="size-4 text-amber-400" /> Canje Directo en WhatsApp
+              <div className="flex items-center gap-1 rounded-full bg-zinc-900/90 border border-border/80 px-2.5 py-1">
+                <Zap className="size-3.5 text-amber-400 shrink-0" />
+                <span>Canje Directo con Comercio</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-zinc-900 border border-border px-3 py-1">
-                <Percent className="size-4 text-primary" /> Sin Costo Adicional
+              <div className="flex items-center gap-1 rounded-full bg-zinc-900/90 border border-border/80 px-2.5 py-1">
+                <Percent className="size-3.5 text-primary shrink-0" />
+                <span>Sin Costo Adicional</span>
               </div>
             </div>
           </div>
         </section>
 
         {/* BUSCADOR Y FILTROS */}
-        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-          <div className="flex flex-col md:flex-row gap-3 items-center justify-between mb-8">
+        <section className="mx-auto max-w-7xl px-3 sm:px-6 py-5 sm:py-8 space-y-4 sm:space-y-6">
+          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             {/* Buscador */}
             <div className="relative w-full md:max-w-md">
               <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar taller, restaurante, lavado, repuestos..."
+                placeholder="Buscar taller, lavacar, restaurante, repuestos..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                className="pl-9 h-10 text-xs sm:text-sm bg-card"
+                className="pl-9 h-10 text-xs sm:text-sm bg-card rounded-xl border-border"
               />
             </div>
 
-            {/* Filtros de Categorías en Botones de Píldora */}
-            <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
+            {/* Filtros de Categorías en Píldoras Horizontales */}
+            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto w-full md:w-auto pb-1.5 md:pb-0 scrollbar-none touch-pan-x">
               <button
                 type="button"
                 onClick={() => setFiltroCategoria("todas")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer whitespace-nowrap ${
                   filtroCategoria === "todas"
-                    ? "bg-amber-500 text-black shadow-md"
+                    ? "bg-amber-500 text-black shadow-md font-black"
                     : "bg-card border border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -268,9 +285,9 @@ function SponsorsPage() {
                     key={cat.id}
                     type="button"
                     onClick={() => setFiltroCategoria(cat.id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1 ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                       filtroCategoria === cat.id
-                        ? "bg-amber-500 text-black shadow-md"
+                        ? "bg-amber-500 text-black shadow-md font-black"
                         : "bg-card border border-border text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -287,25 +304,25 @@ function SponsorsPage() {
           {cargando ? (
             <div className="py-20 text-center text-muted-foreground">
               <div className="size-10 mx-auto animate-spin rounded-full border-4 border-amber-500 border-t-transparent mb-3" />
-              <p className="text-sm">Cargando comercios aliados...</p>
+              <p className="text-sm font-medium">Cargando comercios aliados...</p>
             </div>
           ) : sponsorsFiltrados.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-border p-12 text-center space-y-3 bg-card/40">
+            <div className="rounded-3xl border border-dashed border-border p-8 sm:p-12 text-center space-y-3 bg-card/40">
               <Store className="size-12 mx-auto text-muted-foreground/40" />
-              <h3 className="font-bold text-lg text-foreground">No se encontraron comercios en esta búsqueda</h3>
+              <h3 className="font-bold text-base sm:text-lg text-foreground">No se encontraron comercios en esta búsqueda</h3>
               <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                Prueba buscando con otro término o categoría. Si eres dueño de un comercio, ¡puedes ser el primero de tu zona!
+                Prueba buscando con otro término o categoría. Si eres dueño de un comercio, ¡afíliate gratis!
               </p>
               <Button asChild size="sm" className="bg-amber-500 text-black font-bold">
                 <a href="#afiliarse">Afiliar mi Comercio</a>
               </Button>
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {sponsorsFiltrados.map((s) => (
                 <div
                   key={s.id}
-                  className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-b from-card to-zinc-950 p-6 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col justify-between ${
+                  className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border bg-gradient-to-b from-card to-zinc-950 p-4 sm:p-5 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col justify-between ${
                     s.destacado
                       ? "border-amber-500/60 ring-1 ring-amber-500/30"
                       : "border-border hover:border-border/80"
@@ -316,10 +333,10 @@ function SponsorsPage() {
                     <div className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-amber-500/15 blur-2xl group-hover:bg-amber-500/25 transition-colors" />
                   )}
 
-                  <div className="space-y-4">
+                  <div className="space-y-3.5">
                     {/* Header de la tarjeta */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
                         {s.logoUrl ? (
                           <button
                             type="button"
@@ -330,7 +347,7 @@ function SponsorsPage() {
                                 categoria: getCatInfo(s.categoria).label,
                               })
                             }
-                            className="group/img relative size-14 rounded-2xl overflow-hidden border border-amber-500/40 bg-muted/40 shrink-0 shadow-md cursor-zoom-in transition-all hover:border-amber-400 hover:scale-105 active:scale-95"
+                            className="group/img relative size-12 sm:size-14 rounded-xl sm:rounded-2xl overflow-hidden border border-amber-500/40 bg-muted/40 shrink-0 shadow-md cursor-zoom-in transition-all hover:border-amber-400 hover:scale-105 active:scale-95"
                             title="Haz clic para ver la imagen en grande"
                           >
                             <img
@@ -342,16 +359,16 @@ function SponsorsPage() {
                               }}
                             />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                              <ZoomIn className="size-4 text-amber-300 drop-shadow" />
+                              <ZoomIn className="size-3.5 sm:size-4 text-amber-300 drop-shadow" />
                             </div>
                           </button>
                         ) : (
-                          <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 text-2xl font-black shadow-inner shrink-0">
+                          <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl sm:rounded-2xl bg-amber-500/20 text-amber-400 text-xl sm:text-2xl font-black shadow-inner shrink-0">
                             {getCatInfo(s.categoria).icono}
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+                          <span className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-wider block truncate">
                             {getCatInfo(s.categoria).label}
                           </span>
                           <h3 className="font-black text-base sm:text-lg text-foreground group-hover:text-amber-400 transition-colors break-words leading-snug">
@@ -361,55 +378,50 @@ function SponsorsPage() {
                       </div>
 
                       {s.destacado && (
-                        <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-black text-amber-400 shrink-0">
+                        <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[9px] sm:text-[10px] font-black text-amber-400 shrink-0">
                           ⭐ TOP SPONSOR
                         </span>
                       )}
                     </div>
 
-                    {/* Badge Gigante del Descuento */}
-                    <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-amber-600/5 p-3.5 space-y-1">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                        <Percent className="size-3" /> Beneficio Exclusivo Aval
+                    {/* Badge Principal del Descuento */}
+                    <div className="rounded-xl sm:rounded-2xl border border-amber-500/35 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent p-3 sm:p-3.5 space-y-1">
+                      <div className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                        <Percent className="size-3 shrink-0" /> Beneficio Exclusivo Aval
                       </div>
-                      <div className="text-base sm:text-lg font-black text-amber-300">
+                      <div className="text-sm sm:text-base font-black text-amber-300 leading-snug break-words">
                         {s.descuentoTexto}
                       </div>
                     </div>
 
                     {/* Descripción */}
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                      {s.descripcion}
-                    </p>
+                    {s.descripcion && (
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                        {s.descripcion}
+                      </p>
+                    )}
 
                     {/* Condiciones */}
-                    <div className="rounded-xl bg-zinc-900/80 border border-border/60 p-2.5 text-[11px] text-zinc-300">
+                    <div className="rounded-xl bg-zinc-900/90 border border-border/60 p-2.5 text-[10px] sm:text-[11px] text-zinc-300 leading-snug">
                       <span className="text-amber-400 font-bold">Cómo canjear:</span> {s.condiciones}
                     </div>
                   </div>
 
-                    {/* Footer con Ubicación y Botón de WhatsApp */}
-                    <div className="pt-4 mt-4 border-t border-border/70 space-y-3">
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-300">
-                          <MapPin className="size-3.5 text-amber-500 shrink-0" />
-                          <span className="break-words">{s.provincia}</span>
-                        </span>
-                      </div>
+                  {/* Footer con Ubicación y Botón de Canje */}
+                  <div className="pt-3.5 mt-3.5 border-t border-border/70 space-y-2.5">
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-300">
+                        <MapPin className="size-3.5 text-amber-500 shrink-0" />
+                        <span className="break-words">{s.provincia}</span>
+                      </span>
+                    </div>
 
                     <Button
-                      asChild
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 shadow-md"
+                      type="button"
+                      onClick={() => setCuponActivo(s)}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl cursor-pointer"
                     >
-                      <a
-                        href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-                          `¡Hola! Vi su promoción en Aval Community CR (${s.descuentoTexto}) y deseo aplicarla.`
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <MessageSquare className="size-4 mr-1.5" /> Canjear Descuento en WhatsApp
-                      </a>
+                      <MessageSquare className="size-4 shrink-0" /> Canjear Descuento en WhatsApp
                     </Button>
                   </div>
                 </div>
@@ -607,6 +619,125 @@ function SponsorsPage() {
               />
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL DE CUPÓN DIGITAL Y CANJE OFICIAL */}
+      <Dialog open={!!cuponActivo} onOpenChange={(open) => !open && setCuponActivo(null)}>
+        <DialogContent className="max-w-lg bg-zinc-950/95 border-amber-500/50 p-4 sm:p-6 text-foreground backdrop-blur-2xl shadow-2xl rounded-2xl sm:rounded-3xl">
+          {cuponActivo && (
+            <div className="space-y-4">
+              <DialogHeader className="pb-2.5 border-b border-border/70 text-left">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-black text-amber-400 uppercase tracking-wider">
+                    <ShieldCheck className="size-3 text-emerald-400" /> Beneficio Verificado
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">AVAL-SPONSOR-PASS</span>
+                </div>
+                <DialogTitle className="text-lg sm:text-xl font-black text-foreground mt-1">
+                  Cupón Oficial de Descuento
+                </DialogTitle>
+              </DialogHeader>
+
+              {/* Tarjeta Visual del Cupón */}
+              <div className="relative overflow-hidden rounded-2xl border-2 border-amber-500/50 bg-gradient-to-b from-amber-500/15 via-zinc-900 to-zinc-950 p-4 sm:p-5 space-y-3 shadow-inner">
+                <div className="flex items-center gap-3">
+                  {cuponActivo.logoUrl ? (
+                    <div className="size-12 rounded-xl overflow-hidden border border-amber-500/30 bg-muted shrink-0">
+                      <img src={cuponActivo.logoUrl} alt={cuponActivo.nombreComercio} className="size-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="flex size-12 items-center justify-center rounded-xl bg-amber-500/20 text-xl font-bold shrink-0">
+                      {getCatInfo(cuponActivo.categoria).icono}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                      {getCatInfo(cuponActivo.categoria).label}
+                    </span>
+                    <h4 className="font-black text-base text-foreground leading-snug break-words">
+                      {cuponActivo.nombreComercio}
+                    </h4>
+                  </div>
+                </div>
+
+                {/* Banner de Descuento */}
+                <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-amber-600/10 p-3 text-center space-y-0.5">
+                  <div className="text-[10px] font-black uppercase text-amber-400">Promoción Otorgada</div>
+                  <div className="text-base sm:text-lg font-black text-amber-300 break-words">
+                    {cuponActivo.descuentoTexto}
+                  </div>
+                </div>
+
+                {/* Ubicación y Condiciones */}
+                <div className="text-[11px] text-muted-foreground space-y-1">
+                  <div className="flex items-center gap-1.5 text-zinc-300 font-medium">
+                    <MapPin className="size-3.5 text-amber-400 shrink-0" />
+                    <span>{cuponActivo.provincia}</span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-zinc-900/90 border border-border/70 text-[10px] sm:text-[11px] text-zinc-300 leading-snug">
+                    <strong className="text-amber-400">Condición de canje:</strong> {cuponActivo.condiciones}
+                  </div>
+                </div>
+              </div>
+
+              {/* Verificación para el Comercio */}
+              <div className="space-y-2 rounded-xl bg-muted/30 border border-border/70 p-3">
+                <Label className="text-[11px] font-bold text-foreground">
+                  Tu Teléfono o Número de Orden Registrada (Opcional):
+                </Label>
+                <Input
+                  placeholder="Ej: 8888-8888 o ORD-12345"
+                  value={telefonoClienteCanje}
+                  onChange={(e) => setTelefonoClienteCanje(e.target.value)}
+                  className="h-9 text-xs bg-background"
+                />
+                <p className="text-[10px] text-muted-foreground leading-tight">
+                  Se incluirá en el mensaje de WhatsApp para que el comercio valide tu compra en el sistema en 2 segundos.
+                </p>
+              </div>
+
+              {/* Botones de Acción */}
+              <div className="space-y-2 pt-1">
+                <Button
+                  asChild
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl"
+                >
+                  <a
+                    href={getWhatsappUrl(cuponActivo, telefonoClienteCanje)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <MessageSquare className="size-4 mr-2 shrink-0" />
+                    Enviar WhatsApp con Verificación
+                  </a>
+                </Button>
+
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-[11px] h-8 text-muted-foreground hover:text-foreground border-border"
+                  >
+                    <Link to="/validar">
+                      <ShieldCheck className="size-3.5 mr-1 text-emerald-400" />
+                      Verificar mis Tokens
+                    </Link>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCuponActivo(null)}
+                    className="text-[11px] h-8 text-muted-foreground hover:text-foreground"
+                  >
+                    Cerrar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
