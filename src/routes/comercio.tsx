@@ -391,8 +391,8 @@ export function ComercioPortal() {
         return;
       }
 
-      const nombre = aprobadas[0].nombreCliente || "Miembro Aval";
-      const totalTokens = aprobadas.reduce((acc, o) => acc + (o.cantidadTokens || 1), 0);
+      const nombre = aprobadas[0].nombre || (aprobadas[0] as any).nombreCliente || "Miembro Aval";
+      const totalTokens = aprobadas.reduce((acc, o) => acc + (o.cantidad || (o as any).cantidadTokens || (o.numeros?.length || 1)), 0);
 
       setClienteValidado({
         nombre,
