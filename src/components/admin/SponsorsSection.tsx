@@ -79,6 +79,7 @@ export function SponsorsSection() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [sponsorEditando, setSponsorEditando] = useState<ComercioSponsor | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [solicitudOrigenId, setSolicitudOrigenId] = useState<string | null>(null); // ID de la solicitud que origina la creación del comercio
 
   // Modal Gestión de Categorías
   const [modalCategoriasAbierto, setModalCategoriasAbierto] = useState(false);
@@ -195,6 +196,7 @@ export function SponsorsSection() {
   };
 
   const abrirNuevoSponsor = () => {
+    setSolicitudOrigenId(null);
     setSponsorEditando({
       id: `SP-${Date.now().toString().slice(-4)}`,
       nombreComercio: "",
@@ -218,6 +220,7 @@ export function SponsorsSection() {
   };
 
   const abrirEditarSponsor = (s: ComercioSponsor) => {
+    setSolicitudOrigenId(null);
     setSponsorEditando({ ...s });
     setModalAbierto(true);
   };
@@ -248,7 +251,21 @@ export function SponsorsSection() {
       const toSave = { ...sponsorEditando, descuentoPorcentaje: pct, canton: "" };
       const updated = await upsertSponsor(toSave);
       setSponsors(updated);
-      toast.success("Comercio aliado guardado exitosamente");
+
+      // Si viene de una solicitud de afiliación, marcarla como aprobada y quitarla de la lista pendiente
+      if (solicitudOrigenId) {
+        try {
+          await actualizarEstadoSolicitudSponsor(solicitudOrigenId, "aprobado");
+          setSolicitudes((prev) => prev.filter((s) => s.id !== solicitudOrigenId));
+        } catch {
+          // No bloquear el flujo si esto falla
+        }
+        setSolicitudOrigenId(null);
+        toast.success("✅ Comercio creado y solicitud de afiliación aprobada. Ya no aparecerá en pendientes.");
+      } else {
+        toast.success("Comercio aliado guardado exitosamente");
+      }
+
       setModalAbierto(false);
       setSponsorEditando(null);
     } catch {
@@ -321,8 +338,8 @@ export function SponsorsSection() {
       destacado: false,
       orden: sponsors.length + 1,
     });
+    setSolicitudOrigenId(sol.id); // Guardar el ID para eliminarlo al confirmar
     setModalAbierto(true);
-    void cambiarEstadoSolicitud(sol.id, "aprobado");
   };
 
   const sponsorsFiltrados = sponsors.filter((s) => {
