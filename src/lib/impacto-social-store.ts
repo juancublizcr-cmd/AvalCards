@@ -161,11 +161,57 @@ const SPONSORS_DEMO: PropuestaSponsor[] = [
 const STORAGE_CASOS_KEY = "aval_casos_sociales_v1";
 const STORAGE_SPONSORS_KEY = "aval_propuestas_sponsors_v1";
 
+// biome-ignore lint/suspicious/noExplicitAny: generic DB row
+function mapCasoSocialFromDb(row: any): CasoSocial {
+  return {
+    id: row.id,
+    fecha: row.fecha || new Date().toISOString(),
+    postulanteNombre: row.postulante_nombre || row.postulanteNombre || "",
+    postulanteTelefono: row.postulante_telefono || row.postulanteTelefono || "",
+    postulanteRelacion: row.postulante_relacion || row.postulanteRelacion || "",
+    beneficiarioNombre: row.beneficiario_nombre || row.beneficiarioNombre || "",
+    beneficiarioEdad: row.beneficiario_edad || row.beneficiarioEdad || "",
+    provincia: row.provincia || "San José",
+    canton: row.canton || "",
+    categoria: (row.categoria || "otro") as CategoriaCaso,
+    titulo: row.titulo || "",
+    descripcion: row.descripcion || "",
+    presupuestoEstimado: row.presupuesto_estimado || row.presupuestoEstimado || "",
+    urgencia: (row.urgencia || "normal") as CasoSocial["urgencia"],
+    fotos: row.fotos || [],
+    estado: (row.estado || "pendiente") as EstadoCaso,
+    notasAdmin: row.notas_admin || row.notasAdmin || "",
+  };
+}
+
+function mapCasoSocialToDb(c: CasoSocial) {
+  return {
+    id: c.id,
+    fecha: c.fecha,
+    postulante_nombre: c.postulanteNombre,
+    postulante_telefono: c.postulanteTelefono,
+    postulante_relacion: c.postulanteRelacion,
+    beneficiario_nombre: c.beneficiarioNombre,
+    beneficiario_edad: c.beneficiarioEdad || "",
+    provincia: c.provincia,
+    canton: c.canton || "",
+    categoria: c.categoria,
+    titulo: c.titulo,
+    descripcion: c.descripcion,
+    presupuesto_estimado: c.presupuestoEstimado || "",
+    urgencia: c.urgencia || "normal",
+    fotos: c.fotos || [],
+    estado: c.estado,
+    notas_admin: c.notasAdmin || "",
+  };
+}
+
 // ────────────────────────────────────────────────────────────
-// CASOS SOCIALES
+// CASOS SOCIALES (TABLA DB: casos_sociales)
 // ────────────────────────────────────────────────────────────
 
 export async function fetchCasosSociales(): Promise<CasoSocial[]> {
+  // 1. Intentar consulta a tabla Supabase 'casos_sociales'
   try {
     const { data, error } = await supabase
       .from("casos_sociales")
@@ -173,23 +219,46 @@ export async function fetchCasosSociales(): Promise<CasoSocial[]> {
       .order("fecha", { ascending: false });
 
     if (!error && data && data.length > 0) {
-      return data as CasoSocial[];
+      const items = data.map(mapCasoSocialFromDb);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(items));
+        } catch {}
+      }
+      return items;
     }
   } catch {}
 
-  // Fallback LocalStorage
+  // 2. Fallback a site_config
   try {
-    const raw = localStorage.getItem(STORAGE_CASOS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as CasoSocial[];
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    const { data, error } = await supabase
+      .from("site_config")
+      .select("valor")
+      .eq("clave", "casos_sociales_directorio")
+      .maybeSingle();
+
+    if (!error && data?.valor && Array.isArray(data.valor) && data.valor.length > 0) {
+      return data.valor.map(mapCasoSocialFromDb);
     }
   } catch {}
 
-  // Inicializar demo
-  try {
-    localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(CASOS_DEMO));
-  } catch {}
+  // 3. Fallback LocalStorage
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem(STORAGE_CASOS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as CasoSocial[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(mapCasoSocialFromDb);
+      }
+    } catch {}
+  }
+
+  // 4. Inicializar demo
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(CASOS_DEMO));
+    } catch {}
+  }
   return CASOS_DEMO;
 }
 
@@ -204,16 +273,26 @@ export async function crearCasoSocial(
     estado: "pendiente",
   };
 
-  // Intentar guardar en Supabase
+  // 1. Intentar guardar en Supabase (tabla casos_sociales)
   try {
-    await supabase.from("casos_sociales").insert([nuevoCaso]);
+    await supabase.from("casos_sociales").insert([mapCasoSocialToDb(nuevoCaso)]);
   } catch {}
 
-  // Guardar en LocalStorage
+  // 2. Guardar en LocalStorage y site_config
   try {
     const actuales = await fetchCasosSociales();
-    const actualizados = [nuevoCaso, ...actuales];
-    localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(actualizados));
+    const actualizados = [nuevoCaso, ...actuales.filter((c) => c.id !== nuevoId)];
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(actualizados));
+    }
+    await supabase.from("site_config").upsert(
+      {
+        clave: "casos_sociales_directorio",
+        valor: actualizados,
+        actualizado_en: new Date().toISOString(),
+      },
+      { onConflict: "clave" }
+    );
   } catch {}
 
   return nuevoCaso;
@@ -223,26 +302,58 @@ export async function actualizarCasoSocial(
   id: string,
   updates: Partial<CasoSocial>
 ): Promise<void> {
+  // 1. Actualizar en tabla DB
   try {
-    await supabase.from("casos_sociales").update(updates).eq("id", id);
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.estado !== undefined) dbUpdates.estado = updates.estado;
+    if (updates.notasAdmin !== undefined) dbUpdates.notas_admin = updates.notasAdmin;
+    if (updates.titulo !== undefined) dbUpdates.titulo = updates.titulo;
+    if (updates.descripcion !== undefined) dbUpdates.descripcion = updates.descripcion;
+    if (updates.presupuestoEstimado !== undefined) dbUpdates.presupuesto_estimado = updates.presupuestoEstimado;
+    if (updates.urgencia !== undefined) dbUpdates.urgencia = updates.urgencia;
+
+    await supabase.from("casos_sociales").update(dbUpdates).eq("id", id);
   } catch {}
 
+  // 2. Sincronizar memoria y site_config
   try {
     const actuales = await fetchCasosSociales();
     const actualizados = actuales.map((c) => (c.id === id ? { ...c, ...updates } : c));
-    localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(actualizados));
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(actualizados));
+    }
+    await supabase.from("site_config").upsert(
+      {
+        clave: "casos_sociales_directorio",
+        valor: actualizados,
+        actualizado_en: new Date().toISOString(),
+      },
+      { onConflict: "clave" }
+    );
   } catch {}
 }
 
 export async function eliminarCasoSocial(id: string): Promise<void> {
+  // 1. Eliminar en tabla DB
   try {
     await supabase.from("casos_sociales").delete().eq("id", id);
   } catch {}
 
+  // 2. Sincronizar memoria y site_config
   try {
     const actuales = await fetchCasosSociales();
     const actualizados = actuales.filter((c) => c.id !== id);
-    localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(actualizados));
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_CASOS_KEY, JSON.stringify(actualizados));
+    }
+    await supabase.from("site_config").upsert(
+      {
+        clave: "casos_sociales_directorio",
+        valor: actualizados,
+        actualizado_en: new Date().toISOString(),
+      },
+      { onConflict: "clave" }
+    );
   } catch {}
 }
 

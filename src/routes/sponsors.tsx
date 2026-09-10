@@ -27,11 +27,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Footer } from "@/components/Footer";
 import {
+  CATEGORIAS_SPONSOR_DEFAULT,
   CATEGORIAS_SPONSOR_LABELS,
   fetchSponsors,
+  fetchCategoriasSponsors,
   enviarSolicitudSponsor,
   type ComercioSponsor,
   type CategoriaSponsor,
+  type CategoriaItem,
 } from "@/lib/sponsors-store";
 
 export const Route = createFileRoute("/sponsors")({
@@ -50,6 +53,7 @@ export const Route = createFileRoute("/sponsors")({
 
 function SponsorsPage() {
   const [sponsors, setSponsors] = useState<ComercioSponsor[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaItem[]>(CATEGORIAS_SPONSOR_DEFAULT);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [busqueda, setBusqueda] = useState("");
@@ -72,8 +76,12 @@ function SponsorsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await fetchSponsors();
-        setSponsors(data.filter((s) => s.activo));
+        const [dataSponsors, dataCats] = await Promise.all([
+          fetchSponsors(),
+          fetchCategoriasSponsors(),
+        ]);
+        setSponsors(dataSponsors.filter((s) => s.activo));
+        setCategorias(dataCats);
       } catch {
         toast.error("Error al cargar comercios aliados");
       } finally {
@@ -82,6 +90,15 @@ function SponsorsPage() {
     }
     void load();
   }, []);
+
+  const getCatInfo = (catId: string) => {
+    const found = categorias.find((c) => c.id === catId);
+    if (found) return found;
+    if (CATEGORIAS_SPONSOR_LABELS[catId]) {
+      return { id: catId, label: CATEGORIAS_SPONSOR_LABELS[catId].label, icono: CATEGORIAS_SPONSOR_LABELS[catId].icono };
+    }
+    return { id: catId, label: catId, icono: "🏬" };
+  };
 
   const handleEnviarSolicitud = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -220,22 +237,22 @@ function SponsorsPage() {
               >
                 Todas ({sponsors.length})
               </button>
-              {Object.entries(CATEGORIAS_SPONSOR_LABELS).map(([key, item]) => {
-                const count = sponsors.filter((s) => s.categoria === key).length;
+              {categorias.map((cat) => {
+                const count = sponsors.filter((s) => s.categoria === cat.id).length;
                 if (count === 0) return null;
                 return (
                   <button
-                    key={key}
+                    key={cat.id}
                     type="button"
-                    onClick={() => setFiltroCategoria(key)}
+                    onClick={() => setFiltroCategoria(cat.id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1 ${
-                      filtroCategoria === key
+                      filtroCategoria === cat.id
                         ? "bg-amber-500 text-black shadow-md"
                         : "bg-card border border-border text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <span>{item.icono}</span>
-                    <span>{item.label}</span>
+                    <span>{cat.icono}</span>
+                    <span>{cat.label}</span>
                     <span className="opacity-70 text-[10px]">({count})</span>
                   </button>
                 );
@@ -281,11 +298,11 @@ function SponsorsPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 text-2xl font-black shadow-inner shrink-0">
-                          {CATEGORIAS_SPONSOR_LABELS[s.categoria]?.icono || "🏬"}
+                          {getCatInfo(s.categoria).icono}
                         </div>
                         <div>
                           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                            {CATEGORIAS_SPONSOR_LABELS[s.categoria]?.label || s.categoria}
+                            {getCatInfo(s.categoria).label}
                           </span>
                           <h3 className="font-black text-lg text-foreground group-hover:text-amber-400 transition-colors line-clamp-1">
                             {s.nombreComercio}
@@ -422,8 +439,8 @@ function SponsorsPage() {
                         onChange={(e) => setForm({ ...form, categoria: e.target.value as CategoriaSponsor })}
                         className="w-full h-10 rounded-md border border-input bg-card px-3 text-xs text-foreground"
                       >
-                        {Object.entries(CATEGORIAS_SPONSOR_LABELS).map(([key, item]) => (
-                          <option key={key} value={key}>
+                        {categorias.map((item) => (
+                          <option key={item.id} value={item.id}>
                             {item.icono} {item.label}
                           </option>
                         ))}

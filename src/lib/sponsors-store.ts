@@ -1,16 +1,25 @@
 import { supabase } from "./supabase";
 
-export type CategoriaSponsor =
-  | "talleres_mecanica"
-  | "detailing_lavado"
-  | "repuestos_accesorios"
-  | "restaurantes_gastronomia"
-  | "salud_fitness"
-  | "tecnologia_gaming"
-  | "servicios_profesionales"
-  | "otros";
+export type CategoriaSponsor = string;
 
-export const CATEGORIAS_SPONSOR_LABELS: Record<CategoriaSponsor, { label: string; icono: string }> = {
+export type CategoriaItem = {
+  id: string;
+  label: string;
+  icono: string;
+};
+
+export const CATEGORIAS_SPONSOR_DEFAULT: CategoriaItem[] = [
+  { id: "talleres_mecanica", label: "Talleres & Mecánica", icono: "🔧" },
+  { id: "detailing_lavado", label: "Detailing & Lavado", icono: "✨" },
+  { id: "repuestos_accesorios", label: "Repuestos & Accesorios", icono: "🚗" },
+  { id: "restaurantes_gastronomia", label: "Restaurantes & Bares", icono: "🍔" },
+  { id: "salud_fitness", label: "Salud, Barberías & Fitness", icono: "💪" },
+  { id: "tecnologia_gaming", label: "Tecnología & Celulares", icono: "📱" },
+  { id: "servicios_profesionales", label: "Servicios & Seguros", icono: "📄" },
+  { id: "otros", label: "Otros Comercios", icono: "🏬" },
+];
+
+export const CATEGORIAS_SPONSOR_LABELS: Record<string, { label: string; icono: string }> = {
   talleres_mecanica: { label: "Talleres & Mecánica", icono: "🔧" },
   detailing_lavado: { label: "Detailing & Lavado", icono: "✨" },
   repuestos_accesorios: { label: "Repuestos & Accesorios", icono: "🚗" },
@@ -170,11 +179,111 @@ export const SPONSORS_DEMO: ComercioSponsor[] = [
 const LOCAL_SPONSORS_KEY = "aval_sponsors_comercios_v1";
 const LOCAL_SOLICITUDES_SPONSORS_KEY = "aval_solicitudes_sponsors_v1";
 
+// Helper de mapeo de base de datos a tipo TypeScript
+// biome-ignore lint/suspicious/noExplicitAny: generic DB row
+function mapSponsorFromDb(row: any): ComercioSponsor {
+  return {
+    id: row.id,
+    nombreComercio: row.nombre_comercio || row.nombreComercio || "",
+    categoria: (row.categoria || "otros") as CategoriaSponsor,
+    descuentoTexto: row.descuento_texto || row.descuentoTexto || "",
+    descuentoPorcentaje: row.descuento_porcentaje ?? row.descuentoPorcentaje ?? 15,
+    descripcion: row.descripcion || "",
+    condiciones: row.condiciones || "",
+    logoUrl: row.logo_url || row.logoUrl || "",
+    telefonoWhatsapp: row.telefono_whatsapp || row.telefonoWhatsapp || "",
+    provincia: row.provincia || "San José",
+    canton: row.canton || "",
+    direccionFisica: row.direccion_fisica || row.direccionFisica || "",
+    enlaceRedes: row.enlace_redes || row.enlaceRedes || "",
+    activo: row.activo ?? true,
+    destacado: row.destacado ?? false,
+    orden: row.orden ?? 1,
+  };
+}
+
+function mapSponsorToDb(s: ComercioSponsor) {
+  return {
+    id: s.id,
+    nombre_comercio: s.nombreComercio,
+    categoria: s.categoria,
+    descuento_texto: s.descuentoTexto,
+    descuento_porcentaje: s.descuentoPorcentaje || 15,
+    descripcion: s.descripcion,
+    condiciones: s.condiciones,
+    logo_url: s.logoUrl || "",
+    telefono_whatsapp: s.telefonoWhatsapp,
+    provincia: s.provincia,
+    canton: s.canton || "",
+    direccion_fisica: s.direccionFisica || "",
+    enlace_redes: s.enlaceRedes || "",
+    activo: s.activo,
+    destacado: s.destacado,
+    orden: s.orden || 1,
+  };
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: generic DB row
+function mapSolicitudFromDb(row: any): SolicitudAfiliacionSponsor {
+  return {
+    id: row.id,
+    fecha: row.fecha || new Date().toISOString(),
+    nombreEmpresa: row.nombre_empresa || row.nombreEmpresa || "",
+    nombreContacto: row.nombre_contacto || row.nombreContacto || "",
+    cargo: row.cargo || "",
+    telefono: row.telefono || "",
+    email: row.email || "",
+    categoria: (row.categoria || "otros") as CategoriaSponsor,
+    propuestaDescuento: row.propuesta_descuento || row.propuestaDescuento || "",
+    beneficioComunidad: row.beneficio_comunidad || row.beneficioComunidad || "",
+    provincia: row.provincia || "San José",
+    estado: (row.estado || "pendiente") as SolicitudAfiliacionSponsor["estado"],
+    notasAdmin: row.notas_admin || row.notasAdmin || "",
+  };
+}
+
+function mapSolicitudToDb(sol: SolicitudAfiliacionSponsor) {
+  return {
+    id: sol.id,
+    fecha: sol.fecha,
+    nombre_empresa: sol.nombreEmpresa,
+    nombre_contacto: sol.nombreContacto,
+    cargo: sol.cargo || "",
+    telefono: sol.telefono,
+    email: sol.email,
+    categoria: sol.categoria,
+    propuesta_descuento: sol.propuestaDescuento,
+    beneficio_comunidad: sol.beneficioComunidad,
+    provincia: sol.provincia,
+    estado: sol.estado,
+    notas_admin: sol.notasAdmin || "",
+  };
+}
+
 // ============================================================================
-// FUNCIONES CRUD PARA SPONSORS / COMERCIOS
+// FUNCIONES CRUD PARA SPONSORS / COMERCIOS (TABLA DB: sponsors)
 // ============================================================================
 
 export async function fetchSponsors(): Promise<ComercioSponsor[]> {
+  // 1. Intentar consulta directa a la tabla Supabase 'sponsors'
+  try {
+    const { data, error } = await supabase
+      .from("sponsors")
+      .select("*")
+      .order("orden", { ascending: true });
+
+    if (!error && data && Array.isArray(data) && data.length > 0) {
+      const items = data.map(mapSponsorFromDb);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(LOCAL_SPONSORS_KEY, JSON.stringify(items));
+        } catch {}
+      }
+      return items;
+    }
+  } catch {}
+
+  // 2. Fallback a site_config
   try {
     const { data, error } = await supabase
       .from("site_config")
@@ -183,20 +292,23 @@ export async function fetchSponsors(): Promise<ComercioSponsor[]> {
       .maybeSingle();
 
     if (!error && data?.valor && Array.isArray(data.valor) && data.valor.length > 0) {
-      return data.valor as ComercioSponsor[];
+      const items = data.valor.map(mapSponsorFromDb);
+      return items;
     }
   } catch {}
 
+  // 3. Fallback a localStorage
   if (typeof window !== "undefined") {
     try {
       const local = localStorage.getItem(LOCAL_SPONSORS_KEY);
       if (local) {
         const parsed = JSON.parse(local);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(mapSponsorFromDb);
       }
     } catch {}
   }
 
+  // 4. Semilla por defecto
   return SPONSORS_DEMO;
 }
 
@@ -208,6 +320,13 @@ export async function guardarSponsors(sponsors: ComercioSponsor[]): Promise<bool
   }
 
   try {
+    // Sincronizar en tabla sponsors
+    const dbPayload = sponsors.map(mapSponsorToDb);
+    await supabase.from("sponsors").upsert(dbPayload, { onConflict: "id" });
+  } catch {}
+
+  try {
+    // Sincronizar también en site_config para redundancia
     await supabase.from("site_config").upsert(
       {
         clave: "directorio_sponsors",
@@ -234,11 +353,21 @@ export async function upsertSponsor(sponsor: ComercioSponsor): Promise<ComercioS
     updated = [sponsor, ...current];
   }
 
+  // Guardar en tabla individual en DB
+  try {
+    await supabase.from("sponsors").upsert(mapSponsorToDb(sponsor), { onConflict: "id" });
+  } catch {}
+
   await guardarSponsors(updated);
   return updated;
 }
 
 export async function deleteSponsor(id: string): Promise<ComercioSponsor[]> {
+  // Eliminar en tabla de DB
+  try {
+    await supabase.from("sponsors").delete().eq("id", id);
+  } catch {}
+
   const current = await fetchSponsors();
   const updated = current.filter((s) => s.id !== id);
   await guardarSponsors(updated);
@@ -246,10 +375,29 @@ export async function deleteSponsor(id: string): Promise<ComercioSponsor[]> {
 }
 
 // ============================================================================
-// FUNCIONES PARA SOLICITUDES DE NUEVOS SPONSORS
+// FUNCIONES PARA SOLICITUDES DE NUEVOS SPONSORS (TABLA DB: solicitudes_sponsors)
 // ============================================================================
 
 export async function fetchSolicitudesSponsors(): Promise<SolicitudAfiliacionSponsor[]> {
+  // 1. Intentar consulta directa a la tabla Supabase 'solicitudes_sponsors'
+  try {
+    const { data, error } = await supabase
+      .from("solicitudes_sponsors")
+      .select("*")
+      .order("fecha", { ascending: false });
+
+    if (!error && data && Array.isArray(data)) {
+      const items = data.map(mapSolicitudFromDb);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(LOCAL_SOLICITUDES_SPONSORS_KEY, JSON.stringify(items));
+        } catch {}
+      }
+      return items;
+    }
+  } catch {}
+
+  // 2. Fallback a site_config
   try {
     const { data, error } = await supabase
       .from("site_config")
@@ -258,16 +406,17 @@ export async function fetchSolicitudesSponsors(): Promise<SolicitudAfiliacionSpo
       .maybeSingle();
 
     if (!error && data?.valor && Array.isArray(data.valor)) {
-      return data.valor as SolicitudAfiliacionSponsor[];
+      return data.valor.map(mapSolicitudFromDb);
     }
   } catch {}
 
+  // 3. Fallback a localStorage
   if (typeof window !== "undefined") {
     try {
       const local = localStorage.getItem(LOCAL_SOLICITUDES_SPONSORS_KEY);
       if (local) {
         const parsed = JSON.parse(local);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) return parsed.map(mapSolicitudFromDb);
       }
     } catch {}
   }
@@ -285,8 +434,14 @@ export async function enviarSolicitudSponsor(
     estado: "pendiente",
   };
 
+  // 1. Insertar en tabla de DB
+  try {
+    await supabase.from("solicitudes_sponsors").insert([mapSolicitudToDb(nueva)]);
+  } catch {}
+
+  // 2. Guardar en memoria local y site_config
   const current = await fetchSolicitudesSponsors();
-  const updated = [nueva, ...current];
+  const updated = [nueva, ...current.filter((s) => s.id !== nueva.id)];
 
   if (typeof window !== "undefined") {
     try {
@@ -313,8 +468,17 @@ export async function actualizarEstadoSolicitudSponsor(
   estado: SolicitudAfiliacionSponsor["estado"],
   notasAdmin?: string
 ): Promise<SolicitudAfiliacionSponsor[]> {
+  // 1. Actualizar en tabla DB
+  try {
+    const updatePayload: Record<string, unknown> = { estado };
+    if (notasAdmin !== undefined) updatePayload.notas_admin = notasAdmin;
+    await supabase.from("solicitudes_sponsors").update(updatePayload).eq("id", id);
+  } catch {}
+
   const current = await fetchSolicitudesSponsors();
-  const updated = current.map((s) => (s.id === id ? { ...s, estado, ...(notasAdmin !== undefined ? { notasAdmin } : {}) } : s));
+  const updated = current.map((s) =>
+    s.id === id ? { ...s, estado, ...(notasAdmin !== undefined ? { notasAdmin } : {}) } : s
+  );
 
   if (typeof window !== "undefined") {
     try {
@@ -335,3 +499,105 @@ export async function actualizarEstadoSolicitudSponsor(
 
   return updated;
 }
+
+// ============================================================================
+// GESTIÓN DE CATEGORÍAS PERSONALIZADAS EN DB
+// ============================================================================
+
+const LOCAL_CATEGORIAS_KEY = "aval_categorias_sponsors_v1";
+
+export async function fetchCategoriasSponsors(): Promise<CategoriaItem[]> {
+  // 1. Intentar desde Supabase site_config
+  try {
+    const { data, error } = await supabase
+      .from("site_config")
+      .select("valor")
+      .eq("clave", "categorias_sponsors_lista")
+      .maybeSingle();
+
+    if (!error && data?.valor && Array.isArray(data.valor) && data.valor.length > 0) {
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(LOCAL_CATEGORIAS_KEY, JSON.stringify(data.valor));
+        } catch {}
+      }
+      return data.valor as CategoriaItem[];
+    }
+  } catch {}
+
+  // 2. Fallback localStorage
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem(LOCAL_CATEGORIAS_KEY);
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+  }
+
+  return CATEGORIAS_SPONSOR_DEFAULT;
+}
+
+export async function guardarCategoriasSponsors(
+  categorias: CategoriaItem[]
+): Promise<boolean> {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(LOCAL_CATEGORIAS_KEY, JSON.stringify(categorias));
+    } catch {}
+  }
+
+  try {
+    await supabase.from("site_config").upsert(
+      {
+        clave: "categorias_sponsors_lista",
+        valor: categorias,
+        actualizado_en: new Date().toISOString(),
+      },
+      { onConflict: "clave" }
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function crearCategoriaSponsor(
+  label: string,
+  icono: string
+): Promise<CategoriaItem[]> {
+  const current = await fetchCategoriasSponsors();
+  const slug = label
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "") || `cat_${Date.now()}`;
+
+  // Verificar si ya existe
+  if (current.some((c) => c.id === slug || c.label.toLowerCase() === label.toLowerCase())) {
+    return current;
+  }
+
+  const nueva: CategoriaItem = {
+    id: slug,
+    label: label.trim(),
+    icono: icono.trim() || "🏬",
+  };
+
+  const updated = [...current, nueva];
+  await guardarCategoriasSponsors(updated);
+  return updated;
+}
+
+export async function eliminarCategoriaSponsor(
+  id: string
+): Promise<CategoriaItem[]> {
+  const current = await fetchCategoriasSponsors();
+  const updated = current.filter((c) => c.id !== id);
+  await guardarCategoriasSponsors(updated);
+  return updated;
+}
+
+

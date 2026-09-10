@@ -79,6 +79,69 @@ CREATE TABLE IF NOT EXISTS inventario (
 
 INSERT INTO inventario (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
 
+-- ── 7. Tabla sponsors (Comercios Aliados & Beneficios) ───────
+CREATE TABLE IF NOT EXISTS sponsors (
+  id                   TEXT PRIMARY KEY,
+  nombre_comercio      TEXT NOT NULL,
+  categoria            TEXT NOT NULL,
+  descuento_texto      TEXT NOT NULL,
+  descuento_porcentaje INTEGER DEFAULT 15,
+  descripcion          TEXT NOT NULL,
+  condiciones          TEXT NOT NULL,
+  logo_url             TEXT DEFAULT '',
+  telefono_whatsapp    TEXT NOT NULL,
+  provincia            TEXT NOT NULL,
+  canton               TEXT DEFAULT '',
+  direccion_fisica     TEXT DEFAULT '',
+  enlace_redes         TEXT DEFAULT '',
+  activo               BOOLEAN NOT NULL DEFAULT TRUE,
+  destacado            BOOLEAN NOT NULL DEFAULT FALSE,
+  orden                INTEGER NOT NULL DEFAULT 1,
+  creado_en            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ── 8. Tabla solicitudes_sponsors (Propuestas de Afiliación) ─
+CREATE TABLE IF NOT EXISTS solicitudes_sponsors (
+  id                  TEXT PRIMARY KEY,
+  fecha               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  nombre_empresa      TEXT NOT NULL,
+  nombre_contacto     TEXT NOT NULL,
+  cargo               TEXT DEFAULT '',
+  telefono            TEXT NOT NULL,
+  email               TEXT NOT NULL,
+  categoria           TEXT NOT NULL,
+  propuesta_descuento TEXT NOT NULL,
+  beneficio_comunidad TEXT NOT NULL,
+  provincia           TEXT NOT NULL,
+  estado              TEXT NOT NULL DEFAULT 'pendiente'
+                        CONSTRAINT solicitudes_sponsors_estado_check
+                        CHECK (estado IN ('pendiente', 'contactado', 'aprobado', 'rechazado')),
+  notas_admin         TEXT DEFAULT ''
+);
+
+-- ── 9. Tabla casos_sociales (Bien Social & Ayuda Comunitaria) ─
+CREATE TABLE IF NOT EXISTS casos_sociales (
+  id                   TEXT PRIMARY KEY,
+  fecha                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  postulante_nombre    TEXT NOT NULL,
+  postulante_telefono  TEXT NOT NULL,
+  postulante_relacion  TEXT NOT NULL,
+  beneficiario_nombre  TEXT NOT NULL,
+  beneficiario_edad    TEXT DEFAULT '',
+  provincia            TEXT NOT NULL,
+  canton               TEXT DEFAULT '',
+  categoria            TEXT NOT NULL,
+  titulo               TEXT NOT NULL,
+  descripcion          TEXT NOT NULL,
+  presupuesto_estimado TEXT DEFAULT '',
+  urgencia             TEXT NOT NULL DEFAULT 'normal',
+  fotos                TEXT[] DEFAULT '{}',
+  estado               TEXT NOT NULL DEFAULT 'pendiente'
+                         CONSTRAINT casos_sociales_estado_check
+                         CHECK (estado IN ('pendiente', 'en_evaluacion', 'seleccionado', 'ayuda_entregada', 'archivado')),
+  notas_admin          TEXT DEFAULT ''
+);
+
 -- ============================================================
 -- RLS (Row Level Security)
 -- ============================================================
@@ -140,6 +203,42 @@ CREATE POLICY "anon_read_inventario" ON inventario
 CREATE POLICY "service_write_inventario" ON inventario
   FOR ALL TO service_role USING (true);
 
+-- sponsors: lectura pública, escritura permitida para gestión y sincronización
+ALTER TABLE sponsors ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anon_read_sponsors" ON sponsors
+  FOR SELECT TO anon USING (true);
+
+CREATE POLICY "anon_all_sponsors" ON sponsors
+  FOR ALL TO anon USING (true);
+
+-- solicitudes_sponsors: inserción pública (anon), lectura y actualización
+ALTER TABLE solicitudes_sponsors ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anon_insert_solicitudes_sponsors" ON solicitudes_sponsors
+  FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY "anon_read_solicitudes_sponsors" ON solicitudes_sponsors
+  FOR SELECT TO anon USING (true);
+
+CREATE POLICY "anon_update_solicitudes_sponsors" ON solicitudes_sponsors
+  FOR UPDATE TO anon USING (true);
+
+-- casos_sociales: lectura e inserción pública, actualización
+ALTER TABLE casos_sociales ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anon_read_casos_sociales" ON casos_sociales
+  FOR SELECT TO anon USING (true);
+
+CREATE POLICY "anon_insert_casos_sociales" ON casos_sociales
+  FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY "anon_update_casos_sociales" ON casos_sociales
+  FOR UPDATE TO anon USING (true);
+
+CREATE POLICY "anon_delete_casos_sociales" ON casos_sociales
+  FOR DELETE TO anon USING (true);
+
 -- ============================================================
 -- Storage bucket para comprobantes SINPE
 -- (Ejecutar solo si no existe el bucket)
@@ -156,3 +255,4 @@ CREATE POLICY "anon_upload_comprobantes" ON storage.objects
 CREATE POLICY "anon_read_comprobantes" ON storage.objects
   FOR SELECT TO anon
   USING (bucket_id = 'comprobantes');
+
