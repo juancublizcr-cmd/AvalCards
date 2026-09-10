@@ -106,11 +106,26 @@ export function Footer() {
 
       <div className="mx-auto max-w-6xl px-5 mt-10 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
         <p suppressHydrationWarning>© 2026 Aval Community CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.</p>
-        <div className="flex items-center gap-4">
-          <Link to="/terminos" className="hover:text-foreground">Reglamento</Link>
-          <Link to="/privacidad" className="hover:text-foreground">Privacidad</Link>
-          <Link to="/reembolso" className="hover:text-foreground">Reembolsos</Link>
-          <Link to="/admin" className="hover:text-foreground text-[11px] opacity-60">Admin</Link>
+        <div className="flex items-center gap-3 text-[11px]">
+          <Link to="/terminos" className="hover:text-foreground transition-colors">Reglamento</Link>
+          <Link to="/privacidad" className="hover:text-foreground transition-colors">Privacidad</Link>
+          <Link to="/reembolso" className="hover:text-foreground transition-colors">Reembolsos</Link>
+          <span className="opacity-25">·</span>
+          <Link
+            to="/comercio"
+            title="Portal para Comercios y Validación"
+            className="opacity-35 hover:opacity-100 hover:text-amber-400 transition-all"
+          >
+            Comercios
+          </Link>
+          <span className="opacity-25">·</span>
+          <Link
+            to="/admin"
+            title="Consola de Administración"
+            className="opacity-35 hover:opacity-100 hover:text-primary transition-all"
+          >
+            Acceso
+          </Link>
         </div>
       </div>
     </footer>
