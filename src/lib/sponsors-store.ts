@@ -50,10 +50,31 @@ export type ComercioSponsor = {
   pinAcceso?: string; // PIN / Contraseña de acceso a la Mini-App (ej. "1234")
   passwordComercio?: string; // Contraseña personalizada
   emailComercio?: string; // Correo para recuperación de clave
+  serviciosCanje?: string[]; // Servicios o productos configurados para el canje
   activo: boolean;
   destacado: boolean;
   orden: number;
 };
+
+export const SERVICIOS_DEFAULT_POR_CATEGORIA: Record<string, string[]> = {
+  detailing_lavado: ["Lavado Completo", "Lavado Express", "Pulido y Detailing", "Lavado de Tapicería", "Encerado"],
+  talleres_mecanica: ["Mano de Obra", "Cambio de Aceite", "Frenos", "Diagnóstico Scanner", "Alineamiento y Tramado"],
+  repuestos_accesorios: ["Repuestos", "Accesorios 4x4", "Batería", "Llantas", "Luces LED"],
+  restaurantes_gastronomia: ["Consumo Total", "Cortes de Carne", "Hamburguesas & Costillas", "Parrillada", "Bebidas & Postres"],
+  salud_fitness: ["Corte de Cabello", "Barba y Afeitado", "Mensualidad Gym", "Tratamiento Facial", "Consulta General"],
+  tecnologia_gaming: ["Reparación de Celular", "Mantenimiento Laptop", "Accesorios", "Consolas & Juegos", "Repuestos Tech"],
+  servicios_profesionales: ["Asesoría Legal", "Póliza de Seguros", "Avalúo Vehicular", "Servicio Notarial", "Consultoría"],
+  otros: ["Consumo en Local", "Servicio Estándar", "Producto Especial", "Mano de Obra"],
+};
+
+export function getServiciosSponsor(s?: ComercioSponsor | null): string[] {
+  if (s?.serviciosCanje && Array.isArray(s.serviciosCanje) && s.serviciosCanje.length > 0) {
+    const valid = s.serviciosCanje.map((x) => x.trim()).filter(Boolean);
+    if (valid.length > 0) return valid;
+  }
+  const cat = s?.categoria || "otros";
+  return SERVICIOS_DEFAULT_POR_CATEGORIA[cat] || SERVICIOS_DEFAULT_POR_CATEGORIA.otros;
+}
 
 export type SolicitudAfiliacionSponsor = {
   id: string;
@@ -227,6 +248,11 @@ function mapSponsorFromDb(row: any): ComercioSponsor {
     pinAcceso: row.pin_acceso || row.pinAcceso || row.password_comercio || row.passwordComercio || "",
     passwordComercio: row.password_comercio || row.passwordComercio || row.pin_acceso || row.pinAcceso || "",
     emailComercio: row.email_comercio || row.emailComercio || "",
+    serviciosCanje: Array.isArray(row.servicios_canje || row.serviciosCanje)
+      ? (row.servicios_canje || row.serviciosCanje)
+      : typeof (row.servicios_canje || row.serviciosCanje) === "string"
+        ? (row.servicios_canje || row.serviciosCanje).split(",").map((x: string) => x.trim()).filter(Boolean)
+        : undefined,
     activo: row.activo ?? true,
     destacado: row.destacado ?? false,
     orden: row.orden ?? 1,
@@ -253,6 +279,7 @@ function mapSponsorToDb(s: ComercioSponsor) {
     pin_acceso: s.passwordComercio || s.pinAcceso || "",
     password_comercio: s.passwordComercio || s.pinAcceso || "",
     email_comercio: s.emailComercio || "",
+    servicios_canje: s.serviciosCanje || [],
     activo: s.activo,
     destacado: s.destacado,
     orden: s.orden || 1,

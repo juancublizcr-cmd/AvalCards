@@ -22,6 +22,7 @@ import {
   QrCode,
   RefreshCw,
   Search,
+  Settings,
   ShieldCheck,
   Sparkles,
   Store,
@@ -37,6 +38,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +52,7 @@ import {
   eliminarCanjeSponsor,
   upsertSponsor,
   extraerPorcentajeDescuento,
+  getServiciosSponsor,
   type ComercioSponsor,
   type CanjeSponsorRecord,
 } from "@/lib/sponsors-store";
@@ -91,6 +94,11 @@ export function ComercioPortal() {
   const [nuevaClaveInput, setNuevaClaveInput] = useState("");
   const [nuevoEmailInput, setNuevoEmailInput] = useState("");
   const [guardandoClave, setGuardandoClave] = useState(false);
+
+  // Modal Personalizar Servicios de Canje desde la Mini-App
+  const [modalConfigurarServicios, setModalConfigurarServicios] = useState(false);
+  const [serviciosEditandoInput, setServiciosEditandoInput] = useState("");
+  const [guardandoServicios, setGuardandoServicios] = useState(false);
 
   // Pestaña actual: "canje" | "reportes"
   const [pestana, setPestana] = useState<"canje" | "reportes">("canje");
@@ -282,6 +290,38 @@ export function ComercioPortal() {
       toast.error("Error al actualizar la contraseña.");
     } finally {
       setGuardandoClave(false);
+    }
+  };
+
+  // Guardar Personalización de Servicios de Canje desde la Mini-App
+  const handleGuardarServiciosComercio = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comercioActivo) return;
+
+    setGuardandoServicios(true);
+    try {
+      const parsed = serviciosEditandoInput
+        .split(/[\n,]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const updated: ComercioSponsor = {
+        ...comercioActivo,
+        serviciosCanje: parsed.length > 0 ? parsed : undefined,
+      };
+
+      await upsertSponsor(updated);
+      setComercioActivo(updated);
+      setComercioSeleccionado(updated);
+      setSponsors((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+
+      toast.success("¡Servicios de canje guardados y actualizados!");
+      setModalConfigurarServicios(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al guardar la lista de servicios.");
+    } finally {
+      setGuardandoServicios(false);
     }
   };
 
@@ -613,6 +653,21 @@ export function ComercioPortal() {
 
           {comercioActivo ? (
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const currentServices = getServiciosSponsor(comercioActivo);
+                  setServiciosEditandoInput(currentServices.join("\n"));
+                  setModalConfigurarServicios(true);
+                }}
+                className="h-8 text-xs border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 gap-1.5 cursor-pointer"
+                title="Configurar los servicios o productos de canje para este comercio"
+              >
+                <Settings className="size-3.5" />
+                <span className="hidden sm:inline">Mis Servicios</span>
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -1078,25 +1133,42 @@ export function ComercioPortal() {
                       </div>
                     ) : (
                       <form onSubmit={handleGuardarCanje} className="space-y-3.5">
-                        <div className="space-y-1">
-                          <Label className="text-xs font-semibold text-foreground">
-                            Servicio o Producto Aplicado: <span className="text-destructive">*</span>
-                          </Label>
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs font-semibold text-foreground">
+                              Servicio o Producto Aplicado: <span className="text-destructive">*</span>
+                            </Label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const current = getServiciosSponsor(comercioActivo);
+                                setServiciosEditandoInput(current.join("\n"));
+                                setModalConfigurarServicios(true);
+                              }}
+                              className="text-[10px] text-amber-400 hover:underline flex items-center gap-1 cursor-pointer font-semibold"
+                            >
+                              <Settings className="size-3" /> Configurar mis opciones
+                            </button>
+                          </div>
                           <Input
-                            placeholder="Ej. Lavado Completo, Detallado, Cambio de Aceite..."
+                            placeholder="Ej. Consumo en local, Lavado, Cambio de aceite..."
                             value={servicioNombre}
                             onChange={(e) => setServicioNombre(e.target.value)}
                             required
                             className="text-xs bg-slate-950 border-border"
                           />
-                          {/* Sugerencias rápidas */}
-                          <div className="flex flex-wrap gap-1 pt-1">
-                            {["Lavado Completo", "Lavado Express", "Pulido y Detailing", "Mano de Obra", "Consumo en Local"].map((sug) => (
+                          {/* Sugerencias dinámicas según el comercio activo */}
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {getServiciosSponsor(comercioActivo).map((sug) => (
                               <button
                                 key={sug}
                                 type="button"
                                 onClick={() => setServicioNombre(sug)}
-                                className="text-[10px] px-2 py-0.5 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                                className={`text-[10px] px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
+                                  servicioNombre === sug
+                                    ? "bg-amber-500/25 border-amber-500/70 text-amber-300 font-bold"
+                                    : "bg-slate-950/80 border-border hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                                }`}
                               >
                                 + {sug}
                               </button>
@@ -1148,10 +1220,16 @@ export function ComercioPortal() {
 
                         <div className="space-y-1">
                           <Label className="text-xs font-semibold text-muted-foreground">
-                            Número de Placa:
+                            {["detailing_lavado", "talleres_mecanica", "repuestos_accesorios"].includes(comercioActivo?.categoria || "")
+                              ? "Número de Placa / Vehículo:"
+                              : "Mesa / Factura / Orden / Placa (Opcional):"}
                           </Label>
                           <Input
-                            placeholder="Ej. ABC-123 o 123456"
+                            placeholder={
+                              ["detailing_lavado", "talleres_mecanica", "repuestos_accesorios"].includes(comercioActivo?.categoria || "")
+                                ? "Ej. ABC-123 o 123456"
+                                : "Ej. Mesa 4, Factura #1024 o Placa"
+                            }
                             value={notasCanje}
                             onChange={(e) => setNotasCanje(e.target.value)}
                             className="text-xs bg-slate-950 border-border uppercase font-mono"
@@ -1530,6 +1608,58 @@ export function ComercioPortal() {
                 className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs cursor-pointer"
               >
                 {guardandoClave ? "Guardando..." : "Guardar Cambios"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL 3: PERSONALIZAR SERVICIOS DE CANJE DESDE LA MINI-APP */}
+      <Dialog open={modalConfigurarServicios} onOpenChange={setModalConfigurarServicios}>
+        <DialogContent className="max-w-md bg-slate-950 border-amber-500/40 text-foreground p-5">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black text-foreground flex items-center gap-2">
+              <Settings className="size-4 text-amber-400" />
+              Configurar Mis Servicios de Canje
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleGuardarServiciosComercio} className="space-y-3.5 pt-2">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Define los servicios o productos más frecuentes que tus clientes canjean en <strong>{comercioActivo?.nombreComercio}</strong>. Estos aparecerán como botones de acceso rápido al registrar un beneficio.
+            </p>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-foreground">
+                Lista de Servicios / Productos (uno por línea o separados por coma):
+              </Label>
+              <Textarea
+                rows={5}
+                placeholder="Ejemplo:&#10;Consumo Total&#10;Cortes de Carne&#10;Hamburguesas & Costillas&#10;Parrillada"
+                value={serviciosEditandoInput}
+                onChange={(e) => setServiciosEditandoInput(e.target.value)}
+                className="text-xs font-mono bg-slate-900 border-border leading-relaxed"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                💡 Tip: Puedes ingresar tantos como desees. Se guardarán en la nube para tu comercio.
+              </p>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setModalConfigurarServicios(false)}
+                className="flex-1 text-xs"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={guardandoServicios}
+                className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs cursor-pointer"
+              >
+                {guardandoServicios ? "Guardando..." : "Guardar Servicios"}
               </Button>
             </div>
           </form>

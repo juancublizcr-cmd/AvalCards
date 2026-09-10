@@ -209,6 +209,7 @@ export function SponsorsSection() {
       canton: "",
       direccionFisica: "",
       enlaceRedes: "",
+      serviciosCanje: [],
       activo: true,
       destacado: false,
       orden: sponsors.length + 1,
@@ -1320,6 +1321,38 @@ export function SponsorsSection() {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* SECCIÓN: SERVICIOS / PRODUCTOS PARA CANJE RÁPIDO */}
+              <div className="space-y-1.5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-amber-500" /> Servicios / Productos para Canje Rápido
+                  </Label>
+                  <span className="text-[10px] text-muted-foreground">Separados por coma</span>
+                </div>
+                <Input
+                  value={
+                    Array.isArray(sponsorEditando.serviciosCanje)
+                      ? sponsorEditando.serviciosCanje.join(", ")
+                      : sponsorEditando.serviciosCanje || ""
+                  }
+                  onChange={(e) => {
+                    const items = e.target.value
+                      .split(",")
+                      .map((x) => x.trim())
+                      .filter(Boolean);
+                    setSponsorEditando({
+                      ...sponsorEditando,
+                      serviciosCanje: items,
+                    });
+                  }}
+                  placeholder="Ej: Consumo Total, Cortes de Carne, Hamburguesas, Parrillada"
+                  className="text-xs font-mono"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Estas opciones aparecerán como botones de selección rápida para el comercio al registrar un beneficio en la Mini-App (/comercio).
+                </p>
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/40">
