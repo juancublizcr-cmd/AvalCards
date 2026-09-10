@@ -134,6 +134,16 @@ function RootComponent() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Desactivar caché de Service Worker en localhost para asegurar recarga en vivo de cambios
+    if (window.location.hostname === "localhost" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const reg of registrations) {
+          void reg.unregister();
+        }
+      });
+    }
+
     try {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get("ref") || params.get("r");

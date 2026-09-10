@@ -17,6 +17,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ReembolsoRouteImport } from './routes/reembolso'
 import { Route as RematesRouteImport } from './routes/remates'
+import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as ValidarRouteImport } from './routes/validar'
 
@@ -60,6 +61,11 @@ const RematesRoute = RematesRouteImport.update({
   path: '/remates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SponsorsRoute = SponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminosRoute = TerminosRouteImport.update({
   id: '/terminos',
   path: '/terminos',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
   '/remates': typeof RematesRoute
+  '/sponsors': typeof SponsorsRoute
   '/terminos': typeof TerminosRoute
   '/validar': typeof ValidarRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
   '/remates': typeof RematesRoute
+  '/sponsors': typeof SponsorsRoute
   '/terminos': typeof TerminosRoute
   '/validar': typeof ValidarRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
   '/remates': typeof RematesRoute
+  '/sponsors': typeof SponsorsRoute
   '/terminos': typeof TerminosRoute
   '/validar': typeof ValidarRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reembolso'
     | '/remates'
+    | '/sponsors'
     | '/terminos'
     | '/validar'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reembolso'
     | '/remates'
+    | '/sponsors'
     | '/terminos'
     | '/validar'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reembolso'
     | '/remates'
+    | '/sponsors'
     | '/terminos'
     | '/validar'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   PrivacidadRoute: typeof PrivacidadRoute
   ReembolsoRoute: typeof ReembolsoRoute
   RematesRoute: typeof RematesRoute
+  SponsorsRoute: typeof SponsorsRoute
   TerminosRoute: typeof TerminosRoute
   ValidarRoute: typeof ValidarRoute
 }
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RematesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sponsors': {
+      id: '/sponsors'
+      path: '/sponsors'
+      fullPath: '/sponsors'
+      preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminos': {
       id: '/terminos'
       path: '/terminos'
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadRoute: PrivacidadRoute,
   ReembolsoRoute: ReembolsoRoute,
   RematesRoute: RematesRoute,
+  SponsorsRoute: SponsorsRoute,
   TerminosRoute: TerminosRoute,
   ValidarRoute: ValidarRoute,
 }

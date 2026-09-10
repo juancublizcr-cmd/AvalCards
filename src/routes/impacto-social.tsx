@@ -1,59 +1,75 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
-  Heart,
-  HeartHandshake,
-  ShieldCheck,
-  Building2,
-  Users,
-  CheckCircle2,
-  Sparkles,
-  Lock,
-  ArrowRight,
-  Send,
-  Home,
-  Stethoscope,
+  ArrowLeft,
   Baby,
+  Building2,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Flame,
+  Globe,
   Hammer,
-  Gift,
-  HelpCircle,
-  Phone,
-  MessageCircle,
+  HeartHandshake,
+  Home,
+  Info,
+  Lock,
+  MapPin,
+  MessageSquare,
+  Percent,
+  Plus,
+  RefreshCw,
+  Search,
+  ShieldAlert,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+  Store,
+  Tag,
+  Upload,
+  UserCheck,
+  Users,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Footer } from "@/components/Footer";
 import {
+  fetchCasosSociales,
   crearCasoSocial,
-  crearPropuestaSponsor,
+  type CasoSocial,
   type CategoriaCaso,
-  type TipoColaboracionSponsor,
 } from "@/lib/impacto-social-store";
 
 export const Route = createFileRoute("/impacto-social")({
+  head: () => ({
+    meta: [
+      { title: "Impacto y Bien Social | Aval Community CR" },
+      {
+        name: "description",
+        content:
+          "Conoce el compromiso solidario de Aval Community CR: destinamos un porcentaje de cada emisión a causas sociales transparentes, adultos mayores, salud infantil y familias vulnerables en Costa Rica.",
+      },
+    ],
+  }),
   component: ImpactoSocialPage,
 });
 
 function ImpactoSocialPage() {
-  const [tabActiva, setTabActiva] = useState<"casos" | "sponsors">("casos");
+  const [casos, setCasos] = useState<CasoSocial[]>([]);
+  const [cargando, setCargando] = useState(true);
 
-  // Formulario de Casos Sociales
+  // Formulario de Postulación de Casos Sociales
   const [enviandoCaso, setEnviandoCaso] = useState(false);
   const [casoExitoso, setCasoExitoso] = useState(false);
   const [formCaso, setFormCaso] = useState({
     postulanteNombre: "",
     postulanteTelefono: "",
-    postulanteRelacion: "Familiar",
+    postulanteRelacion: "",
     beneficiarioNombre: "",
     beneficiarioEdad: "",
     provincia: "San José",
@@ -65,266 +81,268 @@ function ImpactoSocialPage() {
     urgencia: "alta" as "alta" | "media" | "normal",
   });
 
-  // Formulario de Sponsors
-  const [enviandoSponsor, setEnviandoSponsor] = useState(false);
-  const [sponsorExitoso, setSponsorExitoso] = useState(false);
-  const [formSponsor, setFormSponsor] = useState({
-    empresa: "",
-    representante: "",
-    cargo: "",
-    telefono: "",
-    email: "",
-    tipoColaboracion: "materiales" as TipoColaboracionSponsor,
-    propuesta: "",
-    beneficioComunidad: "",
-  });
+  useEffect(() => {
+    async function cargar() {
+      try {
+        const c = await fetchCasosSociales();
+        setCasos(c);
+      } catch {
+        toast.error("Error al cargar casos solidarios");
+      } finally {
+        setCargando(false);
+      }
+    }
+    void cargar();
+  }, []);
 
   const handleEnviarCaso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formCaso.postulanteNombre.trim() || !formCaso.postulanteTelefono.trim()) {
-      toast.error("Por favor ingresa tu nombre y teléfono para poder contactarte.");
+      toast.error("Por favor completa los datos de contacto del postulante");
       return;
     }
-    if (!formCaso.beneficiarioNombre.trim()) {
-      toast.error("Por favor indica a quién va dirigida la ayuda.");
-      return;
-    }
-    if (!formCaso.descripcion.trim() || formCaso.descripcion.length < 20) {
-      toast.error("Por favor describe la situación con al menos 20 caracteres.");
+    if (!formCaso.beneficiarioNombre.trim() || !formCaso.titulo.trim() || !formCaso.descripcion.trim()) {
+      toast.error("Por favor completa la información del beneficiario y la descripción de la causa");
       return;
     }
 
     setEnviandoCaso(true);
     try {
-      await crearCasoSocial({
-        ...formCaso,
-        titulo: formCaso.titulo.trim() || `Ayuda solidaria para ${formCaso.beneficiarioNombre}`,
-      });
+      await crearCasoSocial(formCaso);
       setCasoExitoso(true);
       toast.success("¡Caso social postulado con éxito!", {
-        description: "Toda la información se guardó bajo estricta confidencialidad.",
+        description: "Nuestro equipo evaluará la causa con absoluta discreción.",
       });
     } catch {
-      toast.error("No se pudo enviar el caso. Por favor intenta de nuevo.");
+      toast.error("Error al postular el caso");
     } finally {
       setEnviandoCaso(false);
     }
   };
 
-  const handleEnviarSponsor = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formSponsor.empresa.trim() || !formSponsor.representante.trim()) {
-      toast.error("Por favor completa el nombre de la empresa y del representante.");
-      return;
+  const getCategoriaIcon = (cat: CategoriaCaso) => {
+    switch (cat) {
+      case "adulto_mayor":
+        return <Home className="size-4 text-amber-400" />;
+      case "salud_cirugia":
+        return <Stethoscope className="size-4 text-rose-400" />;
+      case "vivienda":
+        return <Hammer className="size-4 text-blue-400" />;
+      case "madre_riesgo":
+        return <Baby className="size-4 text-emerald-400" />;
+      default:
+        return <HeartHandshake className="size-4 text-purple-400" />;
     }
-    if (!formSponsor.telefono.trim() && !formSponsor.email.trim()) {
-      toast.error("Ingresa al menos un medio de contacto (teléfono o correo).");
-      return;
-    }
-    if (!formSponsor.propuesta.trim()) {
-      toast.error("Por favor detalla en qué consiste tu propuesta de patrocinio.");
-      return;
-    }
+  };
 
-    setEnviandoSponsor(true);
-    try {
-      await crearPropuestaSponsor(formSponsor);
-      setSponsorExitoso(true);
-      toast.success("¡Propuesta de sponsor enviada con éxito!", {
-        description: "Nuestro equipo directivo analizará los beneficios y te contactará.",
-      });
-    } catch {
-      toast.error("Error al enviar propuesta de sponsor");
-    } finally {
-      setEnviandoSponsor(false);
+  const getCategoriaNombre = (cat: CategoriaCaso) => {
+    switch (cat) {
+      case "adulto_mayor":
+        return "Adulto Mayor / Hogar";
+      case "salud_cirugia":
+        return "Salud / Cirugía / Terapia";
+      case "vivienda":
+        return "Vivienda & Techo Digno";
+      case "madre_riesgo":
+        return "Madres en Riesgo";
+      default:
+        return "Causa Comunitaria";
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-amber-500 selection:text-black">
-      {/* Header Bar */}
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-          <a href="/" className="flex items-center gap-2 group">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-black font-black text-lg shadow-sm group-hover:scale-105 transition-transform">
-              A
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+      {/* NAVBAR */}
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-black text-lg shadow-md group-hover:scale-105 transition-transform">
+              ❤️
             </div>
             <div>
-              <span className="font-display text-lg tracking-wider font-bold block leading-none">
-                AVAL COMMUNITY
+              <span className="font-black text-sm tracking-tight text-foreground flex items-center gap-1">
+                AVAL <span className="text-emerald-400">SOLIDARIO</span>
               </span>
-              <span className="text-[10px] text-amber-500 font-bold uppercase tracking-widest block">
-                Impacto Social CR
+              <span className="text-[10px] text-muted-foreground block -mt-1 font-semibold tracking-wider uppercase">
+                Bien Social & Compromiso Comunitario
               </span>
             </div>
-          </a>
+          </Link>
 
           <div className="flex items-center gap-3">
-            <a
-              href="/"
-              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-block"
+            <Link
+              to="/sponsors"
+              className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors"
             >
-              ← Volver al Sorteo
-            </a>
+              <Store className="size-3.5" /> Ver Comercios Aliados ↗
+            </Link>
             <Button
-              variant="hero"
               size="sm"
-              onClick={() => {
-                window.location.href = "/";
-              }}
-              className="text-xs font-bold gap-1.5 shadow-md"
+              asChild
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md"
             >
-              Participar en el Sorteo
+              <a href="#postular">
+                <Plus className="size-3.5 mr-1" /> Postular un Caso
+              </a>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 pb-20">
-        {/* HERO BANNER INSPIRADOR */}
-        <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-zinc-950 via-zinc-900 to-background py-16 sm:py-24 text-center">
-          {/* Glow effects */}
-          <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-emerald-500/10 blur-3xl" />
-          <div className="pointer-events-none absolute top-1/2 right-10 size-72 rounded-full bg-amber-500/10 blur-3xl" />
+      {/* HERO SECTION */}
+      <main className="flex-1">
+        <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-emerald-950/25 via-background to-background py-14 sm:py-20">
+          <div className="pointer-events-none absolute -left-20 -top-20 size-80 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -right-20 top-20 size-80 rounded-full bg-teal-500/10 blur-3xl" />
 
-          <div className="relative mx-auto max-w-4xl px-5 space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-emerald-400 shadow-xs">
-              <HeartHandshake className="size-4" /> AVAL SOLIDARIO · IMPACTO REAL EN COSTA RICA
+          <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-4 py-1.5 text-xs font-black text-emerald-400 uppercase tracking-wider">
+              <HeartHandshake className="size-3.5" /> Compromiso Social 100% Transparente
             </div>
 
-            <h1 className="font-display text-4xl sm:text-6xl font-black text-white uppercase tracking-tight leading-tight">
-              Detrás de cada sorteo,{" "}
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-400 bg-clip-text text-transparent">
-                transformamos vidas
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground max-w-3xl mx-auto leading-tight">
+              Cada Token Adquirido Construye un{" "}
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">
+                Impacto Real en Costa Rica
               </span>
             </h1>
 
-            <p className="mx-auto max-w-2xl text-sm sm:text-base text-zinc-300 leading-relaxed">
-              En <strong>Aval Community CR</strong> creemos que la emoción de ganar debe multiplicarse en obras de bien social. Destinamos recursos directos y alianzas comerciales para tender la mano a personas en situación de vulnerabilidad, en silencio y con absoluta dignidad.
+            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              En <strong>Aval Community CR</strong> creemos que el éxito debe compartirse. Destinamos una parte de
+              cada sorteo a causas sociales auditables: arreglos de techos para adultos mayores, apoyo a niños con
+              requerimientos médicos especiales y sustento a comedores y hogares vulnerables.
             </p>
 
-            {/* Banner de Garantía de Confidencialidad */}
-            <div className="mx-auto max-w-2xl rounded-2xl border border-emerald-500/30 bg-emerald-950/40 p-4 text-left flex items-start gap-3 shadow-md">
-              <Lock className="size-5 text-emerald-400 shrink-0 mt-0.5" />
-              <div className="space-y-0.5">
-                <h4 className="text-xs sm:text-sm font-bold text-white">
-                  Confidencialidad y Protección de la Dignidad Humana
-                </h4>
-                <p className="text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
-                  Ningún caso postulado se exhibirá en redes sociales ni se expondrá al público. Los datos sensibles son de uso exclusivo del comité directivo de Aval Community CR para evaluar y coordinar la entrega formal de la ayuda.
+            {/* 3 Pilares */}
+            <div className="grid gap-4 sm:grid-cols-3 max-w-3xl mx-auto pt-6 text-left">
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-4 space-y-1.5">
+                <div className="text-emerald-400 font-bold text-sm flex items-center gap-1.5">
+                  <CheckCircle2 className="size-4" /> 100% Auditado
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Entregas con facturación, fotografías y testimonios reales compartidos con la comunidad.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-4 space-y-1.5">
+                <div className="text-emerald-400 font-bold text-sm flex items-center gap-1.5">
+                  <Users className="size-4" /> Postulación Abierta
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Cualquier participante puede postular a una familia, vecino o centro que realmente lo necesite.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-4 space-y-1.5">
+                <div className="text-emerald-400 font-bold text-sm flex items-center gap-1.5">
+                  <Lock className="size-4" /> Privacidad & Dignidad
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Trato respetuoso y confidencial de todos los datos personales de las familias postuladas.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 4 PILARES DE AYUDA SOCIAL */}
-        <section className="mx-auto max-w-6xl px-5 -mt-8">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-2.5 transition-all hover:border-emerald-500/50">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
-                <Home className="size-5" />
-              </div>
-              <h3 className="font-bold text-base text-foreground">Adultos Mayores</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Reparación de techos con goteras, pisos antideslizantes, camas ortopédicas y condiciones dignas para abuelitos solos.
+        {/* EJEMPLOS DE CAUSAS Y CASOS EN EVALUACIÓN */}
+        <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-foreground">
+                Causas Recientes en Evaluación y Apoyo
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                Casos comunitarios postulados por la comunidad de Aval Community en diferentes provincias del país.
               </p>
             </div>
+            <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30 self-start sm:self-auto">
+              Total Casos: {casos.length}
+            </span>
+          </div>
 
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-2.5 transition-all hover:border-emerald-500/50">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-500">
-                <Stethoscope className="size-5" />
-              </div>
-              <h3 className="font-bold text-base text-foreground">Salud y Cirugías</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Apoyo con prótesis, exámenes médicos urgentes, medicamentos inaccesibles y terapias para niños y personas sin recursos.
-              </p>
-            </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {casos.map((c) => (
+              <div
+                key={c.id}
+                className="rounded-3xl border border-border bg-gradient-to-b from-card to-zinc-950 p-6 space-y-3 shadow-md"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground">
+                    {getCategoriaIcon(c.categoria)}
+                    {getCategoriaNombre(c.categoria)}
+                  </span>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase ${
+                      c.estado === "ayuda_entregada"
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                        : c.estado === "seleccionado"
+                        ? "bg-sky-500/20 text-sky-400 border border-sky-500/40"
+                        : "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                    }`}
+                  >
+                    {c.estado.replace("_", " ")}
+                  </span>
+                </div>
 
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-2.5 transition-all hover:border-emerald-500/50">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-500">
-                <Baby className="size-5" />
-              </div>
-              <h3 className="font-bold text-base text-foreground">Madres en Riesgo</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Sustento alimentario, útiles escolares y apoyo emergente para madres jefas de hogar en riesgo inminente de desalojo o abandono.
-              </p>
-            </div>
+                <div>
+                  <h3 className="font-bold text-base text-foreground leading-snug">{c.titulo}</h3>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="size-3 text-emerald-400" /> {c.provincia} {c.canton ? `(${c.canton})` : ""}
+                    </span>
+                    <span>·</span>
+                    <span>Beneficiario: <strong>{c.beneficiarioNombre}</strong></span>
+                  </div>
+                </div>
 
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-2.5 transition-all hover:border-emerald-500/50">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
-                <Hammer className="size-5" />
+                <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                  {c.descripcion}
+                </p>
+
+                {c.presupuestoEstimado && (
+                  <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-2.5 text-xs text-emerald-300 flex items-center justify-between">
+                    <span>Meta de Apoyo Estimada:</span>
+                    <strong className="font-black text-emerald-400">{c.presupuestoEstimado}</strong>
+                  </div>
+                )}
               </div>
-              <h3 className="font-bold text-base text-foreground">Obras Comunitarias</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Alianzas con ferreterías y empresas solidarias para intervenir instalaciones comunitarias y hogares en riesgo estructural.
-              </p>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* SELECTOR DE PESTAÑAS (CASOS SOCIALES VS SPONSORS) */}
-        <section className="mx-auto max-w-4xl px-5 mt-14 space-y-8">
-          <div className="flex rounded-2xl border border-border bg-secondary/50 p-1.5 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setTabActiva("casos")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                tabActiva === "casos"
-                  ? "bg-background text-foreground shadow-md border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <HeartHandshake className={`size-4 ${tabActiva === "casos" ? "text-emerald-500" : ""}`} />
-              <span>1. Postular Caso Solidario (Privado)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setTabActiva("sponsors")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                tabActiva === "sponsors"
-                  ? "bg-background text-foreground shadow-md border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Building2 className={`size-4 ${tabActiva === "sponsors" ? "text-amber-500" : ""}`} />
-              <span>2. Empresas y Sponsors (Alianzas)</span>
-            </button>
-          </div>
-
-          {/* CONTENIDO PESTAÑA 1: CASOS SOCIALES */}
-          {tabActiva === "casos" && (
-            <div className="rounded-3xl border border-border bg-card p-6 sm:p-10 shadow-lg space-y-8">
-              <div>
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 text-emerald-500 px-3 py-1 text-xs font-bold border border-emerald-500/30">
-                  <Lock className="size-3.5" /> Formulario de Postulación Confidencial
+        {/* SECCIÓN FORMULARIO DE POSTULACIÓN */}
+        <section id="postular" className="border-t border-border/80 bg-zinc-950 py-14">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-950/20 via-zinc-900 to-zinc-900 p-6 sm:p-10 shadow-2xl space-y-6">
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-black text-emerald-400 uppercase">
+                  <Lock className="size-3.5" /> Postulación Confidencial
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-foreground mt-2">
-                  Cuéntanos el caso que necesita ayuda
+                <h2 className="text-2xl sm:text-3xl font-black text-foreground">
+                  Postula a una Familia o Causa que Ocupe Apoyo
                 </h2>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Cualquier miembro de la comunidad puede presentar una causa. La administración evalúa periódicamente los casos recibidos para seleccionar a los beneficiarios y asignar los fondos o materiales.
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Cuéntanos la historia. Nuestro comité evaluará la situación para canalizar la ayuda material
+                  o económica directamente al beneficiario.
                 </p>
               </div>
 
               {casoExitoso ? (
-                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-8 text-center space-y-4">
-                  <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-emerald-500 text-black text-2xl shadow-lg">
-                    ✓
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">¡Caso recibido bajo estricta reserva!</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                    Hemos registrado la información en nuestro sistema administrativo privado. El comité directivo de Aval Community CR revisará la viabilidad y nos comunicaremos al teléfono proporcionado si el caso resulta seleccionado.
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-8 text-center space-y-3">
+                  <CheckCircle2 className="size-12 mx-auto text-emerald-400 animate-bounce" />
+                  <h3 className="font-black text-xl text-foreground">¡Caso Registrado Exitosamente!</h3>
+                  <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                    Gracias por postular esta causa. Nos comunicaremos al número de teléfono brindado para verificar
+                    detalles y cotizaciones correspondientes.
                   </p>
                   <Button
-                    variant="outline"
                     onClick={() => {
                       setCasoExitoso(false);
                       setFormCaso({
                         postulanteNombre: "",
                         postulanteTelefono: "",
-                        postulanteRelacion: "Familiar",
+                        postulanteRelacion: "",
                         beneficiarioNombre: "",
                         beneficiarioEdad: "",
                         provincia: "San José",
@@ -336,423 +354,139 @@ function ImpactoSocialPage() {
                         urgencia: "alta",
                       });
                     }}
-                    className="mt-2"
+                    variant="outline"
+                    size="sm"
                   >
                     Postular otro caso
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={(e) => { void handleEnviarCaso(e); }} className="space-y-6">
-                  {/* Datos del Postulante */}
-                  <div className="space-y-4">
-                    <div className="border-b border-border pb-2">
-                      <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                        <Users className="size-4 text-emerald-500" /> Tus Datos de Contacto (Quien Postula)
-                      </h4>
-                      <p className="text-[11px] text-muted-foreground">
-                        Para poder llamarte o escribirte por WhatsApp para coordinar la verificación.
-                      </p>
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="post-nombre" className="text-xs">Tu Nombre Completo *</Label>
-                        <Input
-                          id="post-nombre"
-                          required
-                          value={formCaso.postulanteNombre}
-                          onChange={(e) => setFormCaso({ ...formCaso, postulanteNombre: e.target.value })}
-                          placeholder="Ej: María Eugenia Solano"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="post-tel" className="text-xs">Teléfono WhatsApp *</Label>
-                        <Input
-                          id="post-tel"
-                          required
-                          value={formCaso.postulanteTelefono}
-                          onChange={(e) => setFormCaso({ ...formCaso, postulanteTelefono: e.target.value })}
-                          placeholder="Ej: 8834-1122"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="post-rel" className="text-xs">Tu Relación con el Caso</Label>
-                        <Select
-                          value={formCaso.postulanteRelacion}
-                          onValueChange={(val) => setFormCaso({ ...formCaso, postulanteRelacion: val })}
-                        >
-                          <SelectTrigger id="post-rel">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Familiar">Familiar Directo</SelectItem>
-                            <SelectItem value="Vecino(a)">Vecino(a) de la comunidad</SelectItem>
-                            <SelectItem value="Líder Comunitario">Líder Comunitario / Iglesia</SelectItem>
-                            <SelectItem value="Amigo(a)">Amigo(a) cercano</SelectItem>
-                            <SelectItem value="Mismo Afectado">Soy el mismo afectado</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Datos del Beneficiario y Caso */}
-                  <div className="space-y-4 pt-2">
-                    <div className="border-b border-border pb-2">
-                      <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                        <Heart className="size-4 text-rose-500" /> Información de la Persona o Familia Afectada
-                      </h4>
-                      <p className="text-[11px] text-muted-foreground">
-                        Indícanos a quién beneficiaría la ayuda directamente.
-                      </p>
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      <div className="space-y-1.5 sm:col-span-2">
-                        <Label htmlFor="ben-nombre" className="text-xs">Nombre o Apodo del Beneficiario *</Label>
-                        <Input
-                          id="ben-nombre"
-                          required
-                          value={formCaso.beneficiarioNombre}
-                          onChange={(e) => setFormCaso({ ...formCaso, beneficiarioNombre: e.target.value })}
-                          placeholder="Ej: Doña Carmen / Familia Morales"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="ben-edad" className="text-xs">Edad Aprox.</Label>
-                        <Input
-                          id="ben-edad"
-                          value={formCaso.beneficiarioEdad}
-                          onChange={(e) => setFormCaso({ ...formCaso, beneficiarioEdad: e.target.value })}
-                          placeholder="Ej: 84 años / 3 niños"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="ben-prov" className="text-xs">Provincia *</Label>
-                        <Select
-                          value={formCaso.provincia}
-                          onValueChange={(val) => setFormCaso({ ...formCaso, provincia: val })}
-                        >
-                          <SelectTrigger id="ben-prov">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="San José">San José</SelectItem>
-                            <SelectItem value="Alajuela">Alajuela</SelectItem>
-                            <SelectItem value="Cartago">Cartago</SelectItem>
-                            <SelectItem value="Heredia">Heredia</SelectItem>
-                            <SelectItem value="Guanacaste">Guanacaste</SelectItem>
-                            <SelectItem value="Puntarenas">Puntarenas</SelectItem>
-                            <SelectItem value="Limón">Limón</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="ben-canton" className="text-xs">Cantón o Localidad</Label>
-                        <Input
-                          id="ben-canton"
-                          value={formCaso.canton}
-                          onChange={(e) => setFormCaso({ ...formCaso, canton: e.target.value })}
-                          placeholder="Ej: San Ramón / Pérez Zeledón"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="ben-cat" className="text-xs">Tipo de Causa *</Label>
-                        <Select
-                          value={formCaso.categoria}
-                          onValueChange={(val) => setFormCaso({ ...formCaso, categoria: val as CategoriaCaso })}
-                        >
-                          <SelectTrigger id="ben-cat">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="adulto_mayor">👵 Adulto Mayor / Abuelito</SelectItem>
-                            <SelectItem value="salud_cirugia">🏥 Salud / Cirugía / Prótesis</SelectItem>
-                            <SelectItem value="vivienda">🛠️ Arreglo de Casa / Techo</SelectItem>
-                            <SelectItem value="madre_riesgo">👩‍👧 Madre Jefa de Hogar</SelectItem>
-                            <SelectItem value="otro">🤝 Otra Causa Urgente</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
+                <form onSubmit={(e) => void handleEnviarCaso(e)} className="space-y-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-1.5">
-                      <Label htmlFor="ben-desc" className="text-xs">
-                        Descripción Detallada de la Situación y Necesidades *
-                      </Label>
-                      <Textarea
-                        id="ben-desc"
-                        required
-                        rows={4}
-                        value={formCaso.descripcion}
-                        onChange={(e) => setFormCaso({ ...formCaso, descripcion: e.target.value })}
-                        placeholder="Describe con claridad la situación: qué ocurre, por qué es urgente, qué materiales o apoyo económico se necesita..."
-                      />
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="ben-presup" className="text-xs">Presupuesto Estimado (Aprox. en ₡)</Label>
-                        <Input
-                          id="ben-presup"
-                          value={formCaso.presupuestoEstimado}
-                          onChange={(e) => setFormCaso({ ...formCaso, presupuestoEstimado: e.target.value })}
-                          placeholder="Ej: ₡350,000 en materiales o cotización médica"
-                        />
-                        <p className="text-[10px] text-muted-foreground">
-                          Si no lo tienes exacto, un estimado ayuda a valorar la viabilidad.
-                        </p>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="ben-urg" className="text-xs">Nivel de Urgencia</Label>
-                        <Select
-                          value={formCaso.urgencia}
-                          onValueChange={(val) => setFormCaso({ ...formCaso, urgencia: val as "alta" | "media" | "normal" })}
-                        >
-                          <SelectTrigger id="ben-urg">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="alta">🔴 Alta (Riesgo inminente / cirugía pronta)</SelectItem>
-                            <SelectItem value="media">🟡 Media (Requiere solución este mes)</SelectItem>
-                            <SelectItem value="normal">🟢 Normal (Mejora de calidad de vida)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <ShieldCheck className="size-4 text-emerald-500" />
-                      <span>Tus datos y los del beneficiario nunca serán compartidos con terceros.</span>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      variant="hero"
-                      size="lg"
-                      disabled={enviandoCaso}
-                      className="w-full sm:w-auto font-bold gap-2 shadow-lg"
-                    >
-                      <Send className="size-4" />
-                      {enviandoCaso ? "Enviando Caso..." : "Enviar Caso a Evaluación"}
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </div>
-          )}
-
-          {/* CONTENIDO PESTAÑA 2: PORTAL DE SPONSORS */}
-          {tabActiva === "sponsors" && (
-            <div className="rounded-3xl border border-border bg-card p-6 sm:p-10 shadow-lg space-y-8">
-              <div>
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 text-amber-500 px-3 py-1 text-xs font-bold border border-amber-500/30">
-                  <Building2 className="size-3.5" /> Portal de Alianzas Corporativas y Patrocinios
-                </div>
-                <h2 className="text-xl sm:text-2xl font-black text-foreground mt-2">
-                  Suma tu empresa al impacto de Aval Community CR
-                </h2>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Ferreterías, clínicas de salud, comercios mayoristas, marcas de repuestos o automotrices: colaboren en nuestras causas benéficas o patrocinen eventos y conecten con miles de costarricenses en nuestra plataforma oficial.
-                </p>
-              </div>
-
-              {/* Tarjetas de Beneficios para Sponsors */}
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-1">
-                  <Sparkles className="size-4 text-amber-500" />
-                  <h4 className="font-bold text-xs text-foreground">Visibilidad Masiva</h4>
-                  <p className="text-[11px] text-muted-foreground">
-                    Exposición de tu marca en transmisiones oficiales, boletos y redes de Aval Community.
-                  </p>
-                </div>
-                <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-1">
-                  <Gift className="size-4 text-emerald-500" />
-                  <h4 className="font-bold text-xs text-foreground">Retorno Comunitario</h4>
-                  <p className="text-[11px] text-muted-foreground">
-                    Ofrece descuentos exclusivos a los jugadores y conviértelos en clientes frecuentes.
-                  </p>
-                </div>
-                <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-1">
-                  <HeartHandshake className="size-4 text-primary" />
-                  <h4 className="font-bold text-xs text-foreground">Impacto Certificado</h4>
-                  <p className="text-[11px] text-muted-foreground">
-                    Certificación de Empresa Socialmente Responsable con donaciones directas auditables.
-                  </p>
-                </div>
-              </div>
-
-              {sponsorExitoso ? (
-                <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-8 text-center space-y-4">
-                  <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-amber-500 text-black text-2xl shadow-lg font-bold">
-                    🤝
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">¡Propuesta comercial recibida!</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                    Nuestro departamento comercial y de alianzas estratégicas revisará la propuesta de tu empresa. Te contactaremos formalmente al teléfono o correo indicado para coordinar los detalles.
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSponsorExitoso(false);
-                      setFormSponsor({
-                        empresa: "",
-                        representante: "",
-                        cargo: "",
-                        telefono: "",
-                        email: "",
-                        tipoColaboracion: "materiales",
-                        propuesta: "",
-                        beneficioComunidad: "",
-                      });
-                    }}
-                    className="mt-2"
-                  >
-                    Enviar otra propuesta
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={(e) => { void handleEnviarSponsor(e); }} className="space-y-6">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sp-empresa" className="text-xs">Nombre de la Empresa o Marca *</Label>
+                      <Label className="text-xs font-bold">Tu Nombre Completo (Postulante) *</Label>
                       <Input
-                        id="sp-empresa"
+                        placeholder="Ej: María Eugenia Solano"
+                        value={formCaso.postulanteNombre}
+                        onChange={(e) => setFormCaso({ ...formCaso, postulanteNombre: e.target.value })}
                         required
-                        value={formSponsor.empresa}
-                        onChange={(e) => setFormSponsor({ ...formSponsor, empresa: e.target.value })}
-                        placeholder="Ej: Ferretería El Roble S.A. / Clínica San José"
+                        className="bg-card"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="sp-tipo" className="text-xs">Tipo de Colaboración *</Label>
-                      <Select
-                        value={formSponsor.tipoColaboracion}
-                        onValueChange={(val) => setFormSponsor({ ...formSponsor, tipoColaboracion: val as TipoColaboracionSponsor })}
+                      <Label className="text-xs font-bold">Tu Teléfono / WhatsApp *</Label>
+                      <Input
+                        placeholder="Ej: 8834-1122"
+                        value={formCaso.postulanteTelefono}
+                        onChange={(e) => setFormCaso({ ...formCaso, postulanteTelefono: e.target.value })}
+                        required
+                        className="bg-card"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-bold">Nombre del Beneficiario / Causa *</Label>
+                      <Input
+                        placeholder="Ej: Doña Carmen (84 años)"
+                        value={formCaso.beneficiarioNombre}
+                        onChange={(e) => setFormCaso({ ...formCaso, beneficiarioNombre: e.target.value })}
+                        required
+                        className="bg-card"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-bold">Categoría de la Causa</Label>
+                      <select
+                        value={formCaso.categoria}
+                        onChange={(e) => setFormCaso({ ...formCaso, categoria: e.target.value as CategoriaCaso })}
+                        className="w-full h-10 rounded-md border border-input bg-card px-3 text-xs text-foreground"
                       >
-                        <SelectTrigger id="sp-tipo">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="materiales">🧱 Donación de Materiales de Construcción</SelectItem>
-                          <SelectItem value="servicios">🩺 Servicios Médicos / Profesionales</SelectItem>
-                          <SelectItem value="patrocinio_premios">🎁 Patrocinio de Premios / Mini-Sorteos</SelectItem>
-                          <SelectItem value="descuentos_comunidad">🏷️ Descuentos para Jugadores Aval</SelectItem>
-                          <SelectItem value="donacion_fondos">💵 Aporte Económico Benéfico</SelectItem>
-                          <SelectItem value="otro">🤝 Alianza Estratégica Mixta</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sp-rep" className="text-xs">Representante Comercial *</Label>
-                      <Input
-                        id="sp-rep"
-                        required
-                        value={formSponsor.representante}
-                        onChange={(e) => setFormSponsor({ ...formSponsor, representante: e.target.value })}
-                        placeholder="Ej: Ing. Jorge Méndez"
-                      />
+                        <option value="adulto_mayor">👵 Adulto Mayor / Techo / Asilo</option>
+                        <option value="salud_cirugia">🩺 Salud / Prótesis / Terapia</option>
+                        <option value="vivienda">🏠 Reparación de Vivienda Vulnerable</option>
+                        <option value="madre_riesgo">👶 Madre Jefa de Hogar en Riesgo</option>
+                        <option value="otro">🤝 Otra Causa Comunitaria</option>
+                      </select>
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="sp-cargo" className="text-xs">Cargo en la Empresa</Label>
-                      <Input
-                        id="sp-cargo"
-                        value={formSponsor.cargo}
-                        onChange={(e) => setFormSponsor({ ...formSponsor, cargo: e.target.value })}
-                        placeholder="Ej: Gerente Comercial / Propietario"
-                      />
+                      <Label className="text-xs font-bold">Provincia</Label>
+                      <select
+                        value={formCaso.provincia}
+                        onChange={(e) => setFormCaso({ ...formCaso, provincia: e.target.value })}
+                        className="w-full h-10 rounded-md border border-input bg-card px-3 text-xs text-foreground"
+                      >
+                        <option value="San José">San José</option>
+                        <option value="Alajuela">Alajuela</option>
+                        <option value="Cartago">Cartago</option>
+                        <option value="Heredia">Heredia</option>
+                        <option value="Guanacaste">Guanacaste</option>
+                        <option value="Puntarenas">Puntarenas</option>
+                        <option value="Limón">Limón</option>
+                      </select>
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="sp-tel" className="text-xs">Teléfono WhatsApp *</Label>
+                      <Label className="text-xs font-bold">Cantón / Comunidad</Label>
                       <Input
-                        id="sp-tel"
-                        required
-                        value={formSponsor.telefono}
-                        onChange={(e) => setFormSponsor({ ...formSponsor, telefono: e.target.value })}
-                        placeholder="Ej: 8312-5544"
+                        placeholder="Ej: San Ramón / Puriscal"
+                        value={formCaso.canton}
+                        onChange={(e) => setFormCaso({ ...formCaso, canton: e.target.value })}
+                        className="bg-card"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="sp-email" className="text-xs">Correo Electrónico Corporativo</Label>
+                    <Label className="text-xs font-bold">Título Resumido del Caso *</Label>
                     <Input
-                      id="sp-email"
-                      type="email"
-                      value={formSponsor.email}
-                      onChange={(e) => setFormSponsor({ ...formSponsor, email: e.target.value })}
-                      placeholder="Ej: contacto@tuempresa.cr"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="sp-prop" className="text-xs">
-                      ¿Cómo les gustaría colaborar y qué pueden aportar? *
-                    </Label>
-                    <Textarea
-                      id="sp-prop"
+                      placeholder="Ej: Reparación urgente de techo con goteras para adulta mayor"
+                      value={formCaso.titulo}
+                      onChange={(e) => setFormCaso({ ...formCaso, titulo: e.target.value })}
                       required
-                      rows={3}
-                      value={formSponsor.propuesta}
-                      onChange={(e) => setFormSponsor({ ...formSponsor, propuesta: e.target.value })}
-                      placeholder="Describe qué tipo de materiales, servicios, patrocinios o montos estarían dispuestos a aportar para las causas sociales o sorteos..."
+                      className="bg-card"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="sp-ben" className="text-xs">
-                      ¿Qué beneficio exclusivo pueden ofrecer a los usuarios de Aval Community CR?
-                    </Label>
+                    <Label className="text-xs font-bold">Descripción Detallada de la Necesidad *</Label>
                     <Textarea
-                      id="sp-ben"
-                      rows={2}
-                      value={formSponsor.beneficioComunidad}
-                      onChange={(e) => setFormSponsor({ ...formSponsor, beneficioComunidad: e.target.value })}
-                      placeholder="Ej: 15% de descuento directo en todas nuestras sucursales para quienes presenten un comprobante oficial de Aval..."
+                      placeholder="Explica detalladamente la situación actual, qué materiales o apoyo se requieren y por qué es urgente..."
+                      rows={3}
+                      value={formCaso.descripcion}
+                      onChange={(e) => setFormCaso({ ...formCaso, descripcion: e.target.value })}
+                      required
+                      className="bg-card"
                     />
                   </div>
 
-                  <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Building2 className="size-4 text-amber-500" />
-                      <span>Coordinación directa y formal con la administración general.</span>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      variant="hero"
-                      size="lg"
-                      disabled={enviandoSponsor}
-                      className="w-full sm:w-auto font-bold gap-2 shadow-lg"
-                    >
-                      <Send className="size-4" />
-                      {enviandoSponsor ? "Enviando Propuesta..." : "Enviar Propuesta de Alianza"}
-                    </Button>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold">Presupuesto o Materiales Estimados (Opcional)</Label>
+                    <Input
+                      placeholder="Ej: ₡350,000 / 12 láminas de zinc y bajantes"
+                      value={formCaso.presupuestoEstimado}
+                      onChange={(e) => setFormCaso({ ...formCaso, presupuestoEstimado: e.target.value })}
+                      className="bg-card"
+                    />
                   </div>
+
+                  <Button
+                    type="submit"
+                    disabled={enviandoCaso}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm h-11 shadow-lg"
+                  >
+                    {enviandoCaso ? "Enviando Caso..." : "Enviar Postulación de Caso"}
+                  </Button>
                 </form>
               )}
             </div>
-          )}
+          </div>
         </section>
       </main>
 
+      {/* FOOTER */}
       <Footer />
     </div>
   );

@@ -13,6 +13,7 @@ import {
   Settings,
   Share2,
   ShoppingCart,
+  Store,
   Target,
   Trophy,
   Users,
@@ -38,6 +39,7 @@ export type AdminSeccion =
   | "referidos"
   | "legal"
   | "social"
+  | "sponsors"
   | "config";
 
 export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
@@ -51,7 +53,8 @@ export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[]
   { id: "clientes", label: "Clientes (CRM)", icono: Users },
   { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
   { id: "legal", label: "Protocolo Notarial & Legal", icono: Scale },
-  { id: "social", label: "Impacto Social & Sponsors", icono: HeartHandshake },
+  { id: "social", label: "Bien Social & Causas", icono: HeartHandshake },
+  { id: "sponsors", label: "Sponsors & Comercios", icono: Store },
   { id: "config", label: "Configuración y Pasarelas", icono: Settings },
 ];
 
@@ -157,10 +160,19 @@ export function AdminSidebarContent({
             <Link
               to="/impacto-social"
               onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-rose-500 font-medium transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-emerald-400 font-medium transition-colors hover:bg-emerald-500/10 hover:text-emerald-300"
             >
-              <HeartHandshake className="size-4 shrink-0 text-rose-500" />
-              <span className="flex-1">Impacto y Bien Social</span>
+              <HeartHandshake className="size-4 shrink-0 text-emerald-400" />
+              <span className="flex-1">Bien Social Solidario</span>
+              <ExternalLink className="size-3 text-muted-foreground" />
+            </Link>
+            <Link
+              to="/sponsors"
+              onClick={onItemClick}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-400 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-300"
+            >
+              <Store className="size-4 shrink-0 text-amber-400" />
+              <span className="flex-1">Comercios & Descuentos</span>
               <ExternalLink className="size-3 text-muted-foreground" />
             </Link>
           </div>

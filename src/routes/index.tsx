@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
+  Store,
   Timer,
   ZoomIn,
 } from "lucide-react";
@@ -38,6 +39,7 @@ import { FomoNotifications } from "@/components/FomoNotifications";
 import { RankingReferidos } from "@/components/RankingReferidos";
 import { ReferidosLandingSection } from "@/components/ReferidosLandingSection";
 import { MiniSorteosSection } from "@/components/MiniSorteosSection";
+import { SponsorsLandingSection } from "@/components/SponsorsLandingSection";
 import { SuperTokenSection } from "@/components/SuperTokenSection";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import carroImg from "@/assets/premio-carro.jpg";
@@ -455,6 +457,16 @@ function IndexPage() {
               variant="ghost"
               size="sm"
               asChild
+              className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 font-bold"
+            >
+              <Link to="/sponsors">
+                <Store className="size-3.5 mr-1 text-amber-400" /> Descuentos
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
               className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-neutral-300 hover:text-white"
             >
               <Link to="/validar">Validar Tokens</Link>
@@ -550,6 +562,15 @@ function IndexPage() {
                   <span>⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5</span>
                 </div>
               )}
+
+              {/* Badge Comercios Aliados & Descuentos */}
+              <Link
+                to="/sponsors"
+                className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-amber-500/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 shadow-md hover:bg-amber-500/25 transition-colors"
+              >
+                <Store className="size-3.5 text-amber-400" />
+                <span>Descuentos en Comercios ↗</span>
+              </Link>
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
@@ -1319,6 +1340,11 @@ function IndexPage() {
             <ReferidosLandingSection config={config} />
           </div>
         )}
+
+        {/* COMERCIOS ALIADOS & SPONSORS (DESCUENTOS PARA LA COMUNIDAD) */}
+        <div className="mx-auto max-w-6xl px-5 py-8">
+          <SponsorsLandingSection />
+        </div>
 
         {/* RANKING Y CONCURSO DE REFERIDOS */}
         {config.rankingReferidosActivo && (

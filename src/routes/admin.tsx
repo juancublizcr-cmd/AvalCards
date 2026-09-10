@@ -32,6 +32,7 @@ import { ClientesSection } from "@/components/admin/ClientesSection";
 import { ReferidosSection } from "@/components/admin/ReferidosSection";
 import { ReglamentoNotarialSection } from "@/components/admin/ReglamentoNotarialSection";
 import { ImpactoSocialSection } from "@/components/admin/ImpactoSocialSection";
+import { SponsorsSection } from "@/components/admin/SponsorsSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -130,6 +131,15 @@ function Admin() {
     }
   };
 
+  const handleCambiarSeccion = (s: AdminSeccion) => {
+    setSeccion(s);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("seccion", s);
+      window.history.replaceState({}, "", url.toString());
+    }
+  };
+
   const pendientes = ordenes.filter((o) => o.estado === "pendiente");
   const aprobadas = ordenes.filter((o) => o.estado === "aprobada");
   const vendidos = aprobadas.reduce((s, o) => s + o.cantidad, 0);
@@ -140,7 +150,7 @@ function Admin() {
     <div className="admin-light min-h-screen bg-background">
       <AdminSidebar
         activa={seccion}
-        onChange={setSeccion}
+        onChange={handleCambiarSeccion}
         pendientes={pendientes.length}
         userEmail={userEmail}
         onLogout={cerrarSesion}
@@ -265,6 +275,7 @@ function Admin() {
                 <ReglamentoNotarialSection config={config} setConfig={setConfig} sorteo={sorteo} />
               ) : null}
               {seccion === "social" ? <ImpactoSocialSection /> : null}
+              {seccion === "sponsors" ? <SponsorsSection /> : null}
               {seccion === "config" ? <ConfigSection config={config} setConfig={setConfig} /> : null}
             </>
           )}
