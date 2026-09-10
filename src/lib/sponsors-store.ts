@@ -261,11 +261,33 @@ function mapSolicitudToDb(sol: SolicitudAfiliacionSponsor) {
 }
 
 // ============================================================================
-// FUNCIONES CRUD PARA SPONSORS / COMERCIOS (TABLA DB: sponsors)
+// FUNCIONES CRUD PARA SPONSORS / COMERCIOS (TABLA DB: sponsors & sorteo_config)
 // ============================================================================
 
 export async function fetchSponsors(): Promise<ComercioSponsor[]> {
-  // 1. Intentar consulta directa a la tabla Supabase 'sponsors'
+  // 1. Intentar consulta a sorteo_config._meta._directorioSponsors (persistencia garantizada en Supabase)
+  try {
+    const { data: sorteoRow, error: sorteoErr } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (!sorteoErr && sorteoRow?.raspa_config?._meta?._directorioSponsors) {
+      const metaSponsors = sorteoRow.raspa_config._meta._directorioSponsors;
+      if (Array.isArray(metaSponsors)) {
+        const items = metaSponsors.map(mapSponsorFromDb);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(LOCAL_SPONSORS_KEY, JSON.stringify(items));
+          } catch {}
+        }
+        return items;
+      }
+    }
+  } catch {}
+
+  // 2. Intentar consulta directa a la tabla Supabase 'sponsors'
   try {
     const { data, error } = await supabase
       .from("sponsors")
@@ -279,20 +301,6 @@ export async function fetchSponsors(): Promise<ComercioSponsor[]> {
           localStorage.setItem(LOCAL_SPONSORS_KEY, JSON.stringify(items));
         } catch {}
       }
-      return items;
-    }
-  } catch {}
-
-  // 2. Fallback a site_config
-  try {
-    const { data, error } = await supabase
-      .from("site_config")
-      .select("valor")
-      .eq("clave", "directorio_sponsors")
-      .maybeSingle();
-
-    if (!error && data?.valor && Array.isArray(data.valor) && data.valor.length > 0) {
-      const items = data.valor.map(mapSponsorFromDb);
       return items;
     }
   } catch {}
@@ -313,36 +321,64 @@ export async function fetchSponsors(): Promise<ComercioSponsor[]> {
 }
 
 export async function guardarSponsors(sponsors: ComercioSponsor[]): Promise<boolean> {
+  // 1. Guardar en localStorage inmediatamente y notificar a la app
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem(LOCAL_SPONSORS_KEY, JSON.stringify(sponsors));
+      window.dispatchEvent(new CustomEvent("sponsors_updated", { detail: sponsors }));
     } catch {}
   }
 
+  // 2. Persistir en sorteo_config._meta._directorioSponsors (sin requerir tablas nuevas)
   try {
-    // Sincronizar en tabla sponsors
-    const dbPayload = sponsors.map(mapSponsorToDb);
-    await supabase.from("sponsors").upsert(dbPayload, { onConflict: "id" });
+    const { data: sorteoRow } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+
+    const currentRaspa = (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object")
+      ? sorteoRow.raspa_config
+      : {};
+    const meta = (currentRaspa._meta && typeof currentRaspa._meta === "object")
+      ? { ...currentRaspa._meta }
+      : {};
+    meta._directorioSponsors = sponsors;
+    currentRaspa._meta = meta;
+
+    await supabase
+      .from("sorteo_config")
+      .update({ raspa_config: currentRaspa })
+      .eq("id", 1);
   } catch {}
 
+  // 3. Sincronizar en tabla sponsors dedicada si existe
   try {
-    // Sincronizar también en site_config para redundancia
-    await supabase.from("site_config").upsert(
-      {
-        clave: "directorio_sponsors",
-        valor: sponsors,
-        actualizado_en: new Date().toISOString(),
-      },
-      { onConflict: "clave" }
-    );
-    return true;
-  } catch {
-    return false;
-  }
+    const dbPayload = sponsors.map(mapSponsorToDb);
+    if (dbPayload.length > 0) {
+      await supabase.from("sponsors").upsert(dbPayload, { onConflict: "id" });
+    }
+  } catch {}
+
+  return true;
 }
 
 export async function upsertSponsor(sponsor: ComercioSponsor): Promise<ComercioSponsor[]> {
-  const current = await fetchSponsors();
+  let current: ComercioSponsor[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem(LOCAL_SPONSORS_KEY);
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed)) current = parsed.map(mapSponsorFromDb);
+      }
+    } catch {}
+  }
+
+  if (current.length === 0) {
+    current = await fetchSponsors();
+  }
+
   const idx = current.findIndex((s) => s.id === sponsor.id);
   let updated: ComercioSponsor[];
 
@@ -368,7 +404,21 @@ export async function deleteSponsor(id: string): Promise<ComercioSponsor[]> {
     await supabase.from("sponsors").delete().eq("id", id);
   } catch {}
 
-  const current = await fetchSponsors();
+  let current: ComercioSponsor[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem(LOCAL_SPONSORS_KEY);
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed)) current = parsed.map(mapSponsorFromDb);
+      }
+    } catch {}
+  }
+
+  if (current.length === 0) {
+    current = await fetchSponsors();
+  }
+
   const updated = current.filter((s) => s.id !== id);
   await guardarSponsors(updated);
   return updated;
@@ -501,27 +551,30 @@ export async function actualizarEstadoSolicitudSponsor(
 }
 
 // ============================================================================
-// GESTIÓN DE CATEGORÍAS PERSONALIZADAS EN DB
+// GESTIÓN DE CATEGORÍAS PERSONALIZADAS EN DB & LOCALSTORAGE
 // ============================================================================
 
 const LOCAL_CATEGORIAS_KEY = "aval_categorias_sponsors_v1";
 
 export async function fetchCategoriasSponsors(): Promise<CategoriaItem[]> {
-  // 1. Intentar desde Supabase site_config
+  // 1. Intentar desde Supabase sorteo_config._meta._categoriasSponsors
   try {
-    const { data, error } = await supabase
-      .from("site_config")
-      .select("valor")
-      .eq("clave", "categorias_sponsors_lista")
+    const { data: sorteoRow, error } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
       .maybeSingle();
 
-    if (!error && data?.valor && Array.isArray(data.valor) && data.valor.length > 0) {
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(LOCAL_CATEGORIAS_KEY, JSON.stringify(data.valor));
-        } catch {}
+    if (!error && sorteoRow?.raspa_config?._meta?._categoriasSponsors) {
+      const metaCats = sorteoRow.raspa_config._meta._categoriasSponsors;
+      if (Array.isArray(metaCats) && metaCats.length > 0) {
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(LOCAL_CATEGORIAS_KEY, JSON.stringify(metaCats));
+          } catch {}
+        }
+        return metaCats as CategoriaItem[];
       }
-      return data.valor as CategoriaItem[];
     }
   } catch {}
 
@@ -545,18 +598,30 @@ export async function guardarCategoriasSponsors(
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem(LOCAL_CATEGORIAS_KEY, JSON.stringify(categorias));
+      window.dispatchEvent(new CustomEvent("categorias_sponsors_updated", { detail: categorias }));
     } catch {}
   }
 
   try {
-    await supabase.from("site_config").upsert(
-      {
-        clave: "categorias_sponsors_lista",
-        valor: categorias,
-        actualizado_en: new Date().toISOString(),
-      },
-      { onConflict: "clave" }
-    );
+    const { data: sorteoRow } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+
+    const currentRaspa = (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object")
+      ? sorteoRow.raspa_config
+      : {};
+    const meta = (currentRaspa._meta && typeof currentRaspa._meta === "object")
+      ? { ...currentRaspa._meta }
+      : {};
+    meta._categoriasSponsors = categorias;
+    currentRaspa._meta = meta;
+
+    await supabase
+      .from("sorteo_config")
+      .update({ raspa_config: currentRaspa })
+      .eq("id", 1);
     return true;
   } catch {
     return false;
@@ -599,5 +664,6 @@ export async function eliminarCategoriaSponsor(
   await guardarCategoriasSponsors(updated);
   return updated;
 }
+
 
 

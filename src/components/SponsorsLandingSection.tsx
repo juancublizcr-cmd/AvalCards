@@ -39,6 +39,20 @@ export function SponsorsLandingSection() {
       } catch {}
     }
     void load();
+
+    const handleUpdate = () => {
+      void load();
+    };
+
+    window.addEventListener("sponsors_updated", handleUpdate);
+    window.addEventListener("categorias_sponsors_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+
+    return () => {
+      window.removeEventListener("sponsors_updated", handleUpdate);
+      window.removeEventListener("categorias_sponsors_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
   }, []);
 
   const getCatInfo = (catId: string) => {
