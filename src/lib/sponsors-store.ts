@@ -185,19 +185,40 @@ export const SPONSORS_DEMO: ComercioSponsor[] = [
 const LOCAL_SPONSORS_KEY = "aval_sponsors_comercios_v1";
 const LOCAL_SOLICITUDES_SPONSORS_KEY = "aval_solicitudes_sponsors_v1";
 
+export function extraerPorcentajeDescuento(texto?: string, porcentajeGuardado?: number): number {
+  if (texto) {
+    const match = texto.match(/(\d+(?:\.\d+)?)\s*%/);
+    if (match && match[1]) {
+      const p = parseFloat(match[1]);
+      if (!isNaN(p) && p > 0 && p <= 100) return p;
+    }
+    if (/2\s*x\s*1/i.test(texto) || /dos\s*por\s*uno/i.test(texto) || /mitad\s*de\s*precio/i.test(texto)) {
+      return 50;
+    }
+  }
+  if (typeof porcentajeGuardado === "number" && !isNaN(porcentajeGuardado) && porcentajeGuardado > 0 && porcentajeGuardado <= 100) {
+    return porcentajeGuardado;
+  }
+  return 15;
+}
+
 // Helper de mapeo de base de datos a tipo TypeScript
 // biome-ignore lint/suspicious/noExplicitAny: generic DB row
 function mapSponsorFromDb(row: any): ComercioSponsor {
+  const dTexto = row.descuento_texto || row.descuentoTexto || "";
+  const dPctGuardado = row.descuento_porcentaje ?? row.descuentoPorcentaje;
+  const dPctCalculado = extraerPorcentajeDescuento(dTexto, dPctGuardado);
+
   return {
     id: row.id,
     nombreComercio: row.nombre_comercio || row.nombreComercio || "",
     categoria: (row.categoria || "otros") as CategoriaSponsor,
-    descuentoTexto: row.descuento_texto || row.descuentoTexto || "",
-    descuentoPorcentaje: row.descuento_porcentaje ?? row.descuentoPorcentaje ?? 15,
+    descuentoTexto: dTexto,
+    descuentoPorcentaje: dPctCalculado,
     descripcion: row.descripcion || "",
     condiciones: row.condiciones || "",
     logoUrl: row.logo_url || row.logoUrl || "",
-    telefonoWhatsapp: row.telefono_whatsapp || row.telefonoWhatsapp || "",
+    telefonoWhatsapp: (row.telefono_whatsapp || row.telefonoWhatsapp || "").replace(/\D/g, ""),
     provincia: row.provincia || "San José",
     canton: "",
     direccionFisica: "",
@@ -213,16 +234,17 @@ function mapSponsorFromDb(row: any): ComercioSponsor {
 }
 
 function mapSponsorToDb(s: ComercioSponsor) {
+  const dPct = extraerPorcentajeDescuento(s.descuentoTexto, s.descuentoPorcentaje);
   return {
     id: s.id,
     nombre_comercio: s.nombreComercio,
     categoria: s.categoria,
     descuento_texto: s.descuentoTexto,
-    descuento_porcentaje: s.descuentoPorcentaje || 15,
+    descuento_porcentaje: dPct,
     descripcion: s.descripcion,
     condiciones: s.condiciones,
     logo_url: s.logoUrl || "",
-    telefono_whatsapp: s.telefonoWhatsapp,
+    telefono_whatsapp: (s.telefonoWhatsapp || "").replace(/\D/g, ""),
     provincia: s.provincia,
     canton: s.canton || "",
     direccion_fisica: s.direccionFisica || "",

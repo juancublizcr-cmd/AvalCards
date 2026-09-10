@@ -53,6 +53,7 @@ import {
   upsertSponsor,
   deleteSponsor,
   actualizarEstadoSolicitudSponsor,
+  extraerPorcentajeDescuento,
   type ComercioSponsor,
   type SolicitudAfiliacionSponsor,
   type CanjeSponsorRecord,
@@ -233,7 +234,8 @@ export function SponsorsSection() {
 
     setGuardando(true);
     try {
-      const toSave = { ...sponsorEditando, canton: "" };
+      const pct = extraerPorcentajeDescuento(sponsorEditando.descuentoTexto, sponsorEditando.descuentoPorcentaje);
+      const toSave = { ...sponsorEditando, descuentoPorcentaje: pct, canton: "" };
       const updated = await upsertSponsor(toSave);
       setSponsors(updated);
       toast.success("Comercio aliado guardado exitosamente");
@@ -290,16 +292,17 @@ export function SponsorsSection() {
 
   // Convertir solicitud aprobada en un comercio oficial
   const convertirSolicitudEnSponsor = (sol: SolicitudAfiliacionSponsor) => {
+    const autoPct = extraerPorcentajeDescuento(sol.propuestaDescuento, 15);
     setSponsorEditando({
       id: `SP-${Date.now().toString().slice(-4)}`,
       nombreComercio: sol.nombreEmpresa,
       categoria: sol.categoria,
       descuentoTexto: sol.propuestaDescuento,
-      descuentoPorcentaje: 15,
+      descuentoPorcentaje: autoPct,
       descripcion: sol.beneficioComunidad || "Comercio aliado oficial de Aval Community CR.",
       condiciones: "Válido mostrando tus Tokens activos o comprobante de compra.",
       logoUrl: "",
-      telefonoWhatsapp: sol.telefono,
+      telefonoWhatsapp: sol.telefono.replace(/\D/g, ""),
       provincia: sol.provincia || "San José",
       canton: "",
       direccionFisica: "",
@@ -1034,14 +1037,47 @@ export function SponsorsSection() {
 
               {/* Descuento y Condiciones */}
               <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3.5 space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-bold text-amber-800 dark:text-amber-300">Texto del Descuento o Promoción *</Label>
-                  <Input
-                    value={sponsorEditando.descuentoTexto}
-                    onChange={(e) => setSponsorEditando({ ...sponsorEditando, descuentoTexto: e.target.value })}
-                    placeholder="Ej: 20% de Descuento en Mano de Obra / 2x1 en Lavados"
-                    required
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label className="text-xs font-bold text-amber-800 dark:text-amber-300">
+                      Texto del Descuento o Promoción *
+                    </Label>
+                    <Input
+                      value={sponsorEditando.descuentoTexto}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const autoPct = extraerPorcentajeDescuento(val, sponsorEditando.descuentoPorcentaje);
+                        setSponsorEditando({
+                          ...sponsorEditando,
+                          descuentoTexto: val,
+                          descuentoPorcentaje: autoPct,
+                        });
+                      }}
+                      placeholder="Ej: 50% en todos los servicios de lavado"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-amber-800 dark:text-amber-300">
+                      % Descuento Efectivo *
+                    </Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={sponsorEditando.descuentoPorcentaje || 15}
+                      onChange={(e) => {
+                        const num = parseFloat(e.target.value);
+                        setSponsorEditando({
+                          ...sponsorEditando,
+                          descuentoPorcentaje: isNaN(num) ? 15 : num,
+                        });
+                      }}
+                      placeholder="Ej: 50"
+                      required
+                      className="font-mono font-bold"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">

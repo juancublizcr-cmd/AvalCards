@@ -48,6 +48,7 @@ import {
   registrarCanjeSponsor,
   eliminarCanjeSponsor,
   upsertSponsor,
+  extraerPorcentajeDescuento,
   type ComercioSponsor,
   type CanjeSponsorRecord,
 } from "@/lib/sponsors-store";
@@ -407,10 +408,14 @@ export function ComercioPortal() {
         estado: estadoPrincipal,
       });
 
-      if (comercioActivo?.descuentoPorcentaje && montoRegular) {
+      const pct = comercioActivo
+        ? extraerPorcentajeDescuento(comercioActivo.descuentoTexto, comercioActivo.descuentoPorcentaje)
+        : 0;
+
+      if (pct > 0 && montoRegular) {
         const reg = parseFloat(montoRegular.replace(/[^0-9.]/g, ""));
         if (!isNaN(reg) && reg > 0) {
-          const cobrado = reg * (1 - comercioActivo.descuentoPorcentaje / 100);
+          const cobrado = reg * (1 - pct / 100);
           setMontoCobrado(Math.round(cobrado).toString());
         }
       }
@@ -428,11 +433,17 @@ export function ComercioPortal() {
     }
   };
 
+  const getPorcentajeEfectivo = () => {
+    if (!comercioActivo) return 0;
+    return extraerPorcentajeDescuento(comercioActivo.descuentoTexto, comercioActivo.descuentoPorcentaje);
+  };
+
   const handleMontoRegularChange = (val: string) => {
     setMontoRegular(val);
     const num = parseFloat(val.replace(/[^0-9.]/g, ""));
-    if (!isNaN(num) && num > 0 && comercioActivo?.descuentoPorcentaje) {
-      const cobrado = num * (1 - comercioActivo.descuentoPorcentaje / 100);
+    const pct = getPorcentajeEfectivo();
+    if (!isNaN(num) && num > 0 && pct > 0) {
+      const cobrado = num * (1 - pct / 100);
       setMontoCobrado(Math.round(cobrado).toString());
     }
   };
@@ -1106,6 +1117,21 @@ export function ComercioPortal() {
                             />
                           </div>
                         </div>
+
+                        {/* Indicador en tiempo real de Descuento y Ahorro */}
+                        {montoRegular && (
+                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300">
+                            <div className="flex items-center gap-1.5 font-bold">
+                              <Sparkles className="size-3.5 text-emerald-400" />
+                              <span>Beneficio: {getPorcentajeEfectivo()}% OFF</span>
+                            </div>
+                            {montoCobrado && parseFloat(montoRegular) > parseFloat(montoCobrado) && (
+                              <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                                Ahorro: ₡{(parseFloat(montoRegular) - parseFloat(montoCobrado)).toLocaleString("es-CR")}
+                              </span>
+                            )}
+                          </div>
+                        )}
 
                         <div className="space-y-1">
                           <Label className="text-xs font-semibold text-muted-foreground">
