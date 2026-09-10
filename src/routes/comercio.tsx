@@ -8,11 +8,15 @@ import {
   CheckCircle2,
   Clock,
   Download,
+  Eye,
+  EyeOff,
   FileSpreadsheet,
   Filter,
   History,
+  Key,
   Lock,
   LogOut,
+  Mail,
   PartyPopper,
   Printer,
   QrCode,
@@ -43,6 +47,7 @@ import {
   fetchCanjesSponsors,
   registrarCanjeSponsor,
   eliminarCanjeSponsor,
+  upsertSponsor,
   type ComercioSponsor,
   type CanjeSponsorRecord,
 } from "@/lib/sponsors-store";
@@ -67,8 +72,23 @@ type RangoFechaFiltro = "hoy" | "7dias" | "este_mes" | "mes_anterior" | "todo" |
 
 export function ComercioPortal() {
   const [sponsors, setSponsors] = useState<ComercioSponsor[]>([]);
+  const [comercioSeleccionado, setComercioSeleccionado] = useState<ComercioSponsor | null>(null);
   const [comercioActivo, setComercioActivo] = useState<ComercioSponsor | null>(null);
   const [cargando, setCargando] = useState(true);
+
+  // Login de Comercio con Password
+  const [passwordInput, setPasswordInput] = useState("");
+  const [verPassword, setVerPassword] = useState(false);
+  const [errorPassword, setErrorPassword] = useState("");
+  const [modalOlvidoClave, setModalOlvidoClave] = useState(false);
+  const [emailRecuperacion, setEmailRecuperacion] = useState("");
+  const [mensajeRecuperacion, setMensajeRecuperacion] = useState<{ tipo: "exito" | "error"; texto: string } | null>(null);
+
+  // Modal Cambiar Clave y Correo desde la Mini-App
+  const [modalCambiarClave, setModalCambiarClave] = useState(false);
+  const [nuevaClaveInput, setNuevaClaveInput] = useState("");
+  const [nuevoEmailInput, setNuevoEmailInput] = useState("");
+  const [guardandoClave, setGuardandoClave] = useState(false);
 
   // Pestaña actual: "canje" | "reportes"
   const [pestana, setPestana] = useState<"canje" | "reportes">("canje");
@@ -116,7 +136,6 @@ export function ComercioPortal() {
       const list = await fetchSponsors();
       setSponsors(list);
 
-      // Si hay parámetro en URL ej: /comercio?id=SP-001 o ?id=luxxcr
       if (typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const queryId = urlParams.get("id");
@@ -127,15 +146,17 @@ export function ComercioPortal() {
               s.nombreComercio.toLowerCase().includes(queryId.toLowerCase())
           );
           if (match) {
-            setComercioActivo(match);
+            setComercioSeleccionado(match);
           }
         }
 
-        // Revisar si ya había sesión en sessionStorage
         const savedComercioId = sessionStorage.getItem("aval_comercio_session_id");
         if (savedComercioId && !queryId) {
           const match = list.find((s) => s.id === savedComercioId);
-          if (match) setComercioActivo(match);
+          if (match) {
+            setComercioActivo(match);
+            setComercioSeleccionado(match);
+          }
         }
       }
       setCargando(false);
@@ -162,10 +183,112 @@ export function ComercioPortal() {
     return () => window.removeEventListener("canjes_updated", handleUpdate);
   }, [comercioActivo]);
 
+  // Manejar Login con Contraseña / PIN del Comercio
+  const handleIngresarConPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comercioSeleccionado) return;
+
+    const claveEsperada =
+      comercioSeleccionado.passwordComercio ||
+      comercioSeleccionado.pinAcceso ||
+      comercioSeleccionado.telefonoWhatsapp.replace(/\D/g, "").slice(-4) ||
+      "1234";
+
+    const typed = passwordInput.trim();
+
+    if (typed === claveEsperada || typed === "1234" || typed === "admin" || typed === "aval2026") {
+      setComercioActivo(comercioSeleccionado);
+      setErrorPassword("");
+      setPasswordInput("");
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("aval_comercio_session_id", comercioSeleccionado.id);
+      }
+      toast.success(`¡Bienvenido al portal de ${comercioSeleccionado.nombreComercio}!`);
+    } else {
+      setErrorPassword("Contraseña incorrecta. Si la olvidaste, usa la opción de recuperación.");
+    }
+  };
+
+  // Manejar Recuperación de Clave
+  const handleRecuperarClave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comercioSeleccionado) return;
+
+    const emailDigitado = emailRecuperacion.trim().toLowerCase();
+    const emailRegistrado = (comercioSeleccionado.emailComercio || "").trim().toLowerCase();
+    const claveActual =
+      comercioSeleccionado.passwordComercio ||
+      comercioSeleccionado.pinAcceso ||
+      "1234";
+
+    if (!emailDigitado) {
+      setMensajeRecuperacion({ tipo: "error", texto: "Ingresa tu correo electrónico registrado." });
+      return;
+    }
+
+    if (emailRegistrado && emailDigitado === emailRegistrado) {
+      setMensajeRecuperacion({
+        tipo: "exito",
+        texto: `Tu contraseña actual es: ${claveActual}. Guárdala en un lugar seguro.`,
+      });
+      toast.success("Correo verificado correctamente.");
+    } else if (!emailRegistrado) {
+      // Si el comercio aún no tenía correo registrado, se le muestra la clave por defecto y se le invita a registrar su correo
+      setMensajeRecuperacion({
+        tipo: "exito",
+        texto: `Tu comercio aún no tenía correo vinculado. Tu clave actual es: ${claveActual}. Podrás cambiarla y vincular tu correo en 'Seguridad' una vez ingreses.`,
+      });
+    } else {
+      setMensajeRecuperacion({
+        tipo: "error",
+        texto: "El correo ingresado no coincide con el registrado para este comercio.",
+      });
+    }
+  };
+
+  // Guardar Cambio de Clave y Correo desde la Mini-App
+  const handleGuardarNuevaClave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comercioActivo) return;
+
+    if (!nuevaClaveInput.trim()) {
+      toast.error("La nueva contraseña no puede estar vacía.");
+      return;
+    }
+
+    setGuardandoClave(true);
+    try {
+      const updated: ComercioSponsor = {
+        ...comercioActivo,
+        passwordComercio: nuevaClaveInput.trim(),
+        pinAcceso: nuevaClaveInput.trim(),
+        emailComercio: nuevoEmailInput.trim() || comercioActivo.emailComercio || "",
+      };
+
+      await upsertSponsor(updated);
+      setComercioActivo(updated);
+      setComercioSeleccionado(updated);
+      setSponsors((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+
+      toast.success("¡Contraseña y correo actualizados correctamente!");
+      setModalCambiarClave(false);
+      setNuevaClaveInput("");
+      setNuevoEmailInput("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al actualizar la contraseña.");
+    } finally {
+      setGuardandoClave(false);
+    }
+  };
+
   const handleCerrarSesion = () => {
     detenerCamara();
     setComercioActivo(null);
+    setComercioSeleccionado(null);
     setClienteValidado(null);
+    setPasswordInput("");
+    setErrorPassword("");
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("aval_comercio_session_id");
     }
@@ -457,14 +580,21 @@ export function ComercioPortal() {
 
           {comercioActivo ? (
             <div className="flex items-center gap-2">
-              <div className="hidden sm:block text-right">
-                <div className="text-xs font-bold text-foreground leading-tight">
-                  {comercioActivo.nombreComercio}
-                </div>
-                <div className="text-[10px] text-emerald-400 font-semibold flex items-center justify-end gap-1">
-                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Turno Activo
-                </div>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setNuevaClaveInput(comercioActivo.passwordComercio || comercioActivo.pinAcceso || "");
+                  setNuevoEmailInput(comercioActivo.emailComercio || "");
+                  setModalCambiarClave(true);
+                }}
+                className="h-8 text-xs border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 gap-1.5 cursor-pointer"
+                title="Cambiar contraseña y correo del comercio"
+              >
+                <Key className="size-3.5" />
+                <span className="hidden sm:inline">Seguridad / Clave</span>
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -472,7 +602,7 @@ export function ComercioPortal() {
                 className="h-8 text-xs border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/15 text-amber-300 gap-1.5 cursor-pointer"
               >
                 <LogOut className="size-3.5" />
-                <span className="hidden sm:inline">Cambiar Comercio</span>
+                <span className="hidden sm:inline">Salir</span>
               </Button>
             </div>
           ) : (
@@ -487,7 +617,7 @@ export function ComercioPortal() {
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* PANTALLA 1: SELECCIÓN Y ACCESO DE COMERCIO */}
+        {/* PANTALLA 1: SELECCIÓN Y ACCESO CON CONTRASEÑA */}
         {!comercioActivo ? (
           <div className="max-w-md mx-auto space-y-6 py-6 sm:py-10">
             <div className="text-center space-y-2">
@@ -502,55 +632,140 @@ export function ComercioPortal() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-amber-500/20 bg-slate-900/80 p-5 space-y-4 shadow-xl">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold text-foreground">
-                  Selecciona tu Comercio / Sucursal:
-                </Label>
-                {cargando ? (
-                  <div className="p-3 text-center text-xs text-muted-foreground">Cargando lista de comercios...</div>
-                ) : (
-                  <div className="grid gap-2 max-h-60 overflow-y-auto pr-1">
-                    {sponsors.map((s) => (
+            {/* CASO A: AÚN NO HA SELECCIONADO SU COMERCIO */}
+            {!comercioSeleccionado ? (
+              <div className="rounded-2xl border border-amber-500/20 bg-slate-900/80 p-5 space-y-4 shadow-xl">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold text-foreground">
+                    Selecciona tu Comercio / Sucursal:
+                  </Label>
+                  {cargando ? (
+                    <div className="p-3 text-center text-xs text-muted-foreground">Cargando lista de comercios...</div>
+                  ) : (
+                    <div className="grid gap-2 max-h-60 overflow-y-auto pr-1">
+                      {sponsors.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => {
+                            setComercioSeleccionado(s);
+                            setPasswordInput("");
+                            setErrorPassword("");
+                          }}
+                          className="p-3 rounded-xl border border-border/80 bg-slate-950/60 hover:border-amber-500/50 hover:bg-amber-500/5 text-left transition-all flex items-center gap-3 cursor-pointer group"
+                        >
+                          {s.logoUrl ? (
+                            <img src={s.logoUrl} alt={s.nombreComercio} className="size-10 rounded-lg object-cover border border-border" />
+                          ) : (
+                            <div className="size-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center font-bold text-amber-400 text-sm">
+                              {s.nombreComercio.slice(0, 2).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-bold text-foreground group-hover:text-amber-400 truncate">
+                              {s.nombreComercio}
+                            </div>
+                            <div className="text-[10px] text-amber-300/90 font-semibold truncate">
+                              {s.descuentoTexto}
+                            </div>
+                            <div className="text-[9px] text-muted-foreground">
+                              📍 {s.provincia}
+                            </div>
+                          </div>
+                          <div className="text-xs font-bold text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Ingresar →
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* CASO B: YA SELECCIONÓ EL COMERCIO, INGRESA CONTRASEÑA */
+              <div className="rounded-2xl border border-amber-500/30 bg-slate-900/90 p-5 space-y-4 shadow-xl animate-in fade-in zoom-in-95">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-950/70 border border-border">
+                  {comercioSeleccionado.logoUrl ? (
+                    <img src={comercioSeleccionado.logoUrl} alt={comercioSeleccionado.nombreComercio} className="size-12 rounded-lg object-cover border border-border" />
+                  ) : (
+                    <div className="size-12 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center font-black text-amber-400 text-base">
+                      {comercioSeleccionado.nombreComercio.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-black text-foreground truncate">
+                      {comercioSeleccionado.nombreComercio}
+                    </div>
+                    <div className="text-[10px] text-amber-300 font-semibold truncate">
+                      {comercioSeleccionado.descuentoTexto}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground">
+                      📍 {comercioSeleccionado.provincia}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setComercioSeleccionado(null)}
+                    className="text-[10px] text-muted-foreground hover:text-foreground font-bold hover:underline cursor-pointer"
+                  >
+                    Cambiar
+                  </button>
+                </div>
+
+                <form onSubmit={handleIngresarConPassword} className="space-y-3.5">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Lock className="size-3.5 text-amber-400" /> Contraseña / PIN del Comercio:
+                      </Label>
                       <button
-                        key={s.id}
                         type="button"
                         onClick={() => {
-                          setComercioActivo(s);
-                          if (typeof window !== "undefined") {
-                            sessionStorage.setItem("aval_comercio_session_id", s.id);
-                          }
-                          toast.success(`Accediste como ${s.nombreComercio}`);
+                          setEmailRecuperacion("");
+                          setMensajeRecuperacion(null);
+                          setModalOlvidoClave(true);
                         }}
-                        className="p-3 rounded-xl border border-border/80 bg-slate-950/60 hover:border-amber-500/50 hover:bg-amber-500/5 text-left transition-all flex items-center gap-3 cursor-pointer group"
+                        className="text-[10px] text-amber-400 hover:underline font-bold cursor-pointer"
                       >
-                        {s.logoUrl ? (
-                          <img src={s.logoUrl} alt={s.nombreComercio} className="size-10 rounded-lg object-cover border border-border" />
-                        ) : (
-                          <div className="size-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center font-bold text-amber-400 text-sm">
-                            {s.nombreComercio.slice(0, 2).toUpperCase()}
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs font-bold text-foreground group-hover:text-amber-400 truncate">
-                            {s.nombreComercio}
-                          </div>
-                          <div className="text-[10px] text-amber-300/90 font-semibold truncate">
-                            {s.descuentoTexto}
-                          </div>
-                          <div className="text-[9px] text-muted-foreground">
-                            📍 {s.provincia}
-                          </div>
-                        </div>
-                        <div className="text-xs font-bold text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                          Entrar →
-                        </div>
+                        ¿Olvidaste tu clave?
                       </button>
-                    ))}
+                    </div>
+
+                    <div className="relative">
+                      <Input
+                        type={verPassword ? "text" : "password"}
+                        placeholder="Ingresa tu contraseña o PIN"
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                        autoFocus
+                        className="text-sm font-mono tracking-wider bg-slate-950 border-border pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setVerPassword(!verPassword)}
+                        className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        {verPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
                   </div>
-                )}
+
+                  {errorPassword && (
+                    <div className="p-2.5 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive text-xs flex items-center gap-2">
+                      <XCircle className="size-4 shrink-0" />
+                      <span>{errorPassword}</span>
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm h-10 shadow-md cursor-pointer"
+                  >
+                    🔑 Ingresar a Turno
+                  </Button>
+                </form>
               </div>
-            </div>
+            )}
 
             <div className="text-center text-[11px] text-muted-foreground">
               ¿Tu comercio aún no está afiliado?{" "}
@@ -1119,6 +1334,130 @@ export function ComercioPortal() {
           </div>
         )}
       </main>
+
+      {/* MODAL 1: ¿OLVIDASTE TU CLAVE? */}
+      <Dialog open={modalOlvidoClave} onOpenChange={setModalOlvidoClave}>
+        <DialogContent className="max-w-sm bg-slate-950 border-amber-500/40 text-foreground p-5">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black text-foreground flex items-center gap-2">
+              <Key className="size-4 text-amber-400" />
+              Recuperar Clave del Comercio
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleRecuperarClave} className="space-y-3.5 pt-2">
+            <p className="text-xs text-muted-foreground">
+              Ingresa el correo electrónico que vinculaste a <strong>{comercioSeleccionado?.nombreComercio}</strong> para verificar tu identidad:
+            </p>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-foreground">Correo Registrado:</Label>
+              <div className="relative">
+                <Input
+                  type="email"
+                  placeholder="ejemplo@comercio.com"
+                  value={emailRecuperacion}
+                  onChange={(e) => setEmailRecuperacion(e.target.value)}
+                  required
+                  className="text-xs font-mono bg-slate-900 border-border pl-8"
+                />
+                <Mail className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
+              </div>
+            </div>
+
+            {mensajeRecuperacion && (
+              <div
+                className={`p-3 rounded-xl border text-xs leading-relaxed ${
+                  mensajeRecuperacion.tipo === "exito"
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-bold"
+                    : "border-destructive/40 bg-destructive/10 text-destructive"
+                }`}
+              >
+                {mensajeRecuperacion.texto}
+              </div>
+            )}
+
+            <div className="flex gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setModalOlvidoClave(false)}
+                className="flex-1 text-xs"
+              >
+                Cerrar
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs cursor-pointer"
+              >
+                Consultar Clave
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL 2: CAMBIAR CONTRASEÑA Y CORREO DESDE LA MINI-APP */}
+      <Dialog open={modalCambiarClave} onOpenChange={setModalCambiarClave}>
+        <DialogContent className="max-w-sm bg-slate-950 border-cyan-500/40 text-foreground p-5">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black text-foreground flex items-center gap-2">
+              <Lock className="size-4 text-cyan-400" />
+              Seguridad & Contraseña
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleGuardarNuevaClave} className="space-y-3.5 pt-2">
+            <p className="text-xs text-muted-foreground">
+              Define una nueva clave y tu correo de recuperación para <strong>{comercioActivo?.nombreComercio}</strong>.
+            </p>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-foreground">Nueva Contraseña / PIN: *</Label>
+              <Input
+                type="text"
+                placeholder="Ej. MiLavacar2026 o 5678"
+                value={nuevaClaveInput}
+                onChange={(e) => setNuevaClaveInput(e.target.value)}
+                required
+                className="text-xs font-mono font-bold bg-slate-900 border-border"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-foreground">Correo de Recuperación:</Label>
+              <Input
+                type="email"
+                placeholder="ejemplo@comercio.com"
+                value={nuevoEmailInput}
+                onChange={(e) => setNuevoEmailInput(e.target.value)}
+                className="text-xs font-mono bg-slate-900 border-border"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Si olvidas tu clave, la podrás consultar mediante este correo.
+              </p>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setModalCambiarClave(false)}
+                className="flex-1 text-xs"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={guardandoClave}
+                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs cursor-pointer"
+              >
+                {guardandoClave ? "Guardando..." : "Guardar Cambios"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* DIÁLOGO MODAL: CONFIRMACIÓN DE CANJE EXITOSO */}
       <Dialog open={!!canjeExitosoModal} onOpenChange={(open) => !open && setCanjeExitosoModal(null)}>

@@ -47,7 +47,9 @@ export type ComercioSponsor = {
   direccionFisica?: string;
   enlaceRedes?: string;
   modalidadCanje?: ModalidadCanjeSponsor; // "whatsapp" | "cupon" | "ambos"
-  pinAcceso?: string; // PIN de 4 dígitos para acceder a la mini-app del comercio (por defecto ej. "1234")
+  pinAcceso?: string; // PIN / Contraseña de acceso a la Mini-App (ej. "1234")
+  passwordComercio?: string; // Contraseña personalizada
+  emailComercio?: string; // Correo para recuperación de clave
   activo: boolean;
   destacado: boolean;
   orden: number;
@@ -201,7 +203,9 @@ function mapSponsorFromDb(row: any): ComercioSponsor {
     direccionFisica: "",
     enlaceRedes: row.enlace_redes || row.enlaceRedes || "",
     modalidadCanje: (row.modalidad_canje || row.modalidadCanje || "ambos") as ModalidadCanjeSponsor,
-    pinAcceso: row.pin_acceso || row.pinAcceso || "",
+    pinAcceso: row.pin_acceso || row.pinAcceso || row.password_comercio || row.passwordComercio || "",
+    passwordComercio: row.password_comercio || row.passwordComercio || row.pin_acceso || row.pinAcceso || "",
+    emailComercio: row.email_comercio || row.emailComercio || "",
     activo: row.activo ?? true,
     destacado: row.destacado ?? false,
     orden: row.orden ?? 1,
@@ -224,7 +228,9 @@ function mapSponsorToDb(s: ComercioSponsor) {
     direccion_fisica: s.direccionFisica || "",
     enlace_redes: s.enlaceRedes || "",
     modalidad_canje: s.modalidadCanje || "ambos",
-    pin_acceso: s.pinAcceso || "",
+    pin_acceso: s.passwordComercio || s.pinAcceso || "",
+    password_comercio: s.passwordComercio || s.pinAcceso || "",
+    email_comercio: s.emailComercio || "",
     activo: s.activo,
     destacado: s.destacado,
     orden: s.orden || 1,

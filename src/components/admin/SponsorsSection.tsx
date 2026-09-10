@@ -8,6 +8,8 @@ import {
   Flame,
   Globe,
   History,
+  Key,
+  Lock,
   MapPin,
   MessageSquare,
   Percent,
@@ -543,6 +545,16 @@ export function SponsorsSection() {
                     >
                       <MessageSquare className="size-3.5" /> {s.telefonoWhatsapp}
                     </a>
+                  </div>
+
+                  {/* Clave de Acceso a Mini-App */}
+                  <div className="flex items-center justify-between text-[11px] bg-cyan-500/5 rounded-xl px-3 py-1.5 border border-cyan-500/20">
+                    <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
+                      <Lock className="size-3 text-cyan-500" /> Clave Mini-App:
+                    </span>
+                    <span className="font-mono font-bold text-foreground bg-card px-2 py-0.5 rounded border border-border">
+                      {s.passwordComercio || s.pinAcceso || "1234"}
+                    </span>
                   </div>
 
                   {/* Acciones del Administrador */}
@@ -1208,6 +1220,57 @@ export function SponsorsSection() {
                     <span className="text-xs font-bold">WhatsApp</span>
                     <span className="text-[9px] opacity-75">Chat Verificado</span>
                   </button>
+                </div>
+              </div>
+
+              {/* SECCIÓN: SEGURIDAD Y ACCESO A LA MINI-APP */}
+              <div className="space-y-3 rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3.5">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Lock className="size-3.5 text-cyan-400" /> Seguridad & Contraseña de la Mini-App
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    Esta clave permite al encargado del comercio iniciar sesión en su Mini-App (/comercio) para escanear QR y registrar canjes.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-3 pt-1">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Contraseña / Clave de Acceso:
+                    </Label>
+                    <Input
+                      type="text"
+                      value={sponsorEditando.passwordComercio || sponsorEditando.pinAcceso || ""}
+                      onChange={(e) =>
+                        setSponsorEditando({
+                          ...sponsorEditando,
+                          passwordComercio: e.target.value,
+                          pinAcceso: e.target.value,
+                        })
+                      }
+                      placeholder="Ej: 1234 o clave segura"
+                      className="text-xs font-mono font-bold"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Correo de Recuperación:
+                    </Label>
+                    <Input
+                      type="email"
+                      value={sponsorEditando.emailComercio || ""}
+                      onChange={(e) =>
+                        setSponsorEditando({
+                          ...sponsorEditando,
+                          emailComercio: e.target.value,
+                        })
+                      }
+                      placeholder="ejemplo@comercio.com"
+                      className="text-xs font-mono"
+                    />
+                  </div>
                 </div>
               </div>
 
