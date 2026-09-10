@@ -11,6 +11,7 @@ import {
   Sparkles,
   Store,
   Tag,
+  Ticket,
   Zap,
   ZoomIn,
 } from "lucide-react";
@@ -179,16 +180,25 @@ export function SponsorsLandingSection() {
               <span className="text-muted-foreground flex items-center gap-1 font-medium">
                 <MapPin className="size-3 text-primary shrink-0" /> {s.provincia}
               </span>
-              <a
-                href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-                  `¡Hola ${s.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${s.descuentoTexto}".\n\nPuedes comprobar mis Tokens en el validador oficial:\nhttps://avalcards.com/validar`
-                )}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-emerald-400 hover:underline font-bold flex items-center gap-1"
-              >
-                <MessageSquare className="size-3.5" /> Canjear ↗
-              </a>
+              {s.modalidadCanje === "cupon" ? (
+                <Link
+                  to="/sponsors"
+                  className="text-amber-400 hover:underline font-bold flex items-center gap-1"
+                >
+                  <Ticket className="size-3.5" /> Ver Cupón ↗
+                </Link>
+              ) : (
+                <a
+                  href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
+                    `¡Hola ${s.nombreComercio}! Soy miembro de Aval Community CR y deseo aplicar mi beneficio exclusivo: "${s.descuentoTexto}".\n\nPuedes comprobar mis Tokens en el validador oficial:\nhttps://avalcards.com/validar`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-emerald-400 hover:underline font-bold flex items-center gap-1"
+                >
+                  <MessageSquare className="size-3.5" /> Canjear ↗
+                </a>
+              )}
             </div>
           </div>
         ))}

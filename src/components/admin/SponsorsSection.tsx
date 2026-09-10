@@ -441,6 +441,9 @@ export function SponsorsSection() {
                           ⭐ DESTACADO
                         </span>
                       )}
+                      <span className="rounded-full bg-muted/80 border border-border px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                        {s.modalidadCanje === "cupon" ? "🎟️ Cupón" : s.modalidadCanje === "whatsapp" ? "💬 WhatsApp" : "⭐ Híbrido"}
+                      </span>
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
                           s.activo
@@ -871,6 +874,62 @@ export function SponsorsSection() {
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* SECCIÓN: MODALIDAD DE CANJE */}
+              <div className="space-y-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-amber-500" /> Modalidad de Canje del Descuento
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    Elige cómo los miembros de Aval Community canjearán su descuento con este negocio.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setSponsorEditando({ ...sponsorEditando, modalidadCanje: "ambos" })}
+                    className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      sponsorEditando.modalidadCanje === "ambos" || !sponsorEditando.modalidadCanje
+                        ? "border-amber-500 bg-amber-500/20 text-foreground font-black ring-1 ring-amber-500/50"
+                        : "border-border bg-card hover:bg-muted/50 text-muted-foreground"
+                    }`}
+                  >
+                    <span className="text-base">⭐</span>
+                    <span className="text-xs font-bold">Ambos</span>
+                    <span className="text-[9px] opacity-75">Cupón + WhatsApp</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSponsorEditando({ ...sponsorEditando, modalidadCanje: "cupon" })}
+                    className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      sponsorEditando.modalidadCanje === "cupon"
+                        ? "border-amber-500 bg-amber-500/20 text-foreground font-black ring-1 ring-amber-500/50"
+                        : "border-border bg-card hover:bg-muted/50 text-muted-foreground"
+                    }`}
+                  >
+                    <span className="text-base">🎟️</span>
+                    <span className="text-xs font-bold">Cupón Digital</span>
+                    <span className="text-[9px] opacity-75">Presencial en Caja</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSponsorEditando({ ...sponsorEditando, modalidadCanje: "whatsapp" })}
+                    className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      sponsorEditando.modalidadCanje === "whatsapp"
+                        ? "border-emerald-500 bg-emerald-500/20 text-foreground font-black ring-1 ring-emerald-500/50"
+                        : "border-border bg-card hover:bg-muted/50 text-muted-foreground"
+                    }`}
+                  >
+                    <span className="text-base">💬</span>
+                    <span className="text-xs font-bold">WhatsApp</span>
+                    <span className="text-[9px] opacity-75">Chat Verificado</span>
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/40">

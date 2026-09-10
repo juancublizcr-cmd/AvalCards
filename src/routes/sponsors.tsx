@@ -18,6 +18,7 @@ import {
   Sparkles,
   Store,
   Tag,
+  Ticket,
   Users,
   Zap,
   ZoomIn,
@@ -416,13 +417,51 @@ function SponsorsPage() {
                       </span>
                     </div>
 
-                    <Button
-                      type="button"
-                      onClick={() => setCuponActivo(s)}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl cursor-pointer"
-                    >
-                      <MessageSquare className="size-4 shrink-0" /> Canjear Descuento en WhatsApp
-                    </Button>
+                    {/* Botones de Acción Dinámicos según Modalidad */}
+                    {s.modalidadCanje === "cupon" ? (
+                      <Button
+                        type="button"
+                        onClick={() => setCuponActivo(s)}
+                        className="w-full bg-amber-500 hover:bg-amber-600 text-black font-black text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl cursor-pointer"
+                      >
+                        <Ticket className="size-4 shrink-0" /> Ver Cupón Digital Oficial
+                      </Button>
+                    ) : s.modalidadCanje === "whatsapp" ? (
+                      <Button
+                        asChild
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm h-10 shadow-md flex items-center justify-center gap-1.5 rounded-xl"
+                      >
+                        <a
+                          href={getWhatsappUrl(s)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <MessageSquare className="size-4 shrink-0" /> Canjear por WhatsApp
+                        </a>
+                      </Button>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          onClick={() => setCuponActivo(s)}
+                          className="bg-amber-500 hover:bg-amber-600 text-black font-black text-xs h-10 shadow-sm flex items-center justify-center gap-1 rounded-xl cursor-pointer"
+                        >
+                          <Ticket className="size-3.5 shrink-0" /> Cupón Digital
+                        </Button>
+                        <Button
+                          asChild
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 shadow-sm flex items-center justify-center gap-1 rounded-xl"
+                        >
+                          <a
+                            href={getWhatsappUrl(s)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <MessageSquare className="size-3.5 shrink-0" /> WhatsApp
+                          </a>
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

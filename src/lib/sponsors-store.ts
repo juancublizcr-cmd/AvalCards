@@ -30,6 +30,8 @@ export const CATEGORIAS_SPONSOR_LABELS: Record<string, { label: string; icono: s
   otros: { label: "Otros Comercios", icono: "🏬" },
 };
 
+export type ModalidadCanjeSponsor = "whatsapp" | "cupon" | "ambos";
+
 export type ComercioSponsor = {
   id: string;
   nombreComercio: string;
@@ -44,6 +46,7 @@ export type ComercioSponsor = {
   canton?: string;
   direccionFisica?: string;
   enlaceRedes?: string;
+  modalidadCanje?: ModalidadCanjeSponsor; // "whatsapp" | "cupon" | "ambos"
   activo: boolean;
   destacado: boolean;
   orden: number;
@@ -196,6 +199,7 @@ function mapSponsorFromDb(row: any): ComercioSponsor {
     canton: "",
     direccionFisica: "",
     enlaceRedes: row.enlace_redes || row.enlaceRedes || "",
+    modalidadCanje: (row.modalidad_canje || row.modalidadCanje || "ambos") as ModalidadCanjeSponsor,
     activo: row.activo ?? true,
     destacado: row.destacado ?? false,
     orden: row.orden ?? 1,
@@ -217,6 +221,7 @@ function mapSponsorToDb(s: ComercioSponsor) {
     canton: s.canton || "",
     direccion_fisica: s.direccionFisica || "",
     enlace_redes: s.enlaceRedes || "",
+    modalidad_canje: s.modalidadCanje || "ambos",
     activo: s.activo,
     destacado: s.destacado,
     orden: s.orden || 1,
