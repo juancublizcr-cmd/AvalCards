@@ -47,6 +47,7 @@ export type ComercioSponsor = {
   direccionFisica?: string;
   enlaceRedes?: string;
   modalidadCanje?: ModalidadCanjeSponsor; // "whatsapp" | "cupon" | "ambos"
+  pinAcceso?: string; // PIN de 4 dígitos para acceder a la mini-app del comercio (por defecto ej. "1234")
   activo: boolean;
   destacado: boolean;
   orden: number;
@@ -200,6 +201,7 @@ function mapSponsorFromDb(row: any): ComercioSponsor {
     direccionFisica: "",
     enlaceRedes: row.enlace_redes || row.enlaceRedes || "",
     modalidadCanje: (row.modalidad_canje || row.modalidadCanje || "ambos") as ModalidadCanjeSponsor,
+    pinAcceso: row.pin_acceso || row.pinAcceso || "",
     activo: row.activo ?? true,
     destacado: row.destacado ?? false,
     orden: row.orden ?? 1,
@@ -222,6 +224,7 @@ function mapSponsorToDb(s: ComercioSponsor) {
     direccion_fisica: s.direccionFisica || "",
     enlace_redes: s.enlaceRedes || "",
     modalidad_canje: s.modalidadCanje || "ambos",
+    pin_acceso: s.pinAcceso || "",
     activo: s.activo,
     destacado: s.destacado,
     orden: s.orden || 1,
@@ -669,6 +672,149 @@ export async function eliminarCategoriaSponsor(
   await guardarCategoriasSponsors(updated);
   return updated;
 }
+
+// ============================================================================
+// CANJES Y REPORTES DE COMERCIOS ALIADOS (MINI-APP / SPONSOR PORTAL)
+// ============================================================================
+
+export type CanjeSponsorRecord = {
+  id: string;
+  sponsorId: string;
+  sponsorNombre: string;
+  clienteTelefono: string;
+  clienteNombre: string;
+  servicio: string;
+  montoRegular?: number;
+  montoCobrado?: number;
+  ahorro?: number;
+  descuentoTexto: string;
+  fecha: string; // ISO String
+  notas?: string;
+  registradoPor?: string;
+};
+
+export const LOCAL_CANJES_KEY = "aval_sponsors_canjes_records";
+
+export async function fetchCanjesSponsors(): Promise<CanjeSponsorRecord[]> {
+  // 1. Intentar desde Supabase sorteo_config._meta._canjesSponsors
+  try {
+    const { data: sorteoRow } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object") {
+      const meta = (sorteoRow.raspa_config as any)._meta;
+      if (meta?._canjesSponsors && Array.isArray(meta._canjesSponsors)) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LOCAL_CANJES_KEY, JSON.stringify(meta._canjesSponsors));
+        }
+        return meta._canjesSponsors;
+      }
+    }
+  } catch (err) {
+    console.warn("fetchCanjesSponsors error:", err);
+  }
+
+  // 2. Fallback a LocalStorage
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem(LOCAL_CANJES_KEY);
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+  }
+
+  return [];
+}
+
+export async function registrarCanjeSponsor(
+  record: Omit<CanjeSponsorRecord, "id" | "fecha">
+): Promise<CanjeSponsorRecord> {
+  const newCanje: CanjeSponsorRecord = {
+    ...record,
+    id: `CANJE-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+    fecha: new Date().toISOString(),
+  };
+
+  const current = await fetchCanjesSponsors();
+  const updated = [newCanje, ...current];
+
+  // 1. LocalStorage
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(LOCAL_CANJES_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("canjes_updated", { detail: updated }));
+    } catch {}
+  }
+
+  // 2. Persistir en sorteo_config._meta._canjesSponsors
+  try {
+    const { data: sorteoRow } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+
+    const currentRaspa = (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object")
+      ? sorteoRow.raspa_config
+      : {};
+    const meta = (currentRaspa._meta && typeof currentRaspa._meta === "object")
+      ? { ...currentRaspa._meta }
+      : {};
+    meta._canjesSponsors = updated;
+    currentRaspa._meta = meta;
+
+    await supabase
+      .from("sorteo_config")
+      .update({ raspa_config: currentRaspa })
+      .eq("id", 1);
+  } catch (err) {
+    console.error("Error guardando canje en Supabase:", err);
+  }
+
+  return newCanje;
+}
+
+export async function eliminarCanjeSponsor(id: string): Promise<boolean> {
+  const current = await fetchCanjesSponsors();
+  const updated = current.filter((c) => c.id !== id);
+
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(LOCAL_CANJES_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("canjes_updated", { detail: updated }));
+    } catch {}
+  }
+
+  try {
+    const { data: sorteoRow } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+
+    const currentRaspa = (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object")
+      ? sorteoRow.raspa_config
+      : {};
+    const meta = (currentRaspa._meta && typeof currentRaspa._meta === "object")
+      ? { ...currentRaspa._meta }
+      : {};
+    meta._canjesSponsors = updated;
+    currentRaspa._meta = meta;
+
+    await supabase
+      .from("sorteo_config")
+      .update({ raspa_config: currentRaspa })
+      .eq("id", 1);
+  } catch {}
+
+  return true;
+}
+
 
 
 

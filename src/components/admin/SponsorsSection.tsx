@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import {
   Building2,
+  Calendar,
   CheckCircle2,
   ExternalLink,
+  FileSpreadsheet,
   Flame,
   Globe,
+  History,
   MapPin,
   MessageSquare,
   Percent,
@@ -18,6 +21,7 @@ import {
   Tag,
   Trash2,
   Upload,
+  Users,
   Image as ImageIcon,
   X,
   ZoomIn,
@@ -40,6 +44,8 @@ import {
   fetchSponsors,
   fetchSolicitudesSponsors,
   fetchCategoriasSponsors,
+  fetchCanjesSponsors,
+  eliminarCanjeSponsor,
   crearCategoriaSponsor,
   eliminarCategoriaSponsor,
   upsertSponsor,
@@ -47,17 +53,21 @@ import {
   actualizarEstadoSolicitudSponsor,
   type ComercioSponsor,
   type SolicitudAfiliacionSponsor,
+  type CanjeSponsorRecord,
   type CategoriaSponsor,
   type CategoriaItem,
 } from "@/lib/sponsors-store";
 
 export function SponsorsSection() {
-  const [tab, setTab] = useState<"comercios" | "solicitudes">("comercios");
+  const [tab, setTab] = useState<"comercios" | "solicitudes" | "canjes">("comercios");
   const [sponsors, setSponsors] = useState<ComercioSponsor[]>([]);
   const [solicitudes, setSolicitudes] = useState<SolicitudAfiliacionSponsor[]>([]);
   const [categorias, setCategorias] = useState<CategoriaItem[]>(CATEGORIAS_SPONSOR_DEFAULT);
+  const [canjes, setCanjes] = useState<CanjeSponsorRecord[]>([]);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
+  const [filtroSponsorCanje, setFiltroSponsorCanje] = useState<string>("todos");
+  const [filtroFechaCanje, setFiltroFechaCanje] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState("");
   const [imagenGrande, setImagenGrande] = useState<{ url: string; titulo: string; categoria: string } | null>(null);
 
@@ -75,14 +85,16 @@ export function SponsorsSection() {
   const cargarDatos = async () => {
     setCargando(true);
     try {
-      const [sps, sols, cats] = await Promise.all([
+      const [sps, sols, cats, canj] = await Promise.all([
         fetchSponsors(),
         fetchSolicitudesSponsors(),
         fetchCategoriasSponsors(),
+        fetchCanjesSponsors(),
       ]);
       setSponsors(sps);
       setSolicitudes(sols);
       setCategorias(cats);
+      setCanjes(canj);
     } catch {
       toast.error("Error al cargar datos de sponsors");
     } finally {
@@ -349,12 +361,12 @@ export function SponsorsSection() {
         </div>
       </div>
 
-      {/* Selector de Pestañas: Catálogo vs Solicitudes */}
-      <div className="flex gap-2 border-b border-border">
+      {/* Selector de Pestañas: Catálogo vs Solicitudes vs Canjes */}
+      <div className="flex gap-2 border-b border-border overflow-x-auto">
         <button
           type="button"
           onClick={() => setTab("comercios")}
-          className={`pb-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-colors cursor-pointer ${
+          className={`pb-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-colors cursor-pointer shrink-0 ${
             tab === "comercios"
               ? "border-amber-500 text-amber-600 dark:text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -364,8 +376,19 @@ export function SponsorsSection() {
         </button>
         <button
           type="button"
+          onClick={() => setTab("canjes")}
+          className={`pb-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-colors cursor-pointer shrink-0 ${
+            tab === "canjes"
+              ? "border-amber-500 text-amber-600 dark:text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <History className="size-4" /> Auditoría & Canjes ({canjes.length})
+        </button>
+        <button
+          type="button"
           onClick={() => setTab("solicitudes")}
-          className={`pb-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-colors cursor-pointer relative ${
+          className={`pb-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-colors cursor-pointer shrink-0 relative ${
             tab === "solicitudes"
               ? "border-amber-500 text-amber-600 dark:text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -546,6 +569,15 @@ export function SponsorsSection() {
                     </div>
 
                     <div className="flex items-center gap-1.5">
+                      <a
+                        href={`/comercio?id=${s.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:text-amber-500 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-md transition-colors"
+                        title="Abrir Mini-App de este comercio"
+                      >
+                        <Store className="size-3" /> Mini-App
+                      </a>
                       <Button
                         size="sm"
                         variant="outline"
@@ -671,6 +703,253 @@ export function SponsorsSection() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* PESTAÑA 3: AUDITORÍA Y CONTROL GLOBAL DE CANJES */}
+      {tab === "canjes" && (
+        <div className="space-y-4">
+          {/* Barra de Filtros y Acciones */}
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+            <div className="flex flex-1 flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por cliente, teléfono, servicio o comercio..."
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  className="pl-9 text-xs"
+                />
+              </div>
+
+              <select
+                value={filtroSponsorCanje}
+                onChange={(e) => setFiltroSponsorCanje(e.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-xs text-foreground shrink-0"
+              >
+                <option value="todos">Todos los Comercios ({sponsors.length})</option>
+                {sponsors.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.nombreComercio}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={filtroFechaCanje}
+                onChange={(e) => setFiltroFechaCanje(e.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-xs text-foreground shrink-0"
+              >
+                <option value="todos">Todo el Historial</option>
+                <option value="hoy">Hoy</option>
+                <option value="7dias">Últimos 7 días</option>
+                <option value="este_mes">Este Mes</option>
+              </select>
+            </div>
+
+            <Button
+              size="sm"
+              onClick={() => {
+                const canjesFiltradosGlobal = canjes.filter((c) => {
+                  if (filtroSponsorCanje !== "todos" && c.sponsorId !== filtroSponsorCanje) return false;
+                  if (busqueda.trim()) {
+                    const q = busqueda.toLowerCase();
+                    const match =
+                      c.clienteNombre.toLowerCase().includes(q) ||
+                      c.clienteTelefono.includes(q) ||
+                      c.servicio.toLowerCase().includes(q) ||
+                      c.sponsorNombre.toLowerCase().includes(q);
+                    if (!match) return false;
+                  }
+                  return true;
+                });
+
+                if (canjesFiltradosGlobal.length === 0) {
+                  toast.error("No hay registros para exportar");
+                  return;
+                }
+
+                const headers = ["ID", "Fecha", "Hora", "Comercio", "Cliente", "Telefono", "Servicio", "Monto_Regular_CRC", "Monto_Cobrado_CRC", "Ahorro_CRC", "Descuento", "Notas"];
+                const rows = canjesFiltradosGlobal.map((c) => {
+                  const d = new Date(c.fecha);
+                  return [
+                    c.id,
+                    d.toLocaleDateString("es-CR"),
+                    d.toLocaleTimeString("es-CR"),
+                    `"${c.sponsorNombre.replace(/"/g, '""')}"`,
+                    `"${c.clienteNombre.replace(/"/g, '""')}"`,
+                    `"${c.clienteTelefono}"`,
+                    `"${c.servicio.replace(/"/g, '""')}"`,
+                    c.montoRegular || 0,
+                    c.montoCobrado || 0,
+                    c.ahorro || 0,
+                    `"${c.descuentoTexto.replace(/"/g, '""')}"`,
+                    `"${(c.notas || "").replace(/"/g, '""')}"`,
+                  ];
+                });
+
+                const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `Auditoria_Canjes_Global_${Date.now()}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success("¡Reporte consolidado descargado!");
+              }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 gap-1.5 shrink-0 cursor-pointer"
+            >
+              <FileSpreadsheet className="size-4" /> Exportar Consolidado (CSV)
+            </Button>
+          </div>
+
+          {/* Tarjetas de Métricas Globales */}
+          {(() => {
+            const canjesFiltradosGlobal = canjes.filter((c) => {
+              if (filtroSponsorCanje !== "todos" && c.sponsorId !== filtroSponsorCanje) return false;
+              const d = new Date(c.fecha);
+              const now = new Date();
+              if (filtroFechaCanje === "hoy") {
+                const hoyInicio = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                if (d < hoyInicio) return false;
+              } else if (filtroFechaCanje === "7dias") {
+                const sieteDias = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                if (d < sieteDias) return false;
+              } else if (filtroFechaCanje === "este_mes") {
+                const mesInicio = new Date(now.getFullYear(), now.getMonth(), 1);
+                if (d < mesInicio) return false;
+              }
+              if (busqueda.trim()) {
+                const q = busqueda.toLowerCase();
+                return (
+                  c.clienteNombre.toLowerCase().includes(q) ||
+                  c.clienteTelefono.includes(q) ||
+                  c.servicio.toLowerCase().includes(q) ||
+                  c.sponsorNombre.toLowerCase().includes(q)
+                );
+              }
+              return true;
+            });
+
+            const total = canjesFiltradosGlobal.length;
+            const comerciosActivos = new Set(canjesFiltradosGlobal.map((c) => c.sponsorId)).size;
+            const clientesUnicos = new Set(canjesFiltradosGlobal.map((c) => c.clienteTelefono)).size;
+            const totalFacturado = canjesFiltradosGlobal.reduce((acc, c) => acc + (c.montoCobrado || 0), 0);
+            const totalAhorro = canjesFiltradosGlobal.reduce((acc, c) => acc + (c.ahorro || 0), 0);
+
+            return (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="rounded-xl border border-border bg-card p-3.5 space-y-1 shadow-sm">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <Tag className="size-3 text-amber-500" /> Total Canjes
+                    </div>
+                    <div className="text-2xl font-black text-foreground">{total}</div>
+                  </div>
+
+                  <div className="rounded-xl border border-border bg-card p-3.5 space-y-1 shadow-sm">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <Store className="size-3 text-cyan-500" /> Comercios
+                    </div>
+                    <div className="text-2xl font-black text-cyan-600 dark:text-cyan-400">{comerciosActivos}</div>
+                  </div>
+
+                  <div className="rounded-xl border border-border bg-card p-3.5 space-y-1 shadow-sm">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <Users className="size-3 text-emerald-500" /> Clientes Únicos
+                    </div>
+                    <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{clientesUnicos}</div>
+                  </div>
+
+                  <div className="rounded-xl border border-border bg-card p-3.5 space-y-1 shadow-sm">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <Sparkles className="size-3 text-amber-500" /> Ahorro Comunidad
+                    </div>
+                    <div className="text-xl font-black text-amber-600 dark:text-amber-400 font-mono">
+                      ₡{totalAhorro.toLocaleString("es-CR")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabla de Auditoría */}
+                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="p-3.5 border-b border-border bg-muted/40 flex items-center justify-between text-xs font-bold">
+                    <span>Historial Detallado de Beneficios Canjeados</span>
+                    <span className="text-muted-foreground font-normal">
+                      Mostrando {canjesFiltradosGlobal.length} registros
+                    </span>
+                  </div>
+
+                  {canjesFiltradosGlobal.length === 0 ? (
+                    <div className="p-10 text-center text-xs text-muted-foreground space-y-1">
+                      <div>No se han registrado canjes con los filtros actuales.</div>
+                      <div className="text-[11px] opacity-75">
+                        Los canjes registrados por los comercios en su Mini-App aparecerán aquí.
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-border">
+                      {canjesFiltradosGlobal.map((c) => {
+                        const d = new Date(c.fecha);
+                        return (
+                          <div
+                            key={c.id}
+                            className="p-3.5 hover:bg-muted/30 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                          >
+                            <div className="space-y-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-bold text-foreground text-sm">{c.sponsorNombre}</span>
+                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20">
+                                  {c.servicio}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 text-muted-foreground text-[11px]">
+                                <span>Cliente: <strong className="text-foreground">{c.clienteNombre}</strong></span>
+                                <span>· Tel: <strong className="font-mono text-foreground">{c.clienteTelefono}</strong></span>
+                                {c.notas && <span>· Nota: <em>{c.notas}</em></span>}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                              <div className="text-right">
+                                {c.montoCobrado !== undefined && c.montoCobrado > 0 ? (
+                                  <div className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                    ₡{c.montoCobrado.toLocaleString("es-CR")}
+                                  </div>
+                                ) : (
+                                  <div className="text-[11px] font-bold text-amber-600 dark:text-amber-400">{c.descuentoTexto}</div>
+                                )}
+                                <div className="text-[10px] text-muted-foreground">
+                                  {d.toLocaleDateString("es-CR", { day: "2-digit", month: "short", year: "numeric" })} · {d.toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit" })}
+                                </div>
+                              </div>
+
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={async () => {
+                                  if (!confirm(`¿Eliminar este registro de canje de ${c.clienteNombre}?`)) return;
+                                  await eliminarCanjeSponsor(c.id);
+                                  setCanjes((prev) => prev.filter((item) => item.id !== c.id));
+                                  toast.success("Registro de canje eliminado");
+                                }}
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-rose-500"
+                                title="Eliminar registro"
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
         </div>
       )}
 

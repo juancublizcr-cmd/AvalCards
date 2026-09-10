@@ -30,6 +30,7 @@ async function prerender() {
       { path: "/remates", file: "remates.html" },
       { path: "/impacto-social", file: "impacto-social.html" },
       { path: "/sponsors", file: "sponsors.html" },
+      { path: "/comercio", file: "comercio.html" },
     ];
 
     if (!fs.existsSync(CLIENT_DIR)) {

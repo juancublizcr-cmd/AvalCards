@@ -8,6 +8,9 @@ import {
   Gift,
   HeartHandshake,
   LogOut,
+  Plus,
+  Power,
+  QrCode,
   Scale,
   Search,
   Settings,
@@ -173,6 +176,15 @@ export function AdminSidebarContent({
             >
               <Store className="size-4 shrink-0 text-amber-400" />
               <span className="flex-1">Comercios & Descuentos</span>
+              <ExternalLink className="size-3 text-muted-foreground" />
+            </Link>
+            <Link
+              to="/comercio"
+              onClick={onItemClick}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-400 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-300"
+            >
+              <QrCode className="size-4 shrink-0 text-amber-400" />
+              <span className="flex-1">Portal Comercios (App)</span>
               <ExternalLink className="size-3 text-muted-foreground" />
             </Link>
           </div>

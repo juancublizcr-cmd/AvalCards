@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ComercioRouteImport } from './routes/comercio'
 import { Route as ImpactoSocialRouteImport } from './routes/impacto-social'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
@@ -34,6 +35,11 @@ const AdminRoute = AdminRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComercioRoute = ComercioRouteImport.update({
+  id: '/comercio',
+  path: '/comercio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpactoSocialRoute = ImpactoSocialRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/comercio': typeof ComercioRoute
   '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/comercio': typeof ComercioRoute
   '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/comercio': typeof ComercioRoute
   '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/comercio'
     | '/impacto-social'
     | '/login'
     | '/privacidad'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/comercio'
     | '/impacto-social'
     | '/login'
     | '/privacidad'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/comercio'
     | '/impacto-social'
     | '/login'
     | '/privacidad'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   CheckoutRoute: typeof CheckoutRoute
+  ComercioRoute: typeof ComercioRoute
   ImpactoSocialRoute: typeof ImpactoSocialRoute
   LoginRoute: typeof LoginRoute
   PrivacidadRoute: typeof PrivacidadRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comercio': {
+      id: '/comercio'
+      path: '/comercio'
+      fullPath: '/comercio'
+      preLoaderRoute: typeof ComercioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/impacto-social': {
@@ -259,6 +279,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   CheckoutRoute: CheckoutRoute,
+  ComercioRoute: ComercioRoute,
   ImpactoSocialRoute: ImpactoSocialRoute,
   LoginRoute: LoginRoute,
   PrivacidadRoute: PrivacidadRoute,
