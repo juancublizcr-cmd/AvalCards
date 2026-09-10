@@ -1,84 +1,178 @@
-import { useState } from "react";
-import { Copy, Check, Printer, Download, Scale, ShieldCheck, FileText, Sparkles, Building2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Copy,
+  Check,
+  Printer,
+  Download,
+  Scale,
+  ShieldCheck,
+  FileText,
+  Sparkles,
+  ExternalLink,
+  Save,
+  RotateCcw,
+  Eye,
+  Edit3,
+  Lock,
+  RefreshCcw,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { type Config, type Sorteo } from "@/lib/admin-store";
+import { type Config, type Sorteo, upsertConfig } from "@/lib/admin-store";
+import {
+  getDefaultMinutaNotarial,
+  getDefaultTerminos,
+  getDefaultPrivacidad,
+  getDefaultReembolso,
+} from "@/lib/legal-defaults";
+
+type LegalTab = "notarial" | "terminos" | "privacidad" | "reembolso";
 
 export function ReglamentoNotarialSection({
   config,
+  setConfig,
   sorteo,
 }: {
   config: Config;
+  setConfig?: React.Dispatch<React.SetStateAction<Config>>;
   sorteo: Sorteo;
 }) {
+  const [tabActiva, setTabActiva] = useState<LegalTab>("notarial");
+  const [vistaModo, setVistaModo] = useState<"editor" | "preview">("editor");
   const [copiado, setCopiado] = useState(false);
+  const [guardando, setGuardando] = useState(false);
 
-  const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA";
+  // Estados editables para cada documento legal
+  const [textoNotarial, setTextoNotarial] = useState("");
+  const [textoTerminos, setTextoTerminos] = useState("");
+  const [textoPrivacidad, setTextoPrivacidad] = useState("");
+  const [textoReembolso, setTextoReembolso] = useState("");
+
+  const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA.";
   const fechaSorteo = sorteo.fecha || "27 de septiembre de 2026";
-  const premioNombre = sorteo.titulo || "Vehículo Toyota Prado VX 2026 0KM + $6,000 Cash";
+  const premioNombre = sorteo.titulo || "Moto de Alta Cilindrada (o Vehículo a Elección)";
+  const telSinpe = config.telefonoSinpe || "8634-4772";
 
-  const textoEscritura = `================================================================================
-ESCRITURA NÚMERO CIENTO OCHENTA Y CUATRO (184).- PROTOCOLIZACIÓN DE REGLAMENTO OFICIAL DE PROMOCIÓN COMERCIAL PRIVADA "AVAL COMMUNITY CR".-
-================================================================================
+  // Inicializar o sincronizar con config
+  useEffect(() => {
+    setTextoNotarial(
+      config.legalMinutaNotarialTexto ||
+        getDefaultMinutaNotarial(razonSocial, premioNombre, fechaSorteo),
+    );
+    setTextoTerminos(
+      config.legalTerminosTexto || getDefaultTerminos(razonSocial, telSinpe),
+    );
+    setTextoPrivacidad(
+      config.legalPrivacidadTexto || getDefaultPrivacidad(razonSocial),
+    );
+    setTextoReembolso(
+      config.legalReembolsoTexto || getDefaultReembolso(razonSocial, telSinpe),
+    );
+  }, [config.legalMinutaNotarialTexto, config.legalTerminosTexto, config.legalPrivacidadTexto, config.legalReembolsoTexto, razonSocial, premioNombre, fechaSorteo, telSinpe]);
 
-En la ciudad de San José, República de Costa Rica, al ser las diez horas del día quince de agosto de dos mil veintiséis.- Ante mí, [NOMBRE DEL NOTARIO PÚBLICO], Notario Público con oficina abierta en esta ciudad, comparece el señor [NOMBRE DEL REPRESENTANTE LEGAL], mayor de edad, [estado civil], [profesión u oficio], vecino de [lugar de residencia], portador de la cédula de identidad número [NÚMERO DE CÉDULA], actuando en su condición de Gerente / Apoderado Generalísimo sin límite de suma de la sociedad denominada "${razonSocial.toUpperCase()}", con cédula de persona jurídica número [CÉDULA JURÍDICA], personería que consta debidamente inscrita en la Sección Mercantil del Registro Nacional de Costa Rica, y al efecto DICE:
+  const textoActual =
+    tabActiva === "notarial"
+      ? textoNotarial
+      : tabActiva === "terminos"
+      ? textoTerminos
+      : tabActiva === "privacidad"
+      ? textoPrivacidad
+      : textoReembolso;
 
-PRIMERA: OBJETO DE LA COMPARECENCIA Y ACTIVIDAD COMERCIAL.-
-Que su representada "${razonSocial.toUpperCase()}" es una sociedad mercantil legalmente constituida que se dedica a la importación, comercialización y distribución de productos comerciales, fragancias de lujo, accesorios y prestación de servicios digitales. Que con el propósito exclusivo de promover e incentivar las ventas comerciales de su catálogo de productos y fidelizar a sus clientes, ha diseñado y organizado la PROMOCIÓN COMERCIAL PRIVADA denominada "AVAL COMMUNITY CR", la cual se regirá por las disposiciones de la Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor), su Reglamento Ejecutivo y el Código de Comercio de la República de Costa Rica.
+  const setTextoActual = (nuevo: string) => {
+    if (tabActiva === "notarial") setTextoNotarial(nuevo);
+    else if (tabActiva === "terminos") setTextoTerminos(nuevo);
+    else if (tabActiva === "privacidad") setTextoPrivacidad(nuevo);
+    else setTextoReembolso(nuevo);
+  };
 
-SEGUNDA: NATURALEZA JURÍDICA DE LOS "TOKENS" Y PRODUCTO ADQUIRIDO.-
-A) Se hace constar de forma expresa que "${razonSocial.toUpperCase()}" NO vende billetes de lotería, rifas clandestinas ni realiza actividades de intermediación de apuestas.
-B) Los consumidores adquieren legítimamente paquetes de productos comerciales, suscripciones digitales y/o cuponeras de descuento comercial emitidas por la empresa, por los cuales se expide la correspondiente Factura Electrónica conforme a la legislación tributaria costarricense y la Dirección General de Tributación (DGT).
-C) Por cada compra comercial realizada, el cliente recibe a título de CORTESÍA GRATUITA y sin costo monetario independiente uno o varios códigos alfanuméricos digitales denominados "Tokens Promocionales", los cuales acreditan su derecho de participación en los sorteos de la promoción comercial.
+  const infoTab = {
+    notarial: {
+      titulo: "Minuta Notarial Protocolizable",
+      icono: FileText,
+      badge: "PAPEL DE SEGURIDAD · NOTARIO PÚBLICO",
+      ruta: null,
+      descripcion:
+        "Minuta modelo lista para asentar en el tomo matriz de tu Notario Público y emitir testimonio con timbres de ley ante el Registro Nacional.",
+    },
+    terminos: {
+      titulo: "Términos, Condiciones y Reglamento Oficial",
+      icono: Scale,
+      badge: "PÁGINA PÚBLICA OFICIAL",
+      ruta: "/terminos",
+      descripcion:
+        "Reglamento público que consultan los participantes en la web sobre marco legal, deslinde JPS, métodos de pago y adjudicación.",
+    },
+    privacidad: {
+      titulo: "Políticas de Privacidad y Protección de Datos",
+      icono: Lock,
+      badge: "LEY N° 8968 · PRODHAB",
+      ruta: "/privacidad",
+      descripcion:
+        "Cláusulas sobre confidencialidad, uso estricto de números celulares y protección de datos bancarios de los compradores.",
+    },
+    reembolso: {
+      titulo: "Política de Reembolsos y Devoluciones",
+      icono: RefreshCcw,
+      badge: "GARANTÍA COMERCIAL",
+      ruta: "/reembolso",
+      descripcion:
+        "Condiciones claras para reversión de pagos duplicados, plazos de reintegro por SINPE/tarjeta y excepciones.",
+    },
+  }[tabActiva];
 
-TERCERA: CLÁUSULA DE DESLINDE Y USO DE FE PÚBLICA EXTERNA (JUNTA DE PROTECCIÓN SOCIAL).-
-Se deja formal y expresamente consignado que la presente promoción comercial NO está organizada, patrocinada, administrada ni afiliada a la Junta de Protección Social (JPS) de Costa Rica. La empresa organizadora utiliza la extracción pública y televisada de los sorteos oficiales de la Lotería Nacional de Costa Rica única y exclusivamente como un MECANISMO EXTERNO, NEUTRAL, TRANSPARENTE E INALTERABLE DE FE PÚBLICA para determinar con absoluta aleatoriedad e imparcialidad los códigos numéricos favorecidos, sin que ello implique vulneración de las disposiciones de la Ley N° 7395.
+  // Acciones
+  const guardarCambios = async () => {
+    setGuardando(true);
+    try {
+      const nuevoConfig: Config = {
+        ...config,
+        legalMinutaNotarialTexto: textoNotarial,
+        legalTerminosTexto: textoTerminos,
+        legalPrivacidadTexto: textoPrivacidad,
+        legalReembolsoTexto: textoReembolso,
+      };
 
-CUARTA: MECÁNICA DE ASIGNACIÓN Y DETERMINACIÓN DEL CÓDIGO GANADOR.-
-La determinación de los códigos participantes favorecidos se efectuará mediante la combinación matemática directa de los resultados oficiales emitidos por la Junta de Protección Social en el sorteo de la fecha señalada, estructurándose de la siguiente forma:
-1. PRIMER PREMIO MAYOR: Se conformará por el Número oficial de dos (2) dígitos seguido de la Serie oficial de tres (3) dígitos del Primer Premio de la Lotería Nacional (Ejemplo: Número 01 + Serie 451 = Código 01451).
-2. SEGUNDO PREMIO: Número oficial de dos (2) dígitos seguido de la Serie oficial de tres (3) dígitos del Segundo Premio oficial.
-3. TERCER PREMIO: Número oficial de dos (2) dígitos seguido de la Serie oficial de tres (3) dígitos del Tercer Premio oficial.
+      await upsertConfig(nuevoConfig);
+      if (setConfig) {
+        setConfig(nuevoConfig);
+      }
 
-QUINTA: PREMIOS, FECHA DEL EVENTO Y REPROGRAMACIÓN.-
-A) PREMIO MAYOR EN JUEGO: ${premioNombre}.
-B) FECHA OFICIAL: El evento promocional se proyecta para el día ${fechaSorteo}.
-C) CONDICIONES DE CIERRE:
-   - Si a la fecha prevista se ha colocado la totalidad del inventario de tokens, el sorteo se ejecutará indefectiblemente en dicha fecha.
-   - Si la totalidad de los tokens se completase con antelación, la empresa podrá adelantar el sorteo al domingo más cercano posterior a la finalización de inventario, notificándolo previamente a los consumidores por sus plataformas oficiales.
-   - De no alcanzarse el umbral operativo mínimo requerido para la adjudicación íntegra, la empresa se reserva el derecho de reprogramar la fecha mediante prórrogas periódicas hasta la total colocación de los tokens.
+      toast.success("¡Documento legal guardado con éxito!", {
+        description:
+          "Los cambios ya están sincronizados y publicados en la plataforma.",
+      });
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Error al guardar documento legal", {
+        description: err.message || "Verifica la conexión a la base de datos.",
+      });
+    } finally {
+      setGuardando(false);
+    }
+  };
 
-SEXTA: REQUISITOS DEL GANADOR Y PROTOCOLO NOTARIAL DE ENTREGA.-
-Para hacer efectivo el reclamo y traspaso del premio, el favorecido deberá cumplir estrictamente con los siguientes requisitos:
-1. Ser mayor de dieciocho (18) años.
-2. Presentar su documento de identidad original y vigente (Cédula de Identidad para nacionales o DIMEX/Pasaporte para extranjeros residentes).
-3. Acreditar que el número telefónico y datos de registro coinciden con el código favorecido verificado en la base de datos digital de la plataforma.
-4. El favorecido dispondrá de un plazo improrrogable de treinta (30) días naturales a partir de la fecha de realización del sorteo para apersonarse a coordinar la formalización.
-5. La entrega formal se realizará mediante comparecencia ante Notario Público, levantándose la respectiva ACTA NOTARIAL DE ADJUDICACIÓN Y ENTREGA DE PREMIO PROMOCIONAL y formalizándose la escritura pública de traspaso ante el Registro Nacional de Costa Rica libre de gravámenes, anotaciones o prendas.
-
-SÉPTIMA: FACULTAD DE MODIFICACIÓN Y MEJORAS EN BENEFICIO DE LA COMUNIDAD.-
-La empresa organizadora "${razonSocial.toUpperCase()}" se reserva el derecho expreso de actualizar, complementar, modificar o perfeccionar en cualquier momento las cláusulas operativas, dinámicas de fidelización, catálogo de premios e incentivos de la plataforma, siempre que dichas reformas tengan por objeto optimizar la experiencia, incrementar los beneficios comerciales de los participantes o velar por el interés colectivo de la comunidad de usuarios. Dichas modificaciones surtirán efectos legales plenos a partir de su publicación oficial en el sitio web de la plataforma.
-
-OCTAVA: ACEPTACIÓN Y PROTOCOLIZACIÓN.-
-El compareciente solicita al suscrito Notario protocolizar en todas sus partes el presente Reglamento Oficial de Promoción Comercial para que surta plenos efectos jurídicos, obligándose su representada a publicarlo íntegramente en la dirección electrónica oficial de la plataforma (https://avalcommunity.cr/terminos) a disposición permanente de los consumidores y autoridades competentes.
-
-Leída la presente escritura al compareciente, la encuentra conforme, la aprueba y firmamos en la ciudad de San José, a las diez horas con cuarenta y cinco minutos del día quince de agosto de dos mil veintiséis.- DOY FE.-
-
-_________________________________________
-${razonSocial.toUpperCase()}
-Cédula Jurídica: [CÉDULA JURÍDICA]
-Representante Legal / Compareciente
-
-_________________________________________
-[NOMBRE DEL NOTARIO PÚBLICO]
-Notario Público - Carné Colegio de Abogados: [N° DE CARNÉ]
-(Engrose y Timbres de Ley en Papel de Seguridad Notarial)`;
+  const restablecerOriginal = () => {
+    if (tabActiva === "notarial") {
+      setTextoNotarial(getDefaultMinutaNotarial(razonSocial, premioNombre, fechaSorteo));
+    } else if (tabActiva === "terminos") {
+      setTextoTerminos(getDefaultTerminos(razonSocial, telSinpe));
+    } else if (tabActiva === "privacidad") {
+      setTextoPrivacidad(getDefaultPrivacidad(razonSocial));
+    } else {
+      setTextoReembolso(getDefaultReembolso(razonSocial, telSinpe));
+    }
+    toast.info("Texto restablecido a la versión oficial predeterminada", {
+      description: "Recuerda presionar 'Guardar Cambios' para aplicar.",
+    });
+  };
 
   const copiarTexto = () => {
-    void navigator.clipboard.writeText(textoEscritura);
+    void navigator.clipboard.writeText(textoActual);
     setCopiado(true);
-    toast.success("¡Texto de Escritura Notarial copiado!", {
-      description: "Puedes pegarlo directamente en Word o enviárselo a tu Notario.",
+    toast.success("¡Texto copiado al portapapeles!", {
+      description: "Puedes pegarlo en Word, WhatsApp o enviarlo por correo.",
     });
     setTimeout(() => setCopiado(false), 3000);
   };
@@ -87,23 +181,38 @@ Notario Público - Carné Colegio de Abogados: [N° DE CARNÉ]
     window.print();
   };
 
+  const palabras = textoActual.trim() ? textoActual.trim().split(/\s+/).length : 0;
+  const caracteres = textoActual.length;
+
   return (
     <div className="space-y-6 animate-in fade-in-50">
-      {/* Header */}
+      {/* Header Principal */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 text-xs font-bold text-primary">
-            <Scale className="size-3.5" /> PROTOCOLIZACIÓN NOTARIAL · COSTA RICA
+            <Scale className="size-3.5" /> MARCO LEGAL Y REGLAMENTOS OFICIALES
           </div>
           <h2 className="text-2xl font-black text-foreground mt-2 flex items-center gap-2">
-            📜 Escritura de Reglamento en Papel de Seguridad
+            📜 Protocolo Notarial y Documentos Legales
           </h2>
           <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
-            Minuta modelo lista para protocolizar en el tomo de tu Notario Público y emitir testimonio en papel de seguridad con timbres de ley.
+            Edita, personaliza y mantén al día los reglamentos oficiales, políticas de privacidad, términos comerciales y la minuta notarial de tu evento.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <Button
+            type="button"
+            variant="hero"
+            size="sm"
+            onClick={guardarCambios}
+            disabled={guardando}
+            className="gap-2 font-black shadow-lg"
+          >
+            <Save className="size-4" />
+            {guardando ? "Guardando..." : "Guardar Cambios"}
+          </Button>
+
           <Button
             type="button"
             variant="outline"
@@ -112,17 +221,17 @@ Notario Público - Carné Colegio de Abogados: [N° DE CARNÉ]
             className="gap-2 border-primary/40 text-primary hover:bg-primary/10 font-bold"
           >
             {copiado ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
-            {copiado ? "¡Copiado!" : "Copiar Minuta Notarial"}
+            {copiado ? "¡Copiado!" : "Copiar Texto"}
           </Button>
 
           <Button
             type="button"
-            variant="hero"
+            variant="outline"
             size="sm"
             onClick={imprimirTexto}
-            className="gap-2 font-black shadow-md"
+            className="gap-2 border-border"
           >
-            <Printer className="size-4" /> Imprimir Documento
+            <Printer className="size-4" /> Imprimir
           </Button>
 
           <Button
@@ -139,63 +248,231 @@ Notario Público - Carné Colegio de Abogados: [N° DE CARNÉ]
         </div>
       </div>
 
-      {/* 3 Tarjetas de Resumen Notarial */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/20 text-primary text-base font-bold">
-            ⚖️
+      {/* 4 Pestañas de Documentos Legales */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-secondary/40 border border-border">
+        <button
+          type="button"
+          onClick={() => setTabActiva("notarial")}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold transition-all ${
+            tabActiva === "notarial"
+              ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+          }`}
+        >
+          <FileText className="size-4 text-amber-400 shrink-0" />
+          <span className="truncate">Minuta Notarial</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabActiva("terminos")}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold transition-all ${
+            tabActiva === "terminos"
+              ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+          }`}
+        >
+          <Scale className="size-4 text-primary shrink-0" />
+          <span className="truncate">Términos y Reglamento</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabActiva("privacidad")}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold transition-all ${
+            tabActiva === "privacidad"
+              ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+          }`}
+        >
+          <Lock className="size-4 text-sky-400 shrink-0" />
+          <span className="truncate">Privacidad de Datos</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabActiva("reembolso")}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold transition-all ${
+            tabActiva === "reembolso"
+              ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+          }`}
+        >
+          <RefreshCcw className="size-4 text-emerald-400 shrink-0" />
+          <span className="truncate">Reembolsos</span>
+        </button>
+      </div>
+
+      {/* Tarjeta de Información del Documento Seleccionado */}
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-[10px] font-extrabold text-primary uppercase">
+              {infoTab.badge}
+            </span>
+            {infoTab.ruta && (
+              <span className="text-xs font-mono text-muted-foreground">
+                Publicado en: <strong className="text-foreground">{infoTab.ruta}</strong>
+              </span>
+            )}
           </div>
-          <div className="font-bold text-sm text-foreground">Fundamento Legal MEIC</div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Amparado en la <strong>Ley N° 7472</strong> y el Código de Comercio. La dinámica califica como promoción comercial privada de fidelización.
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <infoTab.icono className="size-4 text-primary" /> {infoTab.titulo}
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+            {infoTab.descripcion}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-base font-bold">
-            🛡️
-          </div>
-          <div className="font-bold text-sm text-foreground">Deslinde de Monopolio JPS</div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            La Lotería Nacional se utiliza únicamente como <strong>testigo neutral de fe pública externa</strong>, sin intermediación de apuestas.
-          </p>
-        </div>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {infoTab.ruta && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              asChild
+              className="gap-1.5 border-border text-xs font-semibold hover:text-primary"
+            >
+              <a href={infoTab.ruta} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="size-3.5" /> Ver en vivo
+              </a>
+            </Button>
+          )}
 
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 text-base font-bold">
-            📑
+          {/* Selector Editor vs Vista Previa */}
+          <div className="flex rounded-xl bg-secondary/70 p-1 border border-border text-xs">
+            <button
+              type="button"
+              onClick={() => setVistaModo("editor")}
+              className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
+                vistaModo === "editor"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Edit3 className="size-3.5" /> Editor
+            </button>
+            <button
+              type="button"
+              onClick={() => setVistaModo("preview")}
+              className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
+                vistaModo === "preview"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Eye className="size-3.5" /> Vista Previa
+            </button>
           </div>
-          <div className="font-bold text-sm text-foreground">Papel de Seguridad Notarial</div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            El notario asienta la matriz en su tomo y emite el <strong>primer testimonio en papel de seguridad</strong> con los timbres del Colegio de Abogados.
-          </p>
         </div>
       </div>
 
-      {/* Visor de Minuta Notarial Oficial */}
-      <div className="rounded-2xl border-2 border-border bg-zinc-950 p-5 sm:p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-          <div className="flex items-center gap-2 font-mono text-xs text-amber-400">
-            <FileText className="size-4" /> MINUTA NOTARIAL PROTOCOLIZABLE (LISTA PARA NOTARIO PÚBLICO)
+      {/* Editor / Vista Previa Principal */}
+      <div className="rounded-2xl border-2 border-border bg-zinc-950 p-4 sm:p-6 shadow-2xl space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3 text-xs">
+          <div className="flex items-center gap-2 font-mono text-amber-400 font-bold">
+            <infoTab.icono className="size-4" /> {infoTab.titulo.toUpperCase()}
           </div>
-          <span className="text-[11px] font-mono text-zinc-400">República de Costa Rica · Tomo Matriz</span>
+          <div className="flex items-center gap-3 text-zinc-400 font-mono text-[11px]">
+            <span>{palabras} palabras</span>
+            <span>·</span>
+            <span>{caracteres} caracteres</span>
+            <span>·</span>
+            <span className="text-emerald-400 flex items-center gap-1">
+              <CheckCircle2 className="size-3" /> Listo para editar
+            </span>
+          </div>
         </div>
 
-        <div className="rounded-xl bg-black/80 border border-zinc-800/80 p-5 font-mono text-xs text-zinc-300 leading-relaxed max-h-[540px] overflow-y-auto whitespace-pre-wrap selection:bg-amber-500 selection:text-black">
-          {textoEscritura}
-        </div>
+        {vistaModo === "editor" ? (
+          <div className="space-y-3">
+            <textarea
+              value={textoActual}
+              onChange={(e) => setTextoActual(e.target.value)}
+              rows={20}
+              placeholder="Escribe o modifica las cláusulas del documento aquí..."
+              className="w-full rounded-xl bg-black/85 border border-zinc-800 p-4 font-mono text-xs sm:text-sm text-zinc-200 leading-relaxed focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 selection:bg-amber-500 selection:text-black resize-y min-h-[480px]"
+            />
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
+              <span>
+                💡 Puedes usar formato tipo Markdown (<code>### Título</code>, <code>**negrita**</code>, <code>- viñetas</code>).
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={restablecerOriginal}
+                className="text-xs text-zinc-400 hover:text-rose-400 hover:bg-rose-950/20 gap-1.5 h-8"
+              >
+                <RotateCcw className="size-3.5" /> Restablecer texto original oficial
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-xl bg-black/85 border border-zinc-800 p-6 text-zinc-200 text-sm leading-relaxed max-h-[560px] overflow-y-auto space-y-4">
+            {textoActual.split("\n\n").map((parrafo, idx) => {
+              const trimmed = parrafo.trim();
+              if (!trimmed) return null;
+              if (trimmed.startsWith("### ")) {
+                return (
+                  <h4 key={idx} className="text-base font-bold text-amber-400 pt-2 border-b border-zinc-800 pb-1">
+                    {trimmed.replace("### ", "")}
+                  </h4>
+                );
+              }
+              if (trimmed.startsWith("> ")) {
+                return (
+                  <blockquote key={idx} className="border-l-2 border-amber-500 pl-3 py-1 italic text-amber-200/90 text-xs bg-amber-950/20 rounded-r-lg">
+                    {trimmed.replace("> ", "")}
+                  </blockquote>
+                );
+              }
+              if (trimmed.startsWith("- ") || trimmed.startsWith("• ")) {
+                const items = trimmed.split("\n").filter((l) => l.trim().length > 0);
+                return (
+                  <ul key={idx} className="list-disc pl-5 space-y-1 text-xs text-zinc-300">
+                    {items.map((it, i) => (
+                      <li key={i}>{it.replace(/^[-•]\s*/, "")}</li>
+                    ))}
+                  </ul>
+                );
+              }
+              return (
+                <p key={idx} className="whitespace-pre-wrap text-xs text-zinc-300 leading-relaxed">
+                  {trimmed}
+                </p>
+              );
+            })}
+          </div>
+        )}
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-muted-foreground">
-          <span>💡 Puedes editar los corchetes <code>[NOMBRE DEL NOTARIO]</code> y <code>[CÉDULA JURÍDICA]</code> con los datos reales de tu empresa.</span>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={copiarTexto}
-            className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10 font-bold shrink-0"
-          >
-            {copiado ? "✓ Texto Copiado" : "📋 Copiar para Enviar al Notario"}
-          </Button>
+        {/* Barra de Acciones Inferior */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-zinc-850">
+          <div className="text-xs text-zinc-400 text-center sm:text-left">
+            <span>Sincronización en vivo con la base de datos de Aval Community CR.</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={copiarTexto}
+              className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10 font-bold text-xs"
+            >
+              {copiado ? "✓ Texto Copiado" : "📋 Copiar Texto"}
+            </Button>
+            <Button
+              type="button"
+              variant="hero"
+              size="sm"
+              onClick={guardarCambios}
+              disabled={guardando}
+              className="font-bold text-xs shadow-md gap-1.5"
+            >
+              <Save className="size-3.5" />
+              {guardando ? "Guardando..." : "Guardar Cambios"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

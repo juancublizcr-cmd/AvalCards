@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 8 de Septiembre de 2026 - 11:55 PM (Hito 25: Dinámica Real de Selección de Vehículos, Subaru Impreza WRX, Cuadrícula Auto-Adaptable y Compatibilidad con Supabase)  
+**Última actualización:** 9 de Septiembre de 2026 - 10:28 PM (Hito 26: Corrección Definitiva de Zona Horaria UTC-6, Cierre Automático de Ventas 2h Antes, Sanitización Legal y Simulador de Estados)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -396,3 +396,35 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Corrección de sintaxis de cierre JSX en `PremiosSection.tsx`.
    - Limpieza exhaustiva de menciones obsoletas a "Toyota Prado" en textos, SEO, metatags y base de conocimientos de Aval-IA.
    - Compilación completa validada (`npm run build` y pre-renderizado HTML) y despliegue exitoso en GitHub y Vercel Edge.
+
+---
+
+## 🚀 Hito 26: Corrección Definitiva de Zona Horaria UTC-6, Cierre Automático de Ventas 2h Antes, Sanitización Legal y Simulador de Estados
+
+1. **Biblioteca Central de Fechas y Neutralización del Bug UTC (`src/lib/fecha-utils.ts`):**
+   - Eliminación radical del bug de corrimiento de fechas causado por instanciación `new Date("YYYY-MM-DD")` que interpretaba medianoche UTC y restaba 6 horas en Costa Rica (UTC-6), mostrando 1 día menos en el contador.
+   - Construcción de funciones normalizadas: `extraerFechaLocal`, `normalizarHora`, `fechaSorteoATimestamp`, `formatearFechaLarga` y `formatearHora12` para calcular siempre la hora local exacta concatenando `T[HH:mm]:00`.
+
+2. **Lógica de Horarios Oficiales y Cierre Previo de 2 Horas (Opción B):**
+   - **Horarios Oficiales**: Martes y Viernes a las 7:30 PM (19:30), Domingos a las 7:30 PM (19:30).
+   - **Cierre Automático**: Bloqueo total de ventas y checkout exactamente **2 horas antes** de la hora de la emisión (a las 5:30 PM / 17:30).
+   - Función `obtenerEstadoSorteo`: Calcula en tiempo real si el sorteo está en `VENTAS_ABIERTAS`, `CIERRE_PREVIO` (2h antes), `EN_CURSO` (transmisión en vivo a partir de las 7:30 PM) o `FINALIZADO`.
+
+3. **Sanitización de Términos Prohibidos:**
+   - Erradicación total de las palabras prohibidas *"lotería"* y *"chances"* en toda la plataforma pública, el panel de administración, la base de datos y los términos legales.
+   - Reemplazo por terminología autorizada y neutral: *"Emisión Oficial de la JPS"*, *"Sorteo Oficial JPS"*, *"Tokens Oficiales"* y *"Auditoría Notarial bajo Emisión Pública"*.
+
+4. **Simulador de Estados del Sorteo en Tiempo Real (`/admin` -> Configuración):**
+   - Integración de panel interactivo de pruebas en la sección de Configuración para testear la respuesta de la web sin esperar las horas reales:
+     - ⚡ **Automático Real**: Sigue la hora del reloj del sistema.
+     - 🟢 **Ventas Abiertas**: Modo estándar con compras y botones 100% habilitados.
+     - 🔒 **Cierre 2h Antes**: Bloquea compras, muestra banner de cierre en la landing page y desactiva el formulario de Checkout.
+     - 🎯 **Sorteo en Vivo**: Activa el distintivo en vivo de emisión en curso a las 7:30 PM.
+   - Enlaces directos a Landing y Checkout para previsualización inmediata en nuevas pestañas.
+
+5. **Guardias de Seguridad y Protección en Checkout (`/checkout`):**
+   - Detección reactiva de estado de ventas cerradas.
+   - Desactivación de pasarelas de pago y presentación de tarjeta informativa de bloqueo con candado cuando restan 2 horas para la emisión.
+
+6. **Compilación de Producción y Pre-renderizado:**
+   - Verificación de imports (`useState`, `Flame`, `fecha-utils`), compilación limpia con Rolldown/Vite SSR y generación de estáticos HTML sin errores.

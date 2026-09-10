@@ -11,7 +11,6 @@ import {
   Timer,
 } from "lucide-react";
 import type { Config, Premio, Sorteo } from "@/lib/admin-store";
-import pradoImg from "@/assets/premio-prado.jpg";
 
 function useCuenta7Dias() {
   const [tiempo, setTiempo] = useState({ d: 7, h: 0, m: 0, s: 0 });
@@ -62,8 +61,8 @@ export function FlyerPromocional({
   );
   const whatsappUrl = `https://wa.me/${telFinal}?text=${mensaje}`;
 
-  const nombreVehiculo = premioMayor?.nombre || "Toyota Prado 2026";
-  const imgVehiculo = premioMayor?.imagen || pradoImg;
+  const nombreVehiculo = premioMayor?.nombre || "Moto de Alta Cilindrada";
+  const imgVehiculo = premioMayor?.imagen || motoImg;
 
   return (
     <div className="min-h-screen bg-[#070709] text-foreground flex flex-col justify-between selection:bg-primary selection:text-primary-foreground relative overflow-x-hidden">

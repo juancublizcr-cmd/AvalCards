@@ -176,7 +176,7 @@ function RematesPage() {
   );
   const [nuevoGanador, setNuevoGanador] = useState("Carlos Solano M.");
   const [nuevoToken, setNuevoToken] = useState("#91204");
-  const [nuevaImagen, setNuevaImagen] = useState("/premio-prado.jpg");
+  const [nuevaImagen, setNuevaImagen] = useState("/premio-subaru.jpg");
 
   const handleCrearNuevoRemate = (e: React.FormEvent) => {
     e.preventDefault();

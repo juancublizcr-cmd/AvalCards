@@ -6,15 +6,20 @@ import {
   Crown,
   Eye,
   EyeOff,
+  Flame,
   Globe,
   Key,
   Loader2,
   Lock,
   MessageSquare,
+  Play,
+  Radio,
+  RefreshCw,
   Save,
   ShieldAlert,
   Smartphone,
   Sparkles,
+  Timer,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -31,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { upsertConfig, type Config } from "@/lib/admin-store";
 import { probarConexionIA } from "@/lib/ai-service";
+import { formatearHora12 } from "@/lib/fecha-utils";
 
 export function ConfigSection({
   config,
@@ -43,6 +49,35 @@ export function ConfigSection({
   const [guardando, setGuardando] = useState(false);
   const [probandoIA, setProbandoIA] = useState(false);
   const [mostrarKeys, setMostrarKeys] = useState<Record<string, boolean>>({});
+  const [modoSimulacion, setModoSimulacion] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("aval_simulador_sorteo_estado") || "auto";
+    }
+    return "auto";
+  });
+
+  const cambiarModoSimulacion = (nuevo: string) => {
+    setModoSimulacion(nuevo);
+    if (typeof window !== "undefined") {
+      if (nuevo === "auto") {
+        localStorage.removeItem("aval_simulador_sorteo_estado");
+        toast.success("Modo Automático restaurado", {
+          description: "El estado se calcula en tiempo real con el reloj oficial.",
+        });
+      } else {
+        localStorage.setItem("aval_simulador_sorteo_estado", nuevo);
+        const nombres: Record<string, string> = {
+          VENTAS_ABIERTAS: "🟢 Ventas Abiertas (Normal)",
+          CIERRE_PREVIO: "🔒 Cierre Previo (2 horas antes)",
+          EN_CURSO: "🎯 Sorteo Oficial en Transmisión",
+          FINALIZADO: "🏁 Sorteo Finalizado",
+        };
+        toast.info(`Simulación activa: ${nombres[nuevo]}`, {
+          description: "Abre la página de inicio o el checkout para ver el resultado en vivo.",
+        });
+      }
+    }
+  };
 
   const toggleMostrarKey = (k: string) => {
     setMostrarKeys((prev) => ({ ...prev, [k]: !prev[k] }));
@@ -153,6 +188,142 @@ export function ConfigSection({
           </div>
         </div>
 
+        {/* HORARIOS DE SORTEOS OFICIALES Y CIERRE AUTOMÁTICO */}
+        <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 space-y-4">
+          <div className="flex items-center gap-2 text-primary font-bold text-sm">
+            <Timer className="size-4" /> Horarios de Sorteos Oficiales y Cierre Automático de Ventas
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Configura la hora oficial de los sorteos y cuántas horas antes se bloquean las ventas automáticamente para la auditoría y verificación previa.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold">⏰ Sorteos Martes y Viernes</Label>
+              <Input
+                type="time"
+                value={borrador.horaSorteoMartesViernes || "19:30"}
+                onChange={(e) => setBorrador({ ...borrador, horaSorteoMartesViernes: e.target.value })}
+                className="font-mono font-bold"
+              />
+              <p className="text-[10px] text-muted-foreground">Hora oficial para emisiones de martes y viernes (ej. 19:30 = 7:30 PM).</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold">⏰ Sorteos Domingos</Label>
+              <Input
+                type="time"
+                value={borrador.horaSorteoDomingos || "19:30"}
+                onChange={(e) => setBorrador({ ...borrador, horaSorteoDomingos: e.target.value })}
+                className="font-mono font-bold"
+              />
+              <p className="text-[10px] text-muted-foreground">Hora oficial para emisiones de domingo (ej. 19:30 = 7:30 PM).</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-amber-400">🔒 Cierre Automático Previo</Label>
+              <Input
+                type="number"
+                min={0.5}
+                max={12}
+                step={0.5}
+                value={borrador.horasCierrePrevio ?? 2}
+                onChange={(e) => setBorrador({ ...borrador, horasCierrePrevio: Number(e.target.value) })}
+                className="font-mono font-bold border-amber-500/50"
+              />
+              <p className="text-[10px] text-amber-400/90">
+                Horas de anticipación para cerrar ventas automáticamente antes del sorteo (Default: 2 horas).
+              </p>
+            </div>
+          </div>
+
+          {/* SIMULADOR EN VIVO PARA EL ADMINISTRADOR */}
+          <div className="pt-3 border-t border-primary/20 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <Radio className="size-3.5 text-amber-400 animate-pulse" />
+                Simulador de Estados del Sorteo (Previsualización en Vivo)
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-primary hover:underline flex items-center gap-1 font-semibold"
+                >
+                  <Eye className="size-3" /> Ver Landing en Vivo ↗
+                </a>
+                <span className="text-zinc-600">·</span>
+                <a
+                  href="/checkout"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-amber-400 hover:underline flex items-center gap-1 font-semibold"
+                >
+                  <Lock className="size-3" /> Ver Checkout ↗
+                </a>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-muted-foreground">
+              Haz clic en cualquiera de los botones para forzar el estado del sorteo y verificar cómo reacciona la página principal, el contador regresivo, los banners y el bloqueo del checkout:
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => cambiarModoSimulacion("auto")}
+                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left flex flex-col gap-0.5 cursor-pointer ${
+                  modoSimulacion === "auto"
+                    ? "bg-primary/20 border-primary text-primary shadow-sm"
+                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+                }`}
+              >
+                <span>⚡ Automático Real</span>
+                <span className="text-[9px] font-normal opacity-80">Usa la hora real del reloj</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => cambiarModoSimulacion("VENTAS_ABIERTAS")}
+                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left flex flex-col gap-0.5 cursor-pointer ${
+                  modoSimulacion === "VENTAS_ABIERTAS"
+                    ? "bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-sm"
+                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+                }`}
+              >
+                <span>🟢 Ventas Abiertas</span>
+                <span className="text-[9px] font-normal opacity-80">Compras 100% activas</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => cambiarModoSimulacion("CIERRE_PREVIO")}
+                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left flex flex-col gap-0.5 cursor-pointer ${
+                  modoSimulacion === "CIERRE_PREVIO"
+                    ? "bg-amber-500/20 border-amber-500 text-amber-400 shadow-sm"
+                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+                }`}
+              >
+                <span>🔒 Cierre 2h Antes</span>
+                <span className="text-[9px] font-normal opacity-80">Bloquea compras y checkout</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => cambiarModoSimulacion("EN_CURSO")}
+                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left flex flex-col gap-0.5 cursor-pointer ${
+                  modoSimulacion === "EN_CURSO"
+                    ? "bg-red-500/20 border-red-500 text-red-400 shadow-sm"
+                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+                }`}
+              >
+                <span>🎯 Sorteo en Vivo</span>
+                <span className="text-[9px] font-normal opacity-80">7:30 PM en transmisión</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* TERMÓMETRO COMERCIAL DE LA LANDING (FASES) */}
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 space-y-4">
           <div className="flex items-center gap-2 text-amber-500 font-bold text-sm">
@@ -175,10 +346,10 @@ export function ConfigSection({
                 type="number"
                 min={50}
                 max={100000}
-                value={borrador.termometroMetaTokens ?? 5000}
+                value={borrador.termometroMetaTokens ?? 100000}
                 onChange={(e) => setBorrador({ ...borrador, termometroMetaTokens: Number(e.target.value) })}
               />
-              <p className="text-[10px] text-muted-foreground">Ej. 5 000 tokens. Con 205 tokens reales calcula 4.1% automáticamente.</p>
+              <p className="text-[10px] text-muted-foreground">Emisión total oficial: 100,000 tokens (00000 al 99999). Con 2,000 tokens calcula exactamente 2.0%.</p>
             </div>
 
             <div className="space-y-1.5">
@@ -646,11 +817,11 @@ export function ConfigSection({
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
             <div className="flex items-center gap-2.5 font-black text-base text-amber-500">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 font-black text-sm">🎮</span>
-              7.4 Mini-Sorteos Semanales (Domingos de PlayStation / Efectivo)
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 font-black text-sm">⛽</span>
+              7.4 Mini-Sorteos Semanales (Viernes de Gasolina ⛽ + Domingos de Play 🎮)
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Sorteos automáticos con el mismo Token de los clientes para mantener las compras activas todas las semanas.
+              Sorteos semanales automáticos con el mismo Token de los clientes: Viernes de Tanque Lleno (₡50,000 en Gasolina) y Domingos de PlayStation 5.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -670,10 +841,18 @@ export function ConfigSection({
               onChange={(e) => setBorrador({ ...borrador, miniSorteoDia: Number(e.target.value) })}
               className="w-full h-9 rounded-md border border-input bg-background px-3 text-xs"
             >
-              <option value={0}>Todos los Domingos (7:00 PM)</option>
-              <option value={5}>Todos los Viernes (7:00 PM)</option>
-              <option value={6}>Todos los Sábados (7:00 PM)</option>
-              <option value={2}>Todos los Martes (7:00 PM)</option>
+              <option value={0}>
+                Todos los Domingos ({formatearHora12(borrador.horaSorteoDomingos || "19:30")})
+              </option>
+              <option value={5}>
+                Todos los Viernes ({formatearHora12(borrador.horaSorteoMartesViernes || "19:30")})
+              </option>
+              <option value={2}>
+                Todos los Martes ({formatearHora12(borrador.horaSorteoMartesViernes || "19:30")})
+              </option>
+              <option value={6}>
+                Todos los Sábados ({formatearHora12(borrador.horaSorteoMartesViernes || "19:30")})
+              </option>
             </select>
           </div>
           <div className="space-y-2">
@@ -739,10 +918,10 @@ export function ConfigSection({
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
             <Label className="text-xs font-bold text-foreground">
-              Precio Adicional por SuperToken (₡ CRC)
+              Costo Adicional (₡ CRC)
             </Label>
             <Input
               type="number"
@@ -752,23 +931,58 @@ export function ConfigSection({
               className="border-amber-500/40 font-bold font-mono text-primary"
             />
             <span className="text-[11px] text-muted-foreground block">
-              Monto en colones que se sumará al total cuando el usuario activa el switch de SuperToken.
+              Precio que se suma al activar SuperToken (por orden).
             </span>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs font-bold text-foreground">
-              Monto del Premio en Efectivo SuperToken ($ USD Cash)
+            <Label className="text-xs font-bold text-amber-400">
+              🥇 Bono 1° Lugar ($ USD)
             </Label>
             <Input
               type="number"
-              value={borrador.supertokenPremioUsd ?? 6000}
-              onChange={(e) => setBorrador({ ...borrador, supertokenPremioUsd: Number(e.target.value) })}
-              placeholder="6000"
+              value={borrador.supertokenPremioPrimeroUsd ?? borrador.supertokenPremioUsd ?? 10000}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setBorrador({ ...borrador, supertokenPremioPrimeroUsd: val, supertokenPremioUsd: val });
+              }}
+              placeholder="10000"
               className="border-amber-500/40 font-bold font-mono text-amber-400"
             />
             <span className="text-[11px] text-muted-foreground block">
-              Monto en dólares estadounidenses anunciado en toda la web (ej: 6000 para +$6,000 USD).
+              Bono en efectivo sumado al Vehículo Mayor.
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-amber-300">
+              🥈 Bono 2° Lugar ($ USD)
+            </Label>
+            <Input
+              type="number"
+              value={borrador.supertokenPremioSegundoUsd ?? 6000}
+              onChange={(e) => setBorrador({ ...borrador, supertokenPremioSegundoUsd: Number(e.target.value) })}
+              placeholder="6000"
+              className="border-amber-500/40 font-bold font-mono text-amber-300"
+            />
+            <span className="text-[11px] text-muted-foreground block">
+              Bono en efectivo sumado al Segundo Premio.
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-yellow-500">
+              🥉 Bono 3° Lugar ($ USD)
+            </Label>
+            <Input
+              type="number"
+              value={borrador.supertokenPremioTerceroUsd ?? 3000}
+              onChange={(e) => setBorrador({ ...borrador, supertokenPremioTerceroUsd: Number(e.target.value) })}
+              placeholder="3000"
+              className="border-amber-500/40 font-bold font-mono text-yellow-500"
+            />
+            <span className="text-[11px] text-muted-foreground block">
+              Bono en efectivo sumado al Tercer Premio.
             </span>
           </div>
         </div>

@@ -205,7 +205,9 @@ export function RankingReferidos({ config }: { config: Config }) {
             <Users className="size-5" />
           </div>
           <div>
-            <div className="font-bold text-sm text-foreground">¿Quieres entrar al Ranking y ganar los ₡250,000?</div>
+            <div className="font-bold text-sm text-foreground">
+              ¿Querés entrar al Ranking y llevarte {config.rankingPremioPrimero || "₡250,000 SINPE"}?
+            </div>
             <p className="text-xs text-muted-foreground">
               Compite invitando amigos con tu enlace personal. ¡Cada compra suma a tu cuenta oficial!
             </p>

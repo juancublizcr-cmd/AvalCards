@@ -72,15 +72,25 @@ function normalizarOrden(item: any): Orden {
 
 export async function fetchOrdenes(): Promise<Orden[]> {
   try {
-    const { data, error } = await supabase
-      .from("ordenes")
-      .select("*")
-      .order("fecha", { ascending: false });
-    if (error) {
-      console.warn("fetchOrdenes error:", error.message);
-      return [];
+    let allData: any[] = [];
+    let from = 0;
+    const step = 1000;
+    while (true) {
+      const { data, error } = await supabase
+        .from("ordenes")
+        .select("*")
+        .order("fecha", { ascending: false })
+        .range(from, from + step - 1);
+      if (error) {
+        console.warn("fetchOrdenes error:", error.message);
+        break;
+      }
+      if (!data || data.length === 0) break;
+      allData = allData.concat(data);
+      if (data.length < step) break;
+      from += step;
     }
-    return (data ?? []).map(normalizarOrden);
+    return allData.map(normalizarOrden);
   } catch (err) {
     console.warn("fetchOrdenes exception:", err);
     return [];

@@ -8,14 +8,22 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  let extraUsd = supertokenPremioUsd;
-  if (!extraUsd && typeof window !== "undefined") {
+  let extraPremio = supertokenPremioUsd;
+  let moneda: "USD" | "CRC" = "CRC";
+  if (typeof window !== "undefined") {
     try {
       const raw = localStorage.getItem("aval_site_config_extra");
-      if (raw) extraUsd = JSON.parse(raw).supertokenPremioUsd;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (!extraPremio) extraPremio = parsed.supertokenPremioPrimeroUsd || parsed.supertokenPremioUsd;
+        if (parsed.supertokenMoneda) moneda = parsed.supertokenMoneda;
+      }
     } catch {}
   }
-  const finalPremioUsd = extraUsd || 6000;
+  const finalPremio = extraPremio || 4500000;
+  if (!moneda) moneda = finalPremio > 50000 ? "CRC" : "USD";
+  const simbolo = moneda === "CRC" ? "₡" : "$";
+  const codigo = moneda === "CRC" ? "CRC" : "USD";
 
   // Dimensiones HD (1200 x 1600 para tarjeta vertical de lujo)
   const width = 1080;
@@ -72,7 +80,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
     ctx.fillStyle = "#000000";
     ctx.font = "bold 26px sans-serif, Arial";
     ctx.textAlign = "center";
-    ctx.fillText(`👑 SUPERTOKEN ACTIVO · CALIFICA PARA +$${finalPremioUsd.toLocaleString()} USD CASH`, width / 2, currentY + 4);
+    ctx.fillText(`👑 SUPERTOKEN ACTIVO · CALIFICA PARA +${simbolo}${finalPremio.toLocaleString()} ${codigo}`, width / 2, currentY + 4);
     currentY += 85;
   }
 

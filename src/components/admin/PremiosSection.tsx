@@ -19,6 +19,8 @@ import {
   Trophy,
   UserCheck,
   Zap,
+  ArrowRightLeft,
+  RotateCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -94,17 +96,56 @@ export function PremiosSection({
     }));
   }, [sorteo]);
 
-  const [supertokenPrecio, setSupertokenPrecio] = useState<number>(config?.supertokenPrecio ?? 1500);
-  const [supertokenPremioUsd, setSupertokenPremioUsd] = useState<number>(config?.supertokenPremioUsd ?? 6000);
+  const [supertokenPrecio, setSupertokenPrecio] = useState<number>(config?.supertokenPrecio ?? 1000);
+  const [supertokenPremioPrimeroUsd, setSupertokenPremioPrimeroUsd] = useState<number>(config?.supertokenPremioPrimeroUsd ?? config?.supertokenPremioUsd ?? 4500000);
+  const [supertokenPremioSegundoUsd, setSupertokenPremioSegundoUsd] = useState<number>(config?.supertokenPremioSegundoUsd ?? 250000);
+  const [supertokenPremioTerceroUsd, setSupertokenPremioTerceroUsd] = useState<number>(config?.supertokenPremioTerceroUsd ?? 1500000);
   const [supertokenActivo, setSupertokenActivo] = useState<boolean>(config?.supertokenActivo ?? true);
+  const [supertokenMoneda, setSupertokenMoneda] = useState<"CRC" | "USD">(() => {
+    if (config?.supertokenMoneda) return config.supertokenMoneda;
+    const p1 = Number(config?.supertokenPremioPrimeroUsd ?? config?.supertokenPremioUsd ?? 0);
+    return p1 > 50000 ? "CRC" : "CRC";
+  });
+  const [tipoCambio, setTipoCambio] = useState<number>(515);
 
   useEffect(() => {
     if (config) {
-      setSupertokenPrecio(config.supertokenPrecio ?? 1500);
-      setSupertokenPremioUsd(config.supertokenPremioUsd ?? 6000);
+      setSupertokenPrecio(config.supertokenPrecio ?? 1000);
+      setSupertokenPremioPrimeroUsd(config.supertokenPremioPrimeroUsd ?? config.supertokenPremioUsd ?? 4500000);
+      setSupertokenPremioSegundoUsd(config.supertokenPremioSegundoUsd ?? 250000);
+      setSupertokenPremioTerceroUsd(config.supertokenPremioTerceroUsd ?? 1500000);
       setSupertokenActivo(config.supertokenActivo ?? true);
+      setSupertokenMoneda(config.supertokenMoneda || (Number(config.supertokenPremioPrimeroUsd || 0) > 50000 ? "CRC" : "CRC"));
     }
   }, [config]);
+
+  const convertirAColones = () => {
+    if (supertokenMoneda === "CRC") {
+      toast.info("Los bonos ya están marcados en Colones (CRC)");
+      return;
+    }
+    setSupertokenPremioPrimeroUsd(Math.round(supertokenPremioPrimeroUsd * tipoCambio));
+    setSupertokenPremioSegundoUsd(Math.round(supertokenPremioSegundoUsd * tipoCambio));
+    setSupertokenPremioTerceroUsd(Math.round(supertokenPremioTerceroUsd * tipoCambio));
+    setSupertokenMoneda("CRC");
+    toast.success("¡Montos convertidos a Colones (CRC)!", {
+      description: `Se multiplicaron los bonos por el tipo de cambio ₡${tipoCambio}.`,
+    });
+  };
+
+  const convertirADolares = () => {
+    if (supertokenMoneda === "USD") {
+      toast.info("Los bonos ya están marcados en Dólares (USD)");
+      return;
+    }
+    setSupertokenPremioPrimeroUsd(Math.round(supertokenPremioPrimeroUsd / tipoCambio));
+    setSupertokenPremioSegundoUsd(Math.round(supertokenPremioSegundoUsd / tipoCambio));
+    setSupertokenPremioTerceroUsd(Math.round(supertokenPremioTerceroUsd / tipoCambio));
+    setSupertokenMoneda("USD");
+    toast.success("¡Montos convertidos a Dólares (USD)!", {
+      description: `Se dividieron los bonos entre el tipo de cambio ₡${tipoCambio}.`,
+    });
+  };
 
   const [guardandoSorteo, setGuardandoSorteo] = useState(false);
   const [guardandoRaspa, setGuardandoRaspa] = useState(false);
@@ -381,15 +422,21 @@ export function PremiosSection({
         const nuevoConfig: Config = {
           ...config,
           supertokenPrecio,
-          supertokenPremioUsd,
+          supertokenMoneda,
+          supertokenPremioUsd: supertokenPremioPrimeroUsd,
+          supertokenPremioPrimeroUsd,
+          supertokenPremioSegundoUsd,
+          supertokenPremioTerceroUsd,
           supertokenActivo,
         };
         await upsertConfig(nuevoConfig);
         setConfig(nuevoConfig);
       }
 
+      const simb = supertokenMoneda === "CRC" ? "₡" : "$";
+      const cod = supertokenMoneda === "CRC" ? "CRC" : "USD";
       toast.success("¡Configuración del evento y SuperToken guardados con éxito!", {
-        description: `SuperToken: ₡${supertokenPrecio.toLocaleString()} CRC · Premio: +$${supertokenPremioUsd.toLocaleString()} USD Cash`,
+        description: `SuperToken: ₡${supertokenPrecio.toLocaleString()} CRC · Bonos: 1° (+${simb}${supertokenPremioPrimeroUsd.toLocaleString()}), 2° (+${simb}${supertokenPremioSegundoUsd.toLocaleString()}), 3° (+${simb}${supertokenPremioTerceroUsd.toLocaleString()}) ${cod} Cash`,
       });
     } catch (err: any) {
       console.error(err);
@@ -456,9 +503,9 @@ export function PremiosSection({
           La fecha que coloques aquí controla directamente el <strong>contador de días, horas y minutos</strong> de la página principal.
         </p>
 
-        <div className="grid gap-4 md:grid-cols-3 pt-2">
+        <div className="grid gap-4 md:grid-cols-4 pt-2">
           <div className="space-y-2">
-            <Label>Nombre del Evento Promocional</Label>
+            <Label>Nombre del Evento</Label>
             <Input
               value={borrador.nombre}
               onChange={(e) => setBorrador({ ...borrador, nombre: e.target.value })}
@@ -466,7 +513,7 @@ export function PremiosSection({
             />
           </div>
           <div className="space-y-2">
-            <Label className="font-bold text-primary">📅 Fecha de Cierre del Evento</Label>
+            <Label className="font-bold text-primary">📅 Fecha Oficial del Sorteo</Label>
             <Input
               type="date"
               value={borrador.fecha}
@@ -474,7 +521,19 @@ export function PremiosSection({
               className="border-primary/60 font-bold"
             />
             <span className="text-[11px] text-muted-foreground block">
-              Actual: <strong>{borrador.fecha || "2026-09-27"}</strong>
+              Actual: <strong>{borrador.fecha || "2026-09-13"}</strong>
+            </span>
+          </div>
+          <div className="space-y-2">
+            <Label className="font-bold text-amber-400">⏰ Hora del Sorteo</Label>
+            <Input
+              type="time"
+              value={borrador.horaSorteo || "19:30"}
+              onChange={(e) => setBorrador({ ...borrador, horaSorteo: e.target.value })}
+              className="border-amber-500/60 font-mono font-bold"
+            />
+            <span className="text-[10px] text-amber-400/90 block">
+              🔒 Ventas se cierran 2h antes automáticamente
             </span>
           </div>
           <div className="space-y-2">
@@ -622,7 +681,7 @@ export function PremiosSection({
         </div>
 
         {/* CONFIGURACIÓN Y VALOR DEL SUPERTOKEN */}
-        <div className="pt-3 border-t border-border space-y-3">
+        <div className="pt-3 border-t border-border space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/40 rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-2.5">
               <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shrink-0">
@@ -633,7 +692,7 @@ export function PremiosSection({
                   👑 Valor y Configuración del SuperToken Oficial
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  Modifica cuánto cuesta activar el SuperToken y el bono en efectivo en dólares que gana el 1° Lugar.
+                  Modifica cuánto cuesta activar el SuperToken y los bonos en efectivo que ganan los 3 primeros lugares.
                 </p>
               </div>
             </div>
@@ -650,10 +709,82 @@ export function PremiosSection({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          {/* BARRA DE CONVERSIÓN Y SELECTOR DE MONEDA */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-zinc-950/80 p-3.5 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <ArrowRightLeft className="size-3.5 text-amber-400" /> Moneda de los Bonos en la Web:
+              </span>
+              <div className="inline-flex rounded-xl border border-border bg-secondary/60 p-1">
+                <button
+                  type="button"
+                  onClick={() => setSupertokenMoneda("CRC")}
+                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                    supertokenMoneda === "CRC"
+                      ? "bg-amber-500 text-black shadow-md"
+                      : "text-muted-foreground hover:text-white"
+                  }`}
+                >
+                  🪙 Colones (₡ CRC)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSupertokenMoneda("USD")}
+                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                    supertokenMoneda === "USD"
+                      ? "bg-amber-500 text-black shadow-md"
+                      : "text-muted-foreground hover:text-white"
+                  }`}
+                >
+                  💵 Dólares ($ USD)
+                </button>
+              </div>
+            </div>
+
+            {/* Herramienta Conversora Rápida */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 bg-secondary/70 border border-border px-2.5 py-1 rounded-lg text-xs">
+                <span className="text-[11px] text-muted-foreground">T.C.:</span>
+                <span className="font-mono font-bold text-amber-400">₡</span>
+                <input
+                  type="number"
+                  value={tipoCambio}
+                  onChange={(e) => setTipoCambio(Number(e.target.value) || 515)}
+                  className="w-14 bg-transparent font-mono font-bold text-xs text-foreground focus:outline-none"
+                  title="Tipo de cambio referencial (₡ / USD)"
+                />
+              </div>
+
+              {supertokenMoneda === "USD" ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={convertirAColones}
+                  className="h-8 px-3 text-xs border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
+                  title="Convierte los 3 montos actuales multiplicándolos por el tipo de cambio a Colones"
+                >
+                  <RotateCw className="size-3.5" /> Convertir cifras a CRC (x{tipoCambio})
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={convertirADolares}
+                  className="h-8 px-3 text-xs border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
+                  title="Convierte los 3 montos actuales dividiéndolos entre el tipo de cambio a Dólares"
+                >
+                  <RotateCw className="size-3.5" /> Convertir cifras a USD (/{tipoCambio})
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5 rounded-xl border border-border bg-secondary/30 p-3.5">
               <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <Coins className="size-4 text-amber-500" /> Costo Adicional del SuperToken (₡ CRC)
+                <Coins className="size-4 text-amber-500" /> Costo Adicional (₡ CRC)
               </Label>
               <Input
                 type="number"
@@ -663,23 +794,61 @@ export function PremiosSection({
                 className="font-bold font-mono text-primary border-primary/50 text-base"
               />
               <span className="text-[11px] text-muted-foreground block">
-                Precio en colones que se sumará a la orden cuando el usuario activa la casilla de SuperToken al comprar.
+                Escala cada 3 tokens: 3 → ₡{(supertokenPrecio || 1000).toLocaleString()}, 6 → ₡{((supertokenPrecio || 1000) * 2).toLocaleString()}, 9 → ₡{((supertokenPrecio || 1000) * 3).toLocaleString()}...
               </span>
             </div>
 
-            <div className="space-y-1.5 rounded-xl border border-border bg-secondary/30 p-3.5">
-              <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <Crown className="size-4 text-amber-400" /> Bono Extra si gana 1° Lugar ($ USD Cash)
+            <div className="space-y-1.5 rounded-xl border border-amber-500/40 bg-amber-500/5 p-3.5">
+              <Label className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <Crown className="size-4 text-amber-400" /> 🥇 Bono 1° Lugar ({supertokenMoneda === "CRC" ? "₡ CRC" : "$ USD"})
               </Label>
               <Input
                 type="number"
-                value={supertokenPremioUsd}
-                onChange={(e) => setSupertokenPremioUsd(Number(e.target.value))}
-                placeholder="6000"
+                value={supertokenPremioPrimeroUsd}
+                onChange={(e) => setSupertokenPremioPrimeroUsd(Number(e.target.value))}
+                placeholder={supertokenMoneda === "CRC" ? "4500000" : "10000"}
                 className="font-bold font-mono text-amber-400 border-amber-500/50 text-base"
               />
-              <span className="text-[11px] text-muted-foreground block">
-                Monto en USD anunciado en la cabecera, tiquetes y modal (ej: 6000 para +$6 000 USD).
+              <span className="text-[11px] text-muted-foreground block font-mono">
+                {supertokenMoneda === "CRC"
+                  ? `≈ $${Math.round((supertokenPremioPrimeroUsd || 0) / tipoCambio).toLocaleString()} USD (al T.C. ₡${tipoCambio})`
+                  : `≈ ₡${Math.round((supertokenPremioPrimeroUsd || 0) * tipoCambio).toLocaleString()} CRC (al T.C. ₡${tipoCambio})`}
+              </span>
+            </div>
+
+            <div className="space-y-1.5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5">
+              <Label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <Crown className="size-4 text-amber-300" /> 🥈 Bono 2° Lugar ({supertokenMoneda === "CRC" ? "₡ CRC" : "$ USD"})
+              </Label>
+              <Input
+                type="number"
+                value={supertokenPremioSegundoUsd}
+                onChange={(e) => setSupertokenPremioSegundoUsd(Number(e.target.value))}
+                placeholder={supertokenMoneda === "CRC" ? "250000" : "6000"}
+                className="font-bold font-mono text-amber-300 border-amber-500/50 text-base"
+              />
+              <span className="text-[11px] text-muted-foreground block font-mono">
+                {supertokenMoneda === "CRC"
+                  ? `≈ $${Math.round((supertokenPremioSegundoUsd || 0) / tipoCambio).toLocaleString()} USD (al T.C. ₡${tipoCambio})`
+                  : `≈ ₡${Math.round((supertokenPremioSegundoUsd || 0) * tipoCambio).toLocaleString()} CRC (al T.C. ₡${tipoCambio})`}
+              </span>
+            </div>
+
+            <div className="space-y-1.5 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-3.5">
+              <Label className="text-xs font-bold text-yellow-500 flex items-center gap-1.5">
+                <Crown className="size-4 text-yellow-500" /> 🥉 Bono 3° Lugar ({supertokenMoneda === "CRC" ? "₡ CRC" : "$ USD"})
+              </Label>
+              <Input
+                type="number"
+                value={supertokenPremioTerceroUsd}
+                onChange={(e) => setSupertokenPremioTerceroUsd(Number(e.target.value))}
+                placeholder={supertokenMoneda === "CRC" ? "1500000" : "3000"}
+                className="font-bold font-mono text-yellow-500 border-yellow-500/50 text-base"
+              />
+              <span className="text-[11px] text-muted-foreground block font-mono">
+                {supertokenMoneda === "CRC"
+                  ? `≈ $${Math.round((supertokenPremioTerceroUsd || 0) / tipoCambio).toLocaleString()} USD (al T.C. ₡${tipoCambio})`
+                  : `≈ ₡${Math.round((supertokenPremioTerceroUsd || 0) * tipoCambio).toLocaleString()} CRC (al T.C. ₡${tipoCambio})`}
               </span>
             </div>
           </div>
@@ -873,7 +1042,7 @@ export function PremiosSection({
               <Input
                 value={borrador.detalleTitulo || ""}
                 onChange={(e) => setBorrador({ ...borrador, detalleTitulo: e.target.value })}
-                placeholder="Toyota Prado 2026: Lujo, Potencia y Confort"
+                placeholder="Moto de Alta Cilindrada: Lujo, Potencia y Confort"
               />
             </div>
 

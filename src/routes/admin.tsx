@@ -31,6 +31,7 @@ import { EscrutinioSection } from "@/components/admin/EscrutinioSection";
 import { ClientesSection } from "@/components/admin/ClientesSection";
 import { ReferidosSection } from "@/components/admin/ReferidosSection";
 import { ReglamentoNotarialSection } from "@/components/admin/ReglamentoNotarialSection";
+import { ImpactoSocialSection } from "@/components/admin/ImpactoSocialSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -253,14 +254,17 @@ function Admin() {
                   reservados={reservados}
                 />
               ) : null}
-              {seccion === "escrutinio" ? <EscrutinioSection /> : null}
+              {seccion === "escrutinio" ? (
+                <EscrutinioSection ordenes={ordenes} premios={premios} config={config} sorteo={sorteo} />
+              ) : null}
               {seccion === "clientes" ? <ClientesSection clientes={clientes} /> : null}
               {seccion === "referidos" ? (
                 <ReferidosSection ordenes={ordenes} config={config} setConfig={setConfig} />
               ) : null}
               {seccion === "legal" ? (
-                <ReglamentoNotarialSection config={config} sorteo={sorteo} />
+                <ReglamentoNotarialSection config={config} setConfig={setConfig} sorteo={sorteo} />
               ) : null}
+              {seccion === "social" ? <ImpactoSocialSection /> : null}
               {seccion === "config" ? <ConfigSection config={config} setConfig={setConfig} /> : null}
             </>
           )}

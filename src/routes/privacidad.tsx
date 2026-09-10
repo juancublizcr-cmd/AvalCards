@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Flame, Lock, Shield, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { fetchConfig, type Config, CONFIG_DEFAULT } from "@/lib/admin-store";
+import { LegalContentRenderer } from "@/components/LegalContentRenderer";
 
 export const Route = createFileRoute("/privacidad")({
   head: () => ({
@@ -17,6 +20,14 @@ export const Route = createFileRoute("/privacidad")({
 });
 
 function PrivacidadPage() {
+  const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
+
+  useEffect(() => {
+    void fetchConfig().then((c) => {
+      if (c) setConfig(c);
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
@@ -44,42 +55,46 @@ function PrivacidadPage() {
             Políticas de Privacidad
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responsable del Tratamiento: Importadora Luxury Scents LTDA. (Aval Community CR)
+            Responsable del Tratamiento: {config.razonSocial || "Importadora Luxury Scents LTDA."} (Aval Community CR)
           </p>
         </div>
 
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 text-sm text-muted-foreground leading-relaxed shadow-sm">
-          <h2 className="text-lg font-bold text-foreground">1. Recopilación de Información</h2>
-          <p>
-            Para procesar tu participación y asignación de tokens digitales en nuestros eventos promocionales, recopilamos únicamente los datos indispensables de contacto: nombre completo, número de teléfono celular, correo electrónico y la captura del comprobante bancario por SINPE Móvil.
-          </p>
+        {config.legalPrivacidadTexto?.trim() ? (
+          <LegalContentRenderer content={config.legalPrivacidadTexto} />
+        ) : (
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 text-sm text-muted-foreground leading-relaxed shadow-sm">
+            <h2 className="text-lg font-bold text-foreground">1. Recopilación de Información</h2>
+            <p>
+              Para procesar tu participación y asignación de tokens digitales en nuestros eventos promocionales, recopilamos únicamente los datos indispensables de contacto: nombre completo, número de teléfono celular, correo electrónico y la captura del comprobante de pago por SINPE Móvil o pasarelas de pago.
+            </p>
 
-          <h2 className="text-lg font-bold text-foreground pt-4">2. Finalidad del Uso de Datos</h2>
-          <p>
-            La información suministrada se utiliza de forma estricta y exclusiva para:
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-xs">
-            <li>Validar los depósitos y asignación de números de tokens oficiales.</li>
-            <li>Permitir la consulta de tus tokens mediante tu número celular en nuestra plataforma.</li>
-            <li>Contactarte de inmediato en caso de resultar favorecido con alguno de los premios principales o instantáneos.</li>
-            <li>Realizar los trámites legales de adjudicación y traspaso notarial de los premios oficiales a tu nombre.</li>
-          </ul>
+            <h2 className="text-lg font-bold text-foreground pt-4">2. Finalidad del Uso de Datos</h2>
+            <p>
+              La información suministrada se utiliza de forma estricta y exclusiva para:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-xs">
+              <li>Validar los depósitos y asignación de números de tokens oficiales.</li>
+              <li>Permitir la consulta de tus tokens mediante tu número celular en nuestra plataforma.</li>
+              <li>Contactarte de inmediato en caso de resultar favorecido con alguno de los premios principales o instantáneos.</li>
+              <li>Realizar los trámites legales de adjudicación y traspaso notarial de los premios oficiales a tu nombre.</li>
+            </ul>
 
-          <h2 className="text-lg font-bold text-foreground pt-4">3. Confidencialidad y No Divulgación</h2>
-          <p>
-            Aval Community CR y <strong>Importadora Luxury Scents LTDA.</strong> garantizan que tus datos personales <strong>nunca</strong> serán vendidos, cedidos, transferidos ni compartidos con empresas externas o terceras partes para fines publicitarios.
-          </p>
+            <h2 className="text-lg font-bold text-foreground pt-4">3. Confidencialidad y No Divulgación</h2>
+            <p>
+              Aval Community CR y <strong>{config.razonSocial || "Importadora Luxury Scents LTDA."}</strong> garantizan que tus datos personales <strong>nunca</strong> serán vendidos, cedidos, transferidos ni compartidos con empresas externas o terceras partes para fines publicitarios.
+            </p>
 
-          <h2 className="text-lg font-bold text-foreground pt-4">4. Seguridad del Almacenamiento</h2>
-          <p>
-            Toda la información viaja encriptada mediante protocolo SSL/TLS y se almacena en infraestructuras con seguridad de nivel bancario. Las capturas de comprobantes se resguardan en servidores protegidos accesibles únicamente por el personal administrativo autorizado.
-          </p>
+            <h2 className="text-lg font-bold text-foreground pt-4">4. Seguridad del Almacenamiento</h2>
+            <p>
+              Toda la información viaja encriptada mediante protocolo SSL/TLS y se almacena en infraestructuras con seguridad de nivel bancario. Las capturas de comprobantes se resguardan en servidores protegidos accesibles únicamente por el personal administrativo autorizado.
+            </p>
 
-          <h2 className="text-lg font-bold text-foreground pt-4">5. Actualizaciones y Mejoras en Beneficio de la Comunidad</h2>
-          <p>
-            Con el propósito de mantener los más altos estándares de ciberseguridad, incorporar nuevas tecnologías y brindar mayores beneficios operativos a la comunidad de participantes, nos reservamos el derecho de modificar o actualizar la presente Política de Privacidad en cualquier momento. Toda actualización entrará en vigencia inmediatamente tras su publicación en esta plataforma, en estricto cumplimiento con la <strong>Ley N° 8968 (Protección de la Persona frente al Tratamiento de sus Datos Personales de Costa Rica)</strong> y los lineamientos de la PRODHAB.
-          </p>
-        </section>
+            <h2 className="text-lg font-bold text-foreground pt-4">5. Actualizaciones y Mejoras en Beneficio de la Comunidad</h2>
+            <p>
+              Con el propósito de mantener los más altos estándares de ciberseguridad, incorporar nuevas tecnologías y brindar mayores beneficios operativos a la comunidad de participantes, nos reservamos el derecho de modificar o actualizar la presente Política de Privacidad en cualquier momento. Toda actualización entrará en vigencia inmediatamente tras su publicación en esta plataforma, en estricto cumplimiento con la <strong>Ley N° 8968 (Protección de la Persona frente al Tratamiento de sus Datos Personales de Costa Rica)</strong> y los lineamientos de la PRODHAB.
+            </p>
+          </section>
+        )}
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">

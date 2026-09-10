@@ -20,7 +20,7 @@ export function esConsultaTecnicaInterna(q: string): boolean {
 }
 
 export const RESPUESTA_SOLO_VENTAS =
-  "¡Pura vida! Mi función es exclusivamente comercial: asesorarte en la compra de tus tokens y en tu participación por la Toyota Prado 2026 0KM y grandes premios en Aval Community CR. 🚗💨\n\n¡Mira! ¿Sabías que con tus tokens te ganas gasolina todos los viernes con el **Viernes de Tanque Lleno (₡50,000 en combustible)** y que con el **SuperToken** te llevas **$6,000 USD cash extra**?\n\n¿Te gustaría ver las opciones de compra disponibles o cómo pagar fácilmente por SINPE Móvil o Tarjeta en el [Checkout de Compra](/checkout)?";
+  "¡Pura vida! Mi función es exclusivamente comercial: asesorarte en la compra de tus tokens y en tu participación por los vehículos 0KM y grandes premios en Aval Community CR. 🚗💨\n\n¡Mira! ¿Sabías que con tus tokens te ganas gasolina todos los viernes con el **Viernes de Tanque Lleno (₡50,000)** y que con el **SuperToken** optas por hasta **$10,000 USD cash extra** ($10k al 1°, $6k al 2° y $3k al 3°)?\n\n¿Te gustaría ver las opciones de compra disponibles o cómo pagar fácilmente por SINPE Móvil o Tarjeta en el [Checkout de Compra](/checkout)?";
 
 // Respuestas inteligentes offline/fallback con conocimiento 100% completo de la plataforma
 export function obtenerRespuestaFallback(consulta: string, config: Config): string {
@@ -28,6 +28,14 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   const telSinpe = config.telefonoSinpe || "8634-4772";
   const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA.";
   const promoWa = config.promoWhatsapp || "50686344772";
+
+  const superMoneda = config.supertokenMoneda || ((config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "USD");
+  const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
+  const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
+  const p1 = (config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 10000).toLocaleString("es-CR");
+  const p2 = (config.supertokenPremioSegundoUsd || 6000).toLocaleString("es-CR");
+  const p3 = (config.supertokenPremioTerceroUsd || 3000).toLocaleString("es-CR");
+  const stPrecio = (config.supertokenPrecio || 1500).toLocaleString("es-CR");
 
   if (esConsultaTecnicaInterna(q)) {
     return RESPUESTA_SOLO_VENTAS;
@@ -47,11 +55,11 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   if (esPreguntaTanqueLleno) {
     return `⛽ **¡Viernes de Tanque Lleno (₡50,000 en Combustible)!**\n\n` +
       `¡No tienes que esperar meses para empezar a ganar! Todos los viernes rifamos premios semanales entre todos los participantes activos:\n\n` +
-      `• ⛽ **Premio Semanal**: ₡50,000 en Gasolina Delta / Uno o su equivalente en SINPE Móvil inmediato.\n` +
+      `• ⛽ **Premio Semanal**: ₡50,000 en Gasolina Delta / Uno o entregados formalmente si lo prefieres en efectivo.\n` +
       `• 🎟️ **100% Automático**: ¡Todos los tokens que compres para los sorteos oficiales entran automáticamente a las rifas de todos los viernes sin pagar nada extra!\n` +
-      `• 📲 **Notificación Directa**: Los números ganadores se publican en la web y se avisa directamente por WhatsApp con comprobante de depósito SINPE.\n` +
-      `• 🚗 **¡Y lo mejor de todo!** Tus tokens siguen participando intactos para la **Toyota Prado 2026 0KM** y todos los premios principales incluso si ganas este viernes.\n\n` +
-      `🔥 *¿Y sabes de los **SuperTokens**? Por solo ₡1,500 extra, si te pegas la Prado, ¡te llevas **$6,000 USD en efectivo CASH** de una vez!*\n\n` +
+      `• 📲 **Notificación Directa**: Los números ganadores se publican en la web y se avisa directamente por WhatsApp con comprobante oficial.\n` +
+      `• 🏍️ **¡Y lo mejor de todo!** Tus tokens siguen participando intactos para la **Moto de Alta Cilindrada** y todos los premios principales incluso si ganas este viernes.\n\n` +
+      `🔥 *¿Y sabes de los **SuperTokens**? Por solo ₡${stPrecio} extra, si te pegas el premio mayor, ¡te llevas **${superSimbolo}${p1} ${superCodigo} extra** entregados formalmente!*\n\n` +
       `¿Apartamos tus números de la suerte para que entres a jugar este mismo viernes? [Asegurar mis Tokens en Checkout](/checkout)`;
   }
 
@@ -88,7 +96,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
       `4. 🌐 **Google Pay**: Pago express y ultra seguro con 1 clic desde tu dispositivo Android o navegador Chrome.\n` +
       `5. 🅿️ **PayPal**: Aceptamos pagos internacionales con tu saldo PayPal o tarjetas internacionales en dólares (USD).\n` +
       `6. 🪙 **Criptomonedas (USDT)**: Puedes pagar en USDT (red TRC20 / BEP20) o directamente por Binance Pay ID.\n\n` +
-      `🔥 *¡Mira! Al comprar tus tokens te ganas gasolina todos los viernes con el **Viernes de Tanque Lleno (₡50,000)** y además puedes activar el **SuperToken** para ganar **$6,000 USD cash extra**.*\n\n` +
+      `🔥 *¡Mira! Al comprar tus tokens te ganas gasolina todos los viernes con el **Viernes de Tanque Lleno (₡50,000)** y además puedes activar el **SuperToken** para ganar hasta **${superSimbolo}${p1} ${superCodigo} extra**.*\n\n` +
       `¿Cuál método te queda más cómodo para apartar tus números de la suerte hoy en el [Checkout de Compra](/checkout)?`;
   }
 
@@ -111,7 +119,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
 
   if (esPreguntaPaquetes) {
     return `🎟️ **Lotes y Paquetes de Tokens Disponibles:**\n\n` +
-      `Elige tu paquete digital para competir por la **Toyota Prado 2026 0KM**:\n\n` +
+      `Elige tu paquete digital para competir por la **Moto de Alta Cilindrada (o Vehículo a Elección)**:\n\n` +
       `• 🎟️ **Paquete Básico (4 Tokens) · ₡4,000**: 4 oportunidades para asegurar tus números favoritos.\n` +
       `• 🔥 **Paquete Popular (8 Tokens) · ₡8,000**: ¡El favorito de la comunidad! Multiplica tus oportunidades x8 por solo ₡8 mil.\n` +
       `• ⚡ **Paquete Pro (12 Tokens) · ₡12,000**: Mayor probabilidad de ganar el sorteo mayor y más giros de regalo para premios express.\n` +
@@ -135,9 +143,12 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   if (esPreguntaSuperToken) {
     return `👑 **¿Sabes de los SuperTokens? ¡Es el beneficio estrella de Aval Community CR!**\n\n` +
       `El **SuperToken** es un multiplicador de premio opcional y exclusivo que puedes activar en tu orden al momento de pagar por tan solo **₡1,500 adicionales**.\n\n` +
-      `🔥 **El Gran Beneficio:**\n` +
-      `Si tu número resulta favorecido con el 1° Lugar (Premio Mayor), ¡no solo te llevas la espectacular **Toyota Prado 2026 0KM** con marchamo y traspaso pagos, sino que además te entregamos **¡$6,000 USD en efectivo CASH extra!** 💵🎉\n\n` +
-      `¡Por solo ₡1,500 te aseguras salir en nave del año y con la bolsa llena de dólares! Además, tus números participan todos los viernes por ₡50,000 en gasolina con el **Viernes de Tanque Lleno**.\n\n` +
+      `🔥 **Los 3 Grandes Bonos en Efectivo Dólares:**\n` +
+      `Si tus números resultan favorecidos, ¡te entregamos además bonos en efectivo CASH extra directos en dólares!\n` +
+      `• 🥇 **1° Lugar:** **+$10,000 USD** sumado a tu vehículo 0KM.\n` +
+      `• 🥈 **2° Lugar:** **+$6,000 USD** sumado a tu segundo vehículo.\n` +
+      `• 🥉 **3° Lugar:** **+$3,000 USD** sumado a tu tercer premio.\n\n` +
+      `¡Por solo ₡1,500 te aseguras salir en nave del año y con la bolsa llena de dólares! Además, tus números participan todos los viernes por ₡50,000 en gasolina y domingos por consolas de Play.\n\n` +
       `¿Te gustaría activar tu SuperToken hoy al apartar tus números? [Apartar Tokens con SuperToken en Checkout](/checkout)`;
   }
 
@@ -146,9 +157,8 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
     q.includes("rifan") ||
     q.includes("rifa") ||
     q.includes("premio") ||
-    q.includes("que se gana") ||
-    q.includes("qué se gana") ||
-    q.includes("prado") ||
+    q.includes("mercedes") ||
+    q.includes("subaru") ||
     q.includes("carro") ||
     q.includes("auto") ||
     q.includes("vehiculo") ||
@@ -159,15 +169,15 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
     q.includes("ps5");
 
   if (esPreguntaPremios) {
-    return `🚗 **Premios Oficiales de Aval Community CR:**\n\n` +
+    return `🏆 **Premios Oficiales de Aval Community CR:**\n\n` +
       `¡Nuestra edición actual está cargada de premios de ensueño!\n\n` +
-      `1. 🏆 **Premio Mayor (1° Lugar)**: Espectacular **Toyota Prado 2026 0KM**, motor turbo diésel 2.8L, 4x4 real, full extras, asientos de cuero y pantalla táctil. *(¡Con Traspaso Notarial y Marchamo 100% PAGOS por la empresa, sacada de agencia sin costos ocultos!)*.\n` +
-      `2. 🏍️ **Segundo Premio (2° Lugar)**: Motocicleta de alta cilindrada 0KM (Yamaha MT) lista para estrenar.\n` +
-      `3. 🎮 / 💵 **Tercer Premio (3° Lugar)**: Consola PlayStation 5 de última generación o ₡1,000,000 en efectivo por SINPE Móvil.\n` +
+      `1. 🏆 **Premio Mayor (1° Lugar)**: Espectacular **Moto de Alta Cilindrada** (o vehículo a elección como Mercedes-Benz Clase GLE / Subaru Impreza WRX). *(¡Con Traspaso Notarial y Marchamo 100% PAGOS por la empresa, sin costos ocultos!)*.\n` +
+      `2. 🚗 **Segundo Premio (2° Lugar)**: Subaru Impreza WRX / Mercedes-Benz Clase GLE listo para estrenar.\n` +
+      `3. 🎮 / 💵 **Tercer Premio (3° Lugar)**: Consola PlayStation 5 de última generación o ₡1,000,000 en efectivo entregados formalmente.\n` +
       `4. ⛽ **Viernes de Tanque Lleno**: ₡50,000 en combustible todos los viernes entre todos los participantes activos.\n` +
-      `5. 🎰 **Entregas Instantáneas**: Giros gratis en el Raspa & Gana Express o Ruleta de la Suerte para premios instantáneos de hasta ₡100,000 por SINPE.\n\n` +
-      `🔥 *¿Y sabes de los **SuperTokens**? Por solo ₡1,500 extra sumas **$6,000 USD cash de una vez** al ganar la Prado.*\n\n` +
-      `¿Te imaginas andar estrenando esa Prado 2026? Vamos a apartar tus números de la suerte hoy: [Ir al Checkout de Compra](/checkout)`;
+      `5. 🎰 **Entregas Instantáneas**: Giros gratis en el Raspa & Gana Express o Ruleta de la Suerte para premios instantáneos de hasta ₡100,000 entregados formalmente.\n\n` +
+      `🔥 *¿Y sabes de los **SuperTokens**? Por solo ₡${stPrecio} extra sumas **${superSimbolo}${p1} ${superCodigo} de una vez** entregados formalmente al ganar el premio mayor.*\n\n` +
+      `¿Te imaginas estrenando ese premio soñado? Vamos a apartar tus números de la suerte hoy: [Ir al Checkout de Compra](/checkout)`;
   }
 
   // 6. QUÉ HAGO DESPUÉS DE PAGAR
@@ -179,7 +189,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
       `• **Si pagas con Tarjeta de Débito/Crédito**: Tu orden se valida al instante de forma 100% automática. ¡Tus tokens quedan listos en el sistema en segundos!\n` +
       `• **Si pagas por SINPE Móvil**: Nuestro equipo valida tu transferencia y comprobante en pocos minutos.\n` +
       `• **Consulta en cualquier momento**: Puedes revisar el estado de tus tokens ingresando tu celular en [Validar mis Tokens](/validar).\n\n` +
-      `🔥 *¡Y listo! Ya quedas participando automáticamente para los **Viernes de Tanque Lleno (₡50,000 en gasolina semanal)** y para la gran **Toyota Prado 2026 0KM**.* ¿Te gustaría apartar tus números hoy en el [Checkout](/checkout)?`;
+      `🔥 *¡Y listo! Ya quedas participando automáticamente para los **Viernes de Tanque Lleno (₡50,000 en gasolina semanal)** y para los **Premios Principales**.* ¿Te gustaría apartar tus números hoy en el [Checkout](/checkout)?`;
   }
 
   // 7. QUÉ SON LAS ENTREGAS INSTANTÁNEAS / RASPA / RULETA
@@ -207,7 +217,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
     return `⚖️ **¿Cómo se realiza la entrega del vehículo o beneficio principal?**\n\n` +
       `La entrega se realiza de forma presencial con **firma formal de traspaso legal ante Notario Público**.\n\n` +
       `• **Cero Gastos Ocultos**: Todos los costos de traspaso, marchamo y derechos corren 100% por cuenta de Aval Community CR e **${razonSocial}** bajo el marco formal de la **Ley N° 7472** (Protección al Consumidor).\n` +
-      `• Te llevas tu Toyota Prado 2026 0KM sacada de agencia, lista para rodar sin poner un solo colón de tu bolsa.\n\n` +
+      `• Te llevas tu premio listo para rodar sin poner un solo colón de tu bolsa.\n\n` +
       `🔥 *¿Y ya sabes de los **SuperTokens**? Por solo ₡1,500 extra te entregamos además **$6,000 USD en efectivo CASH** el día de la entrega.*\n\n` +
       `¿Cuántos números de la suerte te apartamos hoy en el [Checkout de Compra](/checkout)?`;
   }
@@ -236,7 +246,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
     return `🎯 **¿Cómo participo en el evento promocional y cómo se gana?**\n\n` +
       `1. **Elige tu Paquete**: Elige el paquete de Tokens digitales de tu preferencia (4, 8, 12 o 24 Tokens) en el [Checkout de Compra](/checkout).\n` +
       `2. **Asigna tus Números**: Puedes dejar que el sistema te asigne tus números de cortesía de la suerte al azar o escribir tus números favoritos de 5 dígitos (00000 al 99999).\n` +
-      `3. **Activa el SuperToken (Opcional)**: Por ₡1,500 extra sumas $6,000 USD cash si ganas el 1° lugar.\n` +
+      `3. **Activa el SuperToken (Opcional)**: Por ₡${stPrecio} extra sumas hasta ${superSimbolo}${p1} ${superCodigo} (${superSimbolo}${p1} 1°, ${superSimbolo}${p2} 2°, ${superSimbolo}${p3} 3°).\n` +
       `4. **Completa tus Datos y Paga**: Pagas fácilmente por SINPE Móvil, Tarjeta (TiloPay con validación instantánea), Apple Pay, Google Pay, PayPal o Cripto.\n\n` +
       `⚖️ **¿Cómo se determinan los favorecidos?**\n` +
       `El evento se rige formalmente por combinaciones matemáticas transparentes basadas en los **resultados oficiales públicos de la Lotería Nacional de la Junta de Protección Social (JPS)** de Costa Rica en la fecha establecida, garantizando total claridad e imparcialidad.\n\n` +
@@ -250,13 +260,13 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
       `1. Transfiere al número oficial: **${telSinpe}** a nombre de **${razonSocial}**.\n` +
       `2. En el detalle del pase coloca tu nombre y teléfono celular.\n` +
       `3. Entra a [Apartar Tokens en Checkout](/checkout), adjunta la captura de tu comprobante y tus números quedan asignados.\n\n` +
-      `🔥 *¡Ojo! Con cualquier compra entras a los **Viernes de Tanque Lleno (₡50,000 en gasolina semanal)**. ¿Y ya sabes de los **SuperTokens**? Por solo ₡1,500 extra compites por **$6,000 USD cash**.*\n\n` +
+      `🔥 *¡Ojo! Con cualquier compra entras a los **Viernes de Tanque Lleno (₡50,000 en gasolina semanal)**. ¿Y ya sabes de los **SuperTokens**? Por solo ₡${stPrecio} extra compites por hasta **${superSimbolo}${p1} ${superCodigo}**.*\n\n` +
       `¿Te aparto 8 tokens de la suerte para arrancar hoy en el [Checkout](/checkout)?`;
   }
 
   // 11. CONSULTA Y VALIDACIÓN DE TOKENS
   if (q.includes("validar") || q.includes("token") || q.includes("número") || q.includes("numero") || q.includes("comprobante") || q.includes("consultar")) {
-    return `🎟️ **Consulta y Validación de Tokens:**\n\nPuedes consultar tus números y el estado de tu orden en cualquier momento en [Validar mis Tokens](/validar) ingresando tu número de teléfono registrado.\n\n💡 **Tip Ganador**: Cada token adicional multiplica tus probabilidades de llevarte la Toyota Prado 2026 0KM y entras directo a los **Viernes de Tanque Lleno (₡50,000 en gasolina)**. ¿Deseas asegurar más números hoy en el [Checkout de Compra](/checkout)?`;
+    return `🎟️ **Consulta y Validación de Tokens:**\n\nPuedes consultar tus números y el estado de tu orden en cualquier momento en [Validar mis Tokens](/validar) ingresando tu número de teléfono registrado.\n\n💡 **Tip Ganador**: Cada token adicional multiplica tus probabilidades de llevarte la Moto de Alta Cilindrada y los premios oficiales, y entras directo a los **Viernes de Tanque Lleno (₡50,000 en gasolina)**. ¿Deseas asegurar más números hoy en el [Checkout de Compra](/checkout)?`;
   }
 
   // 12. LEGALIDAD Y GARANTÍAS
@@ -275,10 +285,10 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   }
 
   // 15. RESPUESTA GENERAL RESUMIDA / CLOSER
-  return `¡Pura vida! En Aval Community CR estás a un paso de estrenar una espectacular **Toyota Prado 2026 0KM** con marchamo pago y traspaso formal incluido.\n\n` +
+  return `¡Pura vida! En Aval Community CR estás a un paso de estrenar una espectacular **Moto de Alta Cilindrada (o Vehículo a Elección)** con marchamo pago y traspaso formal incluido.\n\n` +
     `🔥 **¡Mira todo lo que ganas al participar!**\n` +
     `• ⛽ **Viernes de Tanque Lleno**: ¡Te ganas gasolina todos los viernes (₡50,000 en combustible) con cualquier paquete que compres sin pagar nada extra!\n` +
-    `• 👑 **¿Sabes de los SuperTokens?**: Por solo ₡1,500 extra, si te pegas la Prado, ¡te llevas **$6,000 USD en efectivo CASH** de una vez!\n` +
+    `• 👑 **¿Sabes de los SuperTokens?**: Por solo ₡1,500 extra optas por hasta **$10,000 USD en efectivo CASH** ($10k 1°, $6k 2°, $3k 3°) de una vez!\n` +
     `• 🎟️ **Lotes de Tickets**: Desde 4 Tokens por ₡4,000 hasta Paquete VIP de 24 Tokens (₡24,000).\n` +
     `• 💳 **6 Formas de Pago**: SINPE Móvil al **${telSinpe}**, Tarjetas Débito/Crédito TiloPay (aprobación automática en segundos), Apple Pay, Google Pay, PayPal y Cripto USDT.\n` +
     `• ⚖️ **Sorteo 100% Transparente**: Definido directamente con la **Lotería Nacional (JPS)** ante Notario Público.\n\n` +
@@ -460,10 +470,10 @@ export async function enviarMensajeIA(
 
 [BASE DE CONOCIMIENTO TOTAL Y REGLAS DE VENTA]:
 1. ¿QUÉ SE RIFA? (PREMIOS):
-- 🏆 1° LUGAR (PREMIO MAYOR): Toyota Prado 2026 0KM, motor turbo diésel 2.8L, 4x4 real, full extras, asientos de cuero, techo panorámico. Sacada de agencia con Traspaso Notarial y Marchamo 100% PAGOS por la empresa (cero gastos ocultos para el ganador).
-- 🏍️ 2° LUGAR (SEGUNDO PREMIO): Motocicleta de alta cilindrada 0KM (Yamaha MT).
+- 🏆 1° LUGAR (PREMIO MAYOR): Moto de Alta Cilindrada (o vehículo a elección como Mercedes-Benz Clase GLE / Subaru Impreza WRX). Sacada con Traspaso Notarial y Marchamo 100% PAGOS por la empresa (cero gastos ocultos para el ganador).
+- 🚗 2° LUGAR (SEGUNDO PREMIO): Subaru Impreza WRX / Mercedes-Benz Clase GLE 2016.
 - 🎮/💵 3° LUGAR (TERCER PREMIO): Consola PlayStation 5 o ₡1,000,000 en efectivo por SINPE Móvil.
-- ⛽ MINI SORTEOS SEMANALES: "Viernes de Tanque Lleno" con ₡50,000 en combustible (estaciones Delta / Uno). Todos los participantes activos entran automáticamente todos los viernes sin pagar nada extra, y siguen jugando para la Prado.
+- ⛽ MINI SORTEOS SEMANALES: "Viernes de Tanque Lleno" con ₡50,000 en combustible (estaciones Delta / Uno). Todos los participantes activos entran automáticamente todos los viernes sin pagar nada extra, y siguen jugando para el sorteo mayor.
 - 🎰 ENTREGAS INSTANTÁNEAS: Si tu número coincide con una combinación favorecida pre-establecida, ¡ganas premios instantáneos de forma automática! Además recibes giros gratis en el Raspa & Gana Express o la Ruleta de la Suerte por hasta ₡100,000 SINPE.
 
 2. MÉTODOS DE PAGO DISPONIBLES (6 FORMAS DE PAGO):
@@ -483,7 +493,7 @@ export async function enviarMensajeIA(
 
 4. ¿QUÉ ES EL SUPERTOKEN?:
 - Beneficio opcional exclusivo por solo ₡1,500 extra al pagar en el Checkout.
-- Si el comprador gana el 1° Lugar (la Toyota Prado 2026 0KM), ¡RECIBE ADICIONALMENTE $6,000 USD EN EFECTIVO CASH EXTRA!
+- Si el comprador gana el 1° Lugar, ¡RECIBE ADICIONALMENTE $6,000 USD EN EFECTIVO CASH EXTRA!
 
 5. ¿CÓMO SE JUEGA Y CÓMO SE DEFINE EL GANADOR?:
 - Se elige el paquete de tokens en el Checkout (/checkout), se asignan los números de 5 dígitos, se añade el SuperToken si se desea, y se paga por cualquiera de los 6 métodos.
@@ -498,7 +508,7 @@ export async function enviarMensajeIA(
 - En cada respuesta DEBES INCITAR A COMPRAR con entusiasmo y calidez costarricense ('pura vida').
 - Usa ganchos irresistibles:
   * "¡Mira! Lo mejor es que con cualquiera de tus tokens te ganas gasolina todos los viernes con el Viernes de Tanque Lleno (₡50,000 en combustible) sin pagar nada extra."
-  * "¿Y ya sabes de los SuperTokens? Por solo ₡1,500 extra, si te pegas la Prado, ¡te llevas $6,000 USD en efectivo CASH de una vez para que andes platudo!"
+  * "¿Y ya sabes de los SuperTokens? Por solo ₡1,500 extra, si te pegas el premio mayor, ¡te llevas $6,000 USD en efectivo CASH de una vez para que andes platudo!"
   * "¿Sabías que con tu compra te llevas giros gratis en el Raspa Express con premios de hasta ₡100,000 por SINPE?"
 - Siempre remata con un llamado a la acción persuasivo hacia el [Checkout de Compra](/checkout) o el SINPE Móvil al ${telSinpe}.
 - Si el cliente requiere atención humana personalizada, indícale escribir a WhatsApp (${promoWa}).

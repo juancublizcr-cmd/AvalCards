@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -14,6 +15,8 @@ import {
   Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { fetchConfig, type Config, CONFIG_DEFAULT } from "@/lib/admin-store";
+import { LegalContentRenderer } from "@/components/LegalContentRenderer";
 
 export const Route = createFileRoute("/terminos")({
   head: () => ({
@@ -30,6 +33,13 @@ export const Route = createFileRoute("/terminos")({
 });
 
 function TerminosPage() {
+  const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
+
+  useEffect(() => {
+    void fetchConfig().then((c) => {
+      if (c) setConfig(c);
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
@@ -61,177 +71,183 @@ function TerminosPage() {
           </p>
         </div>
 
-        {/* 1. Transparencia y Marco Legal */}
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-success/15 text-success">
-              <ShieldCheck className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold">1. Evento Promocional 100% Transparente y Legal</h2>
-          </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            El presente evento constituye una <strong>promoción comercial privada</strong> organizada de conformidad con la <strong>Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor de Costa Rica)</strong> y el Código de Comercio. La adquisición de productos o servicios comerciales de la empresa otorga al consumidor códigos promocionales de cortesía (Tokens) para participar en las dinámicas oficiales.
-          </p>
-        </section>
-
-        {/* 2. Cláusula de Deslinde JPS */}
-        <section className="rounded-2xl border-2 border-amber-500/50 bg-amber-950/20 p-6 sm:p-8 space-y-4 shadow-md">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
-              <Scale className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold text-foreground">2. Cláusula de Deslinde y Uso de Fe Pública Externa (JPS)</h2>
-          </div>
-          <div className="rounded-xl border border-amber-500/30 bg-card/80 p-4 space-y-2">
-            <p className="text-sm text-foreground font-medium leading-relaxed">
-              La plataforma aclara de forma expresa que <strong>no está asociada, afiliada ni patrocinada por la Junta de Protección Social (JPS)</strong>.
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Se utiliza la extracción pública y televisada de la Lotería Nacional de Costa Rica exclusivamente como un <strong>mecanismo neutral, externo e inalterable de fe pública</strong> para garantizar absoluta transparencia y aleatoriedad en la determinación de los códigos participantes favorecidos.
-            </p>
-          </div>
-        </section>
-
-        {/* 3. Instrucciones de Pago SINPE Móvil */}
-        <section className="rounded-2xl border-2 border-primary/50 bg-secondary/50 p-6 sm:p-8 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
-              <CreditCard className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold">3. Instrucciones de Pago y SINPE Móvil</h2>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 rounded-xl bg-card p-4 border border-border">
-            <div>
-              <span className="text-xs text-muted-foreground">Teléfono SINPE Móvil:</span>
-              <p className="font-mono text-xl font-bold text-primary">8634-4772</p>
-            </div>
-            <div>
-              <span className="text-xs text-muted-foreground">Titular Oficial de la Cuenta:</span>
-              <p className="font-semibold text-foreground">Importadora Luxury Scents LTDA.</p>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 space-y-1 text-xs">
-            <p className="font-bold text-destructive flex items-center gap-1.5">
-              <AlertTriangle className="size-4" /> REGLA ESTRICTA DE MOTIVO EN SINPE:
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              En el motivo o detalle de la transferencia SINPE escribe <strong>únicamente tu nombre y apellidos</strong>. Por disposiciones bancarias, <strong>NO</strong> escribas palabras como <em>"rifa"</em>, <em>"sorteo"</em>, <em>"premio"</em> o similares.
-            </p>
-          </div>
-        </section>
-
-        {/* 4. Confirmación y Reserva */}
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
-              <Lock className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold">4. Reserva de Tokens y Validación</h2>
-          </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Una vez realizado el pago, debes adjuntar la captura del comprobante en el sistema para que nuestro equipo lo valide y tu participación quede formalmente confirmada.
-          </p>
-          <div className="rounded-xl bg-secondary/70 p-4 text-xs text-muted-foreground leading-relaxed border border-border">
-            <strong className="text-foreground">⏳ Plazo de Reserva Máximo:</strong> La acción permanecerá reservada por un <strong>máximo de 24 horas</strong>. Si dentro de ese plazo el depósito no ha sido validado con el comprobante correspondiente, la acción será liberada de forma automática y quedará disponible para que otra persona la adquiera.
-          </div>
-        </section>
-
-        {/* 5. Determinación de Ganadores */}
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
-              <Trophy className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold">5. ¿Cómo se determinarán los Ganadores?</h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Los números ganadores se calcularán de acuerdo con las siguientes combinaciones matemáticas directas basadas en el sorteo oficial:
-          </p>
-
-          <div className="space-y-3">
-            <div className="rounded-xl border border-primary/40 bg-secondary/40 p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-primary text-base">🥇 Primer Premio</span>
-                <span className="text-xs font-mono bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/30">
-                  Número (2 dígitos) + Serie (3 dígitos)
-                </span>
+        {config.legalTerminosTexto?.trim() ? (
+          <LegalContentRenderer content={config.legalTerminosTexto} />
+        ) : (
+          <>
+            {/* 1. Transparencia y Marco Legal */}
+            <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-success/15 text-success">
+                  <ShieldCheck className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold">1. Evento Promocional 100% Transparente y Legal</h2>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Se toma el primer número con la serie oficial del 1° premio de la Lotería Nacional.<br />
-                <strong className="text-foreground font-mono">Ejemplo:</strong> Número 01 + Serie 451 = <strong className="text-primary font-mono font-bold">01451</strong>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                El presente evento constituye una <strong>promoción comercial privada</strong> organizada de conformidad con la <strong>Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor de Costa Rica)</strong> y el Código de Comercio. La adquisición de productos o servicios comerciales de la empresa otorga al consumidor códigos promocionales de cortesía (Tokens) para participar en las dinámicas oficiales.
               </p>
-            </div>
+            </section>
 
-            <div className="rounded-xl border border-border bg-secondary/40 p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-foreground text-base">🥈 Segundo Premio</span>
-                <span className="text-xs font-mono bg-secondary text-muted-foreground px-2 py-0.5 rounded border border-border">
-                  Número (2 dígitos) + Serie (3 dígitos)
-                </span>
+            {/* 2. Cláusula de Deslinde JPS */}
+            <section className="rounded-2xl border-2 border-amber-500/50 bg-amber-950/20 p-6 sm:p-8 space-y-4 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+                  <Scale className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground">2. Cláusula de Deslinde y Uso de Fe Pública Externa (JPS)</h2>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Se toma el segundo número con la serie oficial del 2° premio de la Lotería Nacional.<br />
-                <strong className="text-foreground font-mono">Ejemplo:</strong> Número 81 + Serie 160 = <strong className="text-foreground font-mono font-bold">81160</strong>
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-border bg-secondary/40 p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-foreground text-base">🥉 Tercer Premio</span>
-                <span className="text-xs font-mono bg-secondary text-muted-foreground px-2 py-0.5 rounded border border-border">
-                  Número (2 dígitos) + Serie (3 dígitos)
-                </span>
+              <div className="rounded-xl border border-amber-500/30 bg-card/80 p-4 space-y-2">
+                <p className="text-sm text-foreground font-medium leading-relaxed">
+                  La plataforma aclara de forma expresa que <strong>no está asociada, afiliada ni patrocinada por la Junta de Protección Social (JPS)</strong>.
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Se utiliza la extracción pública y televisada de la Lotería Nacional de Costa Rica exclusivamente como un <strong>mecanismo neutral, externo e inalterable de fe pública</strong> para garantizar absoluta transparencia y aleatoriedad en la determinación de los códigos participantes favorecidos.
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Se toma el tercer número con la serie oficial del 3° premio de la Lotería Nacional.<br />
-                <strong className="text-foreground font-mono">Ejemplo:</strong> Número 60 + Serie 562 = <strong className="text-foreground font-mono font-bold">60562</strong>
+            </section>
+
+            {/* 3. Instrucciones de Pago SINPE Móvil */}
+            <section className="rounded-2xl border-2 border-primary/50 bg-secondary/50 p-6 sm:p-8 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+                  <CreditCard className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold">3. Instrucciones de Pago y SINPE Móvil</h2>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 rounded-xl bg-card p-4 border border-border">
+                <div>
+                  <span className="text-xs text-muted-foreground">Teléfono SINPE Móvil:</span>
+                  <p className="font-mono text-xl font-bold text-primary">{config.telefonoSinpe || "8634-4772"}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Titular Oficial de la Cuenta:</span>
+                  <p className="font-semibold text-foreground">{config.razonSocial || "Importadora Luxury Scents LTDA."}</p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 space-y-1 text-xs">
+                <p className="font-bold text-destructive flex items-center gap-1.5">
+                  <AlertTriangle className="size-4" /> REGLA ESTRICTA DE MOTIVO EN SINPE:
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  En el motivo o detalle de la transferencia SINPE escribe <strong>únicamente tu nombre y apellidos</strong>. Por disposiciones bancarias, <strong>NO</strong> escribas palabras como <em>"rifa"</em>, <em>"sorteo"</em>, <em>"premio"</em> o similares.
+                </p>
+              </div>
+            </section>
+
+            {/* 4. Confirmación y Reserva */}
+            <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
+                  <Lock className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold">4. Reserva de Tokens y Validación</h2>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Una vez realizado el pago, debes adjuntar la captura del comprobante en el sistema para que nuestro equipo lo valide y tu participación quede formalmente confirmada.
               </p>
-            </div>
-          </div>
-        </section>
+              <div className="rounded-xl bg-secondary/70 p-4 text-xs text-muted-foreground leading-relaxed border border-border">
+                <strong className="text-foreground">⏳ Plazo de Reserva Máximo:</strong> La acción permanecerá reservada por un <strong>máximo de 24 horas</strong>. Si dentro de ese plazo el depósito no ha sido validado con el comprobante correspondiente, la acción será liberada de forma automática y quedará disponible para que otra persona la adquiera.
+              </div>
+            </section>
 
-        {/* 6. Fechas y Reprogramación */}
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
-              <Calendar className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold">6. Fecha del Evento y Condiciones de Cierre</h2>
-          </div>
-          <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-            <p>
-              📅 El evento promocional está programado oficialmente para el <strong>27 de septiembre de 2026</strong>.
-            </p>
-            <ul className="list-disc pl-5 space-y-2 text-xs">
-              <li>
-                Si para dicha fecha no se ha colocado el <strong>100% de las acciones disponibles</strong>, el evento será reprogramado periódicamente hasta alcanzar la totalidad del inventario.
-              </li>
-              <li>
-                Si el <strong>100% de las acciones se completa antes del 27 de septiembre de 2026</strong>, el evento se adelantará y se realizará el domingo más cercano posterior a la finalización de las ventas, informando oportunamente la fecha definitiva por nuestros canales oficiales.
-              </li>
-            </ul>
-          </div>
-        </section>
+            {/* 5. Determinación de Ganadores */}
+            <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+                  <Trophy className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold">5. ¿Cómo se determinarán los Ganadores?</h2>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Los números ganadores se calcularán de acuerdo con las siguientes combinaciones matemáticas directas basadas en el sorteo oficial:
+              </p>
 
-        {/* 7. Facultad de Modificación y Mejoras en Beneficio de la Comunidad */}
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
-              <Sparkles className="size-5" />
-            </div>
-            <h2 className="text-xl font-bold text-foreground">7. Modificaciones y Mejoras Continuas en Beneficio de la Comunidad</h2>
-          </div>
-          <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-            <p>
-              <strong>Importadora Luxury Scents LTDA</strong> se reserva la facultad de actualizar, complementar, modificar o perfeccionar en cualquier momento las presentes bases, dinámicas promocionales, catálogo de premios e incentivos de la plataforma, siempre que dichas modificaciones tengan como objetivo <strong>mejorar la experiencia del usuario, incrementar los beneficios comerciales de los participantes o responder a las necesidades colectivas de la comunidad</strong>.
-            </p>
-            <p className="text-xs">
-              Toda modificación o mejora entrará en vigencia y surtirá plenos efectos legales a partir de su publicación oficial en este sitio web. La participación continuada del usuario constituirá su plena aceptación de las condiciones optimizadas.
-            </p>
-          </div>
-        </section>
+              <div className="space-y-3">
+                <div className="rounded-xl border border-primary/40 bg-secondary/40 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-primary text-base">🥇 Primer Premio</span>
+                    <span className="text-xs font-mono bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/30">
+                      Número (2 dígitos) + Serie (3 dígitos)
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Se toma el primer número con la serie oficial del 1° premio de la Lotería Nacional.<br />
+                    <strong className="text-foreground font-mono">Ejemplo:</strong> Número 01 + Serie 451 = <strong className="text-primary font-mono font-bold">01451</strong>
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-foreground text-base">🥈 Segundo Premio</span>
+                    <span className="text-xs font-mono bg-secondary text-muted-foreground px-2 py-0.5 rounded border border-border">
+                      Número (2 dígitos) + Serie (3 dígitos)
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Se toma el segundo número con la serie oficial del 2° premio de la Lotería Nacional.<br />
+                    <strong className="text-foreground font-mono">Ejemplo:</strong> Número 81 + Serie 160 = <strong className="text-foreground font-mono font-bold">81160</strong>
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-foreground text-base">🥉 Tercer Premio</span>
+                    <span className="text-xs font-mono bg-secondary text-muted-foreground px-2 py-0.5 rounded border border-border">
+                      Número (2 dígitos) + Serie (3 dígitos)
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Se toma el tercer número con la serie oficial del 3° premio de la Lotería Nacional.<br />
+                    <strong className="text-foreground font-mono">Ejemplo:</strong> Número 60 + Serie 562 = <strong className="text-foreground font-mono font-bold">60562</strong>
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* 6. Fechas y Reprogramación */}
+            <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+                  <Calendar className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold">6. Fecha del Evento y Condiciones de Cierre</h2>
+              </div>
+              <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <p>
+                  📅 El evento promocional está programado oficialmente para el <strong>27 de septiembre de 2026</strong>.
+                </p>
+                <ul className="list-disc pl-5 space-y-2 text-xs">
+                  <li>
+                    Si para dicha fecha no se ha colocado el <strong>100% de las acciones disponibles</strong>, el evento será reprogramado periódicamente hasta alcanzar la totalidad del inventario.
+                  </li>
+                  <li>
+                    Si el <strong>100% de las acciones se completa antes del 27 de septiembre de 2026</strong>, el evento se adelantará y se realizará el domingo más cercano posterior a la finalización de las ventas, informando oportunamente la fecha definitiva por nuestros canales oficiales.
+                  </li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 7. Facultad de Modificación y Mejoras en Beneficio de la Comunidad */}
+            <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+                  <Sparkles className="size-5" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground">7. Modificaciones y Mejoras Continuas en Beneficio de la Comunidad</h2>
+              </div>
+              <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <p>
+                  <strong>{config.razonSocial || "Importadora Luxury Scents LTDA."}</strong> se reserva la facultad de actualizar, complementar, modificar o perfeccionar en cualquier momento las presentes bases, dinámicas promocionales, catálogo de premios e incentivos de la plataforma, siempre que dichas modificaciones tengan como objetivo <strong>mejorar la experiencia del usuario, incrementar los beneficios comerciales de los participantes o responder a las necesidades colectivas de la comunidad</strong>.
+                </p>
+                <p className="text-xs">
+                  Toda modificación o mejora entrará en vigencia y surtirá plenos efectos legales a partir de su publicación oficial en este sitio web. La participación continuada del usuario constituirá su plena aceptación de las condiciones optimizadas.
+                </p>
+              </div>
+            </section>
+          </>
+        )}
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">

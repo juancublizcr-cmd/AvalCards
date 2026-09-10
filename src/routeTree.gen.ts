@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ImpactoSocialRouteImport } from './routes/impacto-social'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ReembolsoRouteImport } from './routes/reembolso'
@@ -32,6 +33,11 @@ const AdminRoute = AdminRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactoSocialRoute = ImpactoSocialRouteImport.update({
+  id: '/impacto-social',
+  path: '/impacto-social',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
   '/reembolso': typeof ReembolsoRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/impacto-social'
     | '/login'
     | '/privacidad'
     | '/reembolso'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/impacto-social'
     | '/login'
     | '/privacidad'
     | '/reembolso'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/impacto-social'
     | '/login'
     | '/privacidad'
     | '/reembolso'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   CheckoutRoute: typeof CheckoutRoute
+  ImpactoSocialRoute: typeof ImpactoSocialRoute
   LoginRoute: typeof LoginRoute
   PrivacidadRoute: typeof PrivacidadRoute
   ReembolsoRoute: typeof ReembolsoRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impacto-social': {
+      id: '/impacto-social'
+      path: '/impacto-social'
+      fullPath: '/impacto-social'
+      preLoaderRoute: typeof ImpactoSocialRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   CheckoutRoute: CheckoutRoute,
+  ImpactoSocialRoute: ImpactoSocialRoute,
   LoginRoute: LoginRoute,
   PrivacidadRoute: PrivacidadRoute,
   ReembolsoRoute: ReembolsoRoute,

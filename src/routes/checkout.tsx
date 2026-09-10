@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { crearOrden, fetchOrdenesPorTelefono, leerSeleccion, limpiarSeleccion, type Seleccion } from "@/lib/orders";
 import { fetchConfig, fetchSorteo, type Config, type Sorteo, CONFIG_DEFAULT, SORTEO_DEFAULT } from "@/lib/admin-store";
+import { obtenerEstadoSorteo, formatearHora12 } from "@/lib/fecha-utils";
 import { Footer } from "@/components/Footer";
 import { calcularGirosPorTokens, guardarGiros } from "@/lib/giros-store";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
@@ -140,6 +141,11 @@ function Checkout() {
     }
   }, [form.telefono]);
 
+  const superMoneda = config.supertokenMoneda || ((config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "USD");
+  const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
+  const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
+  const superPremioMax = (config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 10000).toLocaleString("es-CR");
+
   const telReferido = form.telefono.replace(/\D/g, "") || ordenCreadaId || "amigo";
   const enlaceReferido = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${telReferido}`;
 
@@ -187,8 +193,21 @@ function Checkout() {
 
   const montoUsdt = seleccion ? (seleccion.precio / TIPO_CAMBIO_USD).toFixed(2) : "0.00";
 
+  const estadoSorteo = obtenerEstadoSorteo(
+    sorteo.fecha,
+    sorteo.horaSorteo,
+    config.horasCierrePrevio
+  );
+  const ventasCerradas = !config.ventasActivas || estadoSorteo.estado !== "VENTAS_ABIERTAS";
+
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (ventasCerradas) {
+      toast.error("Las ventas para esta edición ya han finalizado formalmente.");
+      return;
+    }
+
     const res = esquema.safeParse(form);
     const nuevos: Errores = {};
     if (!res.success) {
@@ -353,7 +372,7 @@ function Checkout() {
 
           {seleccion?.supertoken && (
             <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/15 px-4 py-1 text-xs font-bold text-amber-500 shadow-sm">
-              <Crown className="size-4" /> SuperToken Activo · Califica para 1° Lugar + ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash
+              <Crown className="size-4" /> SuperToken Activo · Califica para bonos de hasta +{superSimbolo}{superPremioMax} {superCodigo} Extra
             </div>
           )}
 
@@ -528,26 +547,59 @@ function Checkout() {
 
       <main className="mx-auto max-w-3xl px-5 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-4xl tracking-wide">Finaliza tu compra</h1>
-          {seleccion?.supertoken && (
+          <h1 className="font-display text-4xl tracking-wide">
+            {ventasCerradas ? "Evento Oficial" : "Finaliza tu compra"}
+          </h1>
+          {seleccion?.supertoken && !ventasCerradas && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-500">
-              <Crown className="size-3.5" /> SuperToken (+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD)
+              <Crown className="size-3.5 text-amber-400" /> SuperToken (Hasta +{superSimbolo}{superPremioMax} {superCodigo})
             </span>
           )}
         </div>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {seleccion
-            ? `Paquete de ${seleccion.cantidad} Tokens ${seleccion.supertoken ? "(con SuperToken)" : ""} · ₡${seleccion.precio.toLocaleString("es-CR")} (aprox. $${montoUsdt} USD)`
-            : "No hay un paquete seleccionado. Vuelve al inicio y elige uno."}
-        </p>
+        {!ventasCerradas && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {seleccion
+              ? `Paquete de ${seleccion.cantidad} Tokens ${seleccion.supertoken ? "(con SuperToken)" : ""} · ₡${seleccion.precio.toLocaleString("es-CR")} (aprox. $${montoUsdt} USD)`
+              : "No hay un paquete seleccionado. Vuelve al inicio y elige uno."}
+          </p>
+        )}
 
-        <form onSubmit={(e) => { void enviar(e); }} className="mt-8 space-y-8" noValidate>
+        {ventasCerradas ? (
+          <div className="mt-8 rounded-2xl border-2 border-amber-500/60 bg-zinc-950 p-6 sm:p-8 text-center space-y-4 shadow-xl">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-amber-500/20 text-3xl">
+              🔒
+            </div>
+            <h2 className="font-display text-2xl sm:text-3xl text-foreground">
+              {estadoSorteo.estado === "EN_CURSO"
+                ? "Sorteo Oficial en Proceso"
+                : "Ventas Finalizadas para esta Edición"}
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+              {estadoSorteo.estado === "EN_CURSO"
+                ? "El sorteo oficial se encuentra en transmisión en vivo y proceso de auditoría. No se reciben más órdenes por el momento."
+                : `Las ventas han cerrado formalmente 2 horas antes para el escrutinio notarial y preparación del sorteo oficial de las ${formatearHora12(sorteo.horaSorteo || "19:30")}.`}
+            </p>
+            <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button variant="hero" asChild className="w-full sm:w-auto">
+                <Link to="/validar">🔍 Consultar mis Tokens Adquiridos</Link>
+              </Button>
+              <Button variant="outline" asChild className="w-full sm:w-auto">
+                <Link to="/">Volver al Inicio</Link>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={(e) => { void enviar(e); }} className="mt-8 space-y-8" noValidate>
           {referidoPor && !esUsuarioExistente && form.telefono.replace(/\D/g, "") !== (referidoPor || "").replace(/\D/g, "") && (
             <div className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 via-green-500/15 to-emerald-500/20 p-4 flex items-center gap-3 text-xs sm:text-sm text-emerald-400 font-semibold shadow-md">
               <Sparkles className="size-5 text-emerald-400 shrink-0" />
               <div>
                 <span className="font-bold text-white block text-sm">🎁 ¡Enlace de Amigo Aplicado! (Ref: {referidoPor})</span>
-                <span>Por acceder con invitación exclusiva en tu primera compra, recibirás <strong>+1 Token Extra GRATIS</strong> de regalo.</span>
+                {config.referidosDarTokensBono ? (
+                  <span>Por acceder con invitación exclusiva en tu primera compra, recibirás <strong>+{config.referidosBonoTokens ?? 1} Token{(config.referidosBonoTokens ?? 1) > 1 ? "s" : ""} Extra GRATIS</strong> de regalo.</span>
+                ) : (
+                  <span>Tu orden está vinculada a tu amigo padrino. Si te llevás cualquiera de los 3 premios oficiales, ¡tu amigo también cobra <strong>hasta {config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"} en efectivo</strong> entregados formalmente!</span>
+                )}
               </div>
             </div>
           )}
@@ -1070,6 +1122,7 @@ function Checkout() {
             )}
           </Button>
         </form>
+        )}
       </main>
 
       <Footer />

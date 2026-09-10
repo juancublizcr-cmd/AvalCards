@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Clock, DollarSign, Flame, HelpCircle, RefreshCcw, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { fetchConfig, type Config, CONFIG_DEFAULT } from "@/lib/admin-store";
+import { LegalContentRenderer } from "@/components/LegalContentRenderer";
 
 export const Route = createFileRoute("/reembolso")({
   head: () => ({
@@ -17,11 +20,20 @@ export const Route = createFileRoute("/reembolso")({
 });
 
 function ReembolsoPage() {
+  const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
+
+  useEffect(() => {
+    void fetchConfig().then((c) => {
+      if (c) setConfig(c);
+    });
+  }, []);
+
   const abrirWhatsApp = () => {
+    const tel = (config.promoWhatsapp || config.telefonoSinpe || "50686344772").replace(/\D/g, "");
     const texto = encodeURIComponent(
       "Hola Aval Community CR, solicito información sobre una reversión / reembolso de pago.",
     );
-    window.open(`https://wa.me/50686344772?text=${texto}`, "_blank");
+    window.open(`https://wa.me/${tel}?text=${texto}`, "_blank");
   };
 
   return (
@@ -51,82 +63,86 @@ function ReembolsoPage() {
             Política de Reembolsos y Devoluciones
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responsable: Importadora Luxury Scents LTDA. · Compromiso de transparencia y protección al consumidor
+            Responsable: {config.razonSocial || "Importadora Luxury Scents LTDA."} · Compromiso de transparencia y protección al consumidor
           </p>
         </div>
 
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-6 text-sm text-muted-foreground leading-relaxed shadow-sm">
-          <div>
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <ShieldCheck className="size-5 text-primary" /> 1. Casos en que Aplica Reembolso
-            </h2>
-            <p className="mt-2">
-              En <strong>Aval Community CR</strong> (Importadora Luxury Scents LTDA.) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
-            </p>
-            <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
-              <li>
-                <strong>Pagos Duplicados o Excedentes:</strong> Si realizaste una doble transferencia por SINPE Móvil o tu tarjeta fue procesada más de una vez por error involuntario.
-              </li>
-              <li>
-                <strong>Órdenes Rechazadas con Depósito Confirmado:</strong> Si tu orden fue rechazada por inconsistencia de datos o agotamiento de stock pero el dinero ingresó a nuestra cuenta bancaria.
-              </li>
-              <li>
-                <strong>Cancelación Definitiva del Evento:</strong> En el caso fortuito o de fuerza mayor en que el evento promocional sea cancelado de manera definitiva sin reprogramación, se reintegrará el 100% del monto aportado a cada participante.
-              </li>
-            </ul>
-          </div>
-
-          <div className="pt-4 border-t border-border">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Clock className="size-5 text-primary" /> 2. Plazos y Métodos de Devolución
-            </h2>
-            <p className="mt-2 text-xs">
-              Una vez verificada la solicitud por nuestro equipo administrativo:
-            </p>
-            <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
-              <li>
-                <strong>SINPE Móvil:</strong> Las devoluciones se realizan en un plazo máximo de <strong>24 a 48 horas hábiles</strong> al mismo número telefónico desde el cual se originó el depósito.
-              </li>
-              <li>
-                <strong>Tarjeta de Débito/Crédito (TiloPay):</strong> La reversión se solicita de inmediato a la pasarela; el reflejo en el estado de cuenta depende de la entidad bancaria emisora (habitualmente de 3 a 7 días hábiles).
-              </li>
-              <li>
-                <strong>Criptomonedas (USDT):</strong> La devolución se procesa a la misma dirección de billetera remitente (menos el fee de red de la blockchain).
-              </li>
-            </ul>
-          </div>
-
-          <div className="pt-4 border-t border-border">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <DollarSign className="size-5 text-primary" /> 3. Excepciones (Casos No Reembolsables)
-            </h2>
-            <p className="mt-2 text-xs">
-              Debido a la naturaleza de las rifas digitales y la reserva exclusiva de números de la suerte:
-            </p>
-            <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
-              <li>
-                No se realizarán reembolsos una vez que la orden ha sido validada y los números de stickers han quedado formalmente asignados al participante, salvo los casos estipulados en el punto 1.
-              </li>
-              <li>
-                No aplican reembolsos una vez ejecutado el sorteo oficial de la fecha programada.
-              </li>
-            </ul>
-          </div>
-
-          <div className="pt-4 border-t border-border">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <HelpCircle className="size-5 text-primary" /> 4. ¿Cómo Solicitar tu Reembolso?
-            </h2>
-            <p className="mt-2 text-xs">
-              Para tramitar tu solicitud, por favor contáctanos con tu número de orden y comprobante:
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button variant="outline" size="sm" onClick={abrirWhatsApp} className="text-emerald-500 hover:text-emerald-400">
-                Contactar por WhatsApp: 8634-4772
-              </Button>
+        {config.legalReembolsoTexto?.trim() ? (
+          <LegalContentRenderer content={config.legalReembolsoTexto} />
+        ) : (
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-6 text-sm text-muted-foreground leading-relaxed shadow-sm">
+            <div>
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <ShieldCheck className="size-5 text-primary" /> 1. Casos en que Aplica Reembolso
+              </h2>
+              <p className="mt-2">
+                En <strong>Aval Community CR</strong> ({config.razonSocial || "Importadora Luxury Scents LTDA."}) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
+              </p>
+              <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
+                <li>
+                  <strong>Pagos Duplicados o Excedentes:</strong> Si realizaste un doble pago por SINPE Móvil o tu tarjeta fue procesada más de una vez por error involuntario.
+                </li>
+                <li>
+                  <strong>Órdenes Rechazadas con Depósito Confirmado:</strong> Si tu orden fue rechazada por inconsistencia de datos o agotamiento de stock pero el dinero ingresó a nuestra cuenta bancaria.
+                </li>
+                <li>
+                  <strong>Cancelación Definitiva del Evento:</strong> En el caso fortuito o de fuerza mayor en que el evento promocional sea cancelado de manera definitiva sin reprogramación, se reintegrará el 100% del monto aportado a cada participante.
+                </li>
+              </ul>
             </div>
-          </div>
-        </section>
+
+            <div className="pt-4 border-t border-border">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Clock className="size-5 text-primary" /> 2. Plazos y Métodos de Devolución
+              </h2>
+              <p className="mt-2 text-xs">
+                Una vez verificada la solicitud por nuestro equipo administrativo:
+              </p>
+              <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
+                <li>
+                  <strong>SINPE Móvil:</strong> Las devoluciones se realizan en un plazo máximo de <strong>24 a 48 horas hábiles</strong> al mismo número telefónico desde el cual se originó el pago.
+                </li>
+                <li>
+                  <strong>Tarjeta de Débito/Crédito (TiloPay):</strong> La reversión se solicita de inmediato a la pasarela; el reflejo en el estado de cuenta depende de la entidad bancaria emisora (habitualmente de 3 a 7 días hábiles).
+                </li>
+                <li>
+                  <strong>Criptomonedas (USDT):</strong> La devolución se procesa a la misma dirección de billetera remitente (menos el fee de red de la blockchain).
+                </li>
+              </ul>
+            </div>
+
+            <div className="pt-4 border-t border-border">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <DollarSign className="size-5 text-primary" /> 3. Excepciones (Casos No Reembolsables)
+              </h2>
+              <p className="mt-2 text-xs">
+                Debido a la naturaleza de las promociones comerciales digitales y la reserva exclusiva de números de la suerte:
+              </p>
+              <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
+                <li>
+                  No se realizarán reembolsos una vez que la orden ha sido validada y los números de tokens han quedado formalmente asignados al participante, salvo los casos estipulados en el punto 1.
+                </li>
+                <li>
+                  No aplican reembolsos una vez ejecutado el sorteo oficial de la fecha programada.
+                </li>
+              </ul>
+            </div>
+
+            <div className="pt-4 border-t border-border">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <HelpCircle className="size-5 text-primary" /> 4. ¿Cómo Solicitar tu Reembolso?
+              </h2>
+              <p className="mt-2 text-xs">
+                Para tramitar tu solicitud, por favor contáctanos con tu número de orden y comprobante:
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button variant="outline" size="sm" onClick={abrirWhatsApp} className="text-emerald-500 hover:text-emerald-400">
+                  Contactar por WhatsApp: {config.telefonoSinpe || "8634-4772"}
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">

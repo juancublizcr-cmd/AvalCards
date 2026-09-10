@@ -102,6 +102,13 @@ function Validar() {
     });
   }, []);
 
+  const superMoneda = config.supertokenMoneda || ((config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "USD");
+  const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
+  const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
+  const superPremio1 = (config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 10000).toLocaleString("es-CR");
+  const superPremio2 = (config.supertokenPremioSegundoUsd || 6000).toLocaleString("es-CR");
+  const superPremio3 = (config.supertokenPremioTerceroUsd || 3000).toLocaleString("es-CR");
+
   const ejecutarBusqueda = async (clean: string) => {
     if (!clean) return;
     setError("");
@@ -281,7 +288,7 @@ function Validar() {
                       </span>
                       {tg.supertoken && (
                         <span className="rounded-md bg-yellow-400 text-black px-2 py-0.5 font-bold text-xs flex items-center gap-1">
-                          <Crown className="size-3" /> + ${(config.supertokenPremioUsd || 6000).toLocaleString()} USD Cash Extra
+                          <Crown className="size-3" /> +{superSimbolo}{superPremio1} {superCodigo} Extra
                         </span>
                       )}
                     </div>
@@ -431,13 +438,16 @@ function Validar() {
                 </span>
                 <div>
                   <h4 className="font-bold text-sm sm:text-base text-white flex items-center gap-2">
-                    Tu Programa de Referidos Activo
-                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/40">
-                      Gana Tokens
+                    Tu Programa de Padrinos y Referidos
+                    <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40">
+                      Ganá hasta {config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"}
                     </span>
                   </h4>
-                  <p className="text-xs text-emerald-400/90 leading-tight mt-0.5">
-                    Por cada amigo que compre, ganas <strong>1 Token de Regalo</strong> y tu amigo recibe <strong>+1 Token Extra</strong>.
+                  <p className="text-xs text-zinc-300 leading-tight mt-0.5">
+                    {config.referidosDarTokensBono
+                      ? `Si tu amigo gana cualquiera de los 3 premios, ¡vos ganás hasta ${config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"} en efectivo! Además reciben tokens extra de regalo.`
+                      : `Si cualquiera de tus amigos recomendados gana los 3 premios oficiales, ¡vos cobrás hasta ${config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"} en efectivo entregados formalmente! (₡4M al 1°, ₡2M al 2° y ₡1M al 3°).`
+                    }
                   </p>
                 </div>
               </div>
@@ -484,7 +494,9 @@ function Validar() {
                     const tel = (resultados[0]?.telefono || "").replace(/\D/g, "");
                     const url = `${window.location.origin}/?ref=${tel}`;
                     const texto = encodeURIComponent(
-                      `¡Mae, estoy participando en Aval Community CR! 🚗💨\n\nEntra con mi enlace y recibe +1 Token Extra GRATIS en tu compra:\n${url}`
+                      config.referidosDarTokensBono
+                        ? `¡Mae, estoy participando en Aval Community CR! 🚗💨\n\nEntra con mi enlace y recibe +${config.referidosBonoTokens ?? 1} Token Extra GRATIS en tu compra:\n${url}`
+                        : `¡Mae, mirá este chuzo de sorteo en Aval Community CR! 🚗💨\n\nEntrá con mi enlace personal y asegurá tus números oficiales:\n${url}`
                     );
                     window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
                   }}
@@ -501,10 +513,14 @@ function Validar() {
                 <span className="text-[11px] text-muted-foreground block uppercase font-bold">Amigos Invitados</span>
                 <span className="text-xl sm:text-2xl font-bold font-mono text-white">{referidos.length}</span>
               </div>
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-center">
-                <span className="text-[11px] text-muted-foreground block uppercase font-bold">Tokens de Regalo</span>
-                <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-400">
-                  +{referidos.filter((r) => r.estado === "aprobada").length}
+              <div className="rounded-xl border border-amber-500/30 bg-amber-950/30 p-3 text-center">
+                <span className="text-[11px] text-muted-foreground block uppercase font-bold">
+                  {config.referidosDarTokensBono ? "Tokens de Regalo" : "Premio Si Ganan"}
+                </span>
+                <span className="text-xl sm:text-2xl font-bold font-mono text-amber-400">
+                  {config.referidosDarTokensBono
+                    ? `+${referidos.filter((r) => r.estado === "aprobada").length}`
+                    : `Hasta ${config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"}`}
                 </span>
               </div>
               <div className="col-span-2 sm:col-span-1 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-center">
@@ -576,7 +592,7 @@ function Validar() {
                         </h2>
                         {o.supertoken && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-500">
-                            <Crown className="size-3" /> SuperToken (+${(config.supertokenPremioUsd || 6000).toLocaleString()} USD)
+                            <Crown className="size-3" /> SuperToken (Hasta +${(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 10000).toLocaleString()} USD)
                           </span>
                         )}
                       </div>
@@ -671,7 +687,7 @@ function Validar() {
                   <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 p-3 text-xs text-amber-300 shadow-sm">
                     <Crown className="size-4 text-amber-400 shrink-0" />
                     <span>
-                      <strong className="text-amber-200">SuperToken Activo:</strong> Califica para el 1° Lugar + <strong className="text-yellow-300">${(config.supertokenPremioUsd || 6000).toLocaleString()} USD en Efectivo</strong>.
+                      <strong className="text-amber-200">SuperToken Activo:</strong> Califica para bonos entregados formalmente: <strong className="text-yellow-300">+{superSimbolo}{superPremio1} (1°)</strong>, <strong className="text-sky-300">+{superSimbolo}{superPremio2} (2°)</strong> y <strong className="text-yellow-400">+{superSimbolo}{superPremio3} (3°) {superCodigo}</strong>.
                     </span>
                   </div>
                 )}
@@ -680,7 +696,10 @@ function Validar() {
                   <div className="mt-2.5 flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-2.5 text-xs text-emerald-300">
                     <Gift className="size-4 text-emerald-400 shrink-0" />
                     <span>
-                      <strong>Orden Referida por:</strong> <span className="text-white font-bold">{padresMap[ticketOrden.referido_por]?.nombre || "Carlos Gomez"}</span> ({padresMap[ticketOrden.referido_por]?.telefono || ticketOrden.referido_por}) · (+1 Token Extra incluido).
+                      <strong>Orden Referida por:</strong> <span className="text-white font-bold">{padresMap[ticketOrden.referido_por]?.nombre || "Carlos Gomez"}</span> ({padresMap[ticketOrden.referido_por]?.telefono || ticketOrden.referido_por})
+                      {config.referidosDarTokensBono
+                        ? ` · (+${config.referidosBonoTokens ?? 1} Token${(config.referidosBonoTokens ?? 1) > 1 ? "s" : ""} Extra incluido)`
+                        : ` · (Padrino para premios de hasta ${config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"})`}
                     </span>
                   </div>
                 )}

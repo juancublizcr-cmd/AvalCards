@@ -19,7 +19,7 @@ export function Footer() {
             </span>
           </Link>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
-            Eventos promocionales 100% transparentes auditados con los resultados oficiales de la Lotería Nacional de Costa Rica.
+            Eventos promocionales 100% transparentes auditados con los resultados de la Emisión Oficial de la JPS en Costa Rica.
           </p>
           <div className="pt-2">
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground block font-semibold">
@@ -55,6 +55,11 @@ export function Footer() {
             <li>
               <Link to="/checkout" className="hover:text-primary transition-colors">
                 Checkout de Pago
+              </Link>
+            </li>
+            <li>
+              <Link to="/impacto-social" className="text-rose-500 font-semibold hover:text-rose-400 transition-colors">
+                Impacto y Bien Social
               </Link>
             </li>
           </ul>

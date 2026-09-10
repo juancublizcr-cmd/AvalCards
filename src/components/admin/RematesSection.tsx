@@ -127,7 +127,7 @@ export function RematesSection() {
   );
   const [nuevoGanador, setNuevoGanador] = useState("Carlos Solano M.");
   const [nuevoToken, setNuevoToken] = useState("#91204");
-  const [nuevaImagen, setNuevaImagen] = useState("/premio-prado.jpg");
+  const [nuevaImagen, setNuevaImagen] = useState("/premio-subaru.jpg");
 
   const recargar = () => {
     setRemates(fetchRematesLocal());
@@ -563,7 +563,7 @@ export function RematesSection() {
                   id="titulo"
                   value={nuevoTitulo}
                   onChange={(e) => setNuevoTitulo(e.target.value)}
-                  placeholder="ej: Toyota Land Cruiser Prado TX-L 2026"
+                  placeholder="ej: Subaru Impreza WRX STI 2024"
                   required
                 />
               </div>

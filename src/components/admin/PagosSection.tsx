@@ -300,7 +300,7 @@ export function PagosSection({
                   <div>{o.id}</div>
                   {o.supertoken && (
                     <span className="inline-flex items-center gap-0.5 rounded bg-amber-500/15 border border-amber-500/40 px-1.5 py-0.5 text-[9px] font-bold text-amber-500 mt-1">
-                      <Crown className="size-2.5" /> SuperToken $6K
+                      <Crown className="size-2.5" /> SuperToken VIP
                     </span>
                   )}
                 </td>
@@ -418,8 +418,8 @@ export function PagosSection({
                 <div className="flex items-center gap-3 rounded-xl border-2 border-amber-500/50 bg-amber-500/15 p-3.5 text-xs text-amber-500 font-medium shadow-sm">
                   <Crown className="size-5 text-amber-500 shrink-0" />
                   <div>
-                    <strong className="block text-sm">SuperToken ($6,000 USD Cash) Activo</strong>
-                    <span>Esta orden califica para el bono adicional de $6,000 en efectivo (~₡3,100,000) si gana el 1° Lugar.</span>
+                    <strong className="block text-sm">SuperToken VIP Activo</strong>
+                    <span>Esta orden califica para bonos en efectivo: $10,000 USD (1° Lugar), $6,000 USD (2° Lugar) y $3,000 USD (3° Lugar).</span>
                   </div>
                 </div>
               )}

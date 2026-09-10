@@ -10,6 +10,7 @@ import {
   Crown,
   FileCheck,
   Flame,
+  Fuel,
   Gauge,
   Gift,
   Key,
@@ -35,10 +36,11 @@ import { Footer } from "@/components/Footer";
 import { FlyerPromocional } from "@/components/FlyerPromocional";
 import { FomoNotifications } from "@/components/FomoNotifications";
 import { RankingReferidos } from "@/components/RankingReferidos";
+import { ReferidosLandingSection } from "@/components/ReferidosLandingSection";
 import { MiniSorteosSection } from "@/components/MiniSorteosSection";
-import { ConsultaTokensSection } from "@/components/ConsultaTokensSection";
+import { SuperTokenSection } from "@/components/SuperTokenSection";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
-import pradoImg from "@/assets/premio-prado.jpg";
+import carroImg from "@/assets/premio-carro.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
 import consolaImg from "@/assets/premio-consola.jpg";
 import subaruImg from "@/assets/premio-subaru.jpg";
@@ -56,6 +58,13 @@ import {
   CONFIG_DEFAULT,
   FEATURES_DEFAULT,
 } from "@/lib/admin-store";
+import {
+  fechaSorteoATimestamp,
+  formatearFechaLarga,
+  formatearHora12,
+  obtenerEstadoSorteo,
+  type EstadoSorteo,
+} from "@/lib/fecha-utils";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
@@ -84,7 +93,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Adquiere tus Tokens digitales oficiales y participa por vehículos de alta gama y premios en efectivo desde solo ₡4,000. 100% auditado con la Lotería Nacional de la JPS.",
+          "Adquiere tus Tokens digitales oficiales y participa por vehículos de alta gama y premios en efectivo desde solo ₡4,000. 100% auditado con la Emisión Oficial de la JPS.",
       },
       { property: "og:title", content: "Aval Community CR | Eventos Promocionales Oficiales" },
       {
@@ -105,49 +114,47 @@ const PAQUETES_DEFAULT: Paquete[] = [
   { cantidad: 24, precio: 24000 },
 ];
 
-function useCuentaRegresiva(fechaObjetivo: string) {
-  const [t, setT] = useState({ d: 7, h: 0, m: 0, s: 0 });
-  useEffect(() => {
-    const objetivo = fechaObjetivo
-      ? new Date(fechaObjetivo).getTime()
-      : new Date("2026-09-27T23:59:59").getTime();
+function useCuentaRegresiva(fechaObjetivo: string, horaObjetivo?: string, horasCierrePrevio?: number) {
+  const [t, setT] = useState<{
+    d: number;
+    h: number;
+    m: number;
+    s: number;
+    estado: EstadoSorteo;
+    terminado: boolean;
+  }>({
+    d: 0,
+    h: 0,
+    m: 0,
+    s: 0,
+    estado: "VENTAS_ABIERTAS",
+    terminado: false,
+  });
 
+  useEffect(() => {
     const tick = () => {
-      const diff = Math.max(0, objetivo - Date.now());
+      const res = obtenerEstadoSorteo(fechaObjetivo, horaObjetivo, horasCierrePrevio);
+      const diff = Math.max(0, res.msParaSorteo);
       setT({
         d: Math.floor(diff / 86400000),
         h: Math.floor((diff / 3600000) % 24),
         m: Math.floor((diff / 60000) % 60),
         s: Math.floor((diff / 1000) % 60),
+        estado: res.estado,
+        terminado: res.msParaSorteo <= 0,
       });
     };
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-  }, [fechaObjetivo]);
+  }, [fechaObjetivo, horaObjetivo, horasCierrePrevio]);
+
   return t;
 }
 
-const MESES_ES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-];
+// formatearFechaLarga viene de @/lib/fecha-utils (importado arriba)
+// No se define aquí para evitar duplicación y posibles inconsistencias.
 
-function formatearFechaLarga(fechaStr: string) {
-  try {
-    const clean = (fechaStr || "2026-09-27").split("T")[0];
-    const parts = clean.split("-").map(Number);
-    if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
-      const mesNombre = MESES_ES[parts[1] - 1] || "septiembre";
-      return `${parts[2]} de ${mesNombre} de ${parts[0]}`;
-    }
-    const d = new Date(clean + "T12:00:00Z");
-    const mesNombre = MESES_ES[d.getUTCMonth()] || "septiembre";
-    return `${d.getUTCDate()} de ${mesNombre} de ${d.getUTCFullYear()}`;
-  } catch {
-    return fechaStr || "27 de septiembre de 2026";
-  }
-}
 
 function formatNumber(val: number | string): string {
   const num = Math.round(Number(val) || 0);
@@ -190,6 +197,11 @@ function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
   ];
 }
 
+function calcularCostoSuperToken(cantidad: number, precioBaseSuperToken: number = 1500): number {
+  const grupos = Math.max(1, Math.round(cantidad / 3));
+  return grupos * precioBaseSuperToken;
+}
+
 function calcularProgresoTermometro(
   cfg: Config,
   ordenes?: Orden[],
@@ -198,7 +210,9 @@ function calcularProgresoTermometro(
   if (typeof cfg.termometroPorcentajeManual === "number" && cfg.termometroPorcentajeManual > 0) {
     return cfg.termometroPorcentajeManual;
   }
-  const meta = cfg.termometroMetaTokens && cfg.termometroMetaTokens > 0 ? cfg.termometroMetaTokens : 5000;
+  const meta = (cfg.termometroMetaTokens && cfg.termometroMetaTokens !== 5000 && cfg.termometroMetaTokens >= 10000)
+    ? cfg.termometroMetaTokens
+    : 100000;
 
   // 1. Prioridad: Conteo real de tokens de órdenes aprobadas en Supabase
   if (ordenes && ordenes.length > 0) {
@@ -222,7 +236,7 @@ function calcularProgresoTermometro(
     }
   }
 
-  return 4.1;
+  return 2.0;
 }
 
 function IndexPage() {
@@ -232,7 +246,7 @@ function IndexPage() {
   const [premios, setPremios] = useState<Premio[]>(loaderData?.premios || PREMIOS_DEFAULT);
   const [sorteo, setSorteo] = useState<Sorteo>(loaderData?.sorteo || SORTEO_DEFAULT);
   const [config, setConfig] = useState<Config>(loaderData?.config || CONFIG_DEFAULT);
-  const [fechaSorteo, setFechaSorteo] = useState(loaderData?.sorteo?.fecha || "2026-09-27");
+  const [fechaSorteo, setFechaSorteo] = useState(loaderData?.sorteo?.fecha || "2026-09-13");
   const [paquetes, setPaquetes] = useState<Paquete[]>(() => {
     const sorteoActual = loaderData?.sorteo || SORTEO_DEFAULT;
     return calcularPaquetes(sorteoActual);
@@ -244,7 +258,14 @@ function IndexPage() {
   const [openRaspa, setOpenRaspa] = useState(false);
   const [fotoZoom, setFotoZoom] = useState<{ url: string; titulo: string; nivel?: string } | null>(null);
 
-  const t = useCuentaRegresiva(fechaSorteo);
+  const superMoneda = config.supertokenMoneda || (Number(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "CRC");
+  const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
+  const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
+
+  const t = useCuentaRegresiva(fechaSorteo, sorteo.horaSorteo, config.horasCierrePrevio);
+  const ventasAbiertas = config.ventasActivas && t.estado === "VENTAS_ABIERTAS";
+  const cierrePrevio = t.estado === "CIERRE_PREVIO";
+  const enCurso = t.estado === "EN_CURSO" || t.estado === "FINALIZADO";
 
   const featureIcons = [Gauge, Compass, Star, FileCheck];
 
@@ -273,7 +294,7 @@ function IndexPage() {
   const premiosVisibles = premios.filter((p) => p.activo !== false);
   const primerPremioVisible = premiosVisibles[0] || premios[0];
   const premioMayorActual = primerPremioVisible?.nombre || sorteo.titulo || "el Premio Mayor";
-  const descPaso3 = `El sorteo se determina con los resultados oficiales de la Lotería Nacional (JPS). Si aciertas tu número, te llevas ${premioMayorActual} (vehículo 0KM, moto, casa, dinero en efectivo o el premio activo).`;
+  const descPaso3 = `El sorteo se determina con los resultados de la Emisión Oficial de la JPS. Si aciertas tu número, te llevas ${premioMayorActual} (vehículo 0KM, moto, casa, dinero en efectivo o el premio activo).`;
 
   const pasos = [
     {
@@ -336,6 +357,10 @@ function IndexPage() {
   };
 
   const abrir = (p: Paquete) => {
+    if (cierrePrevio || enCurso) {
+      window.location.href = "/validar";
+      return;
+    }
     if (!config.ventasActivas) {
       abrirWhatsAppPreventa(`Me interesa apartar el paquete de ${p.cantidad} Tokens (₡${formatNumber(p.precio)}).`);
       return;
@@ -345,15 +370,19 @@ function IndexPage() {
   };
 
   const irAPaquetes = () => {
+    if (cierrePrevio || enCurso) {
+      window.location.href = "/validar";
+      return;
+    }
     if (!config.ventasActivas) {
       abrirWhatsAppPreventa();
       return;
     }
-    const el = document.getElementById("paquetes-compra");
+    const el = document.getElementById("tickets-seleccion") || document.getElementById("paquetes-compra");
     if (el) {
       const rect = el.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const targetY = rect.top + scrollTop - 90;
+      const targetY = rect.top + scrollTop - 85;
       window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
     } else {
       abrir(paquetes[2] || paquetes[0] || { cantidad: 12, precio: 12000 });
@@ -363,8 +392,18 @@ function IndexPage() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Barra de Notificación Superior */}
-      <div className="bg-[image:var(--gradient-fire)] py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase">
-        {config.ventasActivas
+      <div className={`py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase ${
+        cierrePrevio
+          ? "bg-amber-600 animate-pulse text-black font-black"
+          : enCurso
+          ? "bg-red-600 font-black text-white"
+          : "bg-[image:var(--gradient-fire)]"
+      }`}>
+        {enCurso
+          ? "🎯 ¡SORTEO OFICIAL EN PROCESO! · TRANSMISIÓN Y AUDITORÍA EN CURSO"
+          : cierrePrevio
+          ? `🔒 VENTAS CERRADAS · PREPARANDO SORTEO OFICIAL DE LAS ${formatearHora12(sorteo.horaSorteo || "19:30")}`
+          : config.ventasActivas
           ? "🔥 Edición Especial 2026 · Más del 85% de Tokens colocados · ¡Quedan pocos cupos!"
           : config.promoTitulo || "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"}
       </div>
@@ -424,9 +463,21 @@ function IndexPage() {
               variant="hero"
               size="sm"
               onClick={irAPaquetes}
-              className="h-8 px-3 sm:px-4 text-xs sm:text-sm shadow-[var(--shadow-fire)] font-bold whitespace-nowrap"
+              className={`h-8 px-3 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap ${
+                cierrePrevio
+                  ? "bg-amber-600 hover:bg-amber-500 text-black shadow-none"
+                  : enCurso
+                  ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
+                  : "shadow-[var(--shadow-fire)]"
+              }`}
             >
-              {config.ventasActivas ? "Participar" : "🔥 Preventa"}
+              {enCurso
+                ? "🎯 Sorteo en Vivo"
+                : cierrePrevio
+                ? "🔒 Sorteo en Breve"
+                : config.ventasActivas
+                ? "Participar"
+                : "🔥 Preventa"}
             </Button>
           </div>
         </div>
@@ -462,9 +513,21 @@ function IndexPage() {
           <div className="relative mx-auto max-w-6xl px-5 text-center">
             {/* Badges de Conversión en el Hero */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
+              <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${
+                enCurso
+                  ? "border-red-500/50 bg-red-500/15 text-red-400 animate-pulse"
+                  : cierrePrevio
+                  ? "border-amber-500/50 bg-amber-500/15 text-amber-400 font-bold"
+                  : "border-primary/50 bg-primary/10 text-primary"
+              }`}>
                 <Sparkles className="size-3.5" />{" "}
-                {config.ventasActivas ? "Evento Promocional Oficial Costa Rica" : "🔥 PREVENTA EXCLUSIVA 2026"}
+                {enCurso
+                  ? "🎯 SORTEO OFICIAL EN CURSO"
+                  : cierrePrevio
+                  ? "🔒 VENTAS CERRADAS · PREPARANDO EMISIÓN"
+                  : config.ventasActivas
+                  ? "Evento Promocional Oficial Costa Rica"
+                  : "🔥 PREVENTA EXCLUSIVA 2026"}
               </div>
 
               {/* Badge del Paquete Más Popular destacado arriba (₡8 000) */}
@@ -476,9 +539,17 @@ function IndexPage() {
               )}
 
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
-                <Crown className="size-3.5" />
-                <span>{`SuperToken: +$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash (${primerPremioVisible?.nombre || "1° Lugar"})`}</span>
+                <Crown className="size-3.5 text-amber-400" />
+                <span>{`SuperToken: Hasta +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash Extra`}</span>
               </div>
+
+              {/* Badge Mini-Sorteos Semanales Gasolina + Play */}
+              {config.miniSorteosActivo !== false && (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 bg-emerald-500/15 px-4 py-1.5 text-xs font-bold text-emerald-400 shadow-md">
+                  <Fuel className="size-3.5 text-emerald-400" />
+                  <span>⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5</span>
+                </div>
+              )}
             </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
@@ -492,7 +563,11 @@ function IndexPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-              {config.ventasActivas
+              {cierrePrevio
+                ? `Las ventas para esta edición han finalizado formalmente 2 horas antes para auditoría. El sorteo oficial inicia a las ${formatearHora12(sorteo.horaSorteo || "19:30")}.`
+                : enCurso
+                ? "El sorteo oficial se encuentra en transmisión y verificación de números favorecidos. Consulta tus tokens en el validador."
+                : config.ventasActivas
                 ? "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales."
                 : config.promoSubtitulo || "Estamos afinando los últimos detalles. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!"}
             </p>
@@ -502,7 +577,7 @@ function IndexPage() {
               className="relative mx-auto mt-12 max-w-5xl group cursor-zoom-in"
               onClick={() =>
                 setFotoZoom({
-                  url: primerPremioVisible?.imagen || pradoImg,
+                  url: primerPremioVisible?.imagen || carroImg,
                   titulo: primerPremioVisible?.nombre || "Gran Entrega 2026",
                   nivel: "1° Lugar · Premio Mayor",
                 })
@@ -511,14 +586,14 @@ function IndexPage() {
               <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-neutral-950 p-2 sm:p-4 shadow-[var(--shadow-card)] transition-all duration-500 group-hover:scale-[1.01] group-hover:border-primary/70 relative min-h-[340px] sm:min-h-[480px] flex items-center justify-center">
                 {/* Fondo difuminado para rellenar los bordes con los tonos reales de la foto */}
                 <img
-                  src={primerPremioVisible?.imagen || pradoImg}
+                  src={primerPremioVisible?.imagen || carroImg}
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
                 />
                 {/* Vehículo completo que se amolda al 100% sin recortarse */}
                 <img
-                  src={primerPremioVisible?.imagen || pradoImg}
+                  src={primerPremioVisible?.imagen || carroImg}
                   alt={primerPremioVisible?.nombre || "Gran Entrega 2026"}
                   className="relative z-0 max-h-[460px] sm:max-h-[520px] max-w-full w-auto h-auto object-contain mx-auto rounded-2xl brightness-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105"
                 />
@@ -536,7 +611,7 @@ function IndexPage() {
 
               <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg pointer-events-none">
                 <Crown className="size-4 text-amber-500" />
-                <span>{`Bono $${formatNumber(config.supertokenPremioUsd || 6000)} USD con SuperToken`}</span>
+                <span>{`Bono +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} con SuperToken`}</span>
               </div>
 
               <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg pointer-events-none">
@@ -545,15 +620,33 @@ function IndexPage() {
             </div>
 
             {/* Termómetro de Disponibilidad y Cuenta Regresiva Oficial en el Hero */}
-            <div className="mx-auto mt-10 max-w-2xl rounded-2xl border-2 border-amber-500/40 bg-zinc-950/90 p-5 shadow-[0_0_35px_rgba(245,158,11,0.15)] backdrop-blur text-left">
+            <div className={`mx-auto mt-10 max-w-2xl rounded-2xl border-2 p-5 backdrop-blur text-left ${
+              enCurso
+                ? "border-red-500/60 bg-red-950/90 shadow-[0_0_40px_rgba(239,68,68,0.25)]"
+                : cierrePrevio
+                ? "border-amber-500/70 bg-amber-950/80 shadow-[0_0_35px_rgba(245,158,11,0.25)]"
+                : "border-amber-500/40 bg-zinc-950/90 shadow-[0_0_35px_rgba(245,158,11,0.15)]"
+            }`}>
               <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                      enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
+                    }`}></span>
+                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                      enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
+                    }`}></span>
                   </span>
-                  <span className="font-black uppercase tracking-wider text-emerald-400 text-xs">
-                    {config.ventasActivas ? "Ventas Abiertas en Vivo" : "Preventa Exclusiva"}
+                  <span className={`font-black uppercase tracking-wider text-xs ${
+                    enCurso ? "text-red-400" : cierrePrevio ? "text-amber-400" : "text-emerald-400"
+                  }`}>
+                    {enCurso
+                      ? "🎯 Sorteo Oficial en Curso"
+                      : cierrePrevio
+                      ? "🔒 Ventas Cerradas (Conteo Final)"
+                      : config.ventasActivas
+                      ? "Ventas Abiertas en Vivo"
+                      : "Preventa Exclusiva"}
                   </span>
                 </div>
                 <span className="font-mono text-lg sm:text-xl font-black text-amber-400 flex items-center gap-1.5" suppressHydrationWarning>
@@ -574,10 +667,14 @@ function IndexPage() {
               <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5" suppressHydrationWarning>
                   <Calendar className="size-3.5 text-primary" />
-                  Cierre Estimado: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)}</strong>
+                  Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
                 </span>
                 <span className="font-mono font-bold text-amber-400 text-xs sm:text-sm" suppressHydrationWarning>
-                  ⏳ Faltan: {t.d}d {t.h}h {t.m}m {t.s}s
+                  {enCurso
+                    ? "🎯 En transmisión oficial"
+                    : cierrePrevio
+                    ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
+                    : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
                 </span>
               </div>
             </div>
@@ -588,9 +685,19 @@ function IndexPage() {
                 variant="hero"
                 size="xl"
                 onClick={irAPaquetes}
-                className="w-full sm:w-auto text-base px-8 py-7 shadow-[var(--shadow-fire)] group cursor-pointer"
+                className={`w-full sm:w-auto text-base px-8 py-7 group cursor-pointer ${
+                  cierrePrevio
+                    ? "bg-amber-500 hover:bg-amber-400 text-black font-black shadow-lg"
+                    : enCurso
+                    ? "bg-red-600 hover:bg-red-500 text-white font-black animate-pulse"
+                    : "shadow-[var(--shadow-fire)]"
+                }`}
               >
-                {config.ventasActivas ? (
+                {enCurso ? (
+                  <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
+                ) : cierrePrevio ? (
+                  <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
+                ) : config.ventasActivas ? (
                   <>
                     🔥 ¡QUIERO PARTICIPAR AHORA!{" "}
                     <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
@@ -621,54 +728,56 @@ function IndexPage() {
           </div>
         </section>
 
-        {/* BANNER INTERACTIVO JUEGOS EXPRESS (RASPA / RULETA) */}
-        {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
-          <section className="relative z-10 -mt-8 pb-10">
-            <div className="mx-auto max-w-5xl px-5">
-              <div
-                onClick={() => setOpenRaspa(true)}
-                className="cursor-pointer group relative overflow-hidden rounded-3xl border-2 border-amber-500/60 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 sm:p-6 shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.01] hover:border-amber-400"
-              >
-                <div className="pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-amber-500/15 blur-[80px]" />
-
-                <div className="flex flex-col md:flex-row items-center justify-between gap-5">
-                  <div className="flex items-center gap-4 text-center md:text-left">
-                    <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg font-bold text-3xl group-hover:rotate-12 group-hover:scale-110 transition-transform">
-                      {sorteo.raspaConfig?.modo === "ruleta" ? "🎡" : sorteo.raspaConfig?.modo === "ambos" ? "✨" : "🎁"}
-                    </div>
-                    <div>
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-0.5 text-xs font-black uppercase tracking-wider text-amber-300 border border-amber-500/40">
-                        <Sparkles className="size-3.5 text-amber-400" /> ¡JUEGO INSTANTÁNEO EXPRESS!
-                      </div>
-                      <h3 className="font-display text-2xl sm:text-3xl text-white font-bold tracking-wide mt-1">
-                        {sorteo.raspaConfig?.modo === "ruleta"
-                          ? (sorteo.raspaConfig?.ruletaTitulo || "Ruleta de la Fortuna Express")
-                          : (sorteo.raspaConfig?.titulo || "Raspa y Gana Digital")} · ¡Gana en SINPE al Instante!
-                      </h3>
-                      <p className="text-xs sm:text-sm text-zinc-300 mt-0.5">
-                        {sorteo.raspaConfig?.modo === "ruleta"
-                          ? (sorteo.raspaConfig?.ruletaSubtitulo || "Gira la ruleta de casino y gana hasta ₡100,000 en SINPE Móvil o Tokens oficiales.")
-                          : (sorteo.raspaConfig?.subtitulo || "Pasa tu dedo o mouse sobre la tarjeta dorada o gira la ruleta y descubre tu premio.")}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    variant="hero"
-                    size="lg"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenRaspa(true);
-                    }}
-                    className="w-full md:w-auto shadow-[var(--shadow-fire)] font-bold text-sm px-6 py-6 shrink-0 gap-2 border border-amber-400/40 cursor-pointer"
-                  >
-                    <Sparkles className="size-4" /> {`¡JUGAR AHORA (₡${formatNumber(sorteo.raspaConfig?.precio || 1000)})!`}
-                  </Button>
-                </div>
-              </div>
+        {/* CÓMO FUNCIONA EN 3 PASOS (PROCESO 100% DIGITAL Y TRANSPARENTE) */}
+        <section id="como-funciona" className="py-20 bg-secondary/30 border-y border-border">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="text-center max-w-2xl mx-auto">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                Proceso 100% Digital y Transparente
+              </span>
+              <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
+                Participa en 3 Simples Pasos
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo.
+              </p>
             </div>
-          </section>
-        )}
+
+            <div className="mt-14 grid gap-8 md:grid-cols-3">
+              {pasos.map((paso, idx) => (
+                <div
+                  key={idx}
+                  className="relative rounded-2xl border border-border bg-card p-8 shadow-sm flex flex-col justify-between hover:border-primary/50 transition-colors"
+                >
+                  <div>
+                    <div className="font-display text-6xl text-primary/30">{paso.num}</div>
+                    <h3 className="mt-4 font-bold text-xl">{paso.titulo}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{paso.desc}</p>
+                    {idx === 1 && metodosActivosLista.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {metodosActivosLista.map((m) => (
+                          <span
+                            key={m.id}
+                            className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-foreground shadow-xs"
+                          >
+                            <span>{m.icono}</span>
+                            <span>{m.nombre}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 text-center">
+              <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
+                {config.ventasActivas ? "Comenzar y Elegir mis Tokens →" : "🔥 Consultar Preventa por WhatsApp →"}
+              </Button>
+            </div>
+          </div>
+        </section>
 
         {/* LAS ENTREGAS DE LA EDICIÓN (CUADRÍCULA DINÁMICA AUTO-ADAPTABLE) */}
         {premiosVisibles.length > 0 && (
@@ -755,7 +864,7 @@ function IndexPage() {
                       : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo")
                       ? consolaImg
                       : isMayor
-                      ? pradoImg
+                      ? carroImg
                       : isSegundo
                       ? motoImg
                       : consolaImg;
@@ -789,10 +898,20 @@ function IndexPage() {
                     >
                       {/* Badges Flotantes de Posición y SuperToken */}
                       <div className="absolute top-3 right-3 flex gap-1.5 z-10">
-                        {(isMayor || isEleccion1) && (
-                          <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
-                            <Crown className="size-3 text-amber-400" /> {`+$${formatNumber(config.supertokenPremioUsd || 6000)} USD`}
-                          </span>
+                        {config.supertokenActivo !== false && (
+                          isMayor || isEleccion1 ? (
+                            <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                              <Crown className="size-3 text-amber-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo}`}
+                            </span>
+                          ) : isSegundo || isEleccion2 ? (
+                            <span className="rounded-full bg-black/80 text-sky-400 border border-sky-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                              <Crown className="size-3 text-sky-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo}`}
+                            </span>
+                          ) : isEfectivo3 ? (
+                            <span className="rounded-full bg-black/80 text-yellow-400 border border-yellow-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                              <Crown className="size-3 text-yellow-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo}`}
+                            </span>
+                          ) : null
                         )}
                         <span
                           className={`rounded-full px-3 py-0.5 text-[11px] uppercase backdrop-blur shadow-md ${tagBadgeClass}`}
@@ -834,7 +953,7 @@ function IndexPage() {
                               : isEleccion2
                               ? "Vehículo adjudicado al 2° Lugar (el restante no seleccionado) 100% legal y listo para rodar."
                               : isEfectivo3
-                              ? "Premio oficial en efectivo entregado por transferencia bancaria / SINPE o consola de última generación."
+                              ? "Premio oficial en efectivo entregado formalmente o consola de última generación."
                               : isMayor
                               ? "Vehículo 0 KM con traspaso y marchamo incluidos."
                               : isSegundo
@@ -842,10 +961,20 @@ function IndexPage() {
                               : "Consola de última generación con controles y juegos incluidos."}
                           </p>
                         </div>
-                        {(isMayor || isEleccion1) && (
-                          <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
-                            <Crown className="size-3.5" /> {`Opción SuperToken: ¡+$${formatNumber(config.supertokenPremioUsd || 6000)} USD Cash extra!`}
-                          </p>
+                        {config.supertokenActivo !== false && (
+                          isMayor || isEleccion1 ? (
+                            <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
+                              <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash extra!`}
+                            </p>
+                          ) : isSegundo || isEleccion2 ? (
+                            <p className="text-xs font-semibold text-sky-400 mt-3 pt-2.5 border-t border-sky-500/20 flex items-center gap-1.5">
+                              <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo} Cash extra!`}
+                            </p>
+                          ) : isEfectivo3 ? (
+                            <p className="text-xs font-semibold text-yellow-400 mt-3 pt-2.5 border-t border-yellow-500/20 flex items-center gap-1.5">
+                              <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo} Cash extra!`}
+                            </p>
+                          ) : null
                         )}
                       </div>
                     </div>
@@ -893,20 +1022,20 @@ function IndexPage() {
                 className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group cursor-zoom-in"
                 onClick={() =>
                   setFotoZoom({
-                    url: sorteo.detalleImagen || premios[0]?.imagen || pradoImg,
+                    url: sorteo.detalleImagen || premios[0]?.imagen || carroImg,
                     titulo: sorteo.detalleTitulo || "Entrega Detallada",
                     nivel: "Ficha Técnica",
                   })
                 }
               >
                 <img
-                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
+                  src={sorteo.detalleImagen || premios[0]?.imagen || carroImg}
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 w-full h-full object-cover blur-md opacity-25 scale-110 pointer-events-none"
                 />
                 <img
-                  src={sorteo.detalleImagen || premios[0]?.imagen || pradoImg}
+                  src={sorteo.detalleImagen || premios[0]?.imagen || carroImg}
                   alt={sorteo.detalleTitulo || "Entrega Detallada"}
                   className="relative z-0 max-h-76 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
                 />
@@ -926,26 +1055,45 @@ function IndexPage() {
           </div>
         </section>
 
+        {/* MODALIDAD VIP: SUPERTOKEN (1°, 2° Y 3° LUGAR EN EFECTIVO) */}
+        {config.supertokenActivo !== false && (
+          <div className="mx-auto max-w-6xl px-5 py-8">
+            <SuperTokenSection config={config} />
+          </div>
+        )}
+
         {/* ZONA DE COMPRA Y CUENTA REGRESIVA */}
-        <section id="paquetes-compra" className="py-20 mx-auto max-w-6xl px-5 scroll-mt-28">
+        <section className="py-20 mx-auto max-w-6xl px-5">
           {/* Contador y Progreso */}
           <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-[var(--shadow-card)] text-center mb-16 space-y-6">
             {/* Header del contador y estado */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
+                  }`}></span>
+                  <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                    enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
+                  }`}></span>
                 </span>
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
-                  {config.ventasActivas ? "Ventas Abiertas" : "Preventa Exclusiva"}
+                <span className={`text-xs font-bold uppercase tracking-widest ${
+                  enCurso ? "text-red-400" : cierrePrevio ? "text-amber-400" : "text-emerald-400"
+                }`}>
+                  {enCurso
+                    ? "🎯 Sorteo Oficial en Curso"
+                    : cierrePrevio
+                    ? "🔒 Ventas Cerradas (Conteo Final)"
+                    : config.ventasActivas
+                    ? "Ventas Abiertas"
+                    : "Preventa Exclusiva"}
                 </span>
               </div>
 
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Calendar className="size-3.5 text-primary" />
                 <span suppressHydrationWarning>
-                  Cierre Estimado: <strong className="text-foreground" suppressHydrationWarning>{formatearFechaLarga(fechaSorteo)}</strong>
+                  Sorteo Oficial: <strong className="text-foreground" suppressHydrationWarning>{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
                 </span>
               </div>
             </div>
@@ -953,7 +1101,7 @@ function IndexPage() {
             {/* Cuenta Regresiva */}
             <div>
               <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-3 font-semibold">
-                Tiempo restante para la fecha estimada
+                {enCurso ? "Sorteo Oficial en proceso de transmisión" : "Tiempo restante para el Sorteo Oficial"}
               </p>
               <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
                 {[
@@ -1007,7 +1155,7 @@ function IndexPage() {
                 </span>
                 <h4 className="font-bold text-sm text-foreground">Cierre Inmediato del Sorteo</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  La edición se cierra y el ganador se define oficialmente con el sorteo de Lotería Nacional de la JPS más cercano.
+                  La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana.
                 </p>
               </div>
 
@@ -1023,21 +1171,30 @@ function IndexPage() {
             </div>
           </div>
 
-          <div className="text-center max-w-2xl mx-auto">
+          <div id="paquetes-compra" className="scroll-mt-28" />
+          <div id="tickets-seleccion" className="text-center max-w-2xl mx-auto scroll-mt-28">
             <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-              {config.ventasActivas
+              {cierrePrevio || enCurso
+                ? "🔒 Emisión en Proceso"
+                : config.ventasActivas
                 ? "Elige tu Paquete Digital"
                 : "🔥 Preventa Exclusiva de Tokens"}
             </span>
             <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-              {paquetes.length === 1
+              {cierrePrevio || enCurso
+                ? "Ventas Finalizadas para esta Edición"
+                : paquetes.length === 1
                 ? "Adquiere tus Tokens Digitales"
                 : config.ventasActivas
                 ? "Elige tu paquete de Tokens"
                 : "Paquetes Oficiales del Evento"}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {paquetes.length === 1
+              {cierrePrevio
+                ? `Las ventas para este evento han cerrado formalmente 2 horas antes para el escrutinio notarial y preparación del sorteo de las ${formatearHora12(sorteo.horaSorteo || "19:30")}. Puedes consultar tus números en el validador.`
+                : enCurso
+                ? "El evento promocional se encuentra en proceso de transmisión y verificación de ganadores oficiales."
+                : paquetes.length === 1
                 ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${formatNumber(paquetes[0]?.precio || 5000)}. Puedes generarlos al azar o elegir tus números favoritos.`
                 : config.ventasActivas
                 ? "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos."
@@ -1082,8 +1239,16 @@ function IndexPage() {
                   <div className="mt-4 text-2xl sm:text-3xl font-bold text-foreground">
                     {`₡${formatNumber(p.precio)}`}
                   </div>
-                  <div className="mt-6 inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary group-hover:translate-x-0.5 transition-transform">
-                    {config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
+                  {config.supertokenActivo !== false && (
+                    <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-400">
+                      <Crown className="size-3 text-amber-400 shrink-0" />
+                      <span>{`SuperToken: +₡${formatNumber(calcularCostoSuperToken(p.cantidad, config.supertokenPrecio || 1500))}`}</span>
+                    </div>
+                  )}
+                  <div className={`mt-5 inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold group-hover:translate-x-0.5 transition-transform ${
+                    cierrePrevio || enCurso ? "text-amber-400" : "text-primary"
+                  }`}>
+                    {cierrePrevio ? "🔒 Ventas cerradas (Consultar) →" : enCurso ? "🎯 Sorteo en curso (Validar) →" : config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
                   </div>
                 </button>
               );
@@ -1091,56 +1256,52 @@ function IndexPage() {
           </div>
         </section>
 
-        {/* CÓMO FUNCIONA EN 3 PASOS */}
-        <section id="como-funciona" className="py-20 bg-secondary/30 border-y border-border">
-          <div className="mx-auto max-w-6xl px-5">
-            <div className="text-center max-w-2xl mx-auto">
-              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                Proceso 100% Digital y Transparente
-              </span>
-              <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-                Participa en 3 Simples Pasos
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo.
-              </p>
-            </div>
+        {/* BANNER INTERACTIVO JUEGOS EXPRESS (SOLO SI ESTÁ ACTIVO EN ADMIN, POR DEFECTO APAGADO) */}
+        {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
+          <div className="mx-auto max-w-5xl px-5 py-6">
+            <div
+              onClick={() => setOpenRaspa(true)}
+              className="cursor-pointer group relative overflow-hidden rounded-3xl border-2 border-amber-500/60 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 sm:p-6 shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.01] hover:border-amber-400"
+            >
+              <div className="pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-amber-500/15 blur-[80px]" />
 
-            <div className="mt-14 grid gap-8 md:grid-cols-3">
-              {pasos.map((paso, idx) => (
-                <div
-                  key={idx}
-                  className="relative rounded-2xl border border-border bg-card p-8 shadow-sm flex flex-col justify-between hover:border-primary/50 transition-colors"
-                >
+              <div className="flex flex-col md:flex-row items-center justify-between gap-5">
+                <div className="flex items-center gap-4 text-center md:text-left">
+                  <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg font-bold text-3xl group-hover:rotate-12 group-hover:scale-110 transition-transform">
+                    {sorteo.raspaConfig?.modo === "ruleta" ? "🎡" : sorteo.raspaConfig?.modo === "ambos" ? "✨" : "🎁"}
+                  </div>
                   <div>
-                    <div className="font-display text-6xl text-primary/30">{paso.num}</div>
-                    <h3 className="mt-4 font-bold text-xl">{paso.titulo}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{paso.desc}</p>
-                    {idx === 1 && metodosActivosLista.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-1.5">
-                        {metodosActivosLista.map((m) => (
-                          <span
-                            key={m.id}
-                            className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-foreground shadow-xs"
-                          >
-                            <span>{m.icono}</span>
-                            <span>{m.nombre}</span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-0.5 text-xs font-black uppercase tracking-wider text-amber-300 border border-amber-500/40">
+                      <Sparkles className="size-3.5 text-amber-400" /> ¡JUEGO INSTANTÁNEO EXPRESS!
+                    </div>
+                    <h3 className="font-display text-2xl sm:text-3xl text-white font-bold tracking-wide mt-1">
+                      {sorteo.raspaConfig?.modo === "ruleta"
+                        ? (sorteo.raspaConfig?.ruletaTitulo || "Ruleta de la Fortuna Express")
+                        : (sorteo.raspaConfig?.titulo || "Raspa y Gana Digital")} · ¡Gana en SINPE al Instante!
+                    </h3>
+                    <p className="text-xs sm:text-sm text-zinc-300 mt-0.5">
+                      {sorteo.raspaConfig?.modo === "ruleta"
+                        ? (sorteo.raspaConfig?.ruletaSubtitulo || "Gira la ruleta de casino y gana hasta ₡100,000 en SINPE Móvil o Tokens oficiales.")
+                        : (sorteo.raspaConfig?.subtitulo || "Pasa tu dedo o mouse sobre la tarjeta dorada o gira la ruleta y descubre tu premio.")}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="mt-12 text-center">
-              <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
-                {config.ventasActivas ? "Comenzar y Elegir mis Tokens →" : "🔥 Consultar Preventa por WhatsApp →"}
-              </Button>
+                <Button
+                  variant="hero"
+                  size="lg"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenRaspa(true);
+                  }}
+                  className="w-full md:w-auto shadow-[var(--shadow-fire)] font-bold text-sm px-6 py-6 shrink-0 gap-2 border border-amber-400/40 cursor-pointer"
+                >
+                  <Sparkles className="size-4" /> {`¡JUGAR AHORA (₡${formatNumber(sorteo.raspaConfig?.precio || 1000)})!`}
+                </Button>
+              </div>
             </div>
           </div>
-        </section>
+        )}
 
         {/* MINI-SORTEOS SEMANALES */}
         {config.miniSorteosActivo && (
@@ -1149,15 +1310,19 @@ function IndexPage() {
           </div>
         )}
 
-        {/* 04 / CONSULTA PÚBLICA DE TOKENS & VALIDACIÓN */}
-        <ConsultaTokensSection />
-
         {/* GANADORES ANTERIORES Y TESTIMONIOS */}
         <GanadoresSection ganadores={sorteo.ganadoresTestimonios} />
 
+        {/* PROGRAMA DE REFERIDOS Y PADRINOS */}
+        {config.referidosActivo !== false && config.referidosPromoLandingActivo !== false && (
+          <div className="mx-auto max-w-6xl px-5 py-8">
+            <ReferidosLandingSection config={config} />
+          </div>
+        )}
+
         {/* RANKING Y CONCURSO DE REFERIDOS */}
         {config.rankingReferidosActivo && (
-          <div className="mx-auto max-w-6xl px-5 py-8">
+          <div id="ranking-referidos" className="mx-auto max-w-6xl px-5 py-4">
             <RankingReferidos config={config} />
           </div>
         )}

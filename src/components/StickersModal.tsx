@@ -95,12 +95,19 @@ export function StickersModal({
   }, [configProp]);
 
   const precioBase = paquete?.precio ?? 0;
-  // Tarifa plana fija: mismo costo de SuperToken para cualquier paquete
-  const supertokenPrecioTotal = config.supertokenPrecio ?? 1000;
-  const costoSupertoken = paquete ? supertokenPrecioTotal : 0;
+  // Costo incremental según el paquete: ₡1 500 cada 3 tokens (3 -> ₡1.500, 6 -> ₡3.000, 9 -> ₡4.500, etc.)
+  const precioUnitarioSuperToken = config.supertokenPrecio ?? 1500;
+  const gruposTrio = paquete ? Math.max(1, Math.round(paquete.cantidad / 3)) : 1;
+  const costoSupertoken = paquete ? gruposTrio * precioUnitarioSuperToken : 0;
   const extraSupertoken = supertoken && paquete ? costoSupertoken : 0;
   const precioFinal = precioBase + extraSupertoken;
-  const premioUsd = config.supertokenPremioUsd ?? 6000;
+  const premioBono1 = config.supertokenPremioPrimeroUsd ?? config.supertokenPremioUsd ?? 4500000;
+  const premioBono2 = config.supertokenPremioSegundoUsd ?? 250000;
+  const premioBono3 = config.supertokenPremioTerceroUsd ?? 1500000;
+  const superMoneda = config.supertokenMoneda || (premioBono1 > 50000 ? "CRC" : "CRC");
+  const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
+  const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
+  const superNombreMoneda = superMoneda === "CRC" ? "colones" : "dólares";
 
   const celebrar = async (nums: string[]) => {
     try {
@@ -279,11 +286,11 @@ export function StickersModal({
                       Activar SuperToken
                     </span>
                     <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide text-amber-400 border border-amber-500/40 shrink-0">
-                      +${premioUsd.toLocaleString()} USD CASH
+                      Hasta +{superSimbolo}{premioBono1.toLocaleString()} {superCodigo} CASH
                     </span>
                   </div>
                   <p className="mt-1 text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
-                    Si ganas el <strong>1° Lugar ({premioMayor || "Vehículo 0KM"})</strong>, ¡te llevas también <strong>${premioUsd.toLocaleString()} en efectivo</strong>!
+                    Activa bonos en {superNombreMoneda}: <strong className="text-amber-400">+{superSimbolo}{premioBono1.toLocaleString()}</strong> (1° Lugar), <strong className="text-sky-400">+{superSimbolo}{premioBono2.toLocaleString()}</strong> (2° Lugar) y <strong className="text-yellow-400">+{superSimbolo}{premioBono3.toLocaleString()}</strong> (3° Lugar).
                   </p>
                 </div>
               </div>
@@ -311,7 +318,7 @@ export function StickersModal({
               <span className="text-[11px] text-muted-foreground">
                 {supertoken
                   ? `₡${precioBase.toLocaleString("es-CR")} (Paquete) + ₡${extraSupertoken.toLocaleString("es-CR")} (SuperToken)`
-                  : `Opción extra (+$${premioUsd.toLocaleString()} USD si ganas)`}
+                  : `Opción extra (Bonos en efectivo para los 3 primeros lugares)`}
               </span>
               <span className="font-bold text-foreground text-xs">
                 Total: <strong className={supertoken ? "text-amber-400 text-sm font-mono" : "text-primary text-sm font-mono"}>₡{precioFinal.toLocaleString("es-CR")}</strong>

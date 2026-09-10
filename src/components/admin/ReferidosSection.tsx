@@ -1,18 +1,22 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Award,
+  Calendar,
   CheckCircle2,
   ChevronRight,
   Coins,
   Copy,
+  Crown,
   DollarSign,
   Gift,
   MessageCircle,
   Percent,
+  Save,
   Search,
   Share2,
   Sparkles,
   TrendingUp,
+  Trophy,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -42,6 +46,42 @@ export function ReferidosSection({
   const [referenteSeleccionado, setReferenteSeleccionado] = useState<ReferenteStat | null>(null);
   const [guardandoConfig, setGuardandoConfig] = useState(false);
 
+  // Estados locales editables de Premios del Concurso de Referidos
+  const [premioPrimero, setPremioPrimero] = useState(config.rankingPremioPrimero || "₡250,000 SINPE");
+  const [premioSegundo, setPremioSegundo] = useState(config.rankingPremioSegundo || "₡100,000 SINPE");
+  const [premioTercero, setPremioTercero] = useState(config.rankingPremioTercero || "₡50,000 SINPE");
+  const [fechaCierre, setFechaCierre] = useState(config.rankingFechaCierre || "Último día del mes · 11:59 PM");
+  const [padrinoPremio1, setPadrinoPremio1] = useState(config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000");
+  const [padrinoPremio2, setPadrinoPremio2] = useState(config.referidosPremioSegundo || "₡2,000,000");
+  const [padrinoPremio3, setPadrinoPremio3] = useState(config.referidosPremioTercero || "₡1,000,000");
+  const [darTokensBono, setDarTokensBono] = useState(config.referidosDarTokensBono ?? false);
+  const [promoLandingActivo, setPromoLandingActivo] = useState(config.referidosPromoLandingActivo ?? true);
+  const [bonoTokens, setBonoTokens] = useState<number>(config.referidosBonoTokens ?? 1);
+  const [comisionPct, setComisionPct] = useState<number>(config.referidosComisionPct ?? 10);
+  const [mensajeShare, setMensajeShare] = useState(
+    config.referidosMensajeShare || "¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!"
+  );
+  const [rankingActivo, setRankingActivo] = useState(config.rankingReferidosActivo ?? true);
+  const [referidosActivo, setReferidosActivo] = useState(config.referidosActivo ?? true);
+
+  // Sincronizar cuando config cambie desde el store
+  useEffect(() => {
+    setPremioPrimero(config.rankingPremioPrimero || "₡250,000 SINPE");
+    setPremioSegundo(config.rankingPremioSegundo || "₡100,000 SINPE");
+    setPremioTercero(config.rankingPremioTercero || "₡50,000 SINPE");
+    setFechaCierre(config.rankingFechaCierre || "Último día del mes · 11:59 PM");
+    setPadrinoPremio1(config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000");
+    setPadrinoPremio2(config.referidosPremioSegundo || "₡2,000,000");
+    setPadrinoPremio3(config.referidosPremioTercero || "₡1,000,000");
+    setDarTokensBono(config.referidosDarTokensBono ?? false);
+    setPromoLandingActivo(config.referidosPromoLandingActivo ?? true);
+    setBonoTokens(config.referidosBonoTokens ?? 1);
+    setComisionPct(config.referidosComisionPct ?? 10);
+    setMensajeShare(config.referidosMensajeShare || "¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!");
+    setRankingActivo(config.rankingReferidosActivo ?? true);
+    setReferidosActivo(config.referidosActivo ?? true);
+  }, [config]);
+
   const stats = useMemo(() => {
     return calcularReferidosStats(
       ordenes,
@@ -61,19 +101,47 @@ export function ReferidosSection({
     );
   }, [stats.ranking, q]);
 
-  const handleGuardarConfig = async (nuevosValores: Partial<Config>) => {
+  const handleGuardarPremios = async () => {
     setGuardandoConfig(true);
     try {
-      const nuevaConfig = { ...config, ...nuevosValores };
+      const nuevaConfig: Config = {
+        ...config,
+        rankingPremioPrimero: premioPrimero,
+        rankingPremioSegundo: premioSegundo,
+        rankingPremioTercero: premioTercero,
+        rankingFechaCierre: fechaCierre,
+        referidosPremioSiGana: padrinoPremio1,
+        referidosPremioPrimero: padrinoPremio1,
+        referidosPremioSegundo: padrinoPremio2,
+        referidosPremioTercero: padrinoPremio3,
+        referidosDarTokensBono: darTokensBono,
+        referidosPromoLandingActivo: promoLandingActivo,
+        referidosBonoTokens: Number(bonoTokens) || 1,
+        referidosComisionPct: Number(comisionPct) || 10,
+        referidosMensajeShare: mensajeShare,
+        rankingReferidosActivo: rankingActivo,
+        referidosActivo: referidosActivo,
+      };
       await upsertConfig(nuevaConfig);
       setConfig(nuevaConfig);
-      toast.success("Configuración de referidos guardada");
+      toast.success("¡Configuración y premios de referidos guardados!", {
+        description: "Los cambios ya están sincronizados y son visibles en el portal.",
+      });
     } catch (err) {
       console.error(err);
-      toast.error("Error al guardar configuración");
+      toast.error("Error al guardar la configuración de referidos");
     } finally {
       setGuardandoConfig(false);
     }
+  };
+
+  const aplicarPlantillaPremios = (p1: string, p2: string, p3: string) => {
+    setPremioPrimero(p1);
+    setPremioSegundo(p2);
+    setPremioTercero(p3);
+    toast.info("Plantilla de premios aplicada", {
+      description: "Recuerda presionar 'Guardar Premios y Parámetros' para aplicar los cambios.",
+    });
   };
 
   const abrirWhatsAppReferente = (r: ReferenteStat) => {
@@ -95,7 +163,7 @@ export function ReferidosSection({
       <div>
         <h2 className="text-2xl font-bold">Programa de Referidos y Afiliados</h2>
         <p className="text-sm text-muted-foreground">
-          Monitorea el crecimiento viral, las compras traídas por clientes y las comisiones de promotores.
+          Monitorea el crecimiento viral, las compras traídas por clientes y configura los premios que se ganan por invitar.
         </p>
       </div>
 
@@ -123,7 +191,7 @@ export function ReferidosSection({
             {stats.totalTokensBonoEmitidos} TOKENS
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Costo en efectivo para el negocio: <strong>₡0 CRC</strong>
+            Tokens de regalo otorgados a los participantes
           </p>
         </div>
 
@@ -149,20 +217,354 @@ export function ReferidosSection({
             ₡{stats.totalComisionesEstimadas.toLocaleString("es-CR")}
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Para liquidar a promotores o creadores
+            Calculadas para liquidación directa
           </p>
         </div>
       </div>
 
-      {/* 2. TABLA DE TOP REFERENTES */}
+      {/* 2. PROGRAMA DE PADRINOS Y PREMIO SI TU REFERIDO GANA */}
+      <section className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 shadow-md space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 text-amber-400 font-extrabold text-[10px] px-2.5 py-0.5 border border-amber-500/40">
+              <Sparkles className="size-3" /> PREMIO PRINCIPAL DE REFERIDOS (HASTA {padrinoPremio1})
+            </div>
+            <h3 className="font-bold text-xl text-foreground mt-1 flex items-center gap-2">
+              <Trophy className="size-5 text-amber-500" /> Premios al Padrino si su Referido Gana (1°, 2° y 3° Lugar)
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Si una persona compra con el enlace de un usuario y gana cualquiera de los 3 premios oficiales, el padrino cobra el premio asignado.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border">
+            <span className="text-xs font-bold text-foreground">
+              {promoLandingActivo ? "Bloque Explicativo en Portada: Activo" : "Bloque Explicativo: Oculto"}
+            </span>
+            <Switch
+              checked={promoLandingActivo}
+              onCheckedChange={setPromoLandingActivo}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          {/* 1° Premio */}
+          <div className="space-y-2 rounded-xl border-2 border-amber-500/60 bg-amber-500/10 p-4 shadow-sm">
+            <Label className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+              🥇 1° Premio Mayor
+            </Label>
+            <Input
+              value={padrinoPremio1}
+              onChange={(e) => setPadrinoPremio1(e.target.value)}
+              placeholder="Ej: ₡4,000,000"
+              className="border-amber-500/60 font-mono font-bold text-base text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Si el referido gana el 1° Premio Mayor.
+            </p>
+          </div>
+
+          {/* 2° Premio */}
+          <div className="space-y-2 rounded-xl border border-zinc-700/80 bg-zinc-800/40 p-4 shadow-sm">
+            <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              🥈 2° Premio
+            </Label>
+            <Input
+              value={padrinoPremio2}
+              onChange={(e) => setPadrinoPremio2(e.target.value)}
+              placeholder="Ej: ₡2,000,000"
+              className="border-border font-mono font-bold text-base text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Si el referido gana el 2° Premio Oficial.
+            </p>
+          </div>
+
+          {/* 3° Premio */}
+          <div className="space-y-2 rounded-xl border border-zinc-700/80 bg-zinc-800/40 p-4 shadow-sm">
+            <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              🥉 3° Premio
+            </Label>
+            <Input
+              value={padrinoPremio3}
+              onChange={(e) => setPadrinoPremio3(e.target.value)}
+              placeholder="Ej: ₡1,000,000"
+              className="border-border font-mono font-bold text-base text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Si el referido gana el 3° Premio Oficial.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-border/70">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Sparkles className="size-3.5 text-amber-400" />
+            <span>Los cambios en estos montos se aplican de inmediato a toda la plataforma.</span>
+          </div>
+
+          <Button
+            type="button"
+            variant="hero"
+            size="sm"
+            onClick={handleGuardarPremios}
+            disabled={guardandoConfig}
+            className="font-bold gap-2 shadow-md w-full sm:w-auto"
+          >
+            <Save className="size-4" />
+            {guardandoConfig ? "Guardando..." : "Guardar Montos de Premios"}
+          </Button>
+        </div>
+      </section>
+
+      {/* 3. CONFIGURACIÓN DE PREMIOS DEL CONCURSO DE REFERIDOS (HOME) */}
+      <section className="rounded-2xl border-2 border-border bg-card p-6 shadow-md space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 text-amber-400 font-extrabold text-[10px] px-2.5 py-0.5 border border-amber-500/40">
+              <Trophy className="size-3" /> TABLA DE LÍDERES EN LA PORTADA PÚBLICA
+            </div>
+            <h3 className="font-bold text-xl text-foreground mt-1 flex items-center gap-2">
+              <Crown className="size-5 text-amber-500" /> Premios del Concurso Mensual de Referidos
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Aquí configuras exactamente <strong>qué premios en dinero o incentivos</strong> se muestran a los usuarios en la portada web para los que inviten más amigos.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border">
+            <span className="text-xs font-bold text-foreground">
+              {rankingActivo ? "Tabla Visible en Home" : "Tabla Oculta"}
+            </span>
+            <Switch
+              checked={rankingActivo}
+              onCheckedChange={setRankingActivo}
+            />
+          </div>
+        </div>
+
+        {/* Plantillas Rápidas */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-muted-foreground font-semibold">Plantillas sugeridas:</span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => aplicarPlantillaPremios("₡250,000 SINPE", "₡100,000 SINPE", "₡50,000 SINPE")}
+            className="h-7 text-xs border-amber-500/40 hover:bg-amber-500/10 text-amber-400"
+          >
+            ₡250k / ₡100k / ₡50k
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => aplicarPlantillaPremios("₡500,000 SINPE", "₡250,000 SINPE", "₡100,000 SINPE")}
+            className="h-7 text-xs border-amber-500/40 hover:bg-amber-500/10 text-amber-400"
+          >
+            ₡500k / ₡250k / ₡100k
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => aplicarPlantillaPremios("₡1,000,000 SINPE", "₡500,000 SINPE", "₡250,000 SINPE")}
+            className="h-7 text-xs border-amber-500/40 hover:bg-amber-500/10 text-amber-400"
+          >
+            ₡1M / ₡500k / ₡250k
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => aplicarPlantillaPremios("Moto 0KM o ₡500,000", "PlayStation 5", "₡100,000 en Gasolina")}
+            className="h-7 text-xs border-sky-500/40 hover:bg-sky-500/10 text-sky-400"
+          >
+            Premios en Especie (Moto/PS5/Gasolina)
+          </Button>
+        </div>
+
+        {/* 3 Inputs de Premios */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {/* 1° Lugar */}
+          <div className="space-y-2 rounded-2xl bg-amber-500/10 border-2 border-amber-500/50 p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                🥇 1° Lugar (Líder del Mes)
+              </Label>
+              <Crown className="size-4 text-amber-500" />
+            </div>
+            <Input
+              value={premioPrimero}
+              onChange={(e) => setPremioPrimero(e.target.value)}
+              placeholder="Ej: ₡250,000 SINPE"
+              className="border-amber-500/60 font-bold text-sm text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Premio principal para quien encabece la tabla de líderes.
+            </p>
+          </div>
+
+          {/* 2° Lugar */}
+          <div className="space-y-2 rounded-2xl bg-card border border-border p-4 shadow-xs">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                🥈 2° Lugar
+              </Label>
+              <span className="text-lg">🥈</span>
+            </div>
+            <Input
+              value={premioSegundo}
+              onChange={(e) => setPremioSegundo(e.target.value)}
+              placeholder="Ej: ₡100,000 SINPE"
+              className="font-bold text-sm text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Premio para el segundo lugar con más compras invitadas.
+            </p>
+          </div>
+
+          {/* 3° Lugar */}
+          <div className="space-y-2 rounded-2xl bg-card border border-border p-4 shadow-xs">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                🥉 3° Lugar
+              </Label>
+              <span className="text-lg">🥉</span>
+            </div>
+            <Input
+              value={premioTercero}
+              onChange={(e) => setPremioTercero(e.target.value)}
+              placeholder="Ej: ₡50,000 SINPE"
+              className="font-bold text-sm text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Premio para el tercer lugar con más compras invitadas.
+            </p>
+          </div>
+        </div>
+
+        {/* Fecha de Cierre y Tokens de Regalo */}
+        <div className="grid gap-4 sm:grid-cols-2 pt-3 border-t border-border">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <Calendar className="size-3.5 text-primary" /> Fecha o Criterio de Cierre del Concurso
+            </Label>
+            <Input
+              value={fechaCierre}
+              onChange={(e) => setFechaCierre(e.target.value)}
+              placeholder="Ej: Último día del mes · 11:59 PM o 30 de Septiembre"
+              className="text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Se muestra en la esquina superior de la tabla pública en el home.
+            </p>
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-3.5">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Gift className="size-3.5 text-emerald-500" /> Otorgar Tokens de Bono al Comprar
+              </Label>
+              <Switch
+                checked={darTokensBono}
+                onCheckedChange={setDarTokensBono}
+              />
+            </div>
+            
+            {darTokensBono ? (
+              <div className="space-y-1.5 pt-1">
+                <Input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={bonoTokens}
+                  onChange={(e) => setBonoTokens(Number(e.target.value))}
+                  className="border-emerald-500/60 text-emerald-600 dark:text-emerald-400 font-bold bg-background"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Cantidad de tokens de cortesía que recibe el amigo al comprar con enlace.
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground border border-border">
+                🔒 <strong className="text-foreground">Apagado:</strong> Nadie recibe tokens extra por invitación actualmente. El gancho principal son hasta <strong className="text-foreground">{padrinoPremio1}</strong> si sus amigos ganan + los premios de la tabla de líderes.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* % Comisión Estimada y Mensaje al Compartir */}
+        <div className="grid gap-4 sm:grid-cols-2 pt-2 border-t border-border">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <Percent className="size-3.5 text-purple-500" /> % Comisión Estimada de Referidos
+            </Label>
+            <Input
+              type="number"
+              min={0}
+              max={50}
+              value={comisionPct}
+              onChange={(e) => setComisionPct(Number(e.target.value))}
+              className="text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Porcentaje sugerido de comisión en efectivo calculado en la tabla de afiliados para liquidar por SINPE.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <Share2 className="size-3.5 text-primary" /> Mensaje Sugerido al Compartir por WhatsApp
+            </Label>
+            <Input
+              value={mensajeShare}
+              onChange={(e) => setMensajeShare(e.target.value)}
+              placeholder="¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!"
+              className="text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Texto predeterminado que se carga cuando el cliente presiona "Compartir con Amigos".
+            </p>
+          </div>
+        </div>
+
+        {/* Botón de Guardar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={referidosActivo}
+              onCheckedChange={setReferidosActivo}
+            />
+            <span className="text-xs font-medium text-muted-foreground">
+              {referidosActivo ? "Sistema de enlaces de referidos activo" : "Sistema de enlaces pausado"}
+            </span>
+          </div>
+
+          <Button
+            type="button"
+            variant="hero"
+            size="sm"
+            onClick={handleGuardarPremios}
+            disabled={guardandoConfig}
+            className="font-bold gap-2 shadow-lg"
+          >
+            <Save className="size-4" />
+            {guardandoConfig ? "Guardando..." : "Guardar Premios y Parámetros"}
+          </Button>
+        </div>
+      </section>
+
+      {/* 3. TABLA DE TOP REFERENTES */}
       <div className="rounded-2xl border border-border bg-card shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
           <div>
             <h3 className="font-bold text-base flex items-center gap-2">
-              <Award className="size-5 text-amber-500" /> Ranking de Referentes y Afiliados
+              <Award className="size-5 text-amber-500" /> Ranking Real de Referentes y Afiliados
             </h3>
             <p className="text-xs text-muted-foreground">
-              Clientes que más amigos han invitado a comprar tokens
+              Clientes que más amigos han invitado a comprar tokens en la base de datos
             </p>
           </div>
 
@@ -188,7 +590,7 @@ export function ReferidosSection({
                 <th className="px-5 py-3 text-center">Compras Traídas</th>
                 <th className="px-5 py-3">Total Generado</th>
                 <th className="px-5 py-3 text-center">Tokens Bono</th>
-                <th className="px-5 py-3">Comisión ({config.referidosComisionPct ?? 10}%)</th>
+                <th className="px-5 py-3">Comisión ({comisionPct}%)</th>
                 <th className="px-5 py-3 text-right">Acciones</th>
               </tr>
             </thead>
@@ -248,57 +650,6 @@ export function ReferidosSection({
           </table>
         </div>
       </div>
-
-      {/* 3. CONFIGURACIÓN DEL PROGRAMA */}
-      <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
-        <div className="flex items-center justify-between border-b border-border pb-3">
-          <div>
-            <h3 className="font-bold text-base flex items-center gap-2">
-              <Share2 className="size-5 text-emerald-500" /> Parámetros del Programa de Referidos
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Define los incentivos automáticos para compradores e invitados
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{config.referidosActivo ? "Activo" : "Inactivo"}</span>
-            <Switch
-              checked={config.referidosActivo ?? true}
-              onCheckedChange={(v) => handleGuardarConfig({ referidosActivo: v })}
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label className="text-xs">Tokens de Regalo para el Amigo Invitado (+Extra)</Label>
-            <Input
-              type="number"
-              min={1}
-              max={5}
-              value={config.referidosBonoTokens ?? 1}
-              onChange={(e) => handleGuardarConfig({ referidosBonoTokens: Number(e.target.value) })}
-            />
-            <p className="text-[11px] text-muted-foreground">
-              Cantidad de tokens gratis adicionales que recibe el nuevo comprador al pagar con un enlace de referido.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-xs">% Comisión Estimada para Afiliados / Promotores</Label>
-            <Input
-              type="number"
-              min={0}
-              max={30}
-              value={config.referidosComisionPct ?? 10}
-              onChange={(e) => handleGuardarConfig({ referidosComisionPct: Number(e.target.value) })}
-            />
-            <p className="text-[11px] text-muted-foreground">
-              Porcentaje sugerido de comisión en efectivo si decides liquidar a influencers por SINPE Móvil.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* Modal de Detalle de Órdenes del Referente */}
       <Dialog open={!!referenteSeleccionado} onOpenChange={(open) => !open && setReferenteSeleccionado(null)}>

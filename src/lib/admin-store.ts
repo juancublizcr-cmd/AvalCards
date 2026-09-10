@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { Orden } from "@/lib/orders";
-import prado from "@/assets/premio-prado.jpg";
+import carro from "@/assets/premio-carro.jpg";
 import moto from "@/assets/premio-moto.jpg";
 import consola from "@/assets/premio-consola.jpg";
 import subaru from "@/assets/premio-subaru.jpg";
@@ -87,6 +87,7 @@ export type RaspaConfig = {
   ruletaTitulo?: string;
   ruletaSubtitulo?: string;
   ruletaPremios?: PremioRuleta[];
+  _meta?: any;
 };
 
 export type ModalidadVenta = "escalonado" | "multiplos_3" | "fijo_3x5000";
@@ -97,6 +98,7 @@ export type Sorteo = {
   rangoMax: string;
   precioBase: number;
   fecha: string;
+  horaSorteo?: string; // e.g. "19:30" (7:30 PM en Costa Rica)
   modalidadVenta?: ModalidadVenta;
   heroTitulo?: string;
   reglaPremios?: string;
@@ -119,11 +121,21 @@ export type Config = {
   telefonoSinpe: string;
   razonSocial: string;
   ventasActivas: boolean;
+  // Horarios de sorteos y cierre previo
+  horaSorteoMartesViernes?: string; // Default: "19:30"
+  horaSorteoDomingos?: string; // Default: "19:30"
+  horasCierrePrevio?: number; // Horas antes para cerrar ventas automáticamente (Default: 2)
   promoTitulo?: string;
   promoSubtitulo?: string;
   promoBotonTexto?: string;
   promoWhatsapp?: string;
   referidosActivo?: boolean;
+  referidosDarTokensBono?: boolean;
+  referidosPremioSiGana?: string;
+  referidosPremioPrimero?: string;
+  referidosPremioSegundo?: string;
+  referidosPremioTercero?: string;
+  referidosPromoLandingActivo?: boolean;
   referidosBonoTokens?: number;
   referidosComisionPct?: number;
   referidosMensajeShare?: string;
@@ -170,7 +182,11 @@ export type Config = {
   // SuperToken
   supertokenActivo?: boolean;
   supertokenPrecio?: number;
+  supertokenMoneda?: "USD" | "CRC";
   supertokenPremioUsd?: number;
+  supertokenPremioPrimeroUsd?: number;
+  supertokenPremioSegundoUsd?: number;
+  supertokenPremioTerceroUsd?: number;
   // Agente de Inteligencia Artificial
   aiActivo?: boolean;
   aiProveedor?: "gemini" | "openai" | "deepseek" | "claude";
@@ -185,6 +201,11 @@ export type Config = {
   aiNombre?: string;
   aiSaludo?: string;
   aiSystemPrompt?: string;
+  // Contenidos Legales Editables
+  legalTerminosTexto?: string;
+  legalPrivacidadTexto?: string;
+  legalReembolsoTexto?: string;
+  legalMinutaNotarialTexto?: string;
 };
 
 export type ReferenteStat = {
@@ -220,7 +241,7 @@ export type Cliente = {
 
 export const PREMIOS_DEFAULT: Premio[] = [
   { id: "p1", nombre: "Moto de Alta Cilindrada", nivel: "1° Lugar (A Elección)", imagen: moto, orden: 1, activo: true },
-  { id: "p2", nombre: "Mercedes-Benz Clase GLE", nivel: "1° Lugar (A Elección)", imagen: prado, orden: 2, activo: true },
+  { id: "p2", nombre: "Mercedes-Benz Clase GLE", nivel: "1° Lugar (A Elección)", imagen: carro, orden: 2, activo: true },
   { id: "p3", nombre: "Subaru Impreza WRX", nivel: "1° Lugar (A Elección)", imagen: subaru, orden: 3, activo: true },
   { id: "p4", nombre: "Premio en Efectivo / PS5", nivel: "3° Lugar (Efectivo)", imagen: consola, orden: 4, activo: true },
 ];
@@ -295,8 +316,8 @@ export const RULETA_PREMIOS_DEFAULT: PremioRuleta[] = [
 ];
 
 export const RASPA_DEFAULT: RaspaConfig = {
-  activo: true,
-  modo: "ambos",
+  activo: false, // Desconectado por defecto
+  modo: "ninguno",
   precio: 1000,
   titulo: "Raspa y Gana Express",
   subtitulo: "¡Gana dinero en SINPE Móvil y premios al instante con tu dedo o mouse!",
@@ -318,7 +339,8 @@ export const SORTEO_DEFAULT: Sorteo = {
   rangoMin: "00000",
   rangoMax: "99999",
   precioBase: 2500,
-  fecha: "2026-09-27",
+  fecha: "2026-09-13",
+  horaSorteo: "19:30", // 7:30 PM
   heroTitulo: "",
   reglaPremios: "El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo.",
   detalleTitulo: "Vehículos de Alta Gama y Premios Oficiales",
@@ -336,11 +358,20 @@ export const CONFIG_DEFAULT: Config = {
   telefonoSinpe: "8634-4772",
   razonSocial: "Importadora Luxury Scents LTDA.",
   ventasActivas: true, // Tienda y secciones activas por defecto
+  horaSorteoMartesViernes: "19:30", // 7:30 PM
+  horaSorteoDomingos: "19:30", // 7:30 PM
+  horasCierrePrevio: 2, // Cierre de ventas 2 horas antes (5:30 PM)
   promoTitulo: "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!",
   promoSubtitulo: "Estamos afinando los últimos detalles de la plataforma. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!",
   promoBotonTexto: "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA EXCLUSIVA)!",
   promoWhatsapp: "50686344772",
   referidosActivo: true,
+  referidosDarTokensBono: false, // Por defecto nadie se gana tokens ya, configurable por switch en admin
+  referidosPremioSiGana: "₡4,000,000",
+  referidosPremioPrimero: "₡4,000,000",
+  referidosPremioSegundo: "₡2,000,000",
+  referidosPremioTercero: "₡1,000,000",
+  referidosPromoLandingActivo: true,
   referidosBonoTokens: 1,
   referidosComisionPct: 10,
   referidosMensajeShare: "¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!",
@@ -370,17 +401,21 @@ export const CONFIG_DEFAULT: Config = {
   rankingFechaCierre: "Último día del mes · 11:59 PM",
   generadorHistoriasActivo: true,
   miniSorteosActivo: true,
-  miniSorteoDia: 0,
-  miniSorteoTitulo: "🎮 Domingos de PlayStation 5 Extra (Con tu mismo Token)",
-  miniSorteoFecha: "Todos los Domingos 7:00 PM con la Lotería de la JPS",
-  miniSorteoPremio: "PlayStation 5 o ₡350,000 en Efectivo por SINPE Móvil",
+  miniSorteoDia: 5,
+  miniSorteoTitulo: "⛽ Viernes de Tanque Lleno + 🎮 Domingos de PlayStation 5 Extra",
+  miniSorteoFecha: "Viernes 7:30 PM (Gasolina Delta/Uno) y Domingos 7:30 PM (PlayStation 5)",
+  miniSorteoPremio: "₡50,000 en Gasolina Delta/Uno y Consola PlayStation 5",
   pwaBannerActivo: true,
   termometroFaseTitulo: "Progreso de la Edición",
-  termometroMetaTokens: 5000,
+  termometroMetaTokens: 100000,
   termometroPorcentajeManual: 0,
   supertokenActivo: true,
-  supertokenPrecio: 1500,
-  supertokenPremioUsd: 6000,
+  supertokenPrecio: 1000,
+  supertokenMoneda: "CRC",
+  supertokenPremioUsd: 4500000,
+  supertokenPremioPrimeroUsd: 4500000,
+  supertokenPremioSegundoUsd: 250000,
+  supertokenPremioTerceroUsd: 1500000,
   // Agente de IA
   aiActivo: true,
   aiProveedor: "gemini",
@@ -393,8 +428,12 @@ export const CONFIG_DEFAULT: Config = {
   aiClaudeKey: "",
   aiClaudeModel: "claude-3-5-haiku-20241022",
   aiNombre: "Aval-IA · Asesor Comercial 24/7",
-  aiSaludo: "¡Hola! Pura vida 🇨🇷 Soy Aval-IA, tu asesor comercial en Aval Community CR. ¡Hoy es tu día de suerte! ¿Sabías que el 1er lugar escoge entre una Moto de Alta Cilindrada, un Mercedes-Benz o un Subaru Impreza, y que con el SuperToken optas por $6,000 USD cash extra sumado a tu premio? 🚗💨 ¿Te gustaría apartar tus números de la suerte ahora mismo o prefieres conocer los métodos de pago?",
-  aiSystemPrompt: "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR (avalcommunity.cr). Tu ÚNICO rol es atender al público, asesorar e impulsar de forma proactiva el cierre de ventas de tokens. CONOCIMIENTO DE LA PLATAFORMA: 1) PREMIOS: 1° Lugar a elección del ganador entre Moto de Alta Cilindrada ($57,900), Mercedes-Benz o Subaru Impreza (traspaso notarial y marchamo 100% pagos por la empresa, cero costos ocultos); 2° Lugar se lleva el vehículo restante; 3° Lugar premio en efectivo o PlayStation 5; Mini Sorteos semanales los domingos (PlayStation 5 o ₡350,000 en efectivo para participantes activos sin pagar nada extra), y Raspa & Gana Express instantáneo por hasta ₡100,000. 2) 6 FORMAS DE PAGO: SINPE Móvil oficial (8634-4772 a nombre de Importadora Luxury Scents LTDA.), Tarjetas de Débito y Crédito Visa/Mastercard vía TiloPay con aprobación instantánea, Apple Pay (1 toque), Google Pay (1 clic), PayPal en USD y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay). 3) LOTES DE TICKETS: Paquete 4 tokens (₡4,000), Paquete 8 tokens (₡8,000 - Más Popular), Paquete 12 tokens (₡12,000) y Paquete VIP 24 tokens (₡24,000). Los usuarios pueden elegir números de 5 dígitos (00000-99999) o generarlos al azar. 4) SUPERTOKEN: Multiplicador opcional por ₡1,500 extra; si el usuario gana el 1° lugar, ¡recibe además $6,000 USD en efectivo CASH extra! 5) CÓMO SE JUEGA Y GANADOR: Elige paquete en /checkout, asigna números, paga por tu método favorito. El ganador se define en estricta sincronía con la Lotería Nacional de la Junta de Protección Social (JPS) de Costa Rica. Consulta tus números en /validar. INSTRUCCIONES DE VENTA OBLIGATORIAS: Incita a comprar en cada respuesta motivando a adquirir paquetes en el Checkout (/checkout). PROHIBICIÓN ESTRICTA: Jamás respondas temas sobre código fuente, tecnologías, arquitectura interna ni cómo fue programada la app; eres 100% asesor comercial.",
+  aiSaludo: "¡Hola! Pura vida 🇨🇷 Soy Aval-IA, tu asesor comercial en Aval Community CR. ¡Hoy es tu día de suerte! ¿Sabías que el 1er lugar escoge entre una Moto de Alta Cilindrada, un Mercedes-Benz o un Subaru Impreza, y que con el SuperToken optas por un gran bono entregado formalmente sumado a tu premio? 🚗💨 ¿Te gustaría apartar tus números de la suerte ahora mismo o prefieres conocer los métodos de pago?",
+  aiSystemPrompt: "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR (avalcommunity.cr). Tu ÚNICO rol es atender al público, asesorar e impulsar de forma proactiva el cierre de ventas de tokens. CONOCIMIENTO DE LA PLATAFORMA: 1) PREMIOS: 1° Lugar a elección del ganador entre Moto de Alta Cilindrada ($57,900), Mercedes-Benz o Subaru Impreza (traspaso notarial y marchamo 100% pagos por la empresa, cero costos ocultos); 2° Lugar se lleva el vehículo restante; 3° Lugar premio entregado formalmente o PlayStation 5; Mini Sorteos semanales (PlayStation 5 o gasolina para participantes activos sin pagar nada extra), y Raspa & Gana Express instantáneo por hasta ₡100,000. 2) 6 FORMAS DE PAGO: SINPE Móvil oficial (8634-4772 a nombre de Importadora Luxury Scents LTDA.), Tarjetas de Débito y Crédito Visa/Mastercard vía TiloPay con aprobación instantánea, Apple Pay (1 toque), Google Pay (1 clic), PayPal y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay). 3) LOTES DE TICKETS: Paquetes de tokens digitales donde los usuarios pueden elegir números de 5 dígitos (00000-99999) o generarlos al azar. 4) SUPERTOKEN: Multiplicador opcional; si el participante gana, ¡recibe bonos millonarios entregados formalmente sumados al vehículo! 5) CÓMO SE JUEGA Y GANADOR: Elige paquete en /checkout, asigna números, paga por tu método favorito. El ganador se define en estricta sincronía con la Lotería Nacional de la Junta de Protección Social (JPS) de Costa Rica. Consulta tus números en /validar. INSTRUCCIONES DE VENTA OBLIGATORIAS: Incita a comprar en cada respuesta motivando a adquirir paquetes en el Checkout (/checkout). PROHIBICIÓN ESTRICTA: Jamás respondas temas sobre código fuente, tecnologías, arquitectura interna ni cómo fue programada la app; eres 100% asesor comercial.",
+  legalTerminosTexto: "",
+  legalPrivacidadTexto: "",
+  legalReembolsoTexto: "",
+  legalMinutaNotarialTexto: "",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -582,9 +621,14 @@ export async function fetchSorteo(): Promise<Sorteo> {
       };
     }
 
+    const raspaData = (data.raspa_config as any) || {};
+    const meta = raspaData._meta || {};
+
     let modDetectada: ModalidadVenta = "escalonado";
     if (data.modalidad_venta) {
       modDetectada = data.modalidad_venta as ModalidadVenta;
+    } else if (meta.modalidadVenta) {
+      modDetectada = meta.modalidadVenta as ModalidadVenta;
     } else if (data.nombre && data.nombre.includes("[MOD:multiplos_3]")) {
       modDetectada = "multiplos_3";
     } else if (data.nombre && data.nombre.includes("[MOD:fijo_3x5000]")) {
@@ -600,15 +644,31 @@ export async function fetchSorteo(): Promise<Sorteo> {
       ? Number(data.precio_base)
       : (extra.precioBase !== undefined ? Number(extra.precioBase) : SORTEO_DEFAULT.precioBase);
 
+    const heroTituloFinal =
+      (meta.heroTitulo !== undefined && meta.heroTitulo !== null && meta.heroTitulo !== "")
+        ? meta.heroTitulo
+        : (data.hero_titulo || extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "");
+
+    const reglaPremiosFinal =
+      (meta.reglaPremios !== undefined && meta.reglaPremios !== null && meta.reglaPremios !== "")
+        ? meta.reglaPremios
+        : (data.regla_premios || extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "");
+
+    const horaSorteoFinal =
+      (meta.horaSorteo !== undefined && meta.horaSorteo !== null && meta.horaSorteo !== "")
+        ? meta.horaSorteo
+        : (data.hora_sorteo || extra.horaSorteo || SORTEO_DEFAULT.horaSorteo || "19:30");
+
     return {
       nombre: nombreLimpio || SORTEO_DEFAULT.nombre,
       rangoMin: data.rango_min ?? SORTEO_DEFAULT.rangoMin,
       rangoMax: data.rango_max ?? SORTEO_DEFAULT.rangoMax,
       precioBase: precioBaseFinal,
       fecha: data.fecha ?? "",
+      horaSorteo: horaSorteoFinal,
       modalidadVenta: modDetectada,
-      heroTitulo: data.hero_titulo || extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "",
-      reglaPremios: data.regla_premios || extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "",
+      heroTitulo: heroTituloFinal,
+      reglaPremios: reglaPremiosFinal,
       detalleTitulo: data.detalle_titulo || extra.detalleTitulo || SORTEO_DEFAULT.detalleTitulo,
       detalleSubtitulo: data.detalle_subtitulo || extra.detalleSubtitulo || SORTEO_DEFAULT.detalleSubtitulo,
       detalleImagen: data.detalle_imagen || extra.detalleImagen || SORTEO_DEFAULT.detalleImagen,
@@ -622,6 +682,7 @@ export async function fetchSorteo(): Promise<Sorteo> {
     return {
       ...SORTEO_DEFAULT,
       precioBase: extra.precioBase ?? SORTEO_DEFAULT.precioBase,
+      horaSorteo: extra.horaSorteo ?? SORTEO_DEFAULT.horaSorteo,
       modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
       heroTitulo: extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "",
       reglaPremios: extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "",
@@ -640,6 +701,7 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     try {
       localStorage.setItem("aval_sorteo_config_extra", JSON.stringify({
         precioBase: Number(s.precioBase) || 2500,
+        horaSorteo: s.horaSorteo || "19:30",
         raspaConfig: s.raspaConfig,
         modalidadVenta: s.modalidadVenta,
         heroTitulo: s.heroTitulo,
@@ -652,6 +714,33 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
       }));
     } catch {}
   }
+
+  // Traer _meta previo de Supabase para preservar otros datos guardados
+  let metaExistente: any = {};
+  try {
+    const { data: sorteoActual } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .single();
+    if (sorteoActual?.raspa_config?._meta) {
+      metaExistente = sorteoActual.raspa_config._meta;
+    }
+  } catch {}
+
+  const metaCombinado = {
+    ...metaExistente,
+    ...((s.raspaConfig as any)?._meta || {}),
+    horaSorteo: s.horaSorteo || "19:30",
+    heroTitulo: s.heroTitulo ?? "",
+    reglaPremios: s.reglaPremios ?? "",
+    modalidadVenta: s.modalidadVenta || "escalonado",
+  };
+
+  const raspaFinal = {
+    ...(s.raspaConfig || {}),
+    _meta: metaCombinado,
+  };
 
   const nombreLimpio = (s.nombre || SORTEO_DEFAULT.nombre).replace(/\[MOD:[^\]]+\]/g, "").trim();
   const nombreConTag = `${nombreLimpio} [MOD:${s.modalidadVenta || "escalonado"}]`;
@@ -670,7 +759,7 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     detalle_garantia: s.detalleGarantia,
     ganadores_testimonios: s.ganadoresTestimonios,
     faqs: s.faqs,
-    raspa_config: s.raspaConfig,
+    raspa_config: raspaFinal,
   };
 
   const { error } = await supabase.from("sorteo_config").upsert(upsertData);
@@ -746,6 +835,26 @@ export async function fetchConfig(): Promise<Config> {
       if (raw) extra = JSON.parse(raw);
     } catch {}
 
+    if (!extra || Object.keys(extra).length === 0) {
+      try {
+        const { data: sorteoRow } = await supabase
+          .from("sorteo_config")
+          .select("raspa_config")
+          .eq("id", 1)
+          .single();
+        if (sorteoRow?.raspa_config?._meta?._siteConfig) {
+          extra = sorteoRow.raspa_config._meta._siteConfig;
+        }
+      } catch {}
+    }
+
+    if (extra && (extra.termometroMetaTokens === 5000 || !extra.termometroMetaTokens || extra.termometroMetaTokens < 10000)) {
+      extra.termometroMetaTokens = 100000;
+      try {
+        localStorage.setItem("aval_site_config_extra", JSON.stringify(extra));
+      } catch {}
+    }
+
     const telSinpe = (data.telefono_sinpe && !data.telefono_sinpe.includes("8609"))
       ? data.telefono_sinpe
       : CONFIG_DEFAULT.telefonoSinpe;
@@ -761,11 +870,20 @@ export async function fetchConfig(): Promise<Config> {
       telefonoSinpe: telSinpe,
       razonSocial: data.razon_social ?? CONFIG_DEFAULT.razonSocial,
       ventasActivas: data.ventas_activas ?? CONFIG_DEFAULT.ventasActivas,
+      horaSorteoMartesViernes: extra.horaSorteoMartesViernes || CONFIG_DEFAULT.horaSorteoMartesViernes,
+      horaSorteoDomingos: extra.horaSorteoDomingos || CONFIG_DEFAULT.horaSorteoDomingos,
+      horasCierrePrevio: extra.horasCierrePrevio !== undefined ? Number(extra.horasCierrePrevio) : CONFIG_DEFAULT.horasCierrePrevio,
       promoTitulo: extra.promoTitulo || CONFIG_DEFAULT.promoTitulo,
       promoSubtitulo: extra.promoSubtitulo || CONFIG_DEFAULT.promoSubtitulo,
       promoBotonTexto: extra.promoBotonTexto || CONFIG_DEFAULT.promoBotonTexto,
       promoWhatsapp: promoWa,
       referidosActivo: extra.referidosActivo ?? CONFIG_DEFAULT.referidosActivo,
+      referidosDarTokensBono: extra.referidosDarTokensBono ?? CONFIG_DEFAULT.referidosDarTokensBono,
+      referidosPremioSiGana: extra.referidosPremioSiGana || CONFIG_DEFAULT.referidosPremioSiGana,
+      referidosPremioPrimero: extra.referidosPremioPrimero || extra.referidosPremioSiGana || CONFIG_DEFAULT.referidosPremioPrimero,
+      referidosPremioSegundo: extra.referidosPremioSegundo || CONFIG_DEFAULT.referidosPremioSegundo,
+      referidosPremioTercero: extra.referidosPremioTercero || CONFIG_DEFAULT.referidosPremioTercero,
+      referidosPromoLandingActivo: extra.referidosPromoLandingActivo ?? CONFIG_DEFAULT.referidosPromoLandingActivo,
       referidosBonoTokens: extra.referidosBonoTokens ?? CONFIG_DEFAULT.referidosBonoTokens,
       referidosComisionPct: extra.referidosComisionPct ?? CONFIG_DEFAULT.referidosComisionPct,
       referidosMensajeShare: extra.referidosMensajeShare || CONFIG_DEFAULT.referidosMensajeShare,
@@ -804,7 +922,11 @@ export async function fetchConfig(): Promise<Config> {
       termometroPorcentajeManual: extra.termometroPorcentajeManual ?? data.termometro_porcentaje_manual ?? CONFIG_DEFAULT.termometroPorcentajeManual,
       supertokenActivo: extra.supertokenActivo ?? CONFIG_DEFAULT.supertokenActivo,
       supertokenPrecio: extra.supertokenPrecio ?? CONFIG_DEFAULT.supertokenPrecio,
-      supertokenPremioUsd: extra.supertokenPremioUsd ?? CONFIG_DEFAULT.supertokenPremioUsd,
+      supertokenMoneda: extra.supertokenMoneda || (Number(extra.supertokenPremioPrimeroUsd ?? CONFIG_DEFAULT.supertokenPremioPrimeroUsd) > 50000 ? "CRC" : "CRC"),
+      supertokenPremioUsd: extra.supertokenPremioPrimeroUsd ?? extra.supertokenPremioUsd ?? CONFIG_DEFAULT.supertokenPremioPrimeroUsd,
+      supertokenPremioPrimeroUsd: extra.supertokenPremioPrimeroUsd ?? extra.supertokenPremioUsd ?? CONFIG_DEFAULT.supertokenPremioPrimeroUsd,
+      supertokenPremioSegundoUsd: extra.supertokenPremioSegundoUsd ?? CONFIG_DEFAULT.supertokenPremioSegundoUsd,
+      supertokenPremioTerceroUsd: extra.supertokenPremioTerceroUsd ?? CONFIG_DEFAULT.supertokenPremioTerceroUsd,
       aiActivo: extra.aiActivo ?? CONFIG_DEFAULT.aiActivo,
       aiProveedor: extra.aiProveedor || CONFIG_DEFAULT.aiProveedor,
       aiOpenaiKey: extra.aiOpenaiKey || CONFIG_DEFAULT.aiOpenaiKey,
@@ -818,6 +940,10 @@ export async function fetchConfig(): Promise<Config> {
       aiNombre: extra.aiNombre || CONFIG_DEFAULT.aiNombre,
       aiSaludo: extra.aiSaludo || CONFIG_DEFAULT.aiSaludo,
       aiSystemPrompt: extra.aiSystemPrompt || CONFIG_DEFAULT.aiSystemPrompt,
+      legalTerminosTexto: extra.legalTerminosTexto || "",
+      legalPrivacidadTexto: extra.legalPrivacidadTexto || "",
+      legalReembolsoTexto: extra.legalReembolsoTexto || "",
+      legalMinutaNotarialTexto: extra.legalMinutaNotarialTexto || "",
     };
   } catch {
     return CONFIG_DEFAULT;
@@ -828,11 +954,20 @@ export async function upsertConfig(c: Config): Promise<void> {
   // Guardar en localStorage para disponibilidad inmediata y textos promocionales
   try {
     localStorage.setItem("aval_site_config_extra", JSON.stringify({
+      horaSorteoMartesViernes: c.horaSorteoMartesViernes || "19:30",
+      horaSorteoDomingos: c.horaSorteoDomingos || "19:30",
+      horasCierrePrevio: c.horasCierrePrevio !== undefined ? Number(c.horasCierrePrevio) : 2,
       promoTitulo: c.promoTitulo,
       promoSubtitulo: c.promoSubtitulo,
       promoBotonTexto: c.promoBotonTexto,
       promoWhatsapp: c.promoWhatsapp,
       referidosActivo: c.referidosActivo,
+      referidosDarTokensBono: c.referidosDarTokensBono,
+      referidosPremioSiGana: c.referidosPremioPrimero || c.referidosPremioSiGana,
+      referidosPremioPrimero: c.referidosPremioPrimero,
+      referidosPremioSegundo: c.referidosPremioSegundo,
+      referidosPremioTercero: c.referidosPremioTercero,
+      referidosPromoLandingActivo: c.referidosPromoLandingActivo,
       referidosBonoTokens: c.referidosBonoTokens,
       referidosComisionPct: c.referidosComisionPct,
       referidosMensajeShare: c.referidosMensajeShare,
@@ -862,7 +997,11 @@ export async function upsertConfig(c: Config): Promise<void> {
       termometroPorcentajeManual: c.termometroPorcentajeManual,
       supertokenActivo: c.supertokenActivo,
       supertokenPrecio: c.supertokenPrecio,
-      supertokenPremioUsd: c.supertokenPremioUsd,
+      supertokenMoneda: c.supertokenMoneda || "CRC",
+      supertokenPremioUsd: c.supertokenPremioPrimeroUsd ?? c.supertokenPremioUsd,
+      supertokenPremioPrimeroUsd: c.supertokenPremioPrimeroUsd,
+      supertokenPremioSegundoUsd: c.supertokenPremioSegundoUsd,
+      supertokenPremioTerceroUsd: c.supertokenPremioTerceroUsd,
       aiActivo: c.aiActivo,
       aiProveedor: c.aiProveedor,
       aiOpenaiKey: c.aiOpenaiKey,
@@ -876,6 +1015,10 @@ export async function upsertConfig(c: Config): Promise<void> {
       aiNombre: c.aiNombre,
       aiSaludo: c.aiSaludo,
       aiSystemPrompt: c.aiSystemPrompt,
+      legalTerminosTexto: c.legalTerminosTexto,
+      legalPrivacidadTexto: c.legalPrivacidadTexto,
+      legalReembolsoTexto: c.legalReembolsoTexto,
+      legalMinutaNotarialTexto: c.legalMinutaNotarialTexto,
     }));
   } catch {}
 
@@ -900,6 +1043,29 @@ export async function upsertConfig(c: Config): Promise<void> {
   let { error } = await supabase.from("site_config").upsert(payload);
   if (error) {
     console.error("Supabase upsertConfig error:", error);
+  }
+
+  // Guardar extras de config en raspa_config._meta._siteConfig para SSR y sincronización entre dispositivos
+  try {
+    const { data: sorteoActual } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .single();
+    const currentRaspa = (sorteoActual?.raspa_config as any) || {};
+    const updatedRaspa = {
+      ...currentRaspa,
+      _meta: {
+        ...(currentRaspa._meta || {}),
+        _siteConfig: {
+          ...(currentRaspa._meta?._siteConfig || {}),
+          ...c,
+        },
+      },
+    };
+    await supabase.from("sorteo_config").update({ raspa_config: updatedRaspa }).eq("id", 1);
+  } catch (err) {
+    console.warn("No se pudo guardar _siteConfig en Supabase:", err);
   }
 }
 

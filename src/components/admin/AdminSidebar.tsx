@@ -6,6 +6,7 @@ import {
   Flame,
   Gavel,
   Gift,
+  HeartHandshake,
   LogOut,
   Scale,
   Search,
@@ -36,6 +37,7 @@ export type AdminSeccion =
   | "clientes"
   | "referidos"
   | "legal"
+  | "social"
   | "config";
 
 export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
@@ -49,6 +51,7 @@ export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[]
   { id: "clientes", label: "Clientes (CRM)", icono: Users },
   { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
   { id: "legal", label: "Protocolo Notarial & Legal", icono: Scale },
+  { id: "social", label: "Impacto Social & Sponsors", icono: HeartHandshake },
   { id: "config", label: "Configuración y Pasarelas", icono: Settings },
 ];
 
@@ -149,6 +152,15 @@ export function AdminSidebarContent({
             >
               <ShoppingCart className="size-4 shrink-0 text-primary" />
               <span className="flex-1">Página de Checkout</span>
+              <ExternalLink className="size-3 text-muted-foreground" />
+            </Link>
+            <Link
+              to="/impacto-social"
+              onClick={onItemClick}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-rose-500 font-medium transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+            >
+              <HeartHandshake className="size-4 shrink-0 text-rose-500" />
+              <span className="flex-1">Impacto y Bien Social</span>
               <ExternalLink className="size-3 text-muted-foreground" />
             </Link>
           </div>
