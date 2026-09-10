@@ -474,8 +474,7 @@ export function SponsorsSection() {
                       <h3 className="font-black text-base text-foreground line-clamp-1">
                         {s.nombreComercio}
                       </h3>
-                      <div className="mt-1 inline-flex items-center gap-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-700 dark:text-amber-300">
-                        <Percent className="size-3 text-amber-600 dark:text-amber-400" />
+                      <div className="mt-1 inline-flex items-center rounded-xl bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-700 dark:text-amber-300">
                         {s.descuentoTexto}
                       </div>
                     </div>
