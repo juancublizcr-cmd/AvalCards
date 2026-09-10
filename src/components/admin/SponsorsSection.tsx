@@ -233,6 +233,14 @@ export function SponsorsSection() {
       toast.error("El texto del descuento o promoción es requerido");
       return;
     }
+    if (!sponsorEditando.telefonoWhatsapp.trim()) {
+      toast.error("El WhatsApp de contacto es requerido para que los clientes puedan canjear");
+      return;
+    }
+    if (!sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0) {
+      toast.error("Debes agregar al menos un servicio o producto que incluye el descuento (campo 'Servicios / Productos para Canje Rápido')");
+      return;
+    }
 
     setGuardando(true);
     try {
@@ -1324,10 +1332,15 @@ export function SponsorsSection() {
               </div>
 
               {/* SECCIÓN: SERVICIOS / PRODUCTOS PARA CANJE RÁPIDO */}
-              <div className="space-y-1.5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5">
+              <div className={`space-y-1.5 rounded-xl border p-3.5 ${
+                !sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0
+                  ? "border-rose-500/60 bg-rose-500/8"
+                  : "border-amber-500/30 bg-amber-500/5"
+              }`}>
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    <Sparkles className="size-3.5 text-amber-500" /> Servicios / Productos para Canje Rápido
+                    <Sparkles className="size-3.5 text-amber-500" /> Servicios / Productos que incluyen el descuento
+                    <span className="text-rose-400 font-black">*</span>
                   </Label>
                   <span className="text-[10px] text-muted-foreground">Separados por coma</span>
                 </div>
@@ -1347,12 +1360,22 @@ export function SponsorsSection() {
                       serviciosCanje: items,
                     });
                   }}
-                  placeholder="Ej: Consumo Total, Cortes de Carne, Hamburguesas, Parrillada"
-                  className="text-xs font-mono"
+                  placeholder="Ej: Lavado Completo, Lavado Express, Pulido y Detailing"
+                  className={`text-xs font-mono ${
+                    !sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0
+                      ? "border-rose-500/50 focus-visible:ring-rose-500/30"
+                      : ""
+                  }`}
                 />
-                <p className="text-[10px] text-muted-foreground">
-                  Estas opciones aparecerán como botones de selección rápida para el comercio al registrar un beneficio en la Mini-App (/comercio).
-                </p>
+                {(!sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0) ? (
+                  <p className="text-[10px] text-rose-400 font-semibold">
+                    ⚠️ Campo requerido. Agrega los servicios o productos que incluyen el descuento (ej: Lavado Completo, Cambio de Aceite...).
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-muted-foreground">
+                    Estas opciones aparecerán como botones de selección rápida para el comercio al registrar un beneficio en la Mini-App (/comercio).
+                  </p>
+                )}
               </div>
 
               {/* SECCIÓN: POLÍTICA DE FRECUENCIA DE CANJE */}
