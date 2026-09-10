@@ -66,7 +66,8 @@ function normalizarOrden(item: any): Orden {
   }
   return {
     ...item,
-    referido_por: ref || undefined,
+    telefono: (item.telefono || "").replace(/\D/g, ""),
+    referido_por: ref ? ref.replace(/\D/g, "") : undefined,
   } as Orden;
 }
 
@@ -124,11 +125,13 @@ export async function crearOrden(
     }
   }
 
+  const cleanTel = (orden.telefono || "").replace(/\D/g, "");
   const refTag = orden.referido_por ? ` [REF:${orden.referido_por.replace(/\D/g, "")}]` : "";
   const finalTxId = ((orden.transaccion_id || "") + refTag).trim();
 
   const insertData: Record<string, any> = {
     ...orden,
+    telefono: cleanTel,
     transaccion_id: finalTxId,
     comprobante_url,
   };
