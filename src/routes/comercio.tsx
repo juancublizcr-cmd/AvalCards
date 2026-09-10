@@ -1381,8 +1381,18 @@ export function ComercioPortal() {
                       placeholder="Buscar por nombre, teléfono, servicio o placa..."
                       value={busquedaHistorial}
                       onChange={(e) => setBusquedaHistorial(e.target.value)}
-                      className="pl-9 h-8 text-xs bg-slate-950 border-border"
+                      className="pl-9 pr-8 h-8 text-xs bg-slate-950 border-border"
                     />
+                    {busquedaHistorial && (
+                      <button
+                        type="button"
+                        onClick={() => setBusquedaHistorial("")}
+                        className="absolute right-2.5 top-3 text-muted-foreground hover:text-foreground cursor-pointer p-0.5"
+                        title="Limpiar búsqueda"
+                      >
+                        <XCircle className="size-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
 
