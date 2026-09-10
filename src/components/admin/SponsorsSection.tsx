@@ -754,13 +754,24 @@ export function SponsorsSection() {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">WhatsApp de Contacto / Canje</Label>
-                <Input
-                  value={sponsorEditando.telefonoWhatsapp}
-                  onChange={(e) => setSponsorEditando({ ...sponsorEditando, telefonoWhatsapp: e.target.value })}
-                  placeholder="Ej: 8899-1122"
-                />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">WhatsApp de Contacto / Canje</Label>
+                  <Input
+                    value={sponsorEditando.telefonoWhatsapp}
+                    onChange={(e) => setSponsorEditando({ ...sponsorEditando, telefonoWhatsapp: e.target.value })}
+                    placeholder="Ej: 8899-1122"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Dirección Exacta o Señas (Opcional)</Label>
+                  <Input
+                    value={sponsorEditando.direccionFisica || ""}
+                    onChange={(e) => setSponsorEditando({ ...sponsorEditando, direccionFisica: e.target.value })}
+                    placeholder="Ej: 200m Norte del Mall Oxígeno / Frente a la plaza"
+                  />
+                </div>
               </div>
 
               {/* SECCIÓN: ADJUNTAR LOGO / IMAGEN (BASE64 O URL) */}

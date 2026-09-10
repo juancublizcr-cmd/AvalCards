@@ -365,18 +365,19 @@ function SponsorsPage() {
                     </div>
                   </div>
 
-                  {/* Footer con Ubicación y Botón de WhatsApp */}
-                  <div className="pt-4 mt-4 border-t border-border/70 space-y-3">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="size-3.5 text-primary" /> {s.provincia} {s.canton ? `· ${s.canton}` : ""}
-                      </span>
-                      {s.direccionFisica && (
-                        <span className="text-[10px] text-zinc-400 truncate max-w-[150px]" title={s.direccionFisica}>
-                          {s.direccionFisica}
+                    {/* Footer con Ubicación y Botón de WhatsApp */}
+                    <div className="pt-4 mt-4 border-t border-border/70 space-y-3">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground gap-2">
+                        <span className="flex items-center gap-1 min-w-0">
+                          <MapPin className="size-3.5 text-primary shrink-0" />
+                          <span className="truncate">{s.provincia}</span>
                         </span>
-                      )}
-                    </div>
+                        {s.direccionFisica && (
+                          <span className="text-[10px] text-zinc-400 truncate max-w-[170px]" title={s.direccionFisica}>
+                            {s.direccionFisica}
+                          </span>
+                        )}
+                      </div>
 
                     <Button
                       asChild
