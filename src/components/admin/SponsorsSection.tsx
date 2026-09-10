@@ -932,10 +932,10 @@ export function SponsorsSection() {
                                   {c.servicio}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-3 text-muted-foreground text-[11px]">
+                              <div className="flex items-center gap-3 text-muted-foreground text-[11px] flex-wrap">
                                 <span>Cliente: <strong className="text-foreground">{c.clienteNombre}</strong></span>
                                 <span>· Tel: <strong className="font-mono text-foreground">{c.clienteTelefono}</strong></span>
-                                {c.notas && <span>· Nota: <em>{c.notas}</em></span>}
+                                {c.notas && <span>· Placa: <strong className="font-mono text-foreground uppercase">{c.notas}</strong></span>}
                               </div>
                             </div>
 
