@@ -335,24 +335,20 @@ export async function fetchSponsors(): Promise<ComercioSponsor[]> {
 }
 
 export async function guardarSponsors(sponsors: ComercioSponsor[]): Promise<boolean> {
-  // 1. Guardar en localStorage inmediatamente y notificar a la app
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.setItem(LOCAL_SPONSORS_KEY, JSON.stringify(sponsors));
-      window.dispatchEvent(new CustomEvent("sponsors_updated", { detail: sponsors }));
-    } catch {}
-  }
-
-  // 2. Persistir en sorteo_config._meta._directorioSponsors (sin requerir tablas nuevas)
+  // 1. Persistir directamente en Supabase (sorteo_config._meta._directorioSponsors)
   try {
-    const { data: sorteoRow } = await supabase
+    const { data: sorteoRow, error: fetchErr } = await supabase
       .from("sorteo_config")
       .select("raspa_config")
       .eq("id", 1)
       .maybeSingle();
 
+    if (fetchErr) {
+      console.error("Error al consultar sorteo_config en Supabase:", fetchErr);
+    }
+
     const currentRaspa = (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object")
-      ? sorteoRow.raspa_config
+      ? { ...sorteoRow.raspa_config }
       : {};
     const meta = (currentRaspa._meta && typeof currentRaspa._meta === "object")
       ? { ...currentRaspa._meta }
@@ -360,19 +356,33 @@ export async function guardarSponsors(sponsors: ComercioSponsor[]): Promise<bool
     meta._directorioSponsors = sponsors;
     currentRaspa._meta = meta;
 
-    await supabase
+    const { error: updateErr } = await supabase
       .from("sorteo_config")
       .update({ raspa_config: currentRaspa })
       .eq("id", 1);
-  } catch {}
 
-  // 3. Sincronizar en tabla sponsors dedicada si existe
+    if (updateErr) {
+      console.error("Error al actualizar sorteo_config en Supabase:", updateErr);
+    }
+  } catch (err) {
+    console.error("Error guardando sponsors en Supabase:", err);
+  }
+
+  // 2. Sincronizar en tabla 'sponsors' de Supabase
   try {
     const dbPayload = sponsors.map(mapSponsorToDb);
     if (dbPayload.length > 0) {
       await supabase.from("sponsors").upsert(dbPayload, { onConflict: "id" });
     }
   } catch {}
+
+  // 3. Cache local para respuesta instantánea en navegador
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(LOCAL_SPONSORS_KEY, JSON.stringify(sponsors));
+      window.dispatchEvent(new CustomEvent("sponsors_updated", { detail: sponsors }));
+    } catch {}
+  }
 
   return true;
 }
@@ -749,24 +759,20 @@ export async function registrarCanjeSponsor(
   const current = await fetchCanjesSponsors();
   const updated = [newCanje, ...current];
 
-  // 1. LocalStorage
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.setItem(LOCAL_CANJES_KEY, JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent("canjes_updated", { detail: updated }));
-    } catch {}
-  }
-
-  // 2. Persistir en sorteo_config._meta._canjesSponsors
+  // 1. Persistir directamente en Supabase (sorteo_config._meta._canjesSponsors)
   try {
-    const { data: sorteoRow } = await supabase
+    const { data: sorteoRow, error: fetchErr } = await supabase
       .from("sorteo_config")
       .select("raspa_config")
       .eq("id", 1)
       .maybeSingle();
 
+    if (fetchErr) {
+      console.error("Error al consultar sorteo_config:", fetchErr);
+    }
+
     const currentRaspa = (sorteoRow?.raspa_config && typeof sorteoRow.raspa_config === "object")
-      ? sorteoRow.raspa_config
+      ? { ...sorteoRow.raspa_config }
       : {};
     const meta = (currentRaspa._meta && typeof currentRaspa._meta === "object")
       ? { ...currentRaspa._meta }
@@ -774,12 +780,24 @@ export async function registrarCanjeSponsor(
     meta._canjesSponsors = updated;
     currentRaspa._meta = meta;
 
-    await supabase
+    const { error: updateErr } = await supabase
       .from("sorteo_config")
       .update({ raspa_config: currentRaspa })
       .eq("id", 1);
+
+    if (updateErr) {
+      console.error("Error guardando canje en Supabase sorteo_config:", updateErr);
+    }
   } catch (err) {
-    console.error("Error guardando canje en Supabase:", err);
+    console.error("Error crítico guardando canje en Supabase:", err);
+  }
+
+  // 2. Cache local secundario para UI
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(LOCAL_CANJES_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("canjes_updated", { detail: updated }));
+    } catch {}
   }
 
   return newCanje;
