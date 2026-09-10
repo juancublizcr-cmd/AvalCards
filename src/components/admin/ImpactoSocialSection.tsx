@@ -37,18 +37,18 @@ import {
 } from "@/lib/impacto-social-store";
 
 const CATEGORIA_LABELS: Record<CategoriaCaso, { label: string; color: string }> = {
-  adulto_mayor: { label: "Adulto Mayor", color: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
-  salud_cirugia: { label: "Salud y Cirugía", color: "bg-rose-500/10 text-rose-500 border-rose-500/20" },
-  vivienda: { label: "Arreglo de Vivienda", color: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
-  madre_riesgo: { label: "Madre en Riesgo", color: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
-  otro: { label: "Comunidad / Otro", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
+  adulto_mayor: { label: "Adulto Mayor", color: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/25" },
+  salud_cirugia: { label: "Salud y Cirugía", color: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/25" },
+  vivienda: { label: "Arreglo de Vivienda", color: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/25" },
+  madre_riesgo: { label: "Madre en Riesgo", color: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/25" },
+  otro: { label: "Comunidad / Otro", color: "bg-muted text-muted-foreground border-border" },
 };
 
 const ESTADO_CASO_LABELS: Record<EstadoCaso, { label: string; badge: string }> = {
-  pendiente: { label: "Pendiente", badge: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30" },
-  en_evaluacion: { label: "En Evaluación", badge: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
-  seleccionado: { label: "Seleccionado para Ayuda", badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
-  ayuda_entregada: { label: "Ayuda Entregada", badge: "bg-teal-500/15 text-teal-400 border-teal-500/30" },
+  pendiente: { label: "Pendiente", badge: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30" },
+  en_evaluacion: { label: "En Evaluación", badge: "bg-sky-500/15 text-sky-700 dark:text-sky-400 border-sky-500/30" },
+  seleccionado: { label: "Seleccionado para Ayuda", badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30" },
+  ayuda_entregada: { label: "Ayuda Entregada", badge: "bg-teal-500/15 text-teal-700 dark:text-teal-400 border-teal-500/30" },
   archivado: { label: "Archivado", badge: "bg-muted text-muted-foreground border-border" },
 };
 
@@ -169,21 +169,21 @@ export function ImpactoSocialSection() {
 
       {/* Tarjetas de Métricas de Casos */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-1">
-          <span className="text-[11px] font-bold text-muted-foreground uppercase">Total Casos Postulados</span>
+        <div className="rounded-2xl border border-border/80 bg-card p-4 space-y-1 shadow-sm">
+          <span className="text-[11px] font-bold text-muted-foreground uppercase">Total Casos</span>
           <div className="text-2xl font-black text-foreground">{casos.length}</div>
         </div>
-        <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-4 space-y-1">
-          <span className="text-[11px] font-bold text-yellow-400 uppercase">Casos Pendientes</span>
-          <div className="text-2xl font-black text-yellow-400">{conteoPendientes}</div>
+        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 space-y-1 shadow-sm">
+          <span className="text-[11px] font-bold text-amber-800 dark:text-amber-400 uppercase">Casos Pendientes</span>
+          <div className="text-2xl font-black text-amber-700 dark:text-amber-400">{conteoPendientes}</div>
         </div>
-        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1">
-          <span className="text-[11px] font-bold text-emerald-400 uppercase">Seleccionados para Ayuda</span>
-          <div className="text-2xl font-black text-emerald-400">{conteoSeleccionados}</div>
+        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-4 space-y-1 shadow-sm">
+          <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase">Seleccionados</span>
+          <div className="text-2xl font-black text-emerald-700 dark:text-emerald-400">{conteoSeleccionados}</div>
         </div>
-        <div className="rounded-2xl border border-teal-500/30 bg-teal-500/5 p-4 space-y-1">
-          <span className="text-[11px] font-bold text-teal-400 uppercase">Ayudas Entregadas</span>
-          <div className="text-2xl font-black text-teal-400">{conteoEntregados}</div>
+        <div className="rounded-2xl border border-teal-500/25 bg-teal-500/10 p-4 space-y-1 shadow-sm">
+          <span className="text-[11px] font-bold text-teal-800 dark:text-teal-400 uppercase">Ayudas Entregadas</span>
+          <div className="text-2xl font-black text-teal-700 dark:text-teal-400">{conteoEntregados}</div>
         </div>
       </div>
 
@@ -232,7 +232,7 @@ export function ImpactoSocialSection() {
           Cargando casos comunitarios...
         </div>
       ) : casosFiltrados.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center space-y-2">
+        <div className="rounded-2xl border border-dashed border-border p-12 text-center space-y-2 bg-card">
           <HeartHandshake className="size-10 mx-auto text-muted-foreground/50" />
           <p className="font-bold text-sm text-foreground">No hay casos sociales que coincidan</p>
         </div>
@@ -241,11 +241,11 @@ export function ImpactoSocialSection() {
           {casosFiltrados.map((c) => (
             <div
               key={c.id}
-              className="rounded-2xl border border-border bg-card p-5 space-y-3.5 shadow-sm"
+              className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between gap-2">
                 <span
-                  className={`inline-flex items-center gap-1 rounded-md px-2.5 py-0.5 text-xs font-semibold border ${
+                  className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-bold border ${
                     CATEGORIA_LABELS[c.categoria]?.color || "bg-secondary text-foreground"
                   }`}
                 >
@@ -255,7 +255,7 @@ export function ImpactoSocialSection() {
                 <select
                   value={c.estado}
                   onChange={(e) => void handleCambiarEstadoCaso(c.id, e.target.value as EstadoCaso)}
-                  className="rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] font-bold text-foreground cursor-pointer"
+                  className="rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] font-bold text-foreground cursor-pointer shadow-sm"
                 >
                   {Object.entries(ESTADO_CASO_LABELS).map(([k, item]) => (
                     <option key={k} value={k}>
@@ -266,13 +266,13 @@ export function ImpactoSocialSection() {
               </div>
 
               <div>
-                <h3 className="font-black text-base text-foreground">{c.titulo}</h3>
+                <h3 className="font-extrabold text-base text-foreground">{c.titulo}</h3>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="size-3.5 text-emerald-400" /> {c.provincia} {c.canton ? `(${c.canton})` : ""}
+                  <span className="flex items-center gap-1 font-medium text-foreground">
+                    <MapPin className="size-3.5 text-primary" /> {c.provincia} {c.canton ? `(${c.canton})` : ""}
                   </span>
                   <span>·</span>
-                  <span>Beneficiario: <strong>{c.beneficiarioNombre}</strong></span>
+                  <span>Beneficiario: <strong className="text-foreground">{c.beneficiarioNombre}</strong></span>
                 </div>
               </div>
 
@@ -281,25 +281,25 @@ export function ImpactoSocialSection() {
               </p>
 
               {c.presupuestoEstimado && (
-                <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-2.5 text-xs text-emerald-300 flex items-center justify-between">
-                  <span>Presupuesto Estimado:</span>
-                  <strong className="font-black text-emerald-400">{c.presupuestoEstimado}</strong>
+                <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/25 p-2.5 text-xs text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
+                  <span className="font-medium">Presupuesto Estimado:</span>
+                  <strong className="font-black text-emerald-700 dark:text-emerald-400">{c.presupuestoEstimado}</strong>
                 </div>
               )}
 
               {/* Info de contacto del postulante */}
-              <div className="rounded-xl bg-secondary/30 p-3 border border-border/60 text-xs space-y-1">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
-                  Postulado por: {c.postulanteNombre} ({c.postulanteRelacion || "Vecino/Familiar"})
+              <div className="rounded-xl bg-muted/40 p-3.5 border border-border/70 text-xs space-y-1.5">
+                <span className="text-[11px] font-medium text-muted-foreground block">
+                  Postulado por: <strong className="text-foreground">{c.postulanteNombre}</strong> ({c.postulanteRelacion || "Vecino/Familiar"})
                 </span>
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center justify-between pt-1 border-t border-border/40">
                   <a
                     href={`https://wa.me/506${c.postulanteTelefono.replace(/\D/g, "")}?text=${encodeURIComponent(
                       `¡Hola ${c.postulanteNombre}! Te saludamos de Aval Community CR sobre el caso social que postulaste (${c.titulo}).`
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-emerald-400 hover:underline flex items-center gap-1 font-bold"
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold"
                   >
                     <MessageCircle className="size-3.5" /> WhatsApp: {c.postulanteTelefono}
                   </a>
@@ -307,7 +307,7 @@ export function ImpactoSocialSection() {
                     size="sm"
                     variant="ghost"
                     onClick={() => void handleEliminarCaso(c.id)}
-                    className="h-6 px-2 text-destructive hover:bg-destructive/10 text-[11px]"
+                    className="h-7 px-2.5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 text-[11px]"
                   >
                     <Trash2 className="size-3 mr-1" /> Eliminar
                   </Button>

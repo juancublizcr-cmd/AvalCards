@@ -301,11 +301,11 @@ export function SponsorsSection() {
               Cargando catálogo de sponsors...
             </div>
           ) : sponsorsFiltrados.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-12 text-center space-y-3">
+            <div className="rounded-2xl border border-dashed border-border p-12 text-center space-y-3 bg-card">
               <Store className="size-10 mx-auto text-muted-foreground/50" />
               <h3 className="font-bold text-foreground text-base">No hay comercios con ese filtro</h3>
               <p className="text-xs text-muted-foreground">Prueba cambiando la búsqueda o agrega un nuevo sponsor.</p>
-              <Button onClick={abrirNuevoSponsor} size="sm" className="bg-amber-500 text-black font-bold">
+              <Button onClick={abrirNuevoSponsor} size="sm" className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold">
                 <Plus className="size-4 mr-1" /> Agregar Comercio
               </Button>
             </div>
@@ -314,28 +314,28 @@ export function SponsorsSection() {
               {sponsorsFiltrados.map((s) => (
                 <div
                   key={s.id}
-                  className={`relative rounded-2xl border bg-card p-5 space-y-3.5 shadow-sm transition-all ${
-                    s.destacado ? "border-amber-500/60 ring-1 ring-amber-500/20" : "border-border"
-                  } ${!s.activo ? "opacity-60 bg-secondary/10" : ""}`}
+                  className={`relative rounded-2xl border bg-card p-5 space-y-3.5 shadow-sm transition-all hover:shadow-md ${
+                    s.destacado ? "border-amber-500/50 ring-2 ring-amber-500/20" : "border-border/80"
+                  } ${!s.activo ? "opacity-60 bg-muted/30" : ""}`}
                 >
                   {/* Top: Categoría & Badges */}
                   <div className="flex items-start justify-between gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground">
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 border border-primary/20 px-2.5 py-1 text-[11px] font-semibold text-primary">
                       {CATEGORIAS_SPONSOR_LABELS[s.categoria]?.icono || "🏬"}{" "}
                       {CATEGORIAS_SPONSOR_LABELS[s.categoria]?.label || s.categoria}
                     </span>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       {s.destacado && (
-                        <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-400">
+                        <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-[10px] font-black text-amber-600 dark:text-amber-400 flex items-center gap-1">
                           ⭐ DESTACADO
                         </span>
                       )}
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
                           s.activo
-                            ? "bg-emerald-500/20 text-emerald-400"
-                            : "bg-zinc-500/20 text-zinc-400"
+                            ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400"
+                            : "bg-muted border-border text-muted-foreground"
                         }`}
                       >
                         {s.activo ? "Activo" : "Pausado"}
@@ -348,8 +348,8 @@ export function SponsorsSection() {
                     <h3 className="font-black text-base text-foreground line-clamp-1">
                       {s.nombreComercio}
                     </h3>
-                    <div className="mt-1.5 inline-block rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 text-xs font-black text-amber-400">
-                      <Percent className="size-3.5 inline mr-1" />
+                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-xs font-black text-amber-700 dark:text-amber-300">
+                      <Percent className="size-3.5 text-amber-600 dark:text-amber-400" />
                       {s.descuentoTexto}
                     </div>
                   </div>
@@ -358,62 +358,62 @@ export function SponsorsSection() {
                   <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {s.descripcion}
                   </p>
-                  <p className="text-[11px] text-amber-300/80 bg-zinc-900/60 rounded-lg p-2 border border-border/40">
-                    <strong>Condición:</strong> {s.condiciones}
-                  </p>
+                  <div className="text-[11px] text-amber-900 dark:text-amber-200 bg-amber-500/10 rounded-xl p-2.5 border border-amber-500/20 leading-snug">
+                    <span className="font-bold text-amber-700 dark:text-amber-400">Condición:</span> {s.condiciones}
+                  </div>
 
                   {/* Info de Contacto & Ubicación */}
-                  <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/70">
+                    <span className="flex items-center gap-1 font-medium text-foreground">
                       <MapPin className="size-3.5 text-primary" /> {s.provincia} {s.canton ? `· ${s.canton}` : ""}
                     </span>
                     <a
                       href={`https://wa.me/506${s.telefonoWhatsapp.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-emerald-400 hover:underline flex items-center gap-1 font-bold"
+                      className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold"
                     >
                       <MessageSquare className="size-3.5" /> {s.telefonoWhatsapp}
                     </a>
                   </div>
 
                   {/* Acciones del Administrador */}
-                  <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-border">
+                  <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-border/70">
                     <div className="flex items-center gap-1">
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => toggleActivo(s)}
                         title={s.activo ? "Pausar comercio" : "Activar comercio"}
-                        className="h-7 px-2 text-xs"
+                        className="h-8 px-2.5 text-xs hover:bg-muted"
                       >
-                        <Power className={`size-3.5 ${s.activo ? "text-emerald-400" : "text-zinc-400"}`} />
+                        <Power className={`size-3.5 ${s.activo ? "text-emerald-500" : "text-muted-foreground"}`} />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => toggleDestacado(s)}
                         title="Marcar como Destacado"
-                        className="h-7 px-2 text-xs"
+                        className="h-8 px-2.5 text-xs hover:bg-muted"
                       >
-                        <Flame className={`size-3.5 ${s.destacado ? "text-amber-400" : "text-zinc-400"}`} />
+                        <Flame className={`size-3.5 ${s.destacado ? "text-amber-500 fill-amber-500/20" : "text-muted-foreground"}`} />
                       </Button>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => abrirEditarSponsor(s)}
-                        className="h-7 px-2 text-xs"
+                        className="h-8 px-3 text-xs font-semibold"
                       >
                         Editar
                       </Button>
                       <Button
                         size="sm"
-                        variant="destructive"
+                        variant="ghost"
                         onClick={() => eliminarSponsorConfirm(s.id, s.nombreComercio)}
-                        className="h-7 px-2 text-xs"
+                        className="h-8 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
                       >
                         <Trash2 className="size-3.5" />
                       </Button>
@@ -436,39 +436,39 @@ export function SponsorsSection() {
           </div>
 
           {solicitudes.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground text-sm">
+            <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground text-sm bg-card">
               No hay solicitudes de afiliación registradas todavía.
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {solicitudes.map((sol) => (
                 <div
                   key={sol.id}
-                  className="rounded-2xl border border-border bg-card p-5 space-y-3 shadow-sm"
+                  className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/70 pb-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-base text-foreground">{sol.nombreEmpresa}</span>
-                        <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-semibold text-foreground">
+                        <span className="font-extrabold text-base text-foreground">{sol.nombreEmpresa}</span>
+                        <span className="rounded-lg bg-primary/10 border border-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">
                           {CATEGORIAS_SPONSOR_LABELS[sol.categoria]?.label || sol.categoria}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Contacto: <strong>{sol.nombreContacto}</strong> ({sol.cargo || "Representante"}) · {sol.provincia}
+                        Contacto: <strong className="text-foreground">{sol.nombreContacto}</strong> ({sol.cargo || "Representante"}) · {sol.provincia}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
+                        className={`rounded-full px-3 py-0.5 text-xs font-bold uppercase border ${
                           sol.estado === "aprobado"
-                            ? "bg-emerald-500/20 text-emerald-400"
+                            ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                             : sol.estado === "contactado"
-                            ? "bg-sky-500/20 text-sky-400"
+                            ? "bg-sky-500/15 border-sky-500/30 text-sky-600 dark:text-sky-400"
                             : sol.estado === "rechazado"
-                            ? "bg-red-500/20 text-red-400"
-                            : "bg-amber-500/20 text-amber-400"
+                            ? "bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400"
+                            : "bg-amber-500/15 border-amber-500/30 text-amber-600 dark:text-amber-400"
                         }`}
                       >
                         {sol.estado}
@@ -478,18 +478,18 @@ export function SponsorsSection() {
 
                   {/* Propuesta de Descuento */}
                   <div className="grid gap-3 sm:grid-cols-2 text-xs">
-                    <div className="rounded-xl bg-secondary/30 p-3 border border-border/60">
-                      <span className="font-bold text-amber-400 block mb-1">🎁 Descuento / Beneficio Ofrecido:</span>
-                      <p className="text-foreground">{sol.propuestaDescuento}</p>
+                    <div className="rounded-xl bg-amber-500/10 p-3.5 border border-amber-500/20">
+                      <span className="font-bold text-amber-800 dark:text-amber-300 block mb-1">🎁 Descuento / Beneficio Ofrecido:</span>
+                      <p className="text-foreground font-medium">{sol.propuestaDescuento}</p>
                     </div>
-                    <div className="rounded-xl bg-secondary/30 p-3 border border-border/60">
+                    <div className="rounded-xl bg-primary/5 p-3.5 border border-primary/15">
                       <span className="font-bold text-primary block mb-1">🤝 Beneficio Adicional para la Comunidad:</span>
-                      <p className="text-foreground">{sol.beneficioComunidad || "Sin detalles adicionales"}</p>
+                      <p className="text-foreground font-medium">{sol.beneficioComunidad || "Sin detalles adicionales"}</p>
                     </div>
                   </div>
 
                   {/* Footer & Acciones */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/70">
                     <div className="flex items-center gap-3 text-xs">
                       <a
                         href={`https://wa.me/506${sol.telefono.replace(/\D/g, "")}?text=${encodeURIComponent(
@@ -497,11 +497,11 @@ export function SponsorsSection() {
                         )}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-emerald-400 hover:underline font-bold flex items-center gap-1"
+                        className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1.5"
                       >
                         <MessageSquare className="size-3.5" /> WhatsApp: {sol.telefono}
                       </a>
-                      <span className="text-muted-foreground">· Email: {sol.email}</span>
+                      <span className="text-muted-foreground">· Email: <strong className="text-foreground">{sol.email}</strong></span>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -509,14 +509,14 @@ export function SponsorsSection() {
                         size="sm"
                         variant="outline"
                         onClick={() => void cambiarEstadoSolicitud(sol.id, "contactado")}
-                        className="text-xs h-7"
+                        className="text-xs h-8"
                       >
                         Marcar Contactado
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => convertirSolicitudEnSponsor(sol)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-7"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-8 shadow-sm"
                       >
                         <CheckCircle2 className="size-3.5 mr-1" /> Aprobar y Crear Comercio
                       </Button>
@@ -583,9 +583,9 @@ export function SponsorsSection() {
               </div>
 
               {/* Descuento y Condiciones */}
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 space-y-3">
+              <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3.5 space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold text-amber-400">Texto del Descuento o Promoción *</Label>
+                  <Label className="text-xs font-bold text-amber-800 dark:text-amber-300">Texto del Descuento o Promoción *</Label>
                   <Input
                     value={sponsorEditando.descuentoTexto}
                     onChange={(e) => setSponsorEditando({ ...sponsorEditando, descuentoTexto: e.target.value })}
@@ -595,7 +595,7 @@ export function SponsorsSection() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Condiciones para la Comunidad</Label>
+                  <Label className="text-xs font-medium text-foreground">Condiciones para la Comunidad</Label>
                   <Input
                     value={sponsorEditando.condiciones}
                     onChange={(e) => setSponsorEditando({ ...sponsorEditando, condiciones: e.target.value })}
@@ -605,7 +605,7 @@ export function SponsorsSection() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs">Descripción del Comercio</Label>
+                <Label className="text-xs font-medium">Descripción del Comercio</Label>
                 <Textarea
                   value={sponsorEditando.descripcion}
                   onChange={(e) => setSponsorEditando({ ...sponsorEditando, descripcion: e.target.value })}
@@ -616,7 +616,7 @@ export function SponsorsSection() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">WhatsApp de Contacto / Canje</Label>
+                  <Label className="text-xs font-medium">WhatsApp de Contacto / Canje</Label>
                   <Input
                     value={sponsorEditando.telefonoWhatsapp}
                     onChange={(e) => setSponsorEditando({ ...sponsorEditando, telefonoWhatsapp: e.target.value })}
@@ -625,7 +625,7 @@ export function SponsorsSection() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs">URL del Logo / Foto (Opcional)</Label>
+                  <Label className="text-xs font-medium">URL del Logo / Foto (Opcional)</Label>
                   <Input
                     value={sponsorEditando.logoUrl || ""}
                     onChange={(e) => setSponsorEditando({ ...sponsorEditando, logoUrl: e.target.value })}
@@ -634,10 +634,10 @@ export function SponsorsSection() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-border p-3 bg-secondary/30">
+              <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/40">
                 <div className="space-y-0.5">
-                  <div className="text-xs font-bold">⭐ Destacar en la Portada de Sponsors</div>
-                  <div className="text-[10px] text-muted-foreground">Aparecerá en los primeros lugares con distintivo dorado.</div>
+                  <div className="text-xs font-bold text-foreground">⭐ Destacar en la Portada de Sponsors</div>
+                  <div className="text-[11px] text-muted-foreground">Aparecerá en los primeros lugares con distintivo dorado.</div>
                 </div>
                 <Switch
                   checked={sponsorEditando.destacado}
@@ -649,7 +649,7 @@ export function SponsorsSection() {
                 <Button type="button" variant="outline" onClick={() => setModalAbierto(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={guardando} className="bg-amber-500 hover:bg-amber-600 text-black font-bold">
+                <Button type="submit" disabled={guardando} className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold">
                   {guardando ? "Guardando..." : "Guardar Comercio"}
                 </Button>
               </div>
