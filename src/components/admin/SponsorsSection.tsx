@@ -334,6 +334,7 @@ export function SponsorsSection() {
       canton: "",
       direccionFisica: "",
       enlaceRedes: "",
+      serviciosCanje: [], // Se debe completar antes de guardar
       activo: true,
       destacado: false,
       orden: sponsors.length + 1,
