@@ -108,7 +108,10 @@ export function SponsorsLandingSection() {
 
       {/* Grid de Sponsors Destacados (Top 3-6) */}
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {sponsors.slice(0, 6).map((s) => (
+        {[...sponsors]
+          .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
+          .slice(0, 6)
+          .map((s) => (
           <div
             key={s.id}
             className={`group rounded-2xl border bg-card/80 p-5 space-y-3.5 shadow-md transition-all hover:border-amber-500/60 hover:-translate-y-1 flex flex-col justify-between ${

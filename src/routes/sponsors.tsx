@@ -249,15 +249,17 @@ function SponsorsPage() {
     }
   };
 
-  const sponsorsFiltrados = sponsors.filter((s) => {
-    const matchCat = filtroCategoria === "todas" || s.categoria === filtroCategoria;
-    const matchBusqueda =
-      s.nombreComercio.toLowerCase().includes(busqueda.toLowerCase()) ||
-      s.descuentoTexto.toLowerCase().includes(busqueda.toLowerCase()) ||
-      s.provincia.toLowerCase().includes(busqueda.toLowerCase()) ||
-      s.descripcion.toLowerCase().includes(busqueda.toLowerCase());
-    return matchCat && matchBusqueda;
-  });
+  const sponsorsFiltrados = sponsors
+    .filter((s) => {
+      const matchCat = filtroCategoria === "todas" || s.categoria === filtroCategoria;
+      const matchBusqueda =
+        s.nombreComercio.toLowerCase().includes(busqueda.toLowerCase()) ||
+        s.descuentoTexto.toLowerCase().includes(busqueda.toLowerCase()) ||
+        s.provincia.toLowerCase().includes(busqueda.toLowerCase()) ||
+        s.descripcion.toLowerCase().includes(busqueda.toLowerCase());
+      return matchCat && matchBusqueda;
+    })
+    .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
 
   const getWhatsappUrl = (sponsor: ComercioSponsor, telUsuario?: string) => {
     const cleanTel = sponsor.telefonoWhatsapp.replace(/\D/g, "");
