@@ -80,6 +80,31 @@ export function SponsorsSection() {
   const [sponsorEditando, setSponsorEditando] = useState<ComercioSponsor | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [solicitudOrigenId, setSolicitudOrigenId] = useState<string | null>(null); // ID de la solicitud que origina la creación del comercio
+  const [nuevoServicioInput, setNuevoServicioInput] = useState("");
+
+  const handleAgregarServicio = () => {
+    if (!nuevoServicioInput.trim() || !sponsorEditando) return;
+    const nuevos = nuevoServicioInput
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const existentes = Array.isArray(sponsorEditando.serviciosCanje) ? sponsorEditando.serviciosCanje : [];
+    const combinados = Array.from(new Set([...existentes, ...nuevos]));
+    setSponsorEditando({
+      ...sponsorEditando,
+      serviciosCanje: combinados,
+    });
+    setNuevoServicioInput("");
+  };
+
+  const handleEliminarServicio = (indexAEliminar: number) => {
+    if (!sponsorEditando) return;
+    const listaActual = Array.isArray(sponsorEditando.serviciosCanje) ? sponsorEditando.serviciosCanje : [];
+    setSponsorEditando({
+      ...sponsorEditando,
+      serviciosCanje: listaActual.filter((_, idx) => idx !== indexAEliminar),
+    });
+  };
 
   // Modal Gestión de Categorías
   const [modalCategoriasAbierto, setModalCategoriasAbierto] = useState(false);
@@ -197,6 +222,7 @@ export function SponsorsSection() {
 
   const abrirNuevoSponsor = () => {
     setSolicitudOrigenId(null);
+    setNuevoServicioInput("");
     setSponsorEditando({
       id: `SP-${Date.now().toString().slice(-4)}`,
       nombreComercio: "",
@@ -221,6 +247,7 @@ export function SponsorsSection() {
 
   const abrirEditarSponsor = (s: ComercioSponsor) => {
     setSolicitudOrigenId(null);
+    setNuevoServicioInput("");
     setSponsorEditando({ ...s });
     setModalAbierto(true);
   };
@@ -240,15 +267,38 @@ export function SponsorsSection() {
       toast.error("El WhatsApp de contacto es requerido para que los clientes puedan canjear");
       return;
     }
-    if (!sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0) {
-      toast.error("Debes agregar al menos un servicio o producto que incluye el descuento (campo 'Servicios / Productos para Canje Rápido')");
+
+    // Si hay texto pendiente en el input de servicio, agregarlo automáticamente
+    let listaServicios = Array.isArray(sponsorEditando.serviciosCanje)
+      ? [...sponsorEditando.serviciosCanje]
+      : [];
+    if (nuevoServicioInput.trim()) {
+      const extra = nuevoServicioInput
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      listaServicios = Array.from(new Set([...listaServicios, ...extra]));
+    }
+
+    if (listaServicios.length === 0) {
+      toast.error(
+        "Debes agregar al menos un servicio o producto que incluye el descuento"
+      );
       return;
     }
 
     setGuardando(true);
     try {
-      const pct = extraerPorcentajeDescuento(sponsorEditando.descuentoTexto, sponsorEditando.descuentoPorcentaje);
-      const toSave = { ...sponsorEditando, descuentoPorcentaje: pct, canton: "" };
+      const pct = extraerPorcentajeDescuento(
+        sponsorEditando.descuentoTexto,
+        sponsorEditando.descuentoPorcentaje
+      );
+      const toSave = {
+        ...sponsorEditando,
+        serviciosCanje: listaServicios,
+        descuentoPorcentaje: pct,
+        canton: "",
+      };
       const updated = await upsertSponsor(toSave);
       setSponsors(updated);
 
@@ -256,18 +306,23 @@ export function SponsorsSection() {
       if (solicitudOrigenId) {
         try {
           await actualizarEstadoSolicitudSponsor(solicitudOrigenId, "aprobado");
-          setSolicitudes((prev) => prev.filter((s) => s.id !== solicitudOrigenId));
+          setSolicitudes((prev) =>
+            prev.filter((s) => s.id !== solicitudOrigenId)
+          );
         } catch {
           // No bloquear el flujo si esto falla
         }
         setSolicitudOrigenId(null);
-        toast.success("✅ Comercio creado y solicitud de afiliación aprobada. Ya no aparecerá en pendientes.");
+        toast.success(
+          "✅ Comercio creado y solicitud de afiliación aprobada. Ya no aparecerá en pendientes."
+        );
       } else {
         toast.success("Comercio aliado guardado exitosamente");
       }
 
       setModalAbierto(false);
       setSponsorEditando(null);
+      setNuevoServicioInput("");
     } catch {
       toast.error("Error al guardar sponsor");
     } finally {
@@ -340,6 +395,7 @@ export function SponsorsSection() {
       orden: sponsors.length + 1,
     });
     setSolicitudOrigenId(sol.id); // Guardar el ID para eliminarlo al confirmar
+    setNuevoServicioInput("");
     setModalAbierto(true);
   };
 
@@ -1350,50 +1406,84 @@ export function SponsorsSection() {
               </div>
 
               {/* SECCIÓN: SERVICIOS / PRODUCTOS PARA CANJE RÁPIDO */}
-              <div className={`space-y-1.5 rounded-xl border p-3.5 ${
-                !sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0
-                  ? "border-rose-500/60 bg-rose-500/8"
-                  : "border-amber-500/30 bg-amber-500/5"
-              }`}>
+              <div
+                className={`space-y-3 rounded-xl border p-3.5 transition-all ${
+                  (!sponsorEditando.serviciosCanje ||
+                    sponsorEditando.serviciosCanje.length === 0) &&
+                  !nuevoServicioInput.trim()
+                    ? "border-rose-500/60 bg-rose-500/5"
+                    : "border-amber-500/30 bg-amber-500/5"
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <Sparkles className="size-3.5 text-amber-500" /> Servicios / Productos que incluyen el descuento
                     <span className="text-rose-400 font-black">*</span>
                   </Label>
-                  <span className="text-[10px] text-muted-foreground">Separados por coma</span>
+                  <span className="text-[10px] text-muted-foreground">Presiona Enter o "Agregar"</span>
                 </div>
-                <Input
-                  value={
-                    Array.isArray(sponsorEditando.serviciosCanje)
-                      ? sponsorEditando.serviciosCanje.join(", ")
-                      : sponsorEditando.serviciosCanje || ""
-                  }
-                  onChange={(e) => {
-                    const items = e.target.value
-                      .split(",")
-                      .map((x) => x.trim())
-                      .filter(Boolean);
-                    setSponsorEditando({
-                      ...sponsorEditando,
-                      serviciosCanje: items,
-                    });
-                  }}
-                  placeholder="Ej: Lavado Completo, Lavado Express, Pulido y Detailing"
-                  className={`text-xs font-mono ${
-                    !sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0
-                      ? "border-rose-500/50 focus-visible:ring-rose-500/30"
-                      : ""
-                  }`}
-                />
-                {(!sponsorEditando.serviciosCanje || sponsorEditando.serviciosCanje.length === 0) ? (
-                  <p className="text-[10px] text-rose-400 font-semibold">
-                    ⚠️ Campo requerido. Agrega los servicios o productos que incluyen el descuento (ej: Lavado Completo, Cambio de Aceite...).
-                  </p>
+
+                {/* Input para escribir el servicio + botón Agregar */}
+                <div className="flex gap-2">
+                  <Input
+                    value={nuevoServicioInput}
+                    onChange={(e) => setNuevoServicioInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAgregarServicio();
+                      }
+                    }}
+                    placeholder="Ej: Lavado General, Pulido, Cambio de Aceite..."
+                    className="text-xs flex-1 bg-background"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAgregarServicio}
+                    disabled={!nuevoServicioInput.trim()}
+                    className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10 font-bold text-xs shrink-0"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Agregar
+                  </Button>
+                </div>
+
+                {/* Lista de chips de servicios agregados */}
+                {Array.isArray(sponsorEditando.serviciosCanje) &&
+                sponsorEditando.serviciosCanje.length > 0 ? (
+                  <div className="space-y-1.5 pt-0.5">
+                    <div className="text-[11px] font-semibold text-zinc-300">
+                      Servicios agregados ({sponsorEditando.serviciosCanje.length}):
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {sponsorEditando.serviciosCanje.map((servicio, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-900 border border-amber-500/40 text-amber-300 text-xs font-semibold shadow-sm"
+                        >
+                          <span>{servicio}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleEliminarServicio(idx)}
+                            className="text-muted-foreground hover:text-rose-400 transition-colors p-0.5 rounded cursor-pointer"
+                            title="Eliminar este servicio"
+                          >
+                            <X className="size-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 ) : (
-                  <p className="text-[10px] text-muted-foreground">
-                    Estas opciones aparecerán como botones de selección rápida para el comercio al registrar un beneficio en la Mini-App (/comercio).
+                  <p className="text-[10px] text-rose-400 font-semibold">
+                    ⚠️ Campo requerido. Agrega al menos un servicio arriba escribiendo su nombre y presionando "Agregar".
                   </p>
                 )}
+
+                <p className="text-[10px] text-muted-foreground">
+                  Estas opciones aparecerán como botones de selección rápida para el comercio al registrar un beneficio en la Mini-App (/comercio).
+                </p>
               </div>
 
               {/* SECCIÓN: POLÍTICA DE FRECUENCIA DE CANJE */}
