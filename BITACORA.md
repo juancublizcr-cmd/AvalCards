@@ -428,3 +428,40 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 6. **Compilación de Producción y Pre-renderizado:**
    - Verificación de imports (`useState`, `Flame`, `fecha-utils`), compilación limpia con Rolldown/Vite SSR y generación de estáticos HTML sin errores.
+
+---
+
+## 🚀 Hito 27: Sistema Integral de Sponsors, Cooldown Semanal Antifraude, Aprobación de Solicitudes, Diferenciación de Destacados y Gestor de Servicios por Etiquetas
+
+1. **Control Antifraude y Cooldown Semanal Configurable (`/sponsors` y `/comercio`):**
+   - Incorporación del campo configurable `diasIntervaloCanje` (por defecto 7 días) por cada comercio aliado en el panel de administración.
+   - Verificación preventiva en tiempo real al ingresar el teléfono del cliente:
+     - Bloquea canjes duplicados dentro del intervalo de espera reglamentario.
+     - Mensaje limpio y directo con la fecha exacta de desbloqueo: *"⏳ Próximo canje disponible a partir del [fecha]. Ya utilizaste tu beneficio el [fecha] ([servicio]). Por política de frecuencia, se permite 1 canje cada semana por usuario."*
+   - Protección en la Mini-App del comercio (`/comercio`): Alerta ámbar informativa en el Paso 1 y pantalla de bloqueo preventivo en el Paso 2 con botón de excepción manual autorizado para el encargado del negocio.
+
+2. **Flujo de Aprobación y Depuración de Solicitudes de Afiliación (`/admin`):**
+   - Los negocios que completan el formulario público en `/sponsors#afiliarse` se registran en la base de datos Supabase (`sorteo_config` y `solicitudes_sponsors`).
+   - El administrador visualiza las solicitudes en la pestaña **Solicitudes de Afiliación** con badge indicador parpadeante cuando hay pendientes.
+   - Botón **"Aprobar y Crear Comercio"**: Pre-carga de forma instantánea todos los datos de la solicitud en el modal de creación.
+   - Al guardar el comercio exitosamente, el sistema marca automáticamente la solicitud como `"aprobado"` y la retira de la lista de pendientes para evitar duplicidades.
+
+3. **Gestor Interactivo de Servicios y Productos con Descuento (Chips / Tags):**
+   - Erradicación definitiva del problema de tipeo donde los espacios y comas se eliminaban en cada pulsación.
+   - Nuevo sistema de etiquetas dinámicas:
+     - Entrada de texto libre con soporte completo para espacios.
+     - Inserción individual o por lote con separación por comas al presionar **`Enter`** o hacer clic en **`+ Agregar`**.
+     - Badges visuales dorados individuales con botón **`✕`** para remover servicios en un toque.
+     - Auto-captura de texto pendiente en el campo al presionar "Guardar Comercio".
+     - Validación estricta que exige al menos un servicio registrado antes de permitir guardar el comercio.
+
+4. **Diferenciación Visual Comercial entre Destacados y Aliados Estándar (`/sponsors`):**
+   - División del catálogo público para valorizar el patrocinio premium:
+     - **⭐ Comercios Destacados**: Presentación superior prioritaria con tarjeta expandida completa, badge TOP SPONSOR dorado, resplandor lumínico y botones de acción rápida.
+     - **🏬 Otros Comercios Aliados**: Agrupados de forma compacta en un acordeón desplegable que no resta protagonismo a los patrocinadores destacados.
+   - **Llamado de atención animado**:
+     - Animación de parpadeo suave (`animate-pulse`) en el título y la insignia de conteo de comercios disponibles.
+     - Faro o beacon luminoso (`animate-ping`) para captar la mirada del usuario e invitar a desplegar el listado completo sin pasar desapercibido.
+
+5. **Verificación de Compilación y Despliegue:**
+   - Verificación de tipos TypeScript, compilación exitosa en Rolldown/Vite SSR, pre-renderizado completo de rutas estáticas HTML y despliegue a producción en Vercel Edge.
