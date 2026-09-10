@@ -334,7 +334,7 @@ function Validar() {
                   {totalTokensAcumulados} combinaciones oficiales
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 max-h-64 overflow-y-auto p-1">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 max-h-72 overflow-y-auto p-1.5">
                 {resultados.flatMap((o) =>
                   o.numeros.map((n, i) => ({
                     n,
@@ -349,7 +349,7 @@ function Validar() {
                   <div
                     key={key}
                     onClick={esGanador ? dispararFiestaConfeti : undefined}
-                    className={`relative flex flex-col items-center justify-center rounded-lg border py-2 shadow-xs transition-all ${
+                    className={`relative flex flex-col items-center justify-center rounded-xl border pt-2.5 pb-2 px-1 shadow-xs transition-all ${
                       esGanador
                         ? "border-2 border-yellow-400 bg-gradient-to-b from-yellow-500/30 to-amber-500/20 text-yellow-300 shadow-[0_0_20px_rgba(234,179,8,0.4)] animate-pulse cursor-pointer"
                         : isSuper
@@ -363,14 +363,14 @@ function Validar() {
                       </span>
                     )}
                     {isSuper && !esGanador && (
-                      <span className="absolute -top-1.5 -right-1 flex items-center gap-0.5 rounded-full bg-amber-500 px-1 py-0.2 text-[8px] font-extrabold text-black shadow-xs">
-                        <Crown className="size-2.5" /> $6K
+                      <span className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md bg-amber-500 px-1 py-0.2 text-[7px] sm:text-[8px] font-black text-black shadow-xs">
+                        <Crown className="size-2" /> $6K
                       </span>
                     )}
-                    <span className="font-mono text-sm font-bold tracking-widest mt-0.5">
+                    <span className="font-mono text-sm sm:text-base font-bold tracking-widest mt-0.5">
                       {n}
                     </span>
-                    <span className="text-[9px] text-muted-foreground font-mono">
+                    <span className="text-[9px] text-muted-foreground font-mono truncate max-w-full px-0.5">
                       {esGanador ? (premioInfo?.premio || "¡Premio!") : `${id} · ${estado === "aprobada" ? "✓" : "⏳"}`}
                     </span>
                   </div>
@@ -388,29 +388,22 @@ function Validar() {
           const telefonoPadre = pInfo?.telefono || pTel;
           return (
             <div className="mt-6 rounded-2xl border-2 border-emerald-500/60 bg-gradient-to-r from-emerald-950/60 via-zinc-900 to-emerald-950/40 p-5 sm:p-6 shadow-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 font-bold text-2xl border border-emerald-500/40 shadow-sm">
-                    🤝
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-2xl shrink-0 shadow-inner">
+                    🎁
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-400 block">
-                        👑 Tu Referente Padre Oficial:
-                      </span>
-                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/40">
-                        Padre
+                      <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                        Tu Padrino / Referente Oficial
                       </span>
                     </div>
-                    <h3 className="font-display text-xl sm:text-2xl font-bold text-white mt-0.5">
+                    <div className="text-base sm:text-lg font-bold text-white mt-0.5">
                       {nombrePadre}
-                    </h3>
-                    <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-emerald-400 font-bold bg-emerald-950/90 border border-emerald-500/30 px-2 py-0.5 rounded-md">
-                        📞 {telefonoPadre}
-                      </span>
-                      <span>•</span>
-                      <span className="text-white font-semibold">Te registró como su referido (+1 Token Extra otorgado) 🎁</span>
+                    </div>
+                    <div className="text-xs text-zinc-400 font-mono">
+                      📞 {telefonoPadre}
                     </div>
                   </div>
                 </div>
@@ -431,19 +424,22 @@ function Validar() {
         {/* Banner de Referidos del Cliente */}
         {buscado && resultados.length > 0 && (
           <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-emerald-950/40 via-card to-emerald-950/20 p-5 sm:p-6 shadow-lg space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl shrink-0">
+            {/* Header del Programa con Ancho Completo */}
+            <div className="space-y-3.5 border-b border-emerald-500/20 pb-4">
+              <div className="flex items-start sm:items-center gap-3.5">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-2xl shrink-0 shadow-inner">
                   🎁
                 </span>
-                <div>
-                  <h4 className="font-bold text-sm sm:text-base text-white flex items-center gap-2">
-                    Tu Programa de Padrinos y Referidos
-                    <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="font-bold text-base sm:text-lg text-white">
+                      Tu Programa de Padrinos y Referidos
+                    </h4>
+                    <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40 shrink-0">
                       Ganá hasta {config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"}
                     </span>
-                  </h4>
-                  <p className="text-xs text-zinc-300 leading-tight mt-0.5">
+                  </div>
+                  <p className="text-xs text-zinc-300 leading-relaxed mt-1">
                     {config.referidosDarTokensBono
                       ? `Si tu amigo gana cualquiera de los 3 premios, ¡vos ganás hasta ${config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"} en efectivo! Además reciben tokens extra de regalo.`
                       : `Si cualquiera de tus amigos recomendados gana los 3 premios oficiales, ¡vos cobrás hasta ${config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"} en efectivo entregados formalmente! (₡4M al 1°, ₡2M al 2° y ₡1M al 3°).`
@@ -452,7 +448,8 @@ function Validar() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 shrink-0">
+              {/* Botones de Acción de Compartir */}
+              <div className="flex flex-wrap items-center gap-2 pt-1">
                 <Button
                   type="button"
                   size="sm"
@@ -467,7 +464,7 @@ function Validar() {
                     });
                     setModalHistoria(true);
                   }}
-                  className="gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold hover:from-amber-400 hover:to-amber-500 text-xs shadow-md"
+                  className="gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold hover:from-amber-400 hover:to-amber-500 text-xs shadow-md cursor-pointer"
                 >
                   <Camera className="size-3.5" /> 📸 Imagen para Estado
                 </Button>
@@ -483,7 +480,7 @@ function Validar() {
                       description: "¡Compártelo en tus grupos y redes!",
                     });
                   }}
-                  className="gap-1.5 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 text-xs"
+                  className="gap-1.5 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 text-xs cursor-pointer"
                 >
                   <Share2 className="size-3.5" /> Copiar Enlace
                 </Button>
