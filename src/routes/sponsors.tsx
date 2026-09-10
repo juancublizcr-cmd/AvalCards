@@ -148,26 +148,43 @@ function SponsorsPage() {
         ]);
 
         const validas = ordenes.filter((o) => o.estado !== "rechazada");
-        if (validas.length === 0) {
+        const cleanDigits = term.replace(/\D/g, "");
+        const canjesEnEsteComercio = canjes.filter(
+          (c) =>
+            c.sponsorId === cuponActivo.id &&
+            ((cleanDigits && c.clienteTelefono.replace(/\D/g, "") === cleanDigits) ||
+              validas.some(
+                (v) =>
+                  v.id === c.ordenId ||
+                  (c.clienteTelefono && v.telefono && c.clienteTelefono.replace(/\D/g, "") === v.telefono.replace(/\D/g, ""))
+              ))
+        );
+
+        // 1. Si ya tiene canjes en este comercio y no tiene órdenes extras disponibles
+        if (canjesEnEsteComercio.length > 0 && validas.length <= canjesEnEsteComercio.length) {
+          const ultimo = canjesEnEsteComercio[0];
           setEstadoValidacionCupon({
-            status: "no_encontrado",
-            mensaje: "No se encontró ninguna compra activa o número de orden registrado con estos datos.",
+            status: "agotado",
+            mensaje: `🚫 Ya utilizaste el beneficio de tu compra en ${cuponActivo.nombreComercio} ${
+              ultimo
+                ? `el ${new Date(ultimo.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short" })} (${ultimo.servicio})`
+                : ""
+            }. Recuerda que aún puedes utilizar tu cupón en los demás comercios afiliados, o adquirir una nueva orden de tokens para canjear de nuevo aquí.`,
+            canjePrevio: ultimo,
           });
           return;
         }
 
-        const canjesEnEsteComercio = canjes.filter(
-          (c) =>
-            c.sponsorId === cuponActivo.id &&
-            (validas.some((v) => v.id === c.ordenId) ||
-              validas.some(
-                (v) =>
-                  c.clienteTelefono &&
-                  v.telefono &&
-                  c.clienteTelefono.replace(/\D/g, "") === v.telefono.replace(/\D/g, "")
-              ))
-        );
+        // 2. Si no tiene compras registradas
+        if (validas.length === 0) {
+          setEstadoValidacionCupon({
+            status: "no_encontrado",
+            mensaje: "⚠️ No encontramos compras de tokens activas registradas para este número. Adquiere tus tokens en Aval Community para activar tus cupones de descuento.",
+          });
+          return;
+        }
 
+        // 3. Buscar orden disponible para este comercio
         const ordenDisponible = validas.find(
           (ord) => !canjesEnEsteComercio.some((c) => c.ordenId === ord.id)
         );
@@ -175,7 +192,7 @@ function SponsorsPage() {
         if (ordenDisponible) {
           setEstadoValidacionCupon({
             status: "disponible",
-            mensaje: `✓ Orden #${ordenDisponible.id} activa (${ordenDisponible.cantidad || ordenDisponible.numeros?.length || 1} Tokens). Cupón 100% disponible para canje.`,
+            mensaje: `✓ Miembro verificado (${ordenDisponible.cantidad || ordenDisponible.numeros?.length || 1} Tokens). Cupón 100% disponible para canjear en ${cuponActivo.nombreComercio}.`,
             ordenId: ordenDisponible.id,
           });
         } else {
@@ -877,21 +894,52 @@ function SponsorsPage() {
                   <div className="space-y-2">
                     <Button
                       asChild
-                      className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl"
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl cursor-pointer"
                     >
                       <Link to="/#comprar">
                         <Sparkles className="size-4 mr-2 shrink-0" />
                         Comprar Nuevos Tokens para Canjear
                       </Link>
                     </Button>
-                    <p className="text-[10px] text-center text-muted-foreground">
-                      Cada orden de tokens incluye 1 canje con descuento en comercios aliados.
+                    <p className="text-[10px] text-center text-rose-300 font-semibold">
+                      🚫 Tu cupón para este comercio ya fue utilizado. Adquiere una nueva orden para reactivarlo.
                     </p>
                   </div>
+                ) : estadoValidacionCupon?.status === "no_encontrado" ? (
+                  <div className="space-y-2">
+                    <Button
+                      asChild
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl cursor-pointer"
+                    >
+                      <Link to="/#comprar">
+                        <Sparkles className="size-4 mr-2 shrink-0" />
+                        Comprar Tokens para Activar Beneficio
+                      </Link>
+                    </Button>
+                    <p className="text-[10px] text-center text-amber-300 font-semibold">
+                      ⚠️ Este número no tiene compras registradas en Aval Community.
+                    </p>
+                  </div>
+                ) : !telefonoClienteCanje.trim() ? (
+                  <Button
+                    type="button"
+                    disabled
+                    className="w-full bg-zinc-800 text-zinc-400 font-bold text-xs sm:text-sm h-11 rounded-xl cursor-not-allowed border border-border/50"
+                  >
+                    Ingresa tu teléfono arriba para validar tu cupón
+                  </Button>
+                ) : validandoCupon ? (
+                  <Button
+                    type="button"
+                    disabled
+                    className="w-full bg-zinc-800 text-zinc-400 font-bold text-xs sm:text-sm h-11 rounded-xl cursor-not-allowed border border-border/50"
+                  >
+                    Verificando compra...
+                  </Button>
                 ) : (
                   <Button
                     asChild
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 shadow-lg rounded-xl cursor-pointer"
                   >
                     <a
                       href={getWhatsappUrl(cuponActivo, telefonoClienteCanje)}
