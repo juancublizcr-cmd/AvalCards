@@ -9,6 +9,7 @@ import {
   Flame,
   Globe,
   MapPin,
+  Maximize2,
   MessageSquare,
   Percent,
   Search,
@@ -19,12 +20,19 @@ import {
   Tag,
   Users,
   Zap,
+  ZoomIn,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Footer } from "@/components/Footer";
 import {
   CATEGORIAS_SPONSOR_DEFAULT,
@@ -57,6 +65,7 @@ function SponsorsPage() {
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [busqueda, setBusqueda] = useState("");
+  const [imagenGrande, setImagenGrande] = useState<{ url: string; titulo: string; categoria: string } | null>(null);
 
   // Formulario para que nuevos comercios se afilien
   const [enviandoForm, setEnviandoForm] = useState(false);
@@ -312,16 +321,30 @@ function SponsorsPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         {s.logoUrl ? (
-                          <div className="size-14 rounded-2xl overflow-hidden border border-amber-500/30 bg-muted/40 shrink-0 shadow-md">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setImagenGrande({
+                                url: s.logoUrl || "",
+                                titulo: s.nombreComercio,
+                                categoria: getCatInfo(s.categoria).label,
+                              })
+                            }
+                            className="group/img relative size-14 rounded-2xl overflow-hidden border border-amber-500/40 bg-muted/40 shrink-0 shadow-md cursor-zoom-in transition-all hover:border-amber-400 hover:scale-105 active:scale-95"
+                            title="Haz clic para ver la imagen en grande"
+                          >
                             <img
                               src={s.logoUrl}
                               alt={s.nombreComercio}
-                              className="size-full object-cover"
+                              className="size-full object-cover transition-transform duration-300 group-hover/img:scale-110"
                               onError={(e) => {
                                 (e.target as HTMLElement).style.display = "none";
                               }}
                             />
-                          </div>
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="size-4 text-amber-300 drop-shadow" />
+                            </div>
+                          </button>
                         ) : (
                           <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 text-2xl font-black shadow-inner shrink-0">
                             {getCatInfo(s.categoria).icono}
@@ -560,6 +583,32 @@ function SponsorsPage() {
           </div>
         </section>
       </main>
+
+      {/* MODAL LIGHTBOX DE IMAGEN EN GRANDE */}
+      <Dialog open={!!imagenGrande} onOpenChange={(open) => !open && setImagenGrande(null)}>
+        <DialogContent className="max-w-2xl bg-zinc-950/95 border-amber-500/40 p-4 sm:p-6 text-foreground backdrop-blur-2xl shadow-2xl">
+          <DialogHeader className="pb-3 border-b border-border/70">
+            <div className="flex items-center gap-2">
+              <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[11px] font-bold text-amber-400">
+                {imagenGrande?.categoria}
+              </span>
+              <DialogTitle className="text-base sm:text-xl font-black text-foreground">
+                {imagenGrande?.titulo}
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+
+          <div className="mt-2 flex items-center justify-center overflow-hidden rounded-2xl bg-black/80 border border-border/50 max-h-[75vh] p-2">
+            {imagenGrande?.url && (
+              <img
+                src={imagenGrande.url}
+                alt={imagenGrande.titulo}
+                className="max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-2xl"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* FOOTER */}
       <Footer />

@@ -20,6 +20,7 @@ import {
   Upload,
   Image as ImageIcon,
   X,
+  ZoomIn,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,7 @@ export function SponsorsSection() {
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [busqueda, setBusqueda] = useState("");
+  const [imagenGrande, setImagenGrande] = useState<{ url: string; titulo: string; categoria: string } | null>(null);
 
   // Modales
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -454,16 +456,30 @@ export function SponsorsSection() {
                   {/* Nombre, Descuento y Logo */}
                   <div className="flex items-start gap-3">
                     {s.logoUrl ? (
-                      <div className="size-12 rounded-xl overflow-hidden border border-border/80 bg-muted/50 shrink-0 shadow-sm">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setImagenGrande({
+                            url: s.logoUrl || "",
+                            titulo: s.nombreComercio,
+                            categoria: getCatInfo(s.categoria).label,
+                          })
+                        }
+                        className="group/img relative size-12 rounded-xl overflow-hidden border border-amber-500/40 bg-muted/50 shrink-0 shadow-sm cursor-zoom-in transition-all hover:border-amber-400 hover:scale-105 active:scale-95"
+                        title="Haz clic para ver la foto en grande"
+                      >
                         <img
                           src={s.logoUrl}
                           alt={s.nombreComercio}
-                          className="size-full object-cover"
+                          className="size-full object-cover transition-transform duration-300 group-hover/img:scale-110"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = "none";
                           }}
                         />
-                      </div>
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                          <ZoomIn className="size-3.5 text-amber-300 drop-shadow" />
+                        </div>
+                      </button>
                     ) : (
                       <div className="size-12 rounded-xl border border-amber-500/25 bg-amber-500/10 flex items-center justify-center text-xl shrink-0">
                         {getCatInfo(s.categoria).icono}
@@ -978,6 +994,32 @@ export function SponsorsSection() {
                 Cerrar
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL LIGHTBOX DE IMAGEN EN GRANDE */}
+      <Dialog open={!!imagenGrande} onOpenChange={(open) => !open && setImagenGrande(null)}>
+        <DialogContent className="max-w-2xl bg-card border-border p-4 sm:p-6 text-foreground backdrop-blur-2xl shadow-2xl">
+          <DialogHeader className="pb-3 border-b border-border/70">
+            <div className="flex items-center gap-2">
+              <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                {imagenGrande?.categoria}
+              </span>
+              <DialogTitle className="text-base sm:text-xl font-black text-foreground">
+                {imagenGrande?.titulo}
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+
+          <div className="mt-2 flex items-center justify-center overflow-hidden rounded-2xl bg-muted/40 border border-border max-h-[75vh] p-2">
+            {imagenGrande?.url && (
+              <img
+                src={imagenGrande.url}
+                alt={imagenGrande.titulo}
+                className="max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-lg"
+              />
+            )}
           </div>
         </DialogContent>
       </Dialog>
