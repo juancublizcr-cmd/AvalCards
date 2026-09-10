@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  AlertCircle,
+  AlertTriangle,
   ArrowLeft,
+  Ban,
   Calendar,
   Camera,
   CameraOff,
@@ -23,6 +26,7 @@ import {
   RefreshCw,
   Search,
   Settings,
+  ShieldAlert,
   ShieldCheck,
   Sparkles,
   Store,
@@ -114,7 +118,13 @@ export function ComercioPortal() {
     ordenes: Orden[];
     verificado: boolean;
     estado?: string;
+    totalCompras: number;
+    canjesPreviosComercio: CanjeSponsorRecord[];
+    canjesDisponibles: number;
+    yaCanjeoHoy: boolean;
+    ultimoCanje?: CanjeSponsorRecord;
   } | null>(null);
+  const [permitirCanjeExcepcional, setPermitirCanjeExcepcional] = useState(false);
   const [errorValidacion, setErrorValidacion] = useState("");
 
   // Cámara / Escáner QR
@@ -440,6 +450,25 @@ export function ComercioPortal() {
       const nombre = primerOrdenConNombre?.nombre || (primerOrdenConNombre as any)?.nombreCliente || "Miembro Aval";
       const totalTokens = validas.reduce((acc, o) => acc + (o.cantidad || (o as any).cantidadTokens || (o.numeros?.length || 1)), 0);
 
+      // Consultar historial de canjes del cliente en este comercio
+      const todosLosCanjes = await fetchCanjesSponsors();
+      const canjesEnEsteComercio = todosLosCanjes.filter(
+        (c) =>
+          c.sponsorId === comercioActivo?.id &&
+          c.clienteTelefono.replace(/\D/g, "") === cleanTel
+      );
+
+      const totalCompras = validas.length;
+      const totalCanjes = canjesEnEsteComercio.length;
+      const canjesDisponibles = Math.max(0, totalCompras - totalCanjes);
+      const ultimoCanje = canjesEnEsteComercio[0];
+
+      const hoyStr = new Date().toISOString().slice(0, 10);
+      const yaCanjeoHoy = canjesEnEsteComercio.some(
+        (c) => c.fecha && c.fecha.slice(0, 10) === hoyStr
+      );
+
+      setPermitirCanjeExcepcional(false);
       setClienteValidado({
         nombre,
         telefono: cleanTel,
@@ -447,6 +476,11 @@ export function ComercioPortal() {
         ordenes: validas,
         verificado: true,
         estado: estadoPrincipal,
+        totalCompras,
+        canjesPreviosComercio: canjesEnEsteComercio,
+        canjesDisponibles,
+        yaCanjeoHoy,
+        ultimoCanje,
       });
 
       const pct = comercioActivo
@@ -461,11 +495,17 @@ export function ComercioPortal() {
         }
       }
 
-      toast.success(
-        tieneAprobadas
-          ? `¡Cliente verificado! ${nombre} (${totalTokens} Tokens)`
-          : `¡Cliente localizado! ${nombre} (${totalTokens} Tokens - Orden Registrada)`
-      );
+      if (canjesDisponibles > 0) {
+        toast.success(
+          tieneAprobadas
+            ? `¡Cliente verificado! ${nombre} (${canjesDisponibles} canje${canjesDisponibles > 1 ? "s" : ""} disponible${canjesDisponibles > 1 ? "s" : ""})`
+            : `¡Cliente localizado! ${nombre} (${canjesDisponibles} canje disponible - Orden Registrada)`
+        );
+      } else {
+        toast.warning(
+          `⚠️ ${nombre} ya utilizó sus canjes (${totalCanjes} canjes / ${totalCompras} compras).`
+        );
+      }
     } catch (err) {
       console.error(err);
       setErrorValidacion("Error al consultar la base de datos.");
@@ -1060,48 +1100,53 @@ export function ComercioPortal() {
                     {/* RESULTADO DE VALIDACIÓN DEL CLIENTE */}
                     {clienteValidado && (
                       <div
-                        className={`rounded-xl border p-3.5 space-y-2.5 animate-in fade-in zoom-in-95 ${
-                          clienteValidado.estado === "aprobada"
-                            ? "border-emerald-500/40 bg-emerald-500/10"
-                            : "border-amber-500/40 bg-amber-500/10"
+                        className={`rounded-2xl border p-4 space-y-3 animate-in fade-in zoom-in-95 ${
+                          clienteValidado.canjesDisponibles > 0
+                            ? clienteValidado.estado === "aprobada"
+                              ? "border-emerald-500/50 bg-emerald-500/10 shadow-lg shadow-emerald-500/5"
+                              : "border-amber-500/50 bg-amber-500/10 shadow-lg shadow-amber-500/5"
+                            : "border-rose-500/50 bg-rose-500/10 shadow-lg shadow-rose-500/5"
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            {clienteValidado.estado === "aprobada" ? (
-                              <>
-                                <CheckCircle2 className="size-4 text-emerald-400" />
-                                <span className="text-xs font-black text-emerald-300 uppercase tracking-wide">
-                                  Miembro Activo Verificado
-                                </span>
-                              </>
+                            {clienteValidado.canjesDisponibles > 0 ? (
+                              clienteValidado.estado === "aprobada" ? (
+                                <>
+                                  <CheckCircle2 className="size-4 text-emerald-400" />
+                                  <span className="text-xs font-black text-emerald-300 uppercase tracking-wide">
+                                    Canje Disponible ({clienteValidado.canjesDisponibles} de {clienteValidado.totalCompras})
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <Clock className="size-4 text-amber-400 animate-pulse" />
+                                  <span className="text-xs font-black text-amber-300 uppercase tracking-wide">
+                                    Registrado ({clienteValidado.canjesDisponibles} de {clienteValidado.totalCompras})
+                                  </span>
+                                </>
+                              )
                             ) : (
                               <>
-                                <Clock className="size-4 text-amber-400 animate-pulse" />
-                                <span className="text-xs font-black text-amber-300 uppercase tracking-wide">
-                                  Miembro Registrado (Pendiente)
+                                <Ban className="size-4 text-rose-400" />
+                                <span className="text-xs font-black text-rose-300 uppercase tracking-wide">
+                                  Beneficio Ya Canjeado (0 Disponibles)
                                 </span>
                               </>
                             )}
                           </div>
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                              clienteValidado.estado === "aprobada"
+                              clienteValidado.canjesDisponibles > 0
                                 ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                                : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                                : "bg-rose-500/20 text-rose-300 border-rose-500/30"
                             }`}
                           >
                             {clienteValidado.totalTokens} Tokens
                           </span>
                         </div>
 
-                        <div
-                          className={`grid grid-cols-2 gap-2 text-xs pt-1 border-t ${
-                            clienteValidado.estado === "aprobada"
-                              ? "border-emerald-500/20"
-                              : "border-amber-500/20"
-                          }`}
-                        >
+                        <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border/50">
                           <div>
                             <div className="text-[10px] text-muted-foreground">Nombre:</div>
                             <div className="font-bold text-foreground truncate">{clienteValidado.nombre}</div>
@@ -1110,7 +1155,50 @@ export function ComercioPortal() {
                             <div className="text-[10px] text-muted-foreground">Teléfono:</div>
                             <div className="font-mono font-bold text-foreground">{clienteValidado.telefono}</div>
                           </div>
+                          <div>
+                            <div className="text-[10px] text-muted-foreground">Compras Registradas:</div>
+                            <div className="font-bold text-foreground">{clienteValidado.totalCompras} {clienteValidado.totalCompras === 1 ? "compra" : "compras"}</div>
+                          </div>
+                          <div>
+                            <div className="text-[10px] text-muted-foreground">Canjes en tu local:</div>
+                            <div className={`font-bold ${clienteValidado.canjesDisponibles > 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                              {clienteValidado.canjesPreviosComercio.length} utilizados
+                            </div>
+                          </div>
                         </div>
+
+                        {/* ALERTA DE CANJE PREVIO / HOY */}
+                        {clienteValidado.ultimoCanje && (
+                          <div
+                            className={`p-2.5 rounded-xl border text-[11px] space-y-1 ${
+                              clienteValidado.canjesDisponibles <= 0
+                                ? "border-rose-500/40 bg-rose-500/20 text-rose-200"
+                                : "border-amber-500/30 bg-amber-500/10 text-amber-200"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 font-bold">
+                              <Clock className="size-3.5" />
+                              <span>
+                                {clienteValidado.yaCanjeoHoy ? "⚠️ Ya realizó un canje HOY:" : "Último canje registrado:"}
+                              </span>
+                            </div>
+                            <div className="text-[10px] pl-5 space-y-0.5">
+                              <div>
+                                • Servicio: <strong>{clienteValidado.ultimoCanje.servicio}</strong>
+                                {clienteValidado.ultimoCanje.notas && ` (Ref/Placa: ${clienteValidado.ultimoCanje.notas})`}
+                              </div>
+                              <div>
+                                • Fecha: {new Date(clienteValidado.ultimoCanje.fecha).toLocaleDateString("es-CR", { day: "2-digit", month: "short", year: "numeric" })} · {new Date(clienteValidado.ultimoCanje.fecha).toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit" })}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {clienteValidado.canjesDisponibles <= 0 && (
+                          <div className="p-2.5 rounded-xl border border-rose-500/30 bg-rose-950/40 text-rose-300 text-[11px] leading-relaxed">
+                            🚫 <strong>Sin canjes disponibles:</strong> Este cliente ya aprovechó el beneficio de sus compras activas. Para solicitar otro servicio con descuento, debe realizar una <strong>nueva compra de tokens</strong> en Aval Community.
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1131,8 +1219,56 @@ export function ComercioPortal() {
                           Primero valida al cliente en el Paso 1 (Escaneando su QR o buscando su teléfono).
                         </div>
                       </div>
+                    ) : clienteValidado.canjesDisponibles <= 0 && !permitirCanjeExcepcional ? (
+                      <div className="p-5 rounded-2xl border border-rose-500/40 bg-rose-500/10 space-y-3.5 text-center animate-in fade-in">
+                        <div className="size-12 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400">
+                          <Ban className="size-6" />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="text-sm font-black text-rose-300">
+                            Beneficio No Disponible (Canjes Agotados)
+                          </h3>
+                          <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                            El cliente <strong className="text-foreground">{clienteValidado.nombre}</strong> ya utilizó su descuento correspondiente a sus compras ({clienteValidado.canjesPreviosComercio.length} canje{clienteValidado.canjesPreviosComercio.length > 1 ? "s" : ""} registrado{clienteValidado.canjesPreviosComercio.length > 1 ? "s" : ""} para {clienteValidado.totalCompras} {clienteValidado.totalCompras === 1 ? "orden" : "órdenes"}).
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-slate-950/80 border border-border text-xs text-amber-300 text-left space-y-1">
+                          <div className="font-bold flex items-center gap-1.5">
+                            <Sparkles className="size-3.5 text-amber-400" /> ¿Cómo solicitar un nuevo descuento?
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">
+                            El cliente debe ingresar a Aval Community y realizar una nueva compra de tokens para activar un nuevo cupón de canje.
+                          </p>
+                        </div>
+
+                        <div className="pt-2 border-t border-border/50">
+                          <button
+                            type="button"
+                            onClick={() => setPermitirCanjeExcepcional(true)}
+                            className="text-[10px] text-muted-foreground hover:text-rose-400 underline cursor-pointer"
+                          >
+                            Autorizar canje adicional excepcional (Manual)
+                          </button>
+                        </div>
+                      </div>
                     ) : (
                       <form onSubmit={handleGuardarCanje} className="space-y-3.5">
+                        {clienteValidado.canjesDisponibles <= 0 && permitirCanjeExcepcional && (
+                          <div className="p-2.5 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[11px] flex items-center justify-between">
+                            <span className="font-semibold flex items-center gap-1">
+                              <AlertTriangle className="size-3.5" /> Modo de autorización excepcional activo
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setPermitirCanjeExcepcional(false)}
+                              className="underline text-[10px] font-bold cursor-pointer hover:text-amber-200"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        )}
+
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
                             <Label className="text-xs font-semibold text-foreground">
