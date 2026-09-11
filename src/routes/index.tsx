@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   ArrowRight,
   Award,
@@ -245,7 +245,24 @@ function IndexPage() {
   const loaderData = Route.useLoaderData();
   const [paquete, setPaquete] = useState<Paquete | null>(null);
   const [open, setOpen] = useState(false);
-  const [premios, setPremios] = useState<Premio[]>(loaderData?.premios || PREMIOS_DEFAULT);
+  const [premios, setPremios] = useState<Premio[]>(() => {
+    const list = loaderData?.premios && loaderData.premios.length > 0
+      ? loaderData.premios
+      : PREMIOS_DEFAULT;
+    if (typeof window !== "undefined") {
+      try {
+        const rawInact = localStorage.getItem("aval_premios_inactivos");
+        const inactivos: string[] = rawInact ? JSON.parse(rawInact) : [];
+        if (inactivos.length > 0) {
+          return list.map((p) => ({
+            ...p,
+            activo: inactivos.includes(p.id) ? false : p.activo,
+          }));
+        }
+      } catch {}
+    }
+    return list;
+  });
   const [sorteo, setSorteo] = useState<Sorteo>(loaderData?.sorteo || SORTEO_DEFAULT);
   const [config, setConfig] = useState<Config>(loaderData?.config || CONFIG_DEFAULT);
   const [fechaSorteo, setFechaSorteo] = useState(loaderData?.sorteo?.fecha || "2026-09-13");
@@ -295,8 +312,41 @@ function IndexPage() {
 
   const premiosVisibles = premios.filter((p) => p.activo !== false);
   const primerPremioVisible = premiosVisibles[0] || premios[0];
-  const premioMayorActual = primerPremioVisible?.nombre || sorteo.titulo || "el Premio Mayor";
+  const premioMayorActual = primerPremioVisible?.nombre || (sorteo as any).titulo || "el Premio Mayor";
   const descPaso3 = `El sorteo se determina con los resultados de la Emisión Oficial de la JPS. Si aciertas tu número, te llevas ${premioMayorActual} (vehículo 0KM, moto, casa, dinero en efectivo o el premio activo).`;
+
+  const textoDinamicaFinal = useMemo(() => {
+    if (sorteo.mostrarDinamica === false) return "";
+
+    const activos = premiosVisibles;
+    if (activos.length === 0) return "";
+
+    const inactivosNombres = premios
+      .filter((p) => p.activo === false)
+      .map((p) => p.nombre.toLowerCase().trim())
+      .filter(Boolean);
+
+    const reglaCustom = (sorteo.reglaPremios || "").trim();
+    const esTextoViejoDefecto = reglaCustom.toLowerCase().includes("escoge entre");
+    const mencionaInactivo = inactivosNombres.some((nombreInactivo) =>
+      reglaCustom.toLowerCase().includes(nombreInactivo)
+    );
+
+    if (reglaCustom && !esTextoViejoDefecto && !mencionaInactivo) {
+      return reglaCustom;
+    }
+
+    const p1 = activos.filter((p) => p.nivel === "1° Lugar" || p.nivel === "Premio Mayor").map((p) => p.nombre);
+    const p2 = activos.filter((p) => p.nivel === "2° Lugar" || p.nivel === "Segundo Premio").map((p) => p.nombre);
+    const p3 = activos.filter((p) => p.nivel === "3° Lugar" || p.nivel === "Tercer Premio").map((p) => p.nombre);
+
+    const partes: string[] = [];
+    if (p1.length > 0) partes.push(`1° Lugar: ${p1.join(" o ")}`);
+    if (p2.length > 0) partes.push(`2° Lugar: ${p2.join(" y ")}`);
+    if (p3.length > 0) partes.push(`3° Lugar: ${p3.join(" y ")}`);
+
+    return partes.join(". ") + (partes.length > 0 ? "." : "");
+  }, [sorteo.mostrarDinamica, sorteo.reglaPremios, premiosVisibles, premios]);
 
   const pasos = [
     {
@@ -329,7 +379,12 @@ function IndexPage() {
 
         const cfgActual = configData || config;
         if (premiosData && premiosData.length > 0) {
-          setPremios(premiosData);
+          setPremios((prev) => {
+            const prevSign = prev.map((p) => `${p.id}:${p.activo !== false}:${p.nombre}:${p.nivel}`).join("|");
+            const newSign = premiosData.map((p) => `${p.id}:${p.activo !== false}:${p.nombre}:${p.nivel}`).join("|");
+            if (prevSign === newSign) return prev;
+            return premiosData;
+          });
         }
         if (configData) {
           setConfig(configData);
@@ -831,13 +886,13 @@ function IndexPage() {
               </div>
 
               {/* Banner Dinámico de Dinámica / Regla de Premiación */}
-              {sorteo.reglaPremios && (
+              {sorteo.mostrarDinamica !== false && Boolean(textoDinamicaFinal) && (
                 <div className="mt-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
                   <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400">
                     <Award className="size-4 text-amber-400" /> Dinámica Oficial de Premiación
                   </div>
                   <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
-                    {sorteo.reglaPremios}
+                    {textoDinamicaFinal}
                   </p>
                 </div>
               )}
@@ -855,25 +910,21 @@ function IndexPage() {
               >
                 {premiosVisibles.map((p, idx) => {
                   const nivelStr = (p.nivel || "").trim();
-                  const isEleccion1 = nivelStr === "1° Lugar (A Elección)";
-                  const isEleccion2 = nivelStr === "2° Lugar (A Elección)";
-                  const isEfectivo3 = nivelStr === "3° Lugar (Efectivo)";
+                  const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
+                  const isEleccion2 = nivelStr === "2° Lugar" || nivelStr === "2° Lugar (A Elección)";
+                  const isEfectivo3 = nivelStr === "3° Lugar" || nivelStr === "3° Lugar (Efectivo)";
                   const isExtra = nivelStr === "Premio Extra";
                   const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (idx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
                   const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (idx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
 
-                  const tagLugar = isEleccion1
-                    ? "1° Lugar · A Elección"
-                    : isEleccion2
-                    ? "2° Lugar · Restante"
-                    : isEfectivo3
-                    ? "3° Lugar · Efectivo"
-                    : isExtra
-                    ? "Premio Extra"
-                    : isMayor
+                  const tagLugar = isMayor
                     ? "1° Lugar"
                     : isSegundo
                     ? "2° Lugar"
+                    : isEfectivo3
+                    ? "3° Lugar"
+                    : isExtra
+                    ? "Premio Extra"
                     : "3° Lugar";
 
                   const nombreLower = (p.nombre || "").toLowerCase();

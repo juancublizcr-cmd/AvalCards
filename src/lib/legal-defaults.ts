@@ -24,7 +24,7 @@ La determinación de los códigos participantes favorecidos se efectuará median
 3. TERCER PREMIO: Número oficial de dos (2) dígitos seguido de la Serie oficial de tres (3) dígitos del Tercer Premio oficial.
 
 QUINTA: PREMIOS, FECHA DEL EVENTO Y REPROGRAMACIÓN.-
-A) PREMIO MAYOR EN JUEGO: ${premioNombre || "Moto de Alta Cilindrada (o Vehículo a Elección)"}.
+A) PREMIO MAYOR EN JUEGO: ${premioNombre || "Moto de Alta Cilindrada"}.
 B) FECHA OFICIAL: El evento promocional se proyecta para el día ${fechaSorteo || "27 de septiembre de 2026"}.
 C) CONDICIONES DE CIERRE:
    - Si a la fecha prevista se ha colocado la totalidad del inventario de tokens, el sorteo se ejecutará indefectiblemente en dicha fecha.

@@ -77,7 +77,8 @@ export function PremiosSection({
     ...sorteo,
     modalidadVenta: sorteo.modalidadVenta || "escalonado",
     heroTitulo: sorteo.heroTitulo || "",
-    reglaPremios: sorteo.reglaPremios || "El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo.",
+    reglaPremios: sorteo.reglaPremios ?? "",
+    mostrarDinamica: sorteo.mostrarDinamica !== false,
     detalleTitulo: sorteo.detalleTitulo || "Vehículos de Alta Gama y Premios Oficiales",
     detalleSubtitulo: sorteo.detalleSubtitulo || "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido.",
     detalleImagen: sorteo.detalleImagen || "",
@@ -93,6 +94,8 @@ export function PremiosSection({
       ...prev,
       ...sorteo,
       modalidadVenta: sorteo.modalidadVenta || prev.modalidadVenta || "escalonado",
+      reglaPremios: sorteo.reglaPremios !== undefined ? sorteo.reglaPremios : (prev.reglaPremios ?? ""),
+      mostrarDinamica: sorteo.mostrarDinamica !== undefined ? sorteo.mostrarDinamica : (prev.mostrarDinamica !== false),
     }));
   }, [sorteo]);
 
@@ -161,10 +164,13 @@ export function PremiosSection({
   const [guardandoFaqs, setGuardandoFaqs] = useState(false);
 
   const NIVEL_ORDEN: Record<Nivel, number> = {
+    "1° Lugar": 1,
     "Premio Mayor": 1,
     "1° Lugar (A Elección)": 1,
+    "2° Lugar": 2,
     "Segundo Premio": 2,
     "2° Lugar (A Elección)": 2,
+    "3° Lugar": 3,
     "Tercer Premio": 3,
     "3° Lugar (Efectivo)": 3,
     "Premio Extra": 4,
@@ -261,7 +267,7 @@ export function PremiosSection({
       {
         id: `p${Date.now()}`,
         nombre: "Subaru Impreza WRX",
-        nivel: "1° Lugar (A Elección)",
+        nivel: "1° Lugar",
         imagen: "/premio-subaru.jpg",
         orden: premios.length + 1,
         activo: true,
@@ -275,6 +281,21 @@ export function PremiosSection({
       console.error(err);
       toast.error("Error al agregar premio");
     }
+  };
+
+  const generarDinamicaDesdePremios = () => {
+    const activos = premios.filter((p) => p.activo !== false);
+    if (activos.length === 0) return "";
+    const p1 = activos.filter((p) => p.nivel === "1° Lugar" || p.nivel === "Premio Mayor").map((p) => p.nombre);
+    const p2 = activos.filter((p) => p.nivel === "2° Lugar" || p.nivel === "Segundo Premio").map((p) => p.nombre);
+    const p3 = activos.filter((p) => p.nivel === "3° Lugar" || p.nivel === "Tercer Premio").map((p) => p.nombre);
+
+    const partes: string[] = [];
+    if (p1.length > 0) partes.push(`1° Lugar: ${p1.join(" o ")}`);
+    if (p2.length > 0) partes.push(`2° Lugar: ${p2.join(" y ")}`);
+    if (p3.length > 0) partes.push(`3° Lugar: ${p3.join(" y ")}`);
+
+    return partes.join(". ") + (partes.length > 0 ? "." : "");
   };
 
   const subirImagen = async (id: string, file?: File) => {
@@ -564,19 +585,47 @@ export function PremiosSection({
               </p>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="font-bold text-sm flex items-center gap-1.5 text-primary">
-                <Trophy className="size-4 text-primary" /> Dinámica / Regla de Premiación de esta Edición
-              </Label>
+            <div className="space-y-2 rounded-xl border border-border bg-secondary/20 p-3.5">
+              <div className="flex items-center justify-between gap-2">
+                <Label className="font-bold text-sm flex items-center gap-1.5 text-primary">
+                  <Trophy className="size-4 text-primary" /> Dinámica Oficial de Premiación
+                </Label>
+                <div className="flex items-center gap-1.5" title="Mostrar u ocultar la tarjeta de dinámica en la página web">
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${borrador.mostrarDinamica !== false ? "text-emerald-500" : "text-muted-foreground"}`}>
+                    {borrador.mostrarDinamica !== false ? "Visible en Web" : "Oculto"}
+                  </span>
+                  <Switch
+                    checked={borrador.mostrarDinamica !== false}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarDinamica: v })}
+                  />
+                </div>
+              </div>
+
               <Textarea
                 rows={2}
-                value={borrador.reglaPremios || ""}
+                value={borrador.reglaPremios ?? ""}
                 onChange={(e) => setBorrador({ ...borrador, reglaPremios: e.target.value })}
-                placeholder="El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo."
+                placeholder="Ej: 1° Lugar: Moto de Alta Cilindrada o Mercedes-Benz. 2° Lugar: PlayStation 5..."
               />
-              <p className="text-[11px] text-muted-foreground">
-                Se muestra en una tarjeta destacada arriba de los premios en la página principal para explicar cómo ganan.
-              </p>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <p className="text-[11px] text-muted-foreground leading-snug">
+                  Tarjeta destacada sobre los premios en la web. Los vehículos apagados quedan excluidos automáticamente.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const generada = generarDinamicaDesdePremios();
+                    setBorrador({ ...borrador, reglaPremios: generada, mostrarDinamica: true });
+                    toast.success("Dinámica generada solo con las entregas activas");
+                  }}
+                  className="h-7 px-2.5 text-xs text-amber-500 border-amber-500/30 hover:bg-amber-500/10 font-bold gap-1"
+                >
+                  <Sparkles className="size-3" /> Auto-componer con activos
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -635,7 +684,7 @@ export function PremiosSection({
                 <div className="font-bold text-sm text-emerald-400 flex items-center gap-2">
                   <span>⭐</span> Múltiplos de 3 (Competencia PRO)
                 </div>
-                <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   Paquetes de 3 en 3 (desde 3 hasta 24 tokens). Destaca el paquete de <strong>6 Tokens por ₡8 000</strong> como el más vendido.
                 </p>
               </div>
@@ -667,7 +716,7 @@ export function PremiosSection({
                 <div className="font-bold text-sm text-amber-400 flex items-center gap-2">
                   <span>🔥</span> Paquete Promocional Único (Flash)
                 </div>
-                <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   Un solo botón de compra rápida para <strong>3 Tokens Digitales</strong> cerrados por ₡{(borrador.precioBase >= 2000 ? borrador.precioBase : 4000).toLocaleString("es-CR")}.
                 </p>
               </div>
@@ -697,8 +746,8 @@ export function PremiosSection({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 self-end sm:self-auto bg-black/40 px-3 py-1.5 rounded-full border border-border">
-              <span className="text-xs font-bold text-zinc-200">
+            <div className="flex items-center gap-2 self-end sm:self-auto bg-secondary px-3 py-1.5 rounded-full border border-border">
+              <span className="text-xs font-bold text-foreground">
                 {supertokenActivo ? "🟢 SuperToken Activo" : "🔴 Inactivo"}
               </span>
               <Switch
@@ -710,19 +759,19 @@ export function PremiosSection({
           </div>
 
           {/* BARRA DE CONVERSIÓN Y SELECTOR DE MONEDA */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-zinc-950/80 p-3.5 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/30 p-3.5 shadow-sm">
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <ArrowRightLeft className="size-3.5 text-amber-400" /> Moneda de los Bonos en la Web:
+                <ArrowRightLeft className="size-3.5 text-amber-500" /> Moneda de los Bonos en la Web:
               </span>
-              <div className="inline-flex rounded-xl border border-border bg-secondary/60 p-1">
+              <div className="inline-flex rounded-xl border border-border bg-background p-1">
                 <button
                   type="button"
                   onClick={() => setSupertokenMoneda("CRC")}
                   className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
                     supertokenMoneda === "CRC"
-                      ? "bg-amber-500 text-black shadow-md"
-                      : "text-muted-foreground hover:text-white"
+                      ? "bg-amber-500 text-black shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   🪙 Colones (₡ CRC)
@@ -732,8 +781,8 @@ export function PremiosSection({
                   onClick={() => setSupertokenMoneda("USD")}
                   className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
                     supertokenMoneda === "USD"
-                      ? "bg-amber-500 text-black shadow-md"
-                      : "text-muted-foreground hover:text-white"
+                      ? "bg-amber-500 text-black shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   💵 Dólares ($ USD)
@@ -743,9 +792,9 @@ export function PremiosSection({
 
             {/* Herramienta Conversora Rápida */}
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1 bg-secondary/70 border border-border px-2.5 py-1 rounded-lg text-xs">
+              <div className="flex items-center gap-1 bg-background border border-border px-2.5 py-1 rounded-lg text-xs">
                 <span className="text-[11px] text-muted-foreground">T.C.:</span>
-                <span className="font-mono font-bold text-amber-400">₡</span>
+                <span className="font-mono font-bold text-amber-500">₡</span>
                 <input
                   type="number"
                   value={tipoCambio}
@@ -761,7 +810,7 @@ export function PremiosSection({
                   variant="outline"
                   size="sm"
                   onClick={convertirAColones}
-                  className="h-8 px-3 text-xs border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
+                  className="h-8 px-3 text-xs border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
                   title="Convierte los 3 montos actuales multiplicándolos por el tipo de cambio a Colones"
                 >
                   <RotateCw className="size-3.5" /> Convertir cifras a CRC (x{tipoCambio})
@@ -772,7 +821,7 @@ export function PremiosSection({
                   variant="outline"
                   size="sm"
                   onClick={convertirADolares}
-                  className="h-8 px-3 text-xs border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
+                  className="h-8 px-3 text-xs border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
                   title="Convierte los 3 montos actuales dividiéndolos entre el tipo de cambio a Dólares"
                 >
                   <RotateCw className="size-3.5" /> Convertir cifras a USD (/{tipoCambio})
@@ -898,17 +947,17 @@ export function PremiosSection({
                 {/* Header de la tarjeta con Switch de Activo/Desconectado */}
                 <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-border/50 pb-2">
                   <div className="flex items-center gap-1.5">
-                    {p.nivel === "Premio Mayor" || p.nivel === "1° Lugar (A Elección)" ? (
+                    {p.nivel === "Premio Mayor" || p.nivel === "1° Lugar" || (p.nivel as string) === "1° Lugar (A Elección)" ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-500/40 px-2 py-0.5 text-[11px] font-bold text-amber-400">
-                        👑 1° Lugar · A Elección
+                        👑 1° Lugar
                       </span>
-                    ) : p.nivel === "Segundo Premio" || p.nivel === "2° Lugar (A Elección)" ? (
+                    ) : p.nivel === "Segundo Premio" || p.nivel === "2° Lugar" || (p.nivel as string) === "2° Lugar (A Elección)" ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/15 border border-slate-500/40 px-2 py-0.5 text-[11px] font-bold text-slate-300">
-                        🥈 2° Lugar · Restante
+                        🥈 2° Lugar
                       </span>
-                    ) : p.nivel === "Tercer Premio" || p.nivel === "3° Lugar (Efectivo)" ? (
+                    ) : p.nivel === "Tercer Premio" || p.nivel === "3° Lugar" || (p.nivel as string) === "3° Lugar (Efectivo)" ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/15 border border-orange-500/40 px-2 py-0.5 text-[11px] font-bold text-orange-400">
-                        🥉 3° Lugar · Efectivo
+                        🥉 3° Lugar
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 border border-primary/40 px-2 py-0.5 text-[11px] font-bold text-primary">
@@ -953,7 +1002,15 @@ export function PremiosSection({
                 <div className="space-y-1.5">
                   <Label>Posición / Nivel</Label>
                   <Select
-                    value={p.nivel}
+                    value={
+                      p.nivel === "1° Lugar (A Elección)" || p.nivel === "Premio Mayor"
+                        ? "1° Lugar"
+                        : p.nivel === "2° Lugar (A Elección)" || p.nivel === "Segundo Premio"
+                        ? "2° Lugar"
+                        : p.nivel === "3° Lugar (Efectivo)" || p.nivel === "Tercer Premio"
+                        ? "3° Lugar"
+                        : p.nivel
+                    }
                     onValueChange={(v) => { void cambiarNivel(p.id, v as Nivel); }}
                   >
                     <SelectTrigger>

@@ -119,7 +119,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
 
   if (esPreguntaPaquetes) {
     return `🎟️ **Lotes y Paquetes de Tokens Disponibles:**\n\n` +
-      `Elige tu paquete digital para competir por la **Moto de Alta Cilindrada (o Vehículo a Elección)**:\n\n` +
+      `Elige tu paquete digital para competir por la **Moto de Alta Cilindrada**:\n\n` +
       `• 🎟️ **Paquete Básico (4 Tokens) · ₡4,000**: 4 oportunidades para asegurar tus números favoritos.\n` +
       `• 🔥 **Paquete Popular (8 Tokens) · ₡8,000**: ¡El favorito de la comunidad! Multiplica tus oportunidades x8 por solo ₡8 mil.\n` +
       `• ⚡ **Paquete Pro (12 Tokens) · ₡12,000**: Mayor probabilidad de ganar el sorteo mayor y más giros de regalo para premios express.\n` +
@@ -171,7 +171,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   if (esPreguntaPremios) {
     return `🏆 **Premios Oficiales de Aval Community CR:**\n\n` +
       `¡Nuestra edición actual está cargada de premios de ensueño!\n\n` +
-      `1. 🏆 **Premio Mayor (1° Lugar)**: Espectacular **Moto de Alta Cilindrada** (o vehículo a elección como Mercedes-Benz Clase GLE / Subaru Impreza WRX). *(¡Con Traspaso Notarial y Marchamo 100% PAGOS por la empresa, sin costos ocultos!)*.\n` +
+      `1. 🏆 **Premio Mayor (1° Lugar)**: Espectacular **Moto de Alta Cilindrada** (o vehículos como Mercedes-Benz Clase GLE / Subaru Impreza WRX). *(¡Con Traspaso Notarial y Marchamo 100% PAGOS por la empresa, sin costos ocultos!)*.\n` +
       `2. 🚗 **Segundo Premio (2° Lugar)**: Subaru Impreza WRX / Mercedes-Benz Clase GLE listo para estrenar.\n` +
       `3. 🎮 / 💵 **Tercer Premio (3° Lugar)**: Consola PlayStation 5 de última generación o ₡1,000,000 en efectivo entregados formalmente.\n` +
       `4. ⛽ **Viernes de Tanque Lleno**: ₡50,000 en combustible todos los viernes entre todos los participantes activos.\n` +
@@ -285,7 +285,7 @@ export function obtenerRespuestaFallback(consulta: string, config: Config): stri
   }
 
   // 15. RESPUESTA GENERAL RESUMIDA / CLOSER
-  return `¡Pura vida! En Aval Community CR estás a un paso de estrenar una espectacular **Moto de Alta Cilindrada (o Vehículo a Elección)** con marchamo pago y traspaso formal incluido.\n\n` +
+  return `¡Pura vida! En Aval Community CR estás a un paso de estrenar una espectacular **Moto de Alta Cilindrada** con marchamo pago y traspaso formal incluido.\n\n` +
     `🔥 **¡Mira todo lo que ganas al participar!**\n` +
     `• ⛽ **Viernes de Tanque Lleno**: ¡Te ganas gasolina todos los viernes (₡50,000 en combustible) con cualquier paquete que compres sin pagar nada extra!\n` +
     `• 👑 **¿Sabes de los SuperTokens?**: Por solo ₡1,500 extra optas por hasta **$10,000 USD en efectivo CASH** ($10k 1°, $6k 2°, $3k 3°) de una vez!\n` +
@@ -470,7 +470,7 @@ export async function enviarMensajeIA(
 
 [BASE DE CONOCIMIENTO TOTAL Y REGLAS DE VENTA]:
 1. ¿QUÉ SE RIFA? (PREMIOS):
-- 🏆 1° LUGAR (PREMIO MAYOR): Moto de Alta Cilindrada (o vehículo a elección como Mercedes-Benz Clase GLE / Subaru Impreza WRX). Sacada con Traspaso Notarial y Marchamo 100% PAGOS por la empresa (cero gastos ocultos para el ganador).
+- 🏆 1° LUGAR (PREMIO MAYOR): Moto de Alta Cilindrada (o Mercedes-Benz Clase GLE / Subaru Impreza WRX). Sacada con Traspaso Notarial y Marchamo 100% PAGOS por la empresa (cero gastos ocultos para el ganador).
 - 🚗 2° LUGAR (SEGUNDO PREMIO): Subaru Impreza WRX / Mercedes-Benz Clase GLE 2016.
 - 🎮/💵 3° LUGAR (TERCER PREMIO): Consola PlayStation 5 o ₡1,000,000 en efectivo por SINPE Móvil.
 - ⛽ MINI SORTEOS SEMANALES: "Viernes de Tanque Lleno" con ₡50,000 en combustible (estaciones Delta / Uno). Todos los participantes activos entran automáticamente todos los viernes sin pagar nada extra, y siguen jugando para el sorteo mayor.

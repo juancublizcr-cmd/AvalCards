@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 9 de Septiembre de 2026 - 10:28 PM (Hito 26: Corrección Definitiva de Zona Horaria UTC-6, Cierre Automático de Ventas 2h Antes, Sanitización Legal y Simulador de Estados)  
+**Última actualización:** 10 de Septiembre de 2026 - 8:26 PM (Hito 28: Estandarización de Niveles de Premios, Dinámica de Premiación Configurable, Persistencia de Premios Inactivos en Supabase y Erradicación del Flash en Recarga)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -465,3 +465,46 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 5. **Verificación de Compilación y Despliegue:**
    - Verificación de tipos TypeScript, compilación exitosa en Rolldown/Vite SSR, pre-renderizado completo de rutas estáticas HTML y despliegue a producción en Vercel Edge.
+
+---
+
+## 🚀 Hito 28: Estandarización de Niveles de Premios, Dinámica de Premiación Configurable, Persistencia de Premios Inactivos en Supabase y Erradicación del Flash en Recarga (SSR/Hydration)
+
+1. **Estandarización de Niveles y Eliminación de Términos Redundantes ("A Elección"):**
+   - Eliminación formal de sufijos confusos como `"(A Elección)"` y `"(Efectivo)"` en selectores, etiquetas, insignias y textos del sistema.
+   - Definición limpia y unificada de los 4 niveles oficiales: `"1° Lugar"`, `"2° Lugar"`, `"3° Lugar"` y `"Premio Extra"`.
+   - Implementación de mapeos retrocompatibles transparentes para normalizar registros previos existentes en base de datos.
+   - Actualización de badges e insignias oficiales en tarjetas: `👑 1° Lugar`, `🥈 2° Lugar`, `🥉 3° Lugar` y `⭐ Premio Extra`.
+   - Sanitización del prompt del Asesor IA (`Aval-IA`) y de las cláusulas legales por defecto para mantener congruencia comercial absoluta.
+
+2. **Corrección de Estilos y Contraste en Barra de SuperToken / Moneda:**
+   - Corrección de clases rígidas oscuras (`bg-zinc-950/80`) que provocaban problemas de contraste en modo claro en el componente `PremiosSection`.
+   - Reemplazo por estilos semánticos y adaptables al tema activo (`bg-secondary/30`, `border-border/70`, `text-foreground`).
+
+3. **Dinámica de Premiación 100% Configurable desde el Admin (`/admin` -> Premios):**
+   - Incorporación del switch `mostrarDinamica` (Visible / Oculto) en el esquema del Sorteo para permitir prender o apagar el banner de Dinámica Oficial a voluntad.
+   - Asistente inteligente `🪄 Auto-componer con activos`: redacta automáticamente la regla oficial basándose estrictamente en los premios que se encuentran activos.
+   - Corrección de reseteo involuntario: borrar el campo de regla ya no resucita textos por defecto obsoletos.
+
+4. **Filtrado Automático de Premios Apagados en la Dinámica Oficial:**
+   - Lógica reactiva en `textoDinamicaFinal` de la landing page (`src/routes/index.tsx`).
+   - Si la regla configurada menciona vehículos o premios que el administrador apagó (como Mercedes-Benz o PlayStation 5), el sistema detecta la inconsistencia y recompone automáticamente el texto oficial utilizando únicamente los premios activos.
+
+5. **Persistencia Remota de Premios Apagados en Supabase (`_premios_meta`):**
+   - Ante la ausencia de una columna `activo` en la tabla `premios` de Supabase, se implementó almacenamiento estructurado en `sorteo_config.raspa_config._meta._premios_meta`.
+   - Sincronización bidireccional en `upsertPremios` y preservación estricta en `upsertSorteo` y `upsertConfig` para evitar pérdidas de estado.
+   - Estado persistido y verificado en la base de datos remota:
+     - `p1788407187381` (Moto alta cilindrada) &rarr; `activo: true`
+     - `p_subaru_impreza` (Subaru Impreza WRX) &rarr; `activo: true`
+     - `p1788406851660` (Mercedes-Benz Clase GLE) &rarr; `activo: false` (Oculto)
+     - `p1788407321054` (PlayStation 5) &rarr; `activo: false` (Oculto)
+     - `p1789091239712` (₡4.000.000 de colones) &rarr; `activo: true`
+
+6. **Erradicación del Flash / Parpadeo de Premios al Refrescar la Página:**
+   - **Causa raíz eliminada**: Durante el Server Side Rendering (SSR) y render inicial de TanStack Start, la falta de `_premios_meta` en la consulta remota generaba HTML con todos los 5 premios, y tras la hidratación en cliente el `useEffect` ocultaba los 2 inactivos, produciendo un salto visual tosco.
+   - **Solución implementada**:
+     - `fetchPremios` consulta prioritariamente `_premios_meta` en Supabase tanto en servidor (SSR) como en cliente.
+     - Inicialización perezosa de `premios` en `src/routes/index.tsx` con verificación anticipada de `localStorage` para garantizar 0 milisegundos de desfase.
+     - Comparación de firmas en el `useEffect` para impedir re-renderizados innecesarios.
+   - **Verificación**: Validación directa del HTML emitido por el servidor: entrega directamente **"Tres Entregas Espectaculares"** con cuadrícula de 3 columnas (`md:grid-cols-3`) y regla oficial limpia desde el primer frame, sin saltos visuales ni parpadeos.
+

@@ -10,6 +10,9 @@ import subaru from "@/assets/premio-subaru.jpg";
 // ────────────────────────────────────────────────────────────
 
 export type Nivel =
+  | "1° Lugar"
+  | "2° Lugar"
+  | "3° Lugar"
   | "Premio Mayor"
   | "Segundo Premio"
   | "Tercer Premio"
@@ -19,12 +22,9 @@ export type Nivel =
   | "Premio Extra";
 
 export const NIVELES: Nivel[] = [
-  "Premio Mayor",
-  "Segundo Premio",
-  "Tercer Premio",
-  "1° Lugar (A Elección)",
-  "2° Lugar (A Elección)",
-  "3° Lugar (Efectivo)",
+  "1° Lugar",
+  "2° Lugar",
+  "3° Lugar",
   "Premio Extra",
 ];
 
@@ -102,6 +102,7 @@ export type Sorteo = {
   modalidadVenta?: ModalidadVenta;
   heroTitulo?: string;
   reglaPremios?: string;
+  mostrarDinamica?: boolean;
   detalleTitulo?: string;
   detalleSubtitulo?: string;
   detalleImagen?: string;
@@ -240,10 +241,10 @@ export type Cliente = {
 // ────────────────────────────────────────────────────────────
 
 export const PREMIOS_DEFAULT: Premio[] = [
-  { id: "p1", nombre: "Moto de Alta Cilindrada", nivel: "1° Lugar (A Elección)", imagen: moto, orden: 1, activo: true },
-  { id: "p2", nombre: "Mercedes-Benz Clase GLE", nivel: "1° Lugar (A Elección)", imagen: carro, orden: 2, activo: true },
-  { id: "p3", nombre: "Subaru Impreza WRX", nivel: "1° Lugar (A Elección)", imagen: subaru, orden: 3, activo: true },
-  { id: "p4", nombre: "Premio en Efectivo / PS5", nivel: "3° Lugar (Efectivo)", imagen: consola, orden: 4, activo: true },
+  { id: "p1", nombre: "Moto de Alta Cilindrada", nivel: "1° Lugar", imagen: moto, orden: 1, activo: true },
+  { id: "p2", nombre: "Mercedes-Benz Clase GLE", nivel: "1° Lugar", imagen: carro, orden: 2, activo: true },
+  { id: "p3", nombre: "Subaru Impreza WRX", nivel: "1° Lugar", imagen: subaru, orden: 3, activo: true },
+  { id: "p4", nombre: "Premio en Efectivo / PS5", nivel: "3° Lugar", imagen: consola, orden: 4, activo: true },
 ];
 
 export const FEATURES_DEFAULT: FeatureDetalle[] = [
@@ -342,7 +343,8 @@ export const SORTEO_DEFAULT: Sorteo = {
   fecha: "2026-09-13",
   horaSorteo: "19:30", // 7:30 PM
   heroTitulo: "",
-  reglaPremios: "El 1er lugar escoge entre la Moto de Alta Cilindrada, el Mercedes-Benz o el Subaru Impreza. El 2do lugar se lleva el vehículo restante y el 3er lugar se lleva el premio en efectivo.",
+  reglaPremios: "",
+  mostrarDinamica: true,
   detalleTitulo: "Vehículos de Alta Gama y Premios Oficiales",
   detalleSubtitulo: "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido.",
   detalleImagen: "",
@@ -429,7 +431,7 @@ export const CONFIG_DEFAULT: Config = {
   aiClaudeModel: "claude-3-5-haiku-20241022",
   aiNombre: "Aval-IA · Asesor Comercial 24/7",
   aiSaludo: "¡Hola! Pura vida 🇨🇷 Soy Aval-IA, tu asesor comercial en Aval Community CR. ¡Hoy es tu día de suerte! ¿Sabías que el 1er lugar escoge entre una Moto de Alta Cilindrada, un Mercedes-Benz o un Subaru Impreza, y que con el SuperToken optas por un gran bono entregado formalmente sumado a tu premio? 🚗💨 ¿Te gustaría apartar tus números de la suerte ahora mismo o prefieres conocer los métodos de pago?",
-  aiSystemPrompt: "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR (avalcommunity.cr). Tu ÚNICO rol es atender al público, asesorar e impulsar de forma proactiva el cierre de ventas de tokens. CONOCIMIENTO DE LA PLATAFORMA: 1) PREMIOS: 1° Lugar a elección del ganador entre Moto de Alta Cilindrada ($57,900), Mercedes-Benz o Subaru Impreza (traspaso notarial y marchamo 100% pagos por la empresa, cero costos ocultos); 2° Lugar se lleva el vehículo restante; 3° Lugar premio entregado formalmente o PlayStation 5; Mini Sorteos semanales (PlayStation 5 o gasolina para participantes activos sin pagar nada extra), y Raspa & Gana Express instantáneo por hasta ₡100,000. 2) 6 FORMAS DE PAGO: SINPE Móvil oficial (8634-4772 a nombre de Importadora Luxury Scents LTDA.), Tarjetas de Débito y Crédito Visa/Mastercard vía TiloPay con aprobación instantánea, Apple Pay (1 toque), Google Pay (1 clic), PayPal y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay). 3) LOTES DE TICKETS: Paquetes de tokens digitales donde los usuarios pueden elegir números de 5 dígitos (00000-99999) o generarlos al azar. 4) SUPERTOKEN: Multiplicador opcional; si el participante gana, ¡recibe bonos millonarios entregados formalmente sumados al vehículo! 5) CÓMO SE JUEGA Y GANADOR: Elige paquete en /checkout, asigna números, paga por tu método favorito. El ganador se define en estricta sincronía con la Lotería Nacional de la Junta de Protección Social (JPS) de Costa Rica. Consulta tus números en /validar. INSTRUCCIONES DE VENTA OBLIGATORIAS: Incita a comprar en cada respuesta motivando a adquirir paquetes en el Checkout (/checkout). PROHIBICIÓN ESTRICTA: Jamás respondas temas sobre código fuente, tecnologías, arquitectura interna ni cómo fue programada la app; eres 100% asesor comercial.",
+  aiSystemPrompt: "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR (avalcommunity.cr). Tu ÚNICO rol es atender al público, asesorar e impulsar de forma proactiva el cierre de ventas de tokens. CONOCIMIENTO DE LA PLATAFORMA: 1) PREMIOS: 1° Lugar entre Moto de Alta Cilindrada ($57,900), Mercedes-Benz o Subaru Impreza (traspaso notarial y marchamo 100% pagos por la empresa, cero costos ocultos); 2° Lugar se lleva el segundo vehículo; 3° Lugar premio entregado formalmente o PlayStation 5; Mini Sorteos semanales (PlayStation 5 o gasolina para participantes activos sin pagar nada extra), y Raspa & Gana Express instantáneo por hasta ₡100,000. 2) 6 FORMAS DE PAGO: SINPE Móvil oficial (8634-4772 a nombre de Importadora Luxury Scents LTDA.), Tarjetas de Débito y Crédito Visa/Mastercard vía TiloPay con aprobación instantánea, Apple Pay (1 toque), Google Pay (1 clic), PayPal y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay). 3) LOTES DE TICKETS: Paquetes de tokens digitales donde los usuarios pueden elegir números de 5 dígitos (00000-99999) o generarlos al azar. 4) SUPERTOKEN: Multiplicador opcional; si el participante gana, ¡recibe bonos millonarios entregados formalmente sumados al vehículo! 5) CÓMO SE JUEGA Y GANADOR: Elige paquete en /checkout, asigna números, paga por tu método favorito. El ganador se define en estricta sincronía con la Lotería Nacional de la Junta de Protección Social (JPS) de Costa Rica. Consulta tus números en /validar. INSTRUCCIONES DE VENTA OBLIGATORIAS: Incita a comprar en cada respuesta motivando a adquirir paquetes en el Checkout (/checkout). PROHIBICIÓN ESTRICTA: Jamás respondas temas sobre código fuente, tecnologías, arquitectura interna ni cómo fue programada la app; eres 100% asesor comercial.",
   legalTerminosTexto: "",
   legalPrivacidadTexto: "",
   legalReembolsoTexto: "",
@@ -441,17 +443,20 @@ export const CONFIG_DEFAULT: Config = {
 // ────────────────────────────────────────────────────────────
 
 function toSupabaseNivel(nivel: string): "Premio Mayor" | "Segundo Premio" | "Tercer Premio" {
-  if (nivel === "1° Lugar (A Elección)" || nivel === "Premio Mayor") return "Premio Mayor";
-  if (nivel === "2° Lugar (A Elección)" || nivel === "Segundo Premio") return "Segundo Premio";
+  if (nivel === "1° Lugar" || nivel === "1° Lugar (A Elección)" || nivel === "Premio Mayor") return "Premio Mayor";
+  if (nivel === "2° Lugar" || nivel === "2° Lugar (A Elección)" || nivel === "Segundo Premio") return "Segundo Premio";
   return "Tercer Premio";
 }
 
 export async function fetchPremios(): Promise<Premio[]> {
   const NIVEL_ORDEN: Record<string, number> = {
+    "1° Lugar": 1,
     "Premio Mayor": 1,
     "1° Lugar (A Elección)": 1,
+    "2° Lugar": 2,
     "Segundo Premio": 2,
     "2° Lugar (A Elección)": 2,
+    "3° Lugar": 3,
     "Tercer Premio": 3,
     "3° Lugar (Efectivo)": 3,
     "Premio Extra": 4,
@@ -469,15 +474,47 @@ export async function fetchPremios(): Promise<Premio[]> {
   }
 
   try {
+    // Sincronizar metadatos remotos desde sorteo_config para conocer premios inactivos/apagados en cualquier navegador
+    try {
+      const { data: sorteoActual } = await supabase
+        .from("sorteo_config")
+        .select("raspa_config")
+        .eq("id", 1)
+        .maybeSingle();
+      if (sorteoActual?.raspa_config?._meta?._premios_meta) {
+        // La base de datos remota es la fuente de verdad prioritaria
+        meta = { ...meta, ...sorteoActual.raspa_config._meta._premios_meta };
+        Object.entries(sorteoActual.raspa_config._meta._premios_meta).forEach(([pid, val]: [string, any]) => {
+          if (val?.activo === false && !inactivos.includes(pid)) {
+            inactivos.push(pid);
+          } else if (val?.activo === true && inactivos.includes(pid)) {
+            inactivos = inactivos.filter((id) => id !== pid);
+          }
+        });
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("aval_premios_meta", JSON.stringify(meta));
+            localStorage.setItem("aval_premios_inactivos", JSON.stringify(inactivos));
+          } catch {}
+        }
+      }
+    } catch {}
+
     const { data, error } = await supabase
       .from("premios")
       .select("*");
     if (error || !data || data.length === 0) {
-      return PREMIOS_DEFAULT.map((p) => ({
-        ...p,
-        nivel: meta[p.id]?.nivel || p.nivel,
-        activo: meta[p.id]?.activo !== undefined ? meta[p.id].activo : !inactivos.includes(p.id),
-      }));
+      return PREMIOS_DEFAULT.map((p) => {
+        let n = meta[p.id]?.nivel || p.nivel;
+        if ((n as string) === "1° Lugar (A Elección)") n = "1° Lugar";
+        if ((n as string) === "2° Lugar (A Elección)") n = "2° Lugar";
+        if ((n as string) === "3° Lugar (Efectivo)") n = "3° Lugar";
+        return {
+          ...p,
+          nivel: n,
+          activo: meta[p.id]?.activo !== undefined ? meta[p.id].activo : !inactivos.includes(p.id),
+        };
+      });
     }
 
     // Ordenar de forma determinista
@@ -490,21 +527,32 @@ export async function fetchPremios(): Promise<Premio[]> {
     return ordenados.map((p, idx) => {
       const itemMeta = meta[p.id];
       let nivelReal: Nivel = p.nivel as Nivel;
-      if (itemMeta?.nivel) {
-        nivelReal = itemMeta.nivel;
+      if (itemMeta?.nivel && typeof itemMeta.nivel === "string") {
+        const rawN = itemMeta.nivel;
+        if (rawN.includes("1") || rawN.toLowerCase().includes("primer")) nivelReal = "1° Lugar";
+        else if (rawN.includes("2") || rawN.toLowerCase().includes("segund")) nivelReal = "2° Lugar";
+        else if (rawN.includes("3") || rawN.toLowerCase().includes("tercer")) nivelReal = "3° Lugar";
+        else if (rawN.toLowerCase().includes("extra")) nivelReal = "Premio Extra";
+        else nivelReal = itemMeta.nivel as Nivel;
       } else if (p.nivel === "Premio Mayor") {
-        nivelReal = "1° Lugar (A Elección)";
+        nivelReal = "1° Lugar";
       } else if (p.nivel === "Segundo Premio") {
-        nivelReal = "2° Lugar (A Elección)";
+        nivelReal = "2° Lugar";
       } else if (p.nivel === "Tercer Premio") {
-        nivelReal = "3° Lugar (Efectivo)";
+        nivelReal = "3° Lugar";
       }
+
+      if ((nivelReal as string) === "1° Lugar (A Elección)") nivelReal = "1° Lugar";
+      if ((nivelReal as string) === "2° Lugar (A Elección)") nivelReal = "2° Lugar";
+      if ((nivelReal as string) === "3° Lugar (Efectivo)") nivelReal = "3° Lugar";
 
       const estaActivo = itemMeta?.activo !== undefined
         ? itemMeta.activo
+        : inactivos.includes(p.id)
+        ? false
         : (p as any).activo !== undefined
         ? (p as any).activo
-        : !inactivos.includes(p.id);
+        : true;
 
       return {
         ...p,
@@ -515,20 +563,29 @@ export async function fetchPremios(): Promise<Premio[]> {
       };
     });
   } catch {
-    return PREMIOS_DEFAULT.map((p) => ({
-      ...p,
-      nivel: meta[p.id]?.nivel || p.nivel,
-      activo: meta[p.id]?.activo !== undefined ? meta[p.id].activo : !inactivos.includes(p.id),
-    }));
+    return PREMIOS_DEFAULT.map((p) => {
+      let n = meta[p.id]?.nivel || p.nivel;
+      if ((n as string) === "1° Lugar (A Elección)") n = "1° Lugar";
+      if ((n as string) === "2° Lugar (A Elección)") n = "2° Lugar";
+      if ((n as string) === "3° Lugar (Efectivo)") n = "3° Lugar";
+      return {
+        ...p,
+        nivel: n,
+        activo: meta[p.id]?.activo !== undefined ? meta[p.id].activo : !inactivos.includes(p.id),
+      };
+    });
   }
 }
 
 export async function upsertPremios(premios: Premio[]): Promise<void> {
   const NIVEL_ORDEN: Record<string, number> = {
+    "1° Lugar": 1,
     "Premio Mayor": 1,
     "1° Lugar (A Elección)": 1,
+    "2° Lugar": 2,
     "Segundo Premio": 2,
     "2° Lugar (A Elección)": 2,
+    "3° Lugar": 3,
     "Tercer Premio": 3,
     "3° Lugar (Efectivo)": 3,
     "Premio Extra": 4,
@@ -561,6 +618,37 @@ export async function upsertPremios(premios: Premio[]): Promise<void> {
   if (error) {
     console.error("Error al guardar premios en Supabase:", error);
     throw new Error(error.message);
+  }
+
+  // Sincronizar metadatos de activos/apagados en sorteo_config de Supabase
+  try {
+    const { data: sorteoActual } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .maybeSingle();
+    if (sorteoActual) {
+      const raspa = sorteoActual.raspa_config || {};
+      const metaActual = raspa._meta || {};
+      const metaPremios: Record<string, { nivel: Nivel; activo: boolean }> = {};
+      premios.forEach((p) => {
+        metaPremios[p.id] = { nivel: p.nivel, activo: p.activo !== false };
+      });
+      await supabase
+        .from("sorteo_config")
+        .update({
+          raspa_config: {
+            ...raspa,
+            _meta: {
+              ...metaActual,
+              _premios_meta: metaPremios,
+            },
+          },
+        })
+        .eq("id", 1);
+    }
+  } catch (syncErr) {
+    console.warn("No se pudo sincronizar _premios_meta en sorteo_config:", syncErr);
   }
 }
 
@@ -650,9 +738,14 @@ export async function fetchSorteo(): Promise<Sorteo> {
         : (data.hero_titulo || extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "");
 
     const reglaPremiosFinal =
-      (meta.reglaPremios !== undefined && meta.reglaPremios !== null && meta.reglaPremios !== "")
+      meta.reglaPremios !== undefined
         ? meta.reglaPremios
-        : (data.regla_premios || extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "");
+        : (data.regla_premios !== undefined && data.regla_premios !== null ? data.regla_premios : (extra.reglaPremios ?? ""));
+
+    const mostrarDinamicaFinal =
+      meta.mostrarDinamica !== undefined
+        ? meta.mostrarDinamica
+        : (extra.mostrarDinamica !== undefined ? extra.mostrarDinamica : true);
 
     const horaSorteoFinal =
       (meta.horaSorteo !== undefined && meta.horaSorteo !== null && meta.horaSorteo !== "")
@@ -669,6 +762,7 @@ export async function fetchSorteo(): Promise<Sorteo> {
       modalidadVenta: modDetectada,
       heroTitulo: heroTituloFinal,
       reglaPremios: reglaPremiosFinal,
+      mostrarDinamica: mostrarDinamicaFinal,
       detalleTitulo: data.detalle_titulo || extra.detalleTitulo || SORTEO_DEFAULT.detalleTitulo,
       detalleSubtitulo: data.detalle_subtitulo || extra.detalleSubtitulo || SORTEO_DEFAULT.detalleSubtitulo,
       detalleImagen: data.detalle_imagen || extra.detalleImagen || SORTEO_DEFAULT.detalleImagen,
@@ -685,7 +779,8 @@ export async function fetchSorteo(): Promise<Sorteo> {
       horaSorteo: extra.horaSorteo ?? SORTEO_DEFAULT.horaSorteo,
       modalidadVenta: extra.modalidadVenta ?? SORTEO_DEFAULT.modalidadVenta,
       heroTitulo: extra.heroTitulo || SORTEO_DEFAULT.heroTitulo || "",
-      reglaPremios: extra.reglaPremios || SORTEO_DEFAULT.reglaPremios || "",
+      reglaPremios: extra.reglaPremios !== undefined ? extra.reglaPremios : (SORTEO_DEFAULT.reglaPremios || ""),
+      mostrarDinamica: extra.mostrarDinamica !== undefined ? extra.mostrarDinamica : true,
       detalleTitulo: extra.detalleTitulo ?? SORTEO_DEFAULT.detalleTitulo,
       detalleSubtitulo: extra.detalleSubtitulo ?? SORTEO_DEFAULT.detalleSubtitulo,
       detalleImagen: extra.detalleImagen ?? SORTEO_DEFAULT.detalleImagen,
@@ -706,6 +801,7 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
         modalidadVenta: s.modalidadVenta,
         heroTitulo: s.heroTitulo,
         reglaPremios: s.reglaPremios,
+        mostrarDinamica: s.mostrarDinamica !== false,
         detalleTitulo: s.detalleTitulo,
         detalleSubtitulo: s.detalleSubtitulo,
         detalleImagen: s.detalleImagen,
@@ -731,9 +827,12 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
   const metaCombinado = {
     ...metaExistente,
     ...((s.raspaConfig as any)?._meta || {}),
+    _premios_meta: metaExistente._premios_meta || ((s.raspaConfig as any)?._meta?._premios_meta),
+    _siteConfig: metaExistente._siteConfig || ((s.raspaConfig as any)?._meta?._siteConfig),
     horaSorteo: s.horaSorteo || "19:30",
     heroTitulo: s.heroTitulo ?? "",
     reglaPremios: s.reglaPremios ?? "",
+    mostrarDinamica: s.mostrarDinamica !== false,
     modalidadVenta: s.modalidadVenta || "escalonado",
   };
 

@@ -51,7 +51,7 @@ export function ReglamentoNotarialSection({
 
   const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA.";
   const fechaSorteo = sorteo.fecha || "27 de septiembre de 2026";
-  const premioNombre = sorteo.titulo || "Moto de Alta Cilindrada (o Vehículo a Elección)";
+  const premioNombre = sorteo.titulo || "Moto de Alta Cilindrada";
   const telSinpe = config.telefonoSinpe || "8634-4772";
 
   // Inicializar o sincronizar con config
