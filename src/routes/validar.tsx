@@ -81,6 +81,7 @@ const ESTADOS = {
 } as const;
 
 function Validar() {
+  const [modoBusqueda, setModoBusqueda] = useState<"telefono" | "email">("telefono");
   const [telefono, setTelefono] = useState("");
   const [error, setError] = useState("");
   const [buscado, setBuscado] = useState(false);
@@ -114,14 +115,20 @@ function Validar() {
     setError("");
     setBuscando(true);
     try {
-      const [res, instant, refs] = await Promise.all([
+      const [res, instant, initialRefs] = await Promise.all([
         buscarPorTelefono(clean).catch(() => []),
         fetchInstantaneos().catch(() => []),
-        fetchReferidosPorTelefono(clean).catch(() => []),
+        clean.includes("@") ? Promise.resolve([]) : fetchReferidosPorTelefono(clean).catch(() => []),
       ]);
       setResultados(res);
       setPremiosInstantaneos(instant);
-      setReferidos(refs);
+
+      let finalRefs = initialRefs;
+      if (clean.includes("@") && res.length > 0 && res[0]?.telefono) {
+        const phoneRefs = await fetchReferidosPorTelefono(res[0].telefono).catch(() => []);
+        finalRefs = phoneRefs;
+      }
+      setReferidos(finalRefs);
       setError("");
 
       try {
@@ -166,15 +173,31 @@ function Validar() {
     e.preventDefault();
     const clean = telefono.trim();
     if (!clean) {
-      setError("Ingresa tu número de teléfono o correo");
+      setError(
+        modoBusqueda === "telefono"
+          ? "Ingresá tu número de teléfono"
+          : "Ingresá tu correo electrónico"
+      );
       setBuscado(false);
       return;
     }
-    const digits = clean.replace(/\D/g, "");
-    if (!clean.includes("@") && digits.length < 8) {
-      setError("Digita al menos los 8 dígitos de tu número celular (ej. 8888-8888)");
-      setBuscado(false);
-      return;
+    if (clean.includes("@")) {
+      if (!clean.includes(".")) {
+        setError("Digita un correo electrónico válido (ej. tu.correo@ejemplo.com)");
+        setBuscado(false);
+        return;
+      }
+    } else {
+      const digits = clean.replace(/\D/g, "");
+      if (digits.length < 8) {
+        setError(
+          modoBusqueda === "email"
+            ? "Digita un correo electrónico válido (ej. tu.correo@ejemplo.com)"
+            : "Digita al menos los 8 dígitos de tu número celular (ej. 8888-8888 o 86344772)"
+        );
+        setBuscado(false);
+        return;
+      }
     }
     await ejecutarBusqueda(clean);
   };
@@ -226,33 +249,89 @@ function Validar() {
       </header>
 
       <main className="mx-auto max-w-3xl px-5 py-12">
-        <h1 className="font-display text-4xl tracking-wide flex items-center gap-3">
-          <Coins className="size-8 text-primary" /> Validar mis Tokens
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Digita tu número de celular o correo electrónico con el que realizaste tu compra para consultar todos tus Tokens asignados y el estado de tus órdenes.
-        </p>
+        <div className="mx-auto max-w-md text-center">
+          <span className="inline-block text-xs sm:text-sm font-bold uppercase tracking-widest text-primary mb-2">
+            Consulta tu participación
+          </span>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+            Validar mis tokens
+          </h1>
+          <p className="mt-2.5 text-sm text-muted-foreground leading-relaxed">
+            Ingresa el email o teléfono que usaste al comprar y revisa en qué sorteos participas, tus tokens y el estado.
+          </p>
 
-        <form
-          onSubmit={(e) => { void buscar(e); }}
-          className="mt-8 rounded-2xl border border-border bg-[image:var(--gradient-surface)] p-6 shadow-[var(--shadow-card)]"
-          noValidate
-        >
-          <Label htmlFor="telefono">Número de teléfono (celular) o correo</Label>
-          <div className="mt-1.5 flex flex-col gap-3 sm:flex-row">
-            <Input
-              id="telefono"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-              placeholder="Ej: 8888-8888 o correo@gmail.com"
-            />
-            <Button type="submit" variant="hero" className="sm:w-40" disabled={buscando}>
-              {buscando ? <Loader2 className="animate-spin" /> : <Search />}{" "}
-              {buscando ? "Buscando..." : "Consultar"}
+          <form
+            onSubmit={(e) => { void buscar(e); }}
+            className="mt-6 rounded-3xl border border-border/80 bg-card/70 backdrop-blur-md p-6 sm:p-7 shadow-[var(--shadow-card)] text-left space-y-4"
+            noValidate
+          >
+            {/* Toggle tabs: Email / Teléfono */}
+            <div className="grid grid-cols-2 p-1 rounded-xl bg-secondary/80 border border-border/50">
+              <button
+                type="button"
+                onClick={() => {
+                  setModoBusqueda("email");
+                  setError("");
+                }}
+                className={`py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+                  modoBusqueda === "email"
+                    ? "bg-background text-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Email
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setModoBusqueda("telefono");
+                  setError("");
+                }}
+                className={`py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+                  modoBusqueda === "telefono"
+                    ? "bg-background text-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Teléfono
+              </button>
+            </div>
+
+            {/* Input dinámico según pestaña activa */}
+            <div className="space-y-1.5">
+              <Label htmlFor="valor-busqueda" className="text-sm font-semibold text-foreground">
+                {modoBusqueda === "telefono" ? "Teléfono" : "Email"}
+              </Label>
+              <Input
+                id="valor-busqueda"
+                type={modoBusqueda === "telefono" ? "tel" : "email"}
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder={modoBusqueda === "telefono" ? "86344772" : "ejemplo@correo.com"}
+                className="h-12 text-base px-4 rounded-xl bg-background/90 border-border/80 focus-visible:ring-primary"
+                autoCapitalize="none"
+                autoCorrect="off"
+              />
+              {error && <p className="text-xs text-destructive font-medium pt-0.5">{error}</p>}
+            </div>
+
+            {/* Botón principal */}
+            <Button
+              type="submit"
+              variant="hero"
+              className="w-full h-12 text-base font-bold rounded-xl shadow-[var(--shadow-fire)] gap-2 cursor-pointer"
+              disabled={buscando}
+            >
+              {buscando ? <Loader2 className="size-5 animate-spin" /> : <Search className="size-5" />}
+              {buscando ? "Buscando tokens..." : "Buscar tokens"}
             </Button>
-          </div>
-          {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
-        </form>
+
+            {/* Texto de ayuda al pie */}
+            <p className="text-center text-xs text-muted-foreground leading-relaxed pt-1">
+              Usa los mismos datos que ingresaste en el checkout. No necesitas crear cuenta.
+            </p>
+          </form>
+        </div>
 
         {buscado && resultados.length === 0 && (
           <div className="mt-8 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
@@ -311,7 +390,7 @@ function Validar() {
                   {resultados[0]?.nombre}
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  {resultados.length} paquete(s) registrado(s) · {resultados[0]?.telefono}
+                  {resultados.length} paquete(s) registrado(s) · 📞 {resultados[0]?.telefono}{resultados[0]?.email ? ` · ✉️ ${resultados[0].email}` : ""}
                 </p>
               </div>
               <div className="text-right">

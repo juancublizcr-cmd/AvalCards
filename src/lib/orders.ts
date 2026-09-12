@@ -181,10 +181,11 @@ export async function buscarPorTelefono(termino: string): Promise<Orden[]> {
   // 2. Si busca por correo electrónico
   if (t.includes("@")) {
     try {
+      const cleanEmail = t.trim().toLowerCase();
       const { data, error } = await supabase
         .from("ordenes")
         .select("*")
-        .ilike("email", t)
+        .or(`email.ilike.${cleanEmail},email.ilike.%${cleanEmail}%`)
         .order("fecha", { ascending: false });
       if (!error && data) return data.map(normalizarOrden);
     } catch {
