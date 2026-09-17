@@ -1,4 +1,4 @@
-import { AlertTriangle, Download, FileSpreadsheet, ShoppingCart, TrendingUp, Trophy, Wallet } from "lucide-react";
+import { AlertTriangle, Copy, Download, ExternalLink, FileSpreadsheet, ShoppingCart, TrendingUp, Trophy, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -137,6 +137,52 @@ export function ResumenSection({
         >
           <FileSpreadsheet className="size-4 text-emerald-500" /> Exportar Reporte Global a Excel
         </Button>
+      </div>
+
+      {/* Banner de Campaña Publicitaria / Landing RRSS */}
+      <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/15 via-card to-background p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="flex size-2 rounded-full bg-primary animate-ping" />
+            <span className="text-xs font-black uppercase tracking-wider text-primary">
+              Campaña de Lanzamiento para Redes Sociales
+            </span>
+          </div>
+          <h3 className="font-bold text-base text-foreground">
+            Landing Promocional e Informativa (<span className="text-primary font-mono">/promo</span>)
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+            Página limpia sin carritos ni tokens, diseñada para aterrizar tráfico frío de Instagram, TikTok, Facebook Ads y estados de WhatsApp.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <Button
+            variant="hero"
+            size="sm"
+            onClick={() => {
+              const url = `${window.location.origin}/promo`;
+              void navigator.clipboard.writeText(url);
+              toast.success("¡Enlace de campaña copiado al portapapeles!", {
+                description: url,
+              });
+            }}
+            className="font-bold text-xs gap-1.5 shadow-sm flex-1 md:flex-none cursor-pointer"
+          >
+            <Copy className="size-3.5" /> Copiar Enlace
+          </Button>
+
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-border text-xs gap-1.5 flex-1 md:flex-none cursor-pointer"
+          >
+            <a href="/promo" target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="size-3.5" /> Ver Landing
+            </a>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-4 sm:grid-cols-2">

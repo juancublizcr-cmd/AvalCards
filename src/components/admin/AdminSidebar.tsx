@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Copy,
   CreditCard,
   Dices,
   ExternalLink,
@@ -8,14 +9,17 @@ import {
   Gift,
   HeartHandshake,
   LogOut,
+  Megaphone,
   Plus,
   Power,
   QrCode,
+  Receipt,
   Scale,
   Search,
   Settings,
   Share2,
   ShoppingCart,
+  SlidersHorizontal,
   Store,
   Target,
   Trophy,
@@ -23,6 +27,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
@@ -43,6 +48,7 @@ export type AdminSeccion =
   | "legal"
   | "social"
   | "sponsors"
+  | "disenoWeb"
   | "config";
 
 export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
@@ -58,6 +64,7 @@ export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[]
   { id: "legal", label: "Protocolo Notarial & Legal", icono: Scale },
   { id: "social", label: "Bien Social & Causas", icono: HeartHandshake },
   { id: "sponsors", label: "Sponsors & Comercios", icono: Store },
+  { id: "disenoWeb", label: "Textos y Botones Web", icono: SlidersHorizontal },
   { id: "config", label: "Configuración y Pasarelas", icono: Settings },
 ];
 
@@ -95,27 +102,42 @@ export function AdminSidebarContent({
         {SECCIONES.map((s) => {
           const activo = s.id === activa;
           return (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => {
-                onChange(s.id);
-                onItemClick?.();
-              }}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors cursor-pointer ${
-                activo
-                  ? "bg-primary font-semibold text-primary-foreground shadow-[var(--shadow-fire)]"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <s.icono className="size-4 shrink-0" />
-              <span className="flex-1">{s.label}</span>
-              {s.id === "pagos" && pendientes > 0 ? (
-                <span className="rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
-                  {pendientes}
-                </span>
-              ) : null}
-            </button>
+            <div key={s.id} className="space-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(s.id);
+                  onItemClick?.();
+                }}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors cursor-pointer ${
+                  activo
+                    ? "bg-primary font-semibold text-primary-foreground shadow-[var(--shadow-fire)]"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                }`}
+              >
+                <s.icono className="size-4 shrink-0" />
+                <span className="flex-1">{s.label}</span>
+                {s.id === "pagos" && pendientes > 0 ? (
+                  <span className="rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
+                    {pendientes}
+                  </span>
+                ) : null}
+              </button>
+
+              {s.id === "pagos" && (
+                <a
+                  href="http://localhost:3000/app/invoices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all group my-1"
+                  title="Abrir panel de FacturaOS para AvalCar"
+                >
+                  <Receipt className="size-4 shrink-0 text-blue-400" />
+                  <span className="flex-1 text-blue-300">Facturación Electrónica</span>
+                  <ExternalLink className="size-3 text-blue-400/70 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              )}
+            </div>
           );
         })}
 
@@ -124,6 +146,32 @@ export function AdminSidebarContent({
             Acceso a Páginas Públicas
           </div>
           <div className="space-y-1">
+            <div className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm bg-primary/10 border border-primary/25 text-primary font-bold">
+              <Link
+                to="/promo"
+                onClick={onItemClick}
+                className="flex items-center gap-2.5 flex-1 min-w-0 hover:underline"
+              >
+                <Megaphone className="size-4 shrink-0 text-primary" />
+                <span className="flex-1 truncate">Landing RRSS (/promo)</span>
+                <ExternalLink className="size-3 text-primary/70 shrink-0" />
+              </Link>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const url = `${window.location.origin}/promo`;
+                  void navigator.clipboard.writeText(url);
+                  toast.success("¡Enlace de campaña copiado!", {
+                    description: url,
+                  });
+                }}
+                className="rounded-md p-1 hover:bg-primary/20 text-primary transition-colors cursor-pointer shrink-0"
+                title="Copiar enlace para redes sociales"
+              >
+                <Copy className="size-3.5" />
+              </button>
+            </div>
             <Link
               to="/"
               onClick={onItemClick}

@@ -207,6 +207,61 @@ export type Config = {
   legalPrivacidadTexto?: string;
   legalReembolsoTexto?: string;
   legalMinutaNotarialTexto?: string;
+  // ─── Textos, Badges y Botones Dinámicos de la Web (Página Principal) ───
+  // 1. Hero y Encabezado Principal
+  heroBadgeEvento?: string;
+  heroBadgePopular?: string;
+  heroBadgeSuperToken?: string;
+  heroBadgeGasolina?: string;
+  heroBadgeComercios?: string;
+  heroSubtitulo?: string;
+  heroBotonCta?: string;
+  heroBotonSecundario?: string;
+  heroMicroPrueba1?: string;
+  heroMicroPrueba2?: string;
+  // 2. Vitrina Showcase y Badges Flotantes
+  vitrinaBadgeKm?: string;
+  vitrinaBadgeSuperToken?: string;
+  vitrinaBadgeTraspaso?: string;
+  vitrinaBotonAmpliar?: string;
+  // 3. Sección Cómo Funciona (3 Pasos)
+  pasosBadge?: string;
+  pasosTitulo?: string;
+  pasosSubtitulo?: string;
+  pasosPaso1Titulo?: string;
+  pasosPaso1Desc?: string;
+  pasosPaso2Titulo?: string;
+  pasosPaso2Desc?: string;
+  pasosPaso3Titulo?: string;
+  pasosPaso3Desc?: string;
+  pasosBotonCta?: string;
+  // 4. Mini-Sorteos Semanales
+  miniSorteoTituloPrincipal?: string;
+  miniSorteoSubtituloPrincipal?: string;
+  miniSorteoViernesBadge?: string;
+  miniSorteoViernesTitulo?: string;
+  miniSorteoViernesPremio?: string;
+  miniSorteoViernesDesc?: string;
+  miniSorteoViernesAuditoria?: string;
+  miniSorteoDomingosBadge?: string;
+  miniSorteoDomingosTitulo?: string;
+  miniSorteoDomingosPremio?: string;
+  miniSorteoDomingosDesc?: string;
+  miniSorteoDomingosAuditoria?: string;
+  miniSorteosGarantia1Titulo?: string;
+  miniSorteosGarantia1Desc?: string;
+  miniSorteosGarantia2Titulo?: string;
+  miniSorteosGarantia2Desc?: string;
+  miniSorteosGarantia3Titulo?: string;
+  miniSorteosGarantia3Desc?: string;
+  // 5. Sección Paquetes de Tokens y Botones de Compra
+  paquetesBadge?: string;
+  paquetesTitulo?: string;
+  paquetesSubtitulo?: string;
+  paquetesTokensLabel?: string;
+  paquetesBotonComprar?: string;
+  paqueteTagPopular?: string;
+  paqueteTagBest?: string;
 };
 
 export type ReferenteStat = {
@@ -436,6 +491,61 @@ export const CONFIG_DEFAULT: Config = {
   legalPrivacidadTexto: "",
   legalReembolsoTexto: "",
   legalMinutaNotarialTexto: "",
+  // ─── Defaults Textos Dinámicos de la Web ───
+  // 1. Hero
+  heroBadgeEvento: "Evento Promocional Oficial Costa Rica",
+  heroBadgePopular: "",
+  heroBadgeSuperToken: "",
+  heroBadgeGasolina: "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5",
+  heroBadgeComercios: "Descuentos en Comercios ↗",
+  heroSubtitulo: "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales.",
+  heroBotonCta: "🔥 ¡QUIERO PARTICIPAR AHORA!",
+  heroBotonSecundario: "¿Cómo funciona? ↓",
+  heroMicroPrueba1: "Pago Seguro SINPE y Tarjeta",
+  heroMicroPrueba2: "Entrega Formal ante Notario",
+  // 2. Vitrina Showcase
+  vitrinaBadgeKm: "0 Kilómetros · Año 2026",
+  vitrinaBadgeSuperToken: "",
+  vitrinaBadgeTraspaso: "Traspaso y Marchamo Incluidos",
+  vitrinaBotonAmpliar: "Clic para ampliar en grande",
+  // 3. 3 Pasos
+  pasosBadge: "Proceso 100% Digital y Transparente",
+  pasosTitulo: "Participa en 3 Simples Pasos",
+  pasosSubtitulo: "Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo.",
+  pasosPaso1Titulo: "Elige tus Tokens",
+  pasosPaso1Desc: "Selecciona el paquete digital que prefieras. Puedes asignar tus números al azar o escribir tus números favoritos.",
+  pasosPaso2Titulo: "Paga Seguro con SINPE o Tarjeta",
+  pasosPaso2Desc: "Paga por SINPE Móvil oficial, tarjeta de débito/crédito, Apple Pay, Google Pay, PayPal o Cripto.",
+  pasosPaso3Titulo: "¡Participa con Resultados Oficiales!",
+  pasosPaso3Desc: "Tus tokens quedan asignados de inmediato. El sorteo se define con la Junta de Protección Social (JPS).",
+  pasosBotonCta: "Comenzar y Elegir mis Tokens →",
+  // 4. Mini-Sorteos
+  miniSorteoTituloPrincipal: "⛽ Mini-Sorteos Semanales (Sin Costo Extra)",
+  miniSorteoSubtituloPrincipal: "Todos los tokens activos participan automáticamente en los sorteos semanales de gasolina y consolas.",
+  miniSorteoViernesBadge: "Todos los Viernes · 7:30 PM",
+  miniSorteoViernesTitulo: "Viernes de Tanque Lleno",
+  miniSorteoViernesPremio: "₡50,000 en Gasolina Delta / Uno",
+  miniSorteoViernesDesc: "Llena el tanque de tu vehículo o motocicleta 100% gratis. También entregados formalmente si lo prefieres en efectivo.",
+  miniSorteoViernesAuditoria: "Auditado con la emisión oficial de los viernes de la JPS",
+  miniSorteoDomingosBadge: "Todos los Domingos · 7:30 PM",
+  miniSorteoDomingosTitulo: "Domingos de PlayStation 5 Extra",
+  miniSorteoDomingosPremio: "Consola PS5 o ₡350,000 SINPE",
+  miniSorteoDomingosDesc: "Estrena una consola PlayStation 5 Slim Digital 0KM sellada de paquete o recibe ₡350,000 en efectivo por SINPE Móvil al instante.",
+  miniSorteoDomingosAuditoria: "Auditado directamente con la emisión dominical oficial de la JPS",
+  miniSorteosGarantia1Titulo: "100% Automático",
+  miniSorteosGarantia1Desc: "Todos los tokens que adquieras entran automáticamente a los sorteos de gasolina de los viernes y PlayStation de los domingos sin pagar nada extra.",
+  miniSorteosGarantia2Titulo: "Sigues Jugando por el Carro",
+  miniSorteosGarantia2Desc: "Incluso si ganas la gasolina o el PlayStation 5 semanal, tus tokens siguen 100% válidos y activos para los vehículos del sorteo mayor.",
+  miniSorteosGarantia3Titulo: "Depósito SINPE Inmediato",
+  miniSorteosGarantia3Desc: "Los números ganadores se anuncian en vivo, se notifican directamente por WhatsApp y el premio se transfiere al instante.",
+  // 5. Paquetes
+  paquetesBadge: "Elige tu Paquete Digital",
+  paquetesTitulo: "Elige tu paquete de Tokens",
+  paquetesSubtitulo: "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos.",
+  paquetesTokensLabel: "Tokens Digitales Oficiales",
+  paquetesBotonComprar: "Adquirir ahora →",
+  paqueteTagPopular: "Más popular",
+  paqueteTagBest: "EL MEJOR · MÁS VENDIDO",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -1043,6 +1153,56 @@ export async function fetchConfig(): Promise<Config> {
       legalPrivacidadTexto: extra.legalPrivacidadTexto || "",
       legalReembolsoTexto: extra.legalReembolsoTexto || "",
       legalMinutaNotarialTexto: extra.legalMinutaNotarialTexto || "",
+      // Textos dinámicos
+      heroBadgeEvento: extra.heroBadgeEvento !== undefined ? extra.heroBadgeEvento : CONFIG_DEFAULT.heroBadgeEvento,
+      heroBadgePopular: extra.heroBadgePopular !== undefined ? extra.heroBadgePopular : CONFIG_DEFAULT.heroBadgePopular,
+      heroBadgeSuperToken: extra.heroBadgeSuperToken !== undefined ? extra.heroBadgeSuperToken : CONFIG_DEFAULT.heroBadgeSuperToken,
+      heroBadgeGasolina: extra.heroBadgeGasolina !== undefined ? extra.heroBadgeGasolina : CONFIG_DEFAULT.heroBadgeGasolina,
+      heroBadgeComercios: extra.heroBadgeComercios !== undefined ? extra.heroBadgeComercios : CONFIG_DEFAULT.heroBadgeComercios,
+      heroSubtitulo: extra.heroSubtitulo !== undefined ? extra.heroSubtitulo : CONFIG_DEFAULT.heroSubtitulo,
+      heroBotonCta: extra.heroBotonCta !== undefined ? extra.heroBotonCta : CONFIG_DEFAULT.heroBotonCta,
+      heroBotonSecundario: extra.heroBotonSecundario !== undefined ? extra.heroBotonSecundario : CONFIG_DEFAULT.heroBotonSecundario,
+      heroMicroPrueba1: extra.heroMicroPrueba1 !== undefined ? extra.heroMicroPrueba1 : CONFIG_DEFAULT.heroMicroPrueba1,
+      heroMicroPrueba2: extra.heroMicroPrueba2 !== undefined ? extra.heroMicroPrueba2 : CONFIG_DEFAULT.heroMicroPrueba2,
+      vitrinaBadgeKm: extra.vitrinaBadgeKm !== undefined ? extra.vitrinaBadgeKm : CONFIG_DEFAULT.vitrinaBadgeKm,
+      vitrinaBadgeSuperToken: extra.vitrinaBadgeSuperToken !== undefined ? extra.vitrinaBadgeSuperToken : CONFIG_DEFAULT.vitrinaBadgeSuperToken,
+      vitrinaBadgeTraspaso: extra.vitrinaBadgeTraspaso !== undefined ? extra.vitrinaBadgeTraspaso : CONFIG_DEFAULT.vitrinaBadgeTraspaso,
+      vitrinaBotonAmpliar: extra.vitrinaBotonAmpliar !== undefined ? extra.vitrinaBotonAmpliar : CONFIG_DEFAULT.vitrinaBotonAmpliar,
+      pasosBadge: extra.pasosBadge !== undefined ? extra.pasosBadge : CONFIG_DEFAULT.pasosBadge,
+      pasosTitulo: extra.pasosTitulo !== undefined ? extra.pasosTitulo : CONFIG_DEFAULT.pasosTitulo,
+      pasosSubtitulo: extra.pasosSubtitulo !== undefined ? extra.pasosSubtitulo : CONFIG_DEFAULT.pasosSubtitulo,
+      pasosPaso1Titulo: extra.pasosPaso1Titulo !== undefined ? extra.pasosPaso1Titulo : CONFIG_DEFAULT.pasosPaso1Titulo,
+      pasosPaso1Desc: extra.pasosPaso1Desc !== undefined ? extra.pasosPaso1Desc : CONFIG_DEFAULT.pasosPaso1Desc,
+      pasosPaso2Titulo: extra.pasosPaso2Titulo !== undefined ? extra.pasosPaso2Titulo : CONFIG_DEFAULT.pasosPaso2Titulo,
+      pasosPaso2Desc: extra.pasosPaso2Desc !== undefined ? extra.pasosPaso2Desc : CONFIG_DEFAULT.pasosPaso2Desc,
+      pasosPaso3Titulo: extra.pasosPaso3Titulo !== undefined ? extra.pasosPaso3Titulo : CONFIG_DEFAULT.pasosPaso3Titulo,
+      pasosPaso3Desc: extra.pasosPaso3Desc !== undefined ? extra.pasosPaso3Desc : CONFIG_DEFAULT.pasosPaso3Desc,
+      pasosBotonCta: extra.pasosBotonCta !== undefined ? extra.pasosBotonCta : CONFIG_DEFAULT.pasosBotonCta,
+      miniSorteoTituloPrincipal: extra.miniSorteoTituloPrincipal !== undefined ? extra.miniSorteoTituloPrincipal : CONFIG_DEFAULT.miniSorteoTituloPrincipal,
+      miniSorteoSubtituloPrincipal: extra.miniSorteoSubtituloPrincipal !== undefined ? extra.miniSorteoSubtituloPrincipal : CONFIG_DEFAULT.miniSorteoSubtituloPrincipal,
+      miniSorteoViernesBadge: extra.miniSorteoViernesBadge !== undefined ? extra.miniSorteoViernesBadge : CONFIG_DEFAULT.miniSorteoViernesBadge,
+      miniSorteoViernesTitulo: extra.miniSorteoViernesTitulo !== undefined ? extra.miniSorteoViernesTitulo : CONFIG_DEFAULT.miniSorteoViernesTitulo,
+      miniSorteoViernesPremio: extra.miniSorteoViernesPremio !== undefined ? extra.miniSorteoViernesPremio : CONFIG_DEFAULT.miniSorteoViernesPremio,
+      miniSorteoViernesDesc: extra.miniSorteoViernesDesc !== undefined ? extra.miniSorteoViernesDesc : CONFIG_DEFAULT.miniSorteoViernesDesc,
+      miniSorteoViernesAuditoria: extra.miniSorteoViernesAuditoria !== undefined ? extra.miniSorteoViernesAuditoria : CONFIG_DEFAULT.miniSorteoViernesAuditoria,
+      miniSorteoDomingosBadge: extra.miniSorteoDomingosBadge !== undefined ? extra.miniSorteoDomingosBadge : CONFIG_DEFAULT.miniSorteoDomingosBadge,
+      miniSorteoDomingosTitulo: extra.miniSorteoDomingosTitulo !== undefined ? extra.miniSorteoDomingosTitulo : CONFIG_DEFAULT.miniSorteoDomingosTitulo,
+      miniSorteoDomingosPremio: extra.miniSorteoDomingosPremio !== undefined ? extra.miniSorteoDomingosPremio : CONFIG_DEFAULT.miniSorteoDomingosPremio,
+      miniSorteoDomingosDesc: extra.miniSorteoDomingosDesc !== undefined ? extra.miniSorteoDomingosDesc : CONFIG_DEFAULT.miniSorteoDomingosDesc,
+      miniSorteoDomingosAuditoria: extra.miniSorteoDomingosAuditoria !== undefined ? extra.miniSorteoDomingosAuditoria : CONFIG_DEFAULT.miniSorteoDomingosAuditoria,
+      miniSorteosGarantia1Titulo: extra.miniSorteosGarantia1Titulo !== undefined ? extra.miniSorteosGarantia1Titulo : CONFIG_DEFAULT.miniSorteosGarantia1Titulo,
+      miniSorteosGarantia1Desc: extra.miniSorteosGarantia1Desc !== undefined ? extra.miniSorteosGarantia1Desc : CONFIG_DEFAULT.miniSorteosGarantia1Desc,
+      miniSorteosGarantia2Titulo: extra.miniSorteosGarantia2Titulo !== undefined ? extra.miniSorteosGarantia2Titulo : CONFIG_DEFAULT.miniSorteosGarantia2Titulo,
+      miniSorteosGarantia2Desc: extra.miniSorteosGarantia2Desc !== undefined ? extra.miniSorteosGarantia2Desc : CONFIG_DEFAULT.miniSorteosGarantia2Desc,
+      miniSorteosGarantia3Titulo: extra.miniSorteosGarantia3Titulo !== undefined ? extra.miniSorteosGarantia3Titulo : CONFIG_DEFAULT.miniSorteosGarantia3Titulo,
+      miniSorteosGarantia3Desc: extra.miniSorteosGarantia3Desc !== undefined ? extra.miniSorteosGarantia3Desc : CONFIG_DEFAULT.miniSorteosGarantia3Desc,
+      paquetesBadge: extra.paquetesBadge !== undefined ? extra.paquetesBadge : CONFIG_DEFAULT.paquetesBadge,
+      paquetesTitulo: extra.paquetesTitulo !== undefined ? extra.paquetesTitulo : CONFIG_DEFAULT.paquetesTitulo,
+      paquetesSubtitulo: extra.paquetesSubtitulo !== undefined ? extra.paquetesSubtitulo : CONFIG_DEFAULT.paquetesSubtitulo,
+      paquetesTokensLabel: extra.paquetesTokensLabel !== undefined ? extra.paquetesTokensLabel : CONFIG_DEFAULT.paquetesTokensLabel,
+      paquetesBotonComprar: extra.paquetesBotonComprar !== undefined ? extra.paquetesBotonComprar : CONFIG_DEFAULT.paquetesBotonComprar,
+      paqueteTagPopular: extra.paqueteTagPopular !== undefined ? extra.paqueteTagPopular : CONFIG_DEFAULT.paqueteTagPopular,
+      paqueteTagBest: extra.paqueteTagBest !== undefined ? extra.paqueteTagBest : CONFIG_DEFAULT.paqueteTagBest,
     };
   } catch {
     return CONFIG_DEFAULT;
@@ -1053,71 +1213,10 @@ export async function upsertConfig(c: Config): Promise<void> {
   // Guardar en localStorage para disponibilidad inmediata y textos promocionales
   try {
     localStorage.setItem("aval_site_config_extra", JSON.stringify({
+      ...c,
       horaSorteoMartesViernes: c.horaSorteoMartesViernes || "19:30",
       horaSorteoDomingos: c.horaSorteoDomingos || "19:30",
       horasCierrePrevio: c.horasCierrePrevio !== undefined ? Number(c.horasCierrePrevio) : 2,
-      promoTitulo: c.promoTitulo,
-      promoSubtitulo: c.promoSubtitulo,
-      promoBotonTexto: c.promoBotonTexto,
-      promoWhatsapp: c.promoWhatsapp,
-      referidosActivo: c.referidosActivo,
-      referidosDarTokensBono: c.referidosDarTokensBono,
-      referidosPremioSiGana: c.referidosPremioPrimero || c.referidosPremioSiGana,
-      referidosPremioPrimero: c.referidosPremioPrimero,
-      referidosPremioSegundo: c.referidosPremioSegundo,
-      referidosPremioTercero: c.referidosPremioTercero,
-      referidosPromoLandingActivo: c.referidosPromoLandingActivo,
-      referidosBonoTokens: c.referidosBonoTokens,
-      referidosComisionPct: c.referidosComisionPct,
-      referidosMensajeShare: c.referidosMensajeShare,
-      paypalActivo: c.paypalActivo,
-      paypalClientId: c.paypalClientId,
-      paypalEmail: c.paypalEmail,
-      paypalSandbox: c.paypalSandbox,
-      applePayActivo: c.applePayActivo,
-      applePayMerchantId: c.applePayMerchantId,
-      googlePayActivo: c.googlePayActivo,
-      googlePayMerchantId: c.googlePayMerchantId,
-      fomoActivo: c.fomoActivo,
-      rankingReferidosActivo: c.rankingReferidosActivo,
-      rankingPremioPrimero: c.rankingPremioPrimero,
-      rankingPremioSegundo: c.rankingPremioSegundo,
-      rankingPremioTercero: c.rankingPremioTercero,
-      rankingFechaCierre: c.rankingFechaCierre,
-      generadorHistoriasActivo: c.generadorHistoriasActivo,
-      miniSorteosActivo: c.miniSorteosActivo,
-      miniSorteoDia: c.miniSorteoDia,
-      miniSorteoTitulo: c.miniSorteoTitulo,
-      miniSorteoFecha: c.miniSorteoFecha,
-      miniSorteoPremio: c.miniSorteoPremio,
-      pwaBannerActivo: c.pwaBannerActivo,
-      termometroFaseTitulo: c.termometroFaseTitulo,
-      termometroMetaTokens: c.termometroMetaTokens,
-      termometroPorcentajeManual: c.termometroPorcentajeManual,
-      supertokenActivo: c.supertokenActivo,
-      supertokenPrecio: c.supertokenPrecio,
-      supertokenMoneda: c.supertokenMoneda || "CRC",
-      supertokenPremioUsd: c.supertokenPremioPrimeroUsd ?? c.supertokenPremioUsd,
-      supertokenPremioPrimeroUsd: c.supertokenPremioPrimeroUsd,
-      supertokenPremioSegundoUsd: c.supertokenPremioSegundoUsd,
-      supertokenPremioTerceroUsd: c.supertokenPremioTerceroUsd,
-      aiActivo: c.aiActivo,
-      aiProveedor: c.aiProveedor,
-      aiOpenaiKey: c.aiOpenaiKey,
-      aiOpenaiModel: c.aiOpenaiModel,
-      aiGeminiKey: c.aiGeminiKey,
-      aiGeminiModel: c.aiGeminiModel,
-      aiDeepseekKey: c.aiDeepseekKey,
-      aiDeepseekModel: c.aiDeepseekModel,
-      aiClaudeKey: c.aiClaudeKey,
-      aiClaudeModel: c.aiClaudeModel,
-      aiNombre: c.aiNombre,
-      aiSaludo: c.aiSaludo,
-      aiSystemPrompt: c.aiSystemPrompt,
-      legalTerminosTexto: c.legalTerminosTexto,
-      legalPrivacidadTexto: c.legalPrivacidadTexto,
-      legalReembolsoTexto: c.legalReembolsoTexto,
-      legalMinutaNotarialTexto: c.legalMinutaNotarialTexto,
     }));
   } catch {}
 

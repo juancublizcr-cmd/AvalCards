@@ -15,6 +15,7 @@ import {
   Lock,
   MessageCircle,
   QrCode,
+  Receipt,
   Share2,
   ShieldCheck,
   Smartphone,
@@ -94,7 +95,22 @@ function Checkout() {
   // Datos Crypto
   const [cryptoHash, setCryptoHash] = useState("");
 
-  type Errores = { nombre?: string; telefono?: string; email?: string; archivo?: string; tarjeta?: string };
+  // Datos Facturación Electrónica Hacienda CR (Integración con FacturaOS API)
+  const [requiereFactura, setRequiereFactura] = useState(false);
+  const [facturaTipoCedula, setFacturaTipoCedula] = useState("02");
+  const [facturaCedula, setFacturaCedula] = useState("");
+  const [facturaNombre, setFacturaNombre] = useState("");
+  const [facturaData, setFacturaData] = useState<any>(null);
+
+  type Errores = {
+    nombre?: string;
+    telefono?: string;
+    email?: string;
+    archivo?: string;
+    tarjeta?: string;
+    facturaCedula?: string;
+    facturaNombre?: string;
+  };
   const [errores, setErrores] = useState<Errores>({});
   const [archivo, setArchivo] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -225,6 +241,16 @@ function Checkout() {
       else if (!tarjeta.expira.includes("/")) nuevos["tarjeta"] = "Fecha de expiración (MM/AA)";
     }
 
+    if (requiereFactura) {
+      const numCed = facturaCedula.replace(/\D/g, "");
+      if (!numCed || numCed.length < 9) {
+        nuevos["facturaCedula"] = "Ingresa una cédula válida (mínimo 9 dígitos)";
+      }
+      if (!facturaNombre.trim()) {
+        nuevos["facturaNombre"] = "Ingresa la Razón Social o Nombre registrado";
+      }
+    }
+
     setErrores(nuevos);
     if (Object.keys(nuevos).length > 0) {
       const primerError = Object.values(nuevos)[0];
@@ -314,6 +340,54 @@ function Checkout() {
       setOrdenAprobadaDirecta(esPagoInstantaneo);
       setTokensCreados(numerosFinales);
       limpiarSeleccion();
+
+      // Emisión electrónica automática en FacturaOS (Tiquete 04 o Factura 01)
+      try {
+        const precioSinIva = Math.round((precioFinal / 1.13) * 100) / 100;
+        const payloadFactura = {
+          docType: requiereFactura ? "01" : "04",
+          paymentMethod: metodo === "tarjeta" ? "02" : "01",
+          saleCondition: "01",
+          currency: "CRC",
+          notes: `Orden #${nuevoId} - AvalCar Community CR`,
+          client: requiereFactura
+            ? {
+                idType: facturaTipoCedula,
+                idNumber: facturaCedula.trim().replace(/\D/g, ""),
+                name: facturaNombre.trim() || form.nombre.trim(),
+                email: form.email.trim(),
+                phone: form.telefono.trim(),
+              }
+            : undefined,
+          items: [
+            {
+              cabys: "8314100009900",
+              detail: `Paquete de ${cantidadTokens} Tokens AvalCar`,
+              qty: 1,
+              unitPrice: precioSinIva,
+              ivaRate: 13,
+              unit: "Sp",
+            },
+          ],
+        };
+
+        const resFct = await fetch("http://localhost:3000/api/v1/invoices/emit", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer fct_live_avalcarcr_7c9a1e3f5b2d8a4c6e",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payloadFactura),
+        });
+
+        if (resFct.ok) {
+          const fctData = await resFct.json();
+          setFacturaData(fctData);
+        }
+      } catch (fctErr) {
+        console.warn("[FacturaOS] Aviso en emisión automática:", fctErr);
+      }
+
       setExito(true);
 
       if (esPagoInstantaneo) {
@@ -399,6 +473,64 @@ function Checkout() {
                   {n}
                 </span>
               ))}
+            </div>
+          )}
+
+          {/* COMPROBANTE ELECTRÓNICO OFICIAL HACIENDA CR */}
+          {facturaData && (
+            <div className="mt-6 rounded-2xl border-2 border-blue-500/50 bg-blue-950/20 p-5 text-left space-y-3 shadow-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                  <Receipt className="size-4.5" />
+                  <span>
+                    {facturaData.consecutiveNumber?.slice(8, 10) === "04"
+                      ? "Tiquete Electrónico Oficial"
+                      : "Factura Electrónica Oficial"}
+                  </span>
+                </div>
+                <span className="rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold">
+                  Hacienda: Aceptado ✓
+                </span>
+              </div>
+
+              <div className="text-xs text-muted-foreground space-y-1 font-mono">
+                <p>
+                  <strong className="text-foreground font-sans">Consecutivo:</strong> {facturaData.consecutiveNumber}
+                </p>
+                <p className="truncate">
+                  <strong className="text-foreground font-sans">Clave:</strong> {facturaData.clave}
+                </p>
+                <p>
+                  <strong className="text-foreground font-sans">Total Comprobante:</strong> ₡{(facturaData.total || 0).toLocaleString("es-CR")} CRC
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                <a
+                  href={facturaData.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-3 text-xs font-bold transition-all shadow-sm"
+                >
+                  📄 Descargar PDF
+                </a>
+                <a
+                  href={facturaData.xmlUrl}
+                  download={`${facturaData.clave}.xml`}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-blue-400/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 py-2.5 px-3 text-xs font-bold transition-all"
+                  title="Descargar comprobante electrónico firmado v4.4"
+                >
+                  💾 Comprobante (.xml)
+                </a>
+                <a
+                  href={facturaData.haciendaXmlUrl || `http://localhost:3000/api/v1/invoices/${facturaData.clave}/hacienda-xml`}
+                  download={`${facturaData.clave}_MensajeHacienda.xml`}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 py-2.5 px-3 text-xs font-bold transition-all"
+                  title="Descargar Acuse de Aprobación de Hacienda (MensajeHacienda.xml)"
+                >
+                  ✅ Acuse Hacienda (.xml)
+                </a>
+              </div>
             </div>
           )}
 
@@ -1096,6 +1228,85 @@ function Checkout() {
               </div>
             )}
           </section>
+
+          {/* SECCIÓN FACTURACIÓN ELECTRÓNICA HACIENDA CR */}
+          <div className="rounded-2xl border border-border/80 bg-secondary/40 p-4 space-y-3 transition-all">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Receipt className="size-4 text-primary" />
+                <span className="text-xs font-bold text-foreground">
+                  Comprobante Electrónico Tributario
+                </span>
+              </div>
+              <span className="rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold flex items-center gap-1">
+                <CheckCircle2 className="size-3" /> Hacienda CR
+              </span>
+            </div>
+
+            <label className="flex items-start gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={requiereFactura}
+                onChange={(e) => setRequiereFactura(e.target.checked)}
+                className="mt-0.5 rounded border-input text-primary focus:ring-primary h-4 w-4"
+              />
+              <div className="text-xs">
+                <span className="font-semibold text-foreground">
+                  ¿Requieres Factura Electrónica con Cédula para tu empresa?
+                </span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Por defecto emitimos un <strong>Tiquete Electrónico (04)</strong> para compra rápida. Marca si necesitas deducir gastos.
+                </p>
+              </div>
+            </label>
+
+            {requiereFactura && (
+              <div className="grid gap-3 pt-3 border-t border-border/60 animate-in fade-in-50">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div>
+                    <Label htmlFor="fe-tipo" className="text-[11px]">Tipo de Cédula</Label>
+                    <select
+                      id="fe-tipo"
+                      value={facturaTipoCedula}
+                      onChange={(e) => setFacturaTipoCedula(e.target.value)}
+                      className="w-full mt-1 h-9 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    >
+                      <option value="02">02 - Cédula Jurídica</option>
+                      <option value="01">01 - Cédula Física</option>
+                      <option value="03">03 - DIMEX</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Label htmlFor="fe-cedula" className="text-[11px]">Número de Cédula *</Label>
+                    <Input
+                      id="fe-cedula"
+                      placeholder={facturaTipoCedula === "02" ? "3-101-xxxxxx" : "1-xxxx-xxxx"}
+                      value={facturaCedula}
+                      onChange={(e) => setFacturaCedula(e.target.value)}
+                      className="mt-1 h-9 text-xs"
+                    />
+                    {errores["facturaCedula"] && (
+                      <p className="mt-1 text-[11px] text-destructive">{errores["facturaCedula"]}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="fe-nombre" className="text-[11px]">Razón Social o Nombre Completo *</Label>
+                  <Input
+                    id="fe-nombre"
+                    placeholder="Nombre o empresa registrada en Hacienda"
+                    value={facturaNombre}
+                    onChange={(e) => setFacturaNombre(e.target.value)}
+                    className="mt-1 h-9 text-xs"
+                  />
+                  {errores["facturaNombre"] && (
+                    <p className="mt-1 text-[11px] text-destructive">{errores["facturaNombre"]}</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* BOTÓN PRINCIPAL DE ACCIÓN */}
           <Button

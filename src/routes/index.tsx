@@ -351,18 +351,18 @@ function IndexPage() {
   const pasos = [
     {
       num: "01",
-      titulo: "Elige tus Tokens",
-      desc: "Selecciona el paquete digital que prefieras. Puedes asignar tus números al azar o escribir tus números favoritos.",
+      titulo: config.pasosPaso1Titulo || "Elige tus Tokens",
+      desc: config.pasosPaso1Desc || "Selecciona el paquete digital que prefieras. Puedes asignar tus números al azar o escribir tus números favoritos.",
     },
     {
       num: "02",
-      titulo: tituloPaso2,
-      desc: descPaso2,
+      titulo: config.pasosPaso2Titulo || tituloPaso2,
+      desc: config.pasosPaso2Desc || descPaso2,
     },
     {
       num: "03",
-      titulo: "¡Participa con Resultados Oficiales!",
-      desc: descPaso3,
+      titulo: config.pasosPaso3Titulo || "¡Participa con Resultados Oficiales!",
+      desc: config.pasosPaso3Desc || descPaso3,
     },
   ];
 
@@ -593,7 +593,7 @@ function IndexPage() {
                   : cierrePrevio
                   ? "🔒 VENTAS CERRADAS · PREPARANDO EMISIÓN"
                   : config.ventasActivas
-                  ? "Evento Promocional Oficial Costa Rica"
+                  ? (config.heroBadgeEvento || "Evento Promocional Oficial Costa Rica")
                   : "🔥 PREVENTA EXCLUSIVA 2026"}
               </div>
 
@@ -601,20 +601,20 @@ function IndexPage() {
               {paquetes.length > 1 && (
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-bold text-amber-400 shadow-md">
                   <Flame className="size-3.5 text-amber-400" />
-                  <span>{`Más Popular: ${(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡${formatNumber((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000)}`}</span>
+                  <span>{config.heroBadgePopular || `Más Popular: ${(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡${formatNumber((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000)}`}</span>
                 </div>
               )}
 
               <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
                 <Crown className="size-3.5 text-amber-400" />
-                <span>{`SuperToken: Hasta +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash Extra`}</span>
+                <span>{config.heroBadgeSuperToken || `SuperToken: Hasta +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash Extra`}</span>
               </div>
 
               {/* Badge Mini-Sorteos Semanales Gasolina + Play */}
               {config.miniSorteosActivo !== false && (
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 bg-emerald-500/15 px-4 py-1.5 text-xs font-bold text-emerald-400 shadow-md">
                   <Fuel className="size-3.5 text-emerald-400" />
-                  <span>⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5</span>
+                  <span>{config.heroBadgeGasolina || "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5"}</span>
                 </div>
               )}
 
@@ -624,7 +624,7 @@ function IndexPage() {
                 className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-amber-500/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 shadow-md hover:bg-amber-500/25 transition-colors"
               >
                 <Store className="size-3.5 text-amber-400" />
-                <span>Descuentos en Comercios ↗</span>
+                <span>{config.heroBadgeComercios || "Descuentos en Comercios ↗"}</span>
               </Link>
             </div>
 
@@ -644,7 +644,7 @@ function IndexPage() {
                 : enCurso
                 ? "El sorteo oficial se encuentra en transmisión y verificación de números favorecidos. Consulta tus tokens en el validador."
                 : config.ventasActivas
-                ? "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales."
+                ? (config.heroSubtitulo || "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales.")
                 : config.promoSubtitulo || "Estamos afinando los últimos detalles. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!"}
             </p>
 
@@ -676,22 +676,22 @@ function IndexPage() {
 
                 {/* Botón flotante para indicar que se puede ampliar */}
                 <div className="absolute bottom-4 left-6 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <ZoomIn className="size-3.5 text-amber-400" /> Clic para ampliar en grande
+                  <ZoomIn className="size-3.5 text-amber-400" /> {config.vitrinaBotonAmpliar || "Clic para ampliar en grande"}
                 </div>
               </div>
 
               {/* Badges Flotantes de Lujo */}
               <div className="absolute -top-4 left-6 hidden sm:flex items-center gap-2 rounded-xl border border-primary/40 bg-card/90 px-4 py-2 text-xs font-bold text-foreground backdrop-blur shadow-lg pointer-events-none">
-                <Key className="size-4 text-primary" /> 0 Kilómetros · Año 2026
+                <Key className="size-4 text-primary" /> {config.vitrinaBadgeKm || "0 Kilómetros · Año 2026"}
               </div>
 
               <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg pointer-events-none">
                 <Crown className="size-4 text-amber-500" />
-                <span>{`Bono +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} con SuperToken`}</span>
+                <span>{config.vitrinaBadgeSuperToken || `Bono +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} con SuperToken`}</span>
               </div>
 
               <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg pointer-events-none">
-                <ShieldCheck className="size-4 text-success" /> Traspaso y Marchamo Incluidos
+                <ShieldCheck className="size-4 text-success" /> {config.vitrinaBadgeTraspaso || "Traspaso y Marchamo Incluidos"}
               </div>
             </div>
 
@@ -775,7 +775,7 @@ function IndexPage() {
                   <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
                 ) : config.ventasActivas ? (
                   <>
-                    🔥 ¡QUIERO PARTICIPAR AHORA!{" "}
+                    {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
                     <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                   </>
                 ) : (
@@ -785,20 +785,20 @@ function IndexPage() {
                 )}
               </Button>
               <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-base px-8 py-7">
-                <a href="#como-funciona">¿Cómo funciona? ↓</a>
+                <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
               </Button>
             </div>
 
             {/* Micro-prueba social */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-success" /> Pago Seguro SINPE y Tarjeta
+                <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-success" /> Entrega Formal ante Notario
+                <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
               </div>
             </div>
           </div>
@@ -809,13 +809,13 @@ function IndexPage() {
           <div className="mx-auto max-w-6xl px-5">
             <div className="text-center max-w-2xl mx-auto">
               <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                Proceso 100% Digital y Transparente
+                {config.pasosBadge || "Proceso 100% Digital y Transparente"}
               </span>
               <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-                Participa en 3 Simples Pasos
+                {config.pasosTitulo || "Participa en 3 Simples Pasos"}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo.
+                {config.pasosSubtitulo || "Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo."}
               </p>
             </div>
 
@@ -849,7 +849,7 @@ function IndexPage() {
 
             <div className="mt-12 text-center">
               <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
-                {config.ventasActivas ? "Comenzar y Elegir mis Tokens →" : "🔥 Consultar Preventa por WhatsApp →"}
+                {config.ventasActivas ? (config.pasosBotonCta || "Comenzar y Elegir mis Tokens →") : "🔥 Consultar Preventa por WhatsApp →"}
               </Button>
             </div>
           </div>
@@ -1249,7 +1249,7 @@ function IndexPage() {
               {cierrePrevio || enCurso
                 ? "🔒 Emisión en Proceso"
                 : config.ventasActivas
-                ? "Elige tu Paquete Digital"
+                ? (config.paquetesBadge || "Elige tu Paquete Digital")
                 : "🔥 Preventa Exclusiva de Tokens"}
             </span>
             <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
@@ -1258,7 +1258,7 @@ function IndexPage() {
                 : paquetes.length === 1
                 ? "Adquiere tus Tokens Digitales"
                 : config.ventasActivas
-                ? "Elige tu paquete de Tokens"
+                ? (config.paquetesTitulo || "Elige tu paquete de Tokens")
                 : "Paquetes Oficiales del Evento"}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -1269,7 +1269,7 @@ function IndexPage() {
                 : paquetes.length === 1
                 ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${formatNumber(paquetes[0]?.precio || 5000)}. Puedes generarlos al azar o elegir tus números favoritos.`
                 : config.ventasActivas
-                ? "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos."
+                ? (config.paquetesSubtitulo || "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos.")
                 : "La venta directa abrirá muy pronto. ¡Contáctanos por WhatsApp para apartar tus números antes del lanzamiento público!"}
             </p>
           </div>
@@ -1278,7 +1278,7 @@ function IndexPage() {
             {paquetes.map((p) => {
               const esUnico = paquetes.length === 1;
               const esPopular = p.popular || (sorteo.modalidadVenta === "multiplos_3" ? p.cantidad === 6 : p.cantidad === 8);
-              const tagTexto = p.tag || (sorteo.modalidadVenta === "multiplos_3" && p.cantidad === 6 ? "EL MEJOR · MÁS VENDIDO" : "Más popular");
+              const tagTexto = p.tag || (sorteo.modalidadVenta === "multiplos_3" && p.cantidad === 6 ? (config.paqueteTagBest || "EL MEJOR · MÁS VENDIDO") : (config.paqueteTagPopular || "Más popular"));
 
               return (
                 <button
@@ -1306,7 +1306,7 @@ function IndexPage() {
                     {p.cantidad}
                   </div>
                   <div className="text-xs sm:text-sm uppercase tracking-widest text-muted-foreground mt-1">
-                    Tokens Digitales Oficiales
+                    {config.paquetesTokensLabel || "Tokens Digitales Oficiales"}
                   </div>
                   <div className="mt-4 text-2xl sm:text-3xl font-bold text-foreground">
                     {`₡${formatNumber(p.precio)}`}
@@ -1320,7 +1320,7 @@ function IndexPage() {
                   <div className={`mt-5 inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold group-hover:translate-x-0.5 transition-transform ${
                     cierrePrevio || enCurso ? "text-amber-400" : "text-primary"
                   }`}>
-                    {cierrePrevio ? "🔒 Ventas cerradas (Consultar) →" : enCurso ? "🎯 Sorteo en curso (Validar) →" : config.ventasActivas ? "Adquirir ahora →" : "Apartar por WhatsApp →"}
+                    {cierrePrevio ? "🔒 Ventas cerradas (Consultar) →" : enCurso ? "🎯 Sorteo en curso (Validar) →" : config.ventasActivas ? (config.paquetesBotonComprar || "Adquirir ahora →") : "Apartar por WhatsApp →"}
                   </div>
                 </button>
               );

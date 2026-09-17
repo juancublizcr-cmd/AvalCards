@@ -16,6 +16,7 @@ import { Route as ComercioRouteImport } from './routes/comercio'
 import { Route as ImpactoSocialRouteImport } from './routes/impacto-social'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as PromoRouteImport } from './routes/promo'
 import { Route as ReembolsoRouteImport } from './routes/reembolso'
 import { Route as RematesRouteImport } from './routes/remates'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
@@ -57,6 +58,11 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
   path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PromoRoute = PromoRouteImport.update({
+  id: '/promo',
+  path: '/promo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReembolsoRoute = ReembolsoRouteImport.update({
   id: '/reembolso',
   path: '/reembolso',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
+  '/promo': typeof PromoRoute
   '/reembolso': typeof ReembolsoRoute
   '/remates': typeof RematesRoute
   '/sponsors': typeof SponsorsRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
+  '/promo': typeof PromoRoute
   '/reembolso': typeof ReembolsoRoute
   '/remates': typeof RematesRoute
   '/sponsors': typeof SponsorsRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/impacto-social': typeof ImpactoSocialRoute
   '/login': typeof LoginRoute
   '/privacidad': typeof PrivacidadRoute
+  '/promo': typeof PromoRoute
   '/reembolso': typeof ReembolsoRoute
   '/remates': typeof RematesRoute
   '/sponsors': typeof SponsorsRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/impacto-social'
     | '/login'
     | '/privacidad'
+    | '/promo'
     | '/reembolso'
     | '/remates'
     | '/sponsors'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/impacto-social'
     | '/login'
     | '/privacidad'
+    | '/promo'
     | '/reembolso'
     | '/remates'
     | '/sponsors'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/impacto-social'
     | '/login'
     | '/privacidad'
+    | '/promo'
     | '/reembolso'
     | '/remates'
     | '/sponsors'
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   ImpactoSocialRoute: typeof ImpactoSocialRoute
   LoginRoute: typeof LoginRoute
   PrivacidadRoute: typeof PrivacidadRoute
+  PromoRoute: typeof PromoRoute
   ReembolsoRoute: typeof ReembolsoRoute
   RematesRoute: typeof RematesRoute
   SponsorsRoute: typeof SponsorsRoute
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/promo': {
+      id: '/promo'
+      path: '/promo'
+      fullPath: '/promo'
+      preLoaderRoute: typeof PromoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reembolso': {
       id: '/reembolso'
       path: '/reembolso'
@@ -283,6 +303,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpactoSocialRoute: ImpactoSocialRoute,
   LoginRoute: LoginRoute,
   PrivacidadRoute: PrivacidadRoute,
+  PromoRoute: PromoRoute,
   ReembolsoRoute: ReembolsoRoute,
   RematesRoute: RematesRoute,
   SponsorsRoute: SponsorsRoute,

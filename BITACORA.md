@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 10 de Septiembre de 2026 - 8:26 PM (Hito 28: Estandarización de Niveles de Premios, Dinámica de Premiación Configurable, Persistencia de Premios Inactivos en Supabase y Erradicación del Flash en Recarga)  
+**Última actualización:** 16 de Septiembre de 2026 - 11:15 PM (Hito 29: Integración de Comprobantes Electrónicos v4.4 con Hacienda, Descarga de XML Firmado y Acuse MensajeHacienda en Checkout, y Acceso Rápido a FacturaOS)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -508,3 +508,20 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
      - Comparación de firmas en el `useEffect` para impedir re-renderizados innecesarios.
    - **Verificación**: Validación directa del HTML emitido por el servidor: entrega directamente **"Tres Entregas Espectaculares"** con cuadrícula de 3 columnas (`md:grid-cols-3`) y regla oficial limpia desde el primer frame, sin saltos visuales ni parpadeos.
 
+---
+
+## 🚀 Hito 29: Integración de Comprobantes Electrónicos v4.4 con Hacienda, Descarga de XML Firmado y Acuse MensajeHacienda en Checkout, y Acceso Rápido a FacturaOS
+
+1. **Emisión Dual Automática de Comprobantes en Pasarela (`/checkout`):**
+   - Integración nativa con la API de facturación electrónica bajo normativa v4.4 del Ministerio de Hacienda.
+   - **Tiquete Electrónico (Tipo 04) por Defecto**: Al adquirir tokens de rifa o recargas, el sistema genera de forma transparente un Tiquete Electrónico simplificado sin exigir datos tributarios engorrosos al comprador regular.
+   - **Factura Electrónica (Tipo 01) a Solicitud**: Selector opcional para clientes corporativos o contribuyentes que requieran deducir gastos. Solicita tipo/número de identificación y razón social para emitir la factura formal con receptor registrado.
+
+2. **Acciones de Descarga Independientes en la Pantalla de Confirmación (`/checkout`):**
+   - Reemplazo del botón único por una botonera triple con separación clara de artefactos legales:
+     - 📄 **Descargar PDF**: Representación gráfica oficial del comprobante emitido con resolución vigente **`MH-DGT-RES-0027-2024`**.
+     - 💾 **Comprobante (.xml)**: Archivo XML firmado v4.4 (`TiqueteElectronico` o `FacturaElectronica`) con firma digital XAdES-EPES emitida por AvalCar Centro de Servicio Automotriz S.A.
+     - ✅ **Acuse Hacienda (.xml)**: Archivo XML oficial `MensajeHacienda.xml` emitido por el Ministerio de Hacienda confirmando el estado **Aceptado** y su validez legal y tributaria.
+
+3. **Acceso Administrativo Directo en Barra Lateral (`AdminSidebar.tsx`):**
+   - Incorporación del acceso directo **"🧾 FacturaOS / Hacienda"** en el panel administrativo de AvalCar para auditar el historial de comprobantes, expedientes y anulaciones sin salir del entorno de control.

@@ -146,6 +146,26 @@ export function ConfigSection({
         </p>
       </div>
 
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+            <SlidersHorizontal className="size-5" />
+          </span>
+          <div>
+            <div className="text-sm font-bold text-foreground">¿Deseas personalizar textos, badges y botones web?</div>
+            <p className="text-xs text-muted-foreground">
+              Hemos organizado una sección dedicada sección por sección para cambiar todos los banners, títulos, vitrinas y botones de la página de inicio.
+            </p>
+          </div>
+        </div>
+        <a
+          href="/admin?seccion=disenoWeb"
+          className="shrink-0 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow hover:bg-primary/90 transition-colors"
+        >
+          Ir a Textos y Botones Web →
+        </a>
+      </div>
+
       {/* 1. CONFIGURACIÓN GENERAL */}
       <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2.5 font-bold text-base border-b border-border pb-3">

@@ -34,6 +34,7 @@ import { ReglamentoNotarialSection } from "@/components/admin/ReglamentoNotarial
 import { ImpactoSocialSection } from "@/components/admin/ImpactoSocialSection";
 import { SponsorsSection } from "@/components/admin/SponsorsSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
+import { DisenoWebSection } from "@/components/admin/DisenoWebSection";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -276,6 +277,7 @@ function Admin() {
               ) : null}
               {seccion === "social" ? <ImpactoSocialSection /> : null}
               {seccion === "sponsors" ? <SponsorsSection /> : null}
+              {seccion === "disenoWeb" ? <DisenoWebSection config={config} setConfig={setConfig} /> : null}
               {seccion === "config" ? <ConfigSection config={config} setConfig={setConfig} /> : null}
             </>
           )}
