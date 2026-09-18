@@ -37,6 +37,7 @@ import {
 import { upsertConfig, type Config } from "@/lib/admin-store";
 import { probarConexionIA } from "@/lib/ai-service";
 import { formatearHora12 } from "@/lib/fecha-utils";
+import { FacturaOSConfigCard } from "@/components/FacturaOSConfigCard";
 
 export function ConfigSection({
   config,
@@ -165,6 +166,9 @@ export function ConfigSection({
           Ir a Textos y Botones Web →
         </a>
       </div>
+
+      {/* FACTURACIÓN ELECTRÓNICA FACTURAOS */}
+      <FacturaOSConfigCard />
 
       {/* 1. CONFIGURACIÓN GENERAL */}
       <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
