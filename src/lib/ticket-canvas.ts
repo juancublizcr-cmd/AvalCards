@@ -199,7 +199,7 @@ export async function descargarTiqueteImagen(orden: Orden, premioMayor = "1° Lu
 
   ctx.fillStyle = "#71717a";
   ctx.font = "16px sans-serif, Arial";
-  ctx.fillText("Operado por Importadora Luxury Scents LTDA · Costa Rica", width / 2, footerY + 40);
+  ctx.fillText("Operado por LUXX CR CAR WASH · Costa Rica", width / 2, footerY + 40);
   ctx.fillText("Valida este tiquete en cualquier momento en: https://www.avalcommunity.com/validar", width / 2, footerY + 70);
 
   // Convertir canvas a Blob y forzar descarga

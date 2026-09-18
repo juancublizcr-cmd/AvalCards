@@ -26,7 +26,7 @@ export const RESPUESTA_SOLO_VENTAS =
 export function obtenerRespuestaFallback(consulta: string, config: Config): string {
   const q = consulta.toLowerCase();
   const telSinpe = config.telefonoSinpe || "8634-4772";
-  const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA.";
+  const razonSocial = config.razonSocial || "LUXX CR CAR WASH";
   const promoWa = config.promoWhatsapp || "50686344772";
 
   const superMoneda = config.supertokenMoneda || ((config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "USD");
@@ -461,7 +461,7 @@ export async function enviarMensajeIA(
   }
 
   const telSinpe = config.telefonoSinpe || "8634-4772";
-  const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA.";
+  const razonSocial = config.razonSocial || "LUXX CR CAR WASH";
   const promoWa = config.promoWhatsapp || "50686344772";
 
   const promptBase = config.aiSystemPrompt || "Eres Aval-IA, el Vendedor Estrella y Asesor Comercial Oficial de Aval Community CR.";

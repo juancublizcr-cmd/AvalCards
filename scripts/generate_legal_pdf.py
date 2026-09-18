@@ -34,7 +34,7 @@ class NumberedCanvas(canvas.Canvas):
         # Header (pages > 1)
         if self._pageNumber > 1:
             self.drawString(54, 750, "AVAL COMMUNITY CR · ESTRUCTURA LEGAL, TRIBUTARIA Y COMERCIAL")
-            self.drawRightString(612 - 54, 750, "IMPORTADORA LUXURY SCENTS LTDA")
+            self.drawRightString(612 - 54, 750, "LUXX CR CAR WASH")
             self.setStrokeColor(colors.HexColor("#e4e4e7"))
             self.setLineWidth(0.5)
             self.line(54, 742, 612 - 54, 742)
@@ -161,7 +161,7 @@ def build_pdf():
     # Title & Metadata
     story.append(Paragraph("⚖️ MARCO LEGAL, TRIBUTARIO Y ESTRATEGIA COMERCIAL", title_style))
     story.append(Paragraph("AVAL COMMUNITY CR · PLATAFORMA DIGITAL DE PREMIOS Y PROMOCIONES", subtitle_style))
-    story.append(Paragraph("<b>Operada por:</b> Importadora Luxury Scents LTDA &nbsp;|&nbsp; <b>Jurisdicción:</b> República de Costa Rica &nbsp;|&nbsp; <b>Fecha:</b> Agosto 2026", meta_style))
+    story.append(Paragraph("<b>Operada por:</b> LUXX CR CAR WASH &nbsp;|&nbsp; <b>Jurisdicción:</b> República de Costa Rica &nbsp;|&nbsp; <b>Fecha:</b> Agosto 2026", meta_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=primary_color, spaceBefore=0, spaceAfter=14))
 
     # 1. Resumen Ejecutivo
@@ -213,7 +213,7 @@ def build_pdf():
     story.append(Paragraph("3. ¿Qué es exactamente el 'Token' y qué adquiere el cliente?", h1_style))
     story.append(Paragraph("<b>A. Producto Comercial Adquirido por el Consumidor:</b>", h2_style))
     story.append(Paragraph(
-        "El cliente realiza su pago comercial por la adquisición de una <b>Membresía Digital / Cuponera de Beneficios Aval Community</b> emitida por Importadora Luxury Scents LTDA, la cual le otorga descuentos exclusivos en comercios automotrices aliados (autolavados, lubricentros, repuestos, accesorios) y catálogo de perfumería.",
+        "El cliente realiza su pago comercial por la adquisición de una <b>Membresía Digital / Cuponera de Beneficios Aval Community</b> emitida por LUXX CR CAR WASH, la cual le otorga descuentos exclusivos en comercios automotrices aliados (autolavados, lubricentros, repuestos, accesorios) y catálogo de perfumería.",
         body_style
     ))
     story.append(Paragraph("<b>B. Naturaleza Jurídica del Token:</b>", h2_style))

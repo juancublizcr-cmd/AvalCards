@@ -49,7 +49,7 @@ export function ReglamentoNotarialSection({
   const [textoPrivacidad, setTextoPrivacidad] = useState("");
   const [textoReembolso, setTextoReembolso] = useState("");
 
-  const razonSocial = config.razonSocial || "Importadora Luxury Scents LTDA.";
+  const razonSocial = config.razonSocial || "LUXX CR CAR WASH";
   const fechaSorteo = sorteo.fecha || "27 de septiembre de 2026";
   const premioNombre = sorteo.titulo || "Moto de Alta Cilindrada";
   const telSinpe = config.telefonoSinpe || "8634-4772";

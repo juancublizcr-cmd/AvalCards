@@ -1,6 +1,6 @@
 # ⚖️ MARCO LEGAL, TRIBUTARIO Y ESTRATEGIA COMERCIAL
 ## Aval Community CR · Plataforma Digital de Promociones Comerciales
-**Operada por:** Importadora Luxury Scents LTDA  
+**Operada por:** LUXX CR CAR WASH  
 **Jurisdicción:** República de Costa Rica  
 **Fecha de Emisión:** Agosto 2026  
 
@@ -44,7 +44,7 @@ El derecho mercantil y la Ley de Defensa del Consumidor amparan el derecho de cu
 Para blindar el negocio ante el consumidor, entidades bancarias y autoridades regulatorias, se define formalmente:
 
 ### A. Producto Comercial Adquirido
-El consumidor realiza el pago comercial por alguno de los siguientes conceptos comerciales emitidos por **Importadora Luxury Scents LTDA**:
+El consumidor realiza el pago comercial por alguno de los siguientes conceptos comerciales emitidos por **LUXX CR CAR WASH**:
 * **Membresía / Club Digital de Descuentos Aval Community:** Acceso exclusivo a promociones, cuponeras de descuento en talleres mecánicos, autolavados, repuestos, perfumería y comercios aliados.
 * **Vales de Compra Canjeables (Gift Cards):** Bonos aplicables a productos físicos, aromatizantes premium de vehículos y fragancias de la importadora.
 * **Pase de Acceso a Entretenimiento Digital:** Licencia de uso de la plataforma digital, juegos interactivos de destreza y herramientas de la comunidad.

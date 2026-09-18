@@ -107,4 +107,4 @@ En lugar de tener una sola casilla de peso `80`, puedes colocar **4 frases difer
 4. Presiona el botón naranja **`Guardar Cambios`**. El sorteador se actualiza en el acto en toda la plataforma.
 
 ---
-*Aval Community CR · Importadora Luxury Scents LTDA · Documento Confidencial de Operación Interna 2026*
+*Aval Community CR · LUXX CR CAR WASH · Documento Confidencial de Operación Interna 2026*

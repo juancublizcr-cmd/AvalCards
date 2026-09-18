@@ -208,7 +208,7 @@ export async function generarImagenHistoria(data: StoryData): Promise<string> {
 
   ctx.fillStyle = "#71717a";
   ctx.font = "500 19px sans-serif";
-  ctx.fillText("Aval Community CR · Importadora Luxury Scents LTDA", 540, c3Y + 360);
+  ctx.fillText("Aval Community CR · LUXX CR CAR WASH", 540, c3Y + 360);
 
   return canvas.toDataURL("image/png");
 }

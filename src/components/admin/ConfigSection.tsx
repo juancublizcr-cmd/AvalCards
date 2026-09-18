@@ -464,7 +464,7 @@ export function ConfigSection({
             <Input
               value={borrador.razonSocial}
               onChange={(e) => setBorrador({ ...borrador, razonSocial: e.target.value })}
-              placeholder="Importadora Luxury Scents LTDA."
+              placeholder="LUXX CR CAR WASH"
             />
           </div>
         </div>

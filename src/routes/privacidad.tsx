@@ -55,7 +55,7 @@ function PrivacidadPage() {
             Políticas de Privacidad
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responsable del Tratamiento: {config.razonSocial || "Importadora Luxury Scents LTDA."} (Aval Community CR)
+            Responsable del Tratamiento: {config.razonSocial || "LUXX CR CAR WASH"} (Aval Community CR)
           </p>
         </div>
 
@@ -81,7 +81,7 @@ function PrivacidadPage() {
 
             <h2 className="text-lg font-bold text-foreground pt-4">3. Confidencialidad y No Divulgación</h2>
             <p>
-              Aval Community CR y <strong>{config.razonSocial || "Importadora Luxury Scents LTDA."}</strong> garantizan que tus datos personales <strong>nunca</strong> serán vendidos, cedidos, transferidos ni compartidos con empresas externas o terceras partes para fines publicitarios.
+              Aval Community CR y <strong>{config.razonSocial || "LUXX CR CAR WASH"}</strong> garantizan que tus datos personales <strong>nunca</strong> serán vendidos, cedidos, transferidos ni compartidos con empresas externas o terceras partes para fines publicitarios.
             </p>
 
             <h2 className="text-lg font-bold text-foreground pt-4">4. Seguridad del Almacenamiento</h2>
@@ -98,7 +98,7 @@ function PrivacidadPage() {
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA.
+        © {new Date().getFullYear()} Aval Community CR · LUXX CR CAR WASH
       </footer>
     </div>
   );

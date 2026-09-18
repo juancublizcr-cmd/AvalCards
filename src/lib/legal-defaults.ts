@@ -1,5 +1,5 @@
 export function getDefaultMinutaNotarial(razonSocial: string, premioNombre: string, fechaSorteo: string): string {
-  const razonUpper = (razonSocial || "Importadora Luxury Scents LTDA.").toUpperCase();
+  const razonUpper = (razonSocial || "LUXX CR CAR WASH").toUpperCase();
   return `================================================================================
 ESCRITURA NÚMERO CIENTO OCHENTA Y CUATRO (184).- PROTOCOLIZACIÓN DE REGLAMENTO OFICIAL DE PROMOCIÓN COMERCIAL PRIVADA "AVAL COMMUNITY CR".-
 ================================================================================
@@ -59,7 +59,7 @@ Notario Público - Carné Colegio de Abogados: [N° DE CARNÉ]
 }
 
 export function getDefaultTerminos(razonSocial: string, telSinpe: string): string {
-  const razon = razonSocial || "Importadora Luxury Scents LTDA.";
+  const razon = razonSocial || "LUXX CR CAR WASH";
   const tel = telSinpe || "8634-4772";
   return `### 1. Evento Promocional 100% Transparente y Legal
 El presente evento constituye una **promoción comercial privada** organizada de conformidad con la **Ley N° 7472 (Ley de Promoción de la Competencia y Defensa Efectiva del Consumidor de Costa Rica)** y el Código de Comercio. La adquisición de productos o servicios comerciales de la empresa otorga al consumidor códigos promocionales de cortesía (Tokens) para participar en las dinámicas oficiales.
@@ -96,7 +96,7 @@ Toda modificación o mejora entrará en vigencia y surtirá plenos efectos legal
 }
 
 export function getDefaultPrivacidad(razonSocial: string): string {
-  const razon = razonSocial || "Importadora Luxury Scents LTDA.";
+  const razon = razonSocial || "LUXX CR CAR WASH";
   return `### 1. Recopilación de Información
 Para procesar tu participación y asignación de tokens digitales en nuestros eventos promocionales, recopilamos únicamente los datos indispensables de contacto: nombre completo, número de teléfono celular, correo electrónico y la captura del comprobante de pago por SINPE Móvil o pasarelas de pago.
 
@@ -118,7 +118,7 @@ Con el propósito de mantener los más altos estándares de ciberseguridad, inco
 }
 
 export function getDefaultReembolso(razonSocial: string, telWhatsapp: string): string {
-  const razon = razonSocial || "Importadora Luxury Scents LTDA.";
+  const razon = razonSocial || "LUXX CR CAR WASH";
   const tel = telWhatsapp || "8634-4772";
   return `### 1. Casos en que Aplica Reembolso
 En **Aval Community CR** (${razon}) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:

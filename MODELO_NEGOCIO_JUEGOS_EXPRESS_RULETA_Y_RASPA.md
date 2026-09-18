@@ -87,4 +87,4 @@ Suponiendo 1,000 jugadas a ₡1,000 (₡1,000,000 de recaudación bruta):
 
 ---
 
-*Documento confidencial para la administración de Aval Community CR e Importadora Luxury Scents LTDA.*
+*Documento confidencial para la administración de Aval Community CR e LUXX CR CAR WASH*

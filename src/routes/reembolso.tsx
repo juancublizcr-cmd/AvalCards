@@ -12,7 +12,7 @@ export const Route = createFileRoute("/reembolso")({
       {
         name: "description",
         content:
-          "Políticas de reembolso, reversión de pagos y cancelaciones de Aval Community CR e Importadora Luxury Scents LTDA.",
+          "Políticas de reembolso, reversión de pagos y cancelaciones de Aval Community CR e LUXX CR CAR WASH",
       },
     ],
   }),
@@ -63,7 +63,7 @@ function ReembolsoPage() {
             Política de Reembolsos y Devoluciones
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responsable: {config.razonSocial || "Importadora Luxury Scents LTDA."} · Compromiso de transparencia y protección al consumidor
+            Responsable: {config.razonSocial || "LUXX CR CAR WASH"} · Compromiso de transparencia y protección al consumidor
           </p>
         </div>
 
@@ -76,7 +76,7 @@ function ReembolsoPage() {
                 <ShieldCheck className="size-5 text-primary" /> 1. Casos en que Aplica Reembolso
               </h2>
               <p className="mt-2">
-                En <strong>Aval Community CR</strong> ({config.razonSocial || "Importadora Luxury Scents LTDA."}) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
+                En <strong>Aval Community CR</strong> ({config.razonSocial || "LUXX CR CAR WASH"}) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
               </p>
               <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
                 <li>
@@ -146,7 +146,7 @@ function ReembolsoPage() {
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA.
+        © {new Date().getFullYear()} Aval Community CR · LUXX CR CAR WASH
       </footer>
     </div>
   );

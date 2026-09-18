@@ -122,7 +122,7 @@ function TerminosPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">Titular Oficial de la Cuenta:</span>
-                  <p className="font-semibold text-foreground">{config.razonSocial || "Importadora Luxury Scents LTDA."}</p>
+                  <p className="font-semibold text-foreground">{config.razonSocial || "LUXX CR CAR WASH"}</p>
                 </div>
               </div>
 
@@ -239,7 +239,7 @@ function TerminosPage() {
               </div>
               <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 <p>
-                  <strong>{config.razonSocial || "Importadora Luxury Scents LTDA."}</strong> se reserva la facultad de actualizar, complementar, modificar o perfeccionar en cualquier momento las presentes bases, dinámicas promocionales, catálogo de premios e incentivos de la plataforma, siempre que dichas modificaciones tengan como objetivo <strong>mejorar la experiencia del usuario, incrementar los beneficios comerciales de los participantes o responder a las necesidades colectivas de la comunidad</strong>.
+                  <strong>{config.razonSocial || "LUXX CR CAR WASH"}</strong> se reserva la facultad de actualizar, complementar, modificar o perfeccionar en cualquier momento las presentes bases, dinámicas promocionales, catálogo de premios e incentivos de la plataforma, siempre que dichas modificaciones tengan como objetivo <strong>mejorar la experiencia del usuario, incrementar los beneficios comerciales de los participantes o responder a las necesidades colectivas de la comunidad</strong>.
                 </p>
                 <p className="text-xs">
                   Toda modificación o mejora entrará en vigencia y surtirá plenos efectos legales a partir de su publicación oficial en este sitio web. La participación continuada del usuario constituirá su plena aceptación de las condiciones optimizadas.
@@ -251,7 +251,7 @@ function TerminosPage() {
       </main>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA. · Todos los derechos reservados.
+        © {new Date().getFullYear()} Aval Community CR · LUXX CR CAR WASH · Todos los derechos reservados.
       </footer>
     </div>
   );

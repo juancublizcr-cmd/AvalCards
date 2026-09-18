@@ -858,7 +858,7 @@ export function EscrutinioSection({
                   Acta Notarial de Escrutinio y Adjudicación Oficial de Premios
                 </h1>
                 <p className="text-xs text-muted-foreground font-medium">
-                  {config.razonSocial || "Importadora Luxury Scents LTDA."} · Aval Community CR
+                  {config.razonSocial || "LUXX CR CAR WASH"} · Aval Community CR
                 </p>
                 <p className="text-[11px] text-muted-foreground">
                   Fecha y Hora de Emisión: {new Date().toLocaleString("es-CR", { dateStyle: "full", timeStyle: "medium" })}
@@ -869,7 +869,7 @@ export function EscrutinioSection({
               <p className="text-justify">
                 En la ciudad de San José, República de Costa Rica, a las horas del día de hoy, el suscrito Notario
                 Público con carné oficial debidamente habilitado, da fe de haber presenciado el cruce y escrutinio
-                oficial del evento promocional realizado por <strong>{config.razonSocial || "Importadora Luxury Scents LTDA."}</strong>,
+                oficial del evento promocional realizado por <strong>{config.razonSocial || "LUXX CR CAR WASH"}</strong>,
                 confrontando los resultados emitidos por la tómbola oficial de la Lotería Nacional de la Junta de
                 Protección Social (JPS) contra la base de datos de tokens asignados a los participantes:
               </p>

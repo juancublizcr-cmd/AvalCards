@@ -174,7 +174,7 @@ export function FlyerPromocional({
 
       {/* 3. Footer Minimalista */}
       <footer className="relative z-10 border-t border-white/10 py-4 text-center text-xs text-zinc-500">
-        <p>© {new Date().getFullYear()} Aval Community CR · Importadora Luxury Scents LTDA. · Costa Rica</p>
+        <p>© {new Date().getFullYear()} Aval Community CR · LUXX CR CAR WASH · Costa Rica</p>
       </footer>
     </div>
   );

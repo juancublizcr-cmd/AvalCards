@@ -334,7 +334,7 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Desvío cordial automático que aclara que su función es 100% comercial y redirige de inmediato a las opciones de compra de tokens.
 
 3. **Enciclopedia y Dominio Total de la Plataforma (LLM y Motor Offline):**
-   - **6 Métodos de Pago**: SINPE Móvil Oficial al `8634-4772` (Importadora Luxury Scents LTDA.), Tarjetas Débito/Crédito TiloPay con aprobación instantánea automática, Apple Pay, Google Pay, PayPal y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay).
+   - **6 Métodos de Pago**: SINPE Móvil Oficial al `8634-4772` (LUXX CR CAR WASH), Tarjetas Débito/Crédito TiloPay con aprobación instantánea automática, Apple Pay, Google Pay, PayPal y Criptomonedas (USDT redes TRC20/BEP20 o Binance Pay).
    - **Lotes de Tickets**: 4 Tokens (₡4,000), 8 Tokens (₡8,000 - Más Popular), 12 Tokens (₡12,000) y 24 Tokens (₡24,000 VIP) con selección libre de combinaciones de 5 dígitos (00000 al 99999) o generadas al azar.
    - **SuperToken ($6,000 USD Cash Extra)**: Multiplicador opcional por ₡1,500 en Checkout que otorga $6,000 USD en efectivo adicionales si el participante gana el 1° lugar.
    - **Premios Oficiales**: Toyota Prado 2026 0KM full extras 4x4 (traspaso notarial y marchamo 100% pagos por la empresa), Moto Yamaha MT 0KM, PlayStation 5 o ₡1,000,000 SINPE, y juegos express con premios instantáneos de hasta ₡100,000.
