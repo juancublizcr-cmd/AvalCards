@@ -1252,7 +1252,7 @@ function Checkout() {
               />
               <div className="text-xs">
                 <span className="font-semibold text-foreground">
-                  ¿Requieres Factura Electrónica con Cédula para tu empresa?
+                  ¿Requieres Factura Electrónica?
                 </span>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   Por defecto emitimos un <strong>Tiquete Electrónico (04)</strong> para compra rápida. Marca si necesitas deducir gastos.
