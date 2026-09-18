@@ -21,6 +21,8 @@ import {
   Store,
   Ticket,
   Timer,
+  Users,
+  Percent,
   ZoomIn,
   MessageCircle,
 } from "lucide-react";
@@ -496,6 +498,22 @@ function IndexPage() {
               className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 font-bold"
             >
               <a href="#detalle-premios">Premios</a>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
+            >
+              <Link to="/referidos">Referidos</Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
+            >
+              <Link to="/sponsors">Comercios</Link>
             </Button>
             <Button
               variant="ghost"
@@ -1348,14 +1366,59 @@ function IndexPage() {
           </div>
         )}
 
-        {/* PROGRAMA DE REFERIDOS Y AMIGOS INVITADOS UNIFICADO (TODO EN UN SOLO MÓDULO) */}
-        {config.mostrarSeccionReferidos !== false && config.referidosActivo !== false && (
-          <ProgramaReferidosUnificado config={config} />
-        )}
+        {/* ACCESOS SEPARADOS: REFERIDOS Y COMERCIOS ALIADOS (MODO LIMPIO Y LIGERO) */}
+        {(config.mostrarSeccionReferidos !== false || config.mostrarSeccionSponsors !== false) && (
+          <section className="py-12 mx-auto max-w-6xl px-5">
+            <div className="grid sm:grid-cols-2 gap-5">
+              {/* Tarjeta Enlace: Programa de Referidos */}
+              {config.mostrarSeccionReferidos !== false && config.referidosActivo !== false && (
+                <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-b from-card via-card to-amber-500/5 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-amber-500 transition-all group">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-amber-600 dark:text-amber-400">
+                      <Users className="size-3.5" /> GANA EN EFECTIVO
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                      Programa de Referidos & Amigos Invitados
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                      Gana hasta <strong>{config.referidosPremioPrimero || "₡4,000,000"} en efectivo</strong> si tu recomendado resulta favorecido. Obtén tu enlace personal de padrino y participa en la tabla de líderes mensual.
+                    </p>
+                  </div>
+                  <div className="pt-6">
+                    <Button asChild variant="outline" className="w-full border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-bold group-hover:bg-amber-500 group-hover:text-black transition-all cursor-pointer">
+                      <Link to="/referidos">
+                        Conocer Programa de Referidos →
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              )}
 
-        {/* DESCUENTOS EN COMERCIOS AFILIADOS (SECCIÓN APARTE) */}
-        {config.mostrarSeccionSponsors !== false && (
-          <SponsorsLandingSection />
+              {/* Tarjeta Enlace: Comercios Aliados */}
+              {config.mostrarSeccionSponsors !== false && (
+                <div className="rounded-3xl border border-border bg-gradient-to-b from-card via-card to-secondary/30 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-emerald-500/60 transition-all group">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-emerald-600 dark:text-emerald-400">
+                      <Percent className="size-3.5" /> BENEFICIOS CON TU TOKEN
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                      Descuentos en Comercios Aliados
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                      Con tus mismos Tokens obtén <strong>descuentos de hasta 50%</strong> en talleres, autolavados, restaurantes, repuestos y tecnología en todo el país.
+                    </p>
+                  </div>
+                  <div className="pt-6">
+                    <Button asChild variant="outline" className="w-full border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 font-bold group-hover:bg-emerald-600 group-hover:text-white transition-all cursor-pointer">
+                      <Link to="/sponsors">
+                        Ver Catálogo de Comercios Aliados →
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
         )}
 
         {/* MINI-SORTEOS SEMANALES (ACTIVABLE DESDE ADMIN) */}

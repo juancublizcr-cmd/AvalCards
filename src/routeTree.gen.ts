@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as PromoRouteImport } from './routes/promo'
 import { Route as ReembolsoRouteImport } from './routes/reembolso'
+import { Route as ReferidosRouteImport } from './routes/referidos'
 import { Route as RematesRouteImport } from './routes/remates'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as TerminosRouteImport } from './routes/terminos'
@@ -68,6 +69,11 @@ const ReembolsoRoute = ReembolsoRouteImport.update({
   path: '/reembolso',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReferidosRoute = ReferidosRouteImport.update({
+  id: '/referidos',
+  path: '/referidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RematesRoute = RematesRouteImport.update({
   id: '/remates',
   path: '/remates',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/privacidad': typeof PrivacidadRoute
   '/promo': typeof PromoRoute
   '/reembolso': typeof ReembolsoRoute
+  '/referidos': typeof ReferidosRoute
   '/remates': typeof RematesRoute
   '/sponsors': typeof SponsorsRoute
   '/terminos': typeof TerminosRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/privacidad': typeof PrivacidadRoute
   '/promo': typeof PromoRoute
   '/reembolso': typeof ReembolsoRoute
+  '/referidos': typeof ReferidosRoute
   '/remates': typeof RematesRoute
   '/sponsors': typeof SponsorsRoute
   '/terminos': typeof TerminosRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/privacidad': typeof PrivacidadRoute
   '/promo': typeof PromoRoute
   '/reembolso': typeof ReembolsoRoute
+  '/referidos': typeof ReferidosRoute
   '/remates': typeof RematesRoute
   '/sponsors': typeof SponsorsRoute
   '/terminos': typeof TerminosRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/promo'
     | '/reembolso'
+    | '/referidos'
     | '/remates'
     | '/sponsors'
     | '/terminos'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/promo'
     | '/reembolso'
+    | '/referidos'
     | '/remates'
     | '/sponsors'
     | '/terminos'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/promo'
     | '/reembolso'
+    | '/referidos'
     | '/remates'
     | '/sponsors'
     | '/terminos'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   PrivacidadRoute: typeof PrivacidadRoute
   PromoRoute: typeof PromoRoute
   ReembolsoRoute: typeof ReembolsoRoute
+  ReferidosRoute: typeof ReferidosRoute
   RematesRoute: typeof RematesRoute
   SponsorsRoute: typeof SponsorsRoute
   TerminosRoute: typeof TerminosRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReembolsoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/referidos': {
+      id: '/referidos'
+      path: '/referidos'
+      fullPath: '/referidos'
+      preLoaderRoute: typeof ReferidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/remates': {
       id: '/remates'
       path: '/remates'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadRoute: PrivacidadRoute,
   PromoRoute: PromoRoute,
   ReembolsoRoute: ReembolsoRoute,
+  ReferidosRoute: ReferidosRoute,
   RematesRoute: RematesRoute,
   SponsorsRoute: SponsorsRoute,
   TerminosRoute: TerminosRoute,

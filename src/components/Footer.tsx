@@ -59,6 +59,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/referidos" className="dark:text-amber-400 text-amber-700 font-semibold hover:text-amber-600 dark:hover:text-amber-300 transition-colors">
+                🎁 Programa de Referidos
+              </Link>
+            </li>
+            <li>
               <Link to="/sponsors" className="dark:text-amber-400 text-amber-700 font-semibold hover:text-amber-600 dark:hover:text-amber-300 transition-colors">
                 🤝 Comercios & Descuentos
               </Link>
