@@ -37,8 +37,8 @@ export function SuperTokenSection({ config }: { config: Config }) {
 
       {/* Header */}
       <div className="relative z-10 text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-black tracking-widest uppercase text-amber-300 shadow-md">
-          <Crown className="size-4 text-amber-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-black tracking-widest uppercase dark:text-amber-300 text-amber-800 shadow-md">
+          <Crown className="size-4 text-amber-500 dark:text-amber-400 animate-pulse" />
           <span>MODALIDAD VIP · BONOS CASH EN {moneda === "CRC" ? "COLONES" : "DÓLARES"}</span>
         </div>
 
@@ -48,7 +48,7 @@ export function SuperTokenSection({ config }: { config: Config }) {
 
         <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
           ¿Quieres salir estrenando vehículo y con la bolsa llena de {nombreMoneda}? Por solo{" "}
-          <strong className="text-amber-400 font-bold">desde ₡{formatNumber(precio)} adicionales</strong> según el paquete que elijas (₡{formatNumber(precio)} en 3 tokens, ₡{formatNumber(precio * 2)} en 6 tokens, +₡{formatNumber(precio)} por cada 3 tokens), conviertes todos tus números en <strong className="text-foreground">SuperTokens</strong> y activas bonos en efectivo directo en {nombreMoneda} para los <strong className="text-amber-300">3 primeros lugares</strong>.
+          <strong className="text-amber-600 dark:text-amber-400 font-bold">desde ₡{formatNumber(precio)} adicionales</strong> según el paquete que elijas (₡{formatNumber(precio)} en 3 tokens, ₡{formatNumber(precio * 2)} en 6 tokens, +₡{formatNumber(precio)} por cada 3 tokens), conviertes todos tus números en <strong className="text-foreground">SuperTokens</strong> y activas bonos en efectivo directo en {nombreMoneda} para los <strong className="text-amber-700 dark:text-amber-300">3 primeros lugares</strong>.
         </p>
       </div>
 
@@ -65,10 +65,10 @@ export function SuperTokenSection({ config }: { config: Config }) {
               🥇
             </div>
             <div className="mt-4">
-              <span className="text-[11px] font-black uppercase tracking-wider text-amber-400">1° Lugar · Vehículo Mayor</span>
+              <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">1° Lugar · Vehículo Mayor</span>
               <h3 className="text-lg font-black text-foreground mt-0.5">Bono en Efectivo Cash</h3>
-              <div className="font-mono text-3xl sm:text-4xl font-black text-amber-400 mt-2 tracking-tight">
-                +{simbolo}{formatNumber(bono1)} <span className="text-base font-sans font-bold text-amber-300">{codigo}</span>
+              <div className="font-mono text-3xl sm:text-4xl font-black text-amber-600 dark:text-amber-400 mt-2 tracking-tight">
+                +{simbolo}{formatNumber(bono1)} <span className="text-base font-sans font-bold text-amber-700 dark:text-amber-300">{codigo}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2.5 leading-relaxed">
                 Entregado formalmente el día de la entrega notarial del vehículo 0KM. ¡Te vas manejando y platudo!
@@ -76,8 +76,8 @@ export function SuperTokenSection({ config }: { config: Config }) {
             </div>
           </div>
 
-          <div className="mt-5 pt-3 border-t border-amber-500/30 flex items-center gap-1.5 text-[11px] text-amber-300/90 font-medium">
-            <CheckCircle2 className="size-3.5 text-amber-400 shrink-0" />
+          <div className="mt-5 pt-3 border-t border-amber-500/30 flex items-center gap-1.5 text-[11px] text-amber-700 dark:text-amber-300/90 font-medium">
+            <CheckCircle2 className="size-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
             <span>Sumado a tu vehículo elegido 0KM</span>
           </div>
         </div>
@@ -89,10 +89,10 @@ export function SuperTokenSection({ config }: { config: Config }) {
               🥈
             </div>
             <div className="mt-4">
-              <span className="text-[11px] font-black uppercase tracking-wider text-sky-400">2° Lugar · Segundo Premio</span>
+              <span className="text-[11px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400">2° Lugar · Segundo Premio</span>
               <h3 className="text-lg font-black text-foreground mt-0.5">Bono en Efectivo Cash</h3>
-              <div className="font-mono text-3xl sm:text-4xl font-black text-sky-400 mt-2 tracking-tight">
-                +{simbolo}{formatNumber(bono2)} <span className="text-base font-sans font-bold text-sky-300">{codigo}</span>
+              <div className="font-mono text-3xl sm:text-4xl font-black text-sky-600 dark:text-sky-400 mt-2 tracking-tight">
+                +{simbolo}{formatNumber(bono2)} <span className="text-base font-sans font-bold text-sky-700 dark:text-sky-300">{codigo}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2.5 leading-relaxed">
                 Bono directo entregado formalmente al ganador del segundo lugar junto con el segundo vehículo o premio oficial.
@@ -100,8 +100,8 @@ export function SuperTokenSection({ config }: { config: Config }) {
             </div>
           </div>
 
-          <div className="mt-5 pt-3 border-t border-border/60 flex items-center gap-1.5 text-[11px] text-sky-300/90 font-medium">
-            <CheckCircle2 className="size-3.5 text-sky-400 shrink-0" />
+          <div className="mt-5 pt-3 border-t border-border/60 flex items-center gap-1.5 text-[11px] text-sky-700 dark:text-sky-300/90 font-medium">
+            <CheckCircle2 className="size-3.5 text-sky-500 dark:text-sky-400 shrink-0" />
             <span>Sumado al 2do vehículo / premio</span>
           </div>
         </div>
@@ -113,10 +113,10 @@ export function SuperTokenSection({ config }: { config: Config }) {
               🥉
             </div>
             <div className="mt-4">
-              <span className="text-[11px] font-black uppercase tracking-wider text-yellow-400">3° Lugar · Tercer Premio</span>
+              <span className="text-[11px] font-black uppercase tracking-wider text-amber-700 dark:text-yellow-400">3° Lugar · Tercer Premio</span>
               <h3 className="text-lg font-black text-foreground mt-0.5">Bono en Efectivo Cash</h3>
-              <div className="font-mono text-3xl sm:text-4xl font-black text-yellow-400 mt-2 tracking-tight">
-                +{simbolo}{formatNumber(bono3)} <span className="text-base font-sans font-bold text-yellow-300">{codigo}</span>
+              <div className="font-mono text-3xl sm:text-4xl font-black text-amber-600 dark:text-yellow-400 mt-2 tracking-tight">
+                +{simbolo}{formatNumber(bono3)} <span className="text-base font-sans font-bold text-amber-700 dark:text-yellow-300">{codigo}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-2.5 leading-relaxed">
                 Bono entregado formalmente que se agrega al tercer premio oficial de la edición para multiplicar tus ganancias.
@@ -124,17 +124,17 @@ export function SuperTokenSection({ config }: { config: Config }) {
             </div>
           </div>
 
-          <div className="mt-5 pt-3 border-t border-border/60 flex items-center gap-1.5 text-[11px] text-yellow-300/90 font-medium">
-            <CheckCircle2 className="size-3.5 text-yellow-400 shrink-0" />
+          <div className="mt-5 pt-3 border-t border-border/60 flex items-center gap-1.5 text-[11px] text-amber-700 dark:text-yellow-300/90 font-medium">
+            <CheckCircle2 className="size-3.5 text-amber-500 dark:text-yellow-400 shrink-0" />
             <span>Sumado al 3er premio de la edición</span>
           </div>
         </div>
       </div>
 
       {/* Banner de Activación y Botón */}
-      <div className="relative z-10 rounded-2xl border border-amber-500/40 bg-zinc-900/90 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+      <div className="relative z-10 rounded-2xl border dark:border-amber-500/40 border-amber-500/50 dark:bg-zinc-900/90 bg-white/95 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="flex items-start sm:items-center gap-3.5">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500 dark:text-amber-400 shrink-0">
             <Zap className="size-5" />
           </div>
           <div>
@@ -143,7 +143,7 @@ export function SuperTokenSection({ config }: { config: Config }) {
             </h4>
             <p className="text-xs text-muted-foreground mt-0.5">
               Al seleccionar cualquiera de tus paquetes, enciende el switch dorado de{" "}
-              <strong className="text-amber-400">
+              <strong className="text-amber-600 dark:text-amber-400">
                 SuperToken (+₡{formatNumber(precio)} cada 3 tokens: ₡{formatNumber(precio)}, ₡{formatNumber(precio * 2)}, ₡{formatNumber(precio * 3)}...)
               </strong>{" "}
               antes de confirmar tu orden.

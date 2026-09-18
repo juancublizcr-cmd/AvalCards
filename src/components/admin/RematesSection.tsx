@@ -246,6 +246,23 @@ export function RematesSection() {
         </div>
       </div>
 
+      {/* Banner Informativo: Oculto al Público para Foco en Tokens */}
+      <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-amber-400">
+            <AlertCircle className="size-4" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-amber-400">
+              Módulo Retirado de la Vista Pública (Foco Central en Compra de Tokens)
+            </h4>
+            <p className="mt-0.5 text-xs text-amber-200/80 leading-relaxed">
+              La Sala de Remates VIP ha sido retirada de la navegación pública y del pie de página para no confundir a los clientes con subastas. Toda la experiencia de los usuarios está concentrada en comprender y adquirir paquetes de tokens para los sorteos principales. Puedes gestionar la visibilidad desde <strong>Diseño Web &gt; Control de Secciones</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Tarjetas de Métricas VIP */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">

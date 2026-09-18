@@ -25,6 +25,7 @@ import {
 import {
   CATEGORIAS_SPONSOR_DEFAULT,
   CATEGORIAS_SPONSOR_LABELS,
+  SPONSORS_DEMO,
   fetchSponsors,
   fetchCategoriasSponsors,
   type ComercioSponsor,
@@ -32,7 +33,7 @@ import {
 } from "@/lib/sponsors-store";
 
 export function SponsorsLandingSection() {
-  const [sponsors, setSponsors] = useState<ComercioSponsor[]>([]);
+  const [sponsors, setSponsors] = useState<ComercioSponsor[]>(SPONSORS_DEMO);
   const [categorias, setCategorias] = useState<CategoriaItem[]>(CATEGORIAS_SPONSOR_DEFAULT);
   const [imagenGrande, setImagenGrande] = useState<{ url: string; titulo: string; categoria: string } | null>(null);
 
@@ -76,14 +77,15 @@ export function SponsorsLandingSection() {
   if (sponsors.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border-2 border-amber-500/40 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 p-6 sm:p-10 shadow-2xl space-y-8">
-      <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-amber-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-primary/10 blur-3xl" />
+    <section id="comercios-afiliados" className="py-16 md:py-20 mx-auto max-w-6xl px-5 scroll-mt-24">
+      <div className="relative overflow-hidden rounded-3xl border-2 border-amber-500/40 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 bg-gradient-to-b from-card via-secondary/20 to-card p-6 sm:p-10 shadow-2xl space-y-8">
+        <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-primary/10 blur-3xl" />
 
       {/* Header de la Sección */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/70 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/15 px-3.5 py-1 text-xs font-black tracking-wide text-amber-400">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/15 px-3.5 py-1 text-xs font-black tracking-wide text-amber-600 dark:text-amber-400">
             <Percent className="size-3.5" /> BENEFICIOS EXCLUSIVOS CON TU TOKEN
           </div>
           <h2 className="text-2xl sm:text-4xl font-black text-foreground mt-2">
@@ -165,10 +167,10 @@ export function SponsorsLandingSection() {
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-black text-base text-foreground group-hover:text-amber-400 transition-colors break-words leading-snug">
+                  <h3 className="font-black text-base text-foreground group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors break-words leading-snug">
                     {s.nombreComercio}
                   </h3>
-                  <div className="mt-1 inline-block rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-300">
+                  <div className="mt-1 inline-block rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-black text-amber-700 dark:text-amber-300">
                     {s.descuentoTexto}
                   </div>
                 </div>
@@ -186,7 +188,7 @@ export function SponsorsLandingSection() {
               {s.modalidadCanje === "cupon" ? (
                 <Link
                   to="/sponsors"
-                  className="text-amber-400 hover:underline font-bold flex items-center gap-1"
+                  className="text-amber-600 dark:text-amber-400 hover:underline font-bold flex items-center gap-1"
                 >
                   <Ticket className="size-3.5" /> Ver Cupón ↗
                 </Link>
@@ -201,7 +203,7 @@ export function SponsorsLandingSection() {
                   )}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-emerald-400 hover:underline font-bold flex items-center gap-1"
+                  className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1"
                 >
                   <MessageSquare className="size-3.5" /> Canjear ↗
                 </a>
@@ -212,20 +214,16 @@ export function SponsorsLandingSection() {
       </div>
 
       {/* Footer Banner de la Sección */}
-      <div className="rounded-2xl border border-border/80 bg-zinc-950 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-sm">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🏬</span>
           <div>
-            <span className="font-bold text-sm text-foreground block">
-              ¿Tienes un negocio o emprendimiento en Costa Rica?
-            </span>
-            <span className="text-xs text-muted-foreground">
-              Afíliate como Sponsor Oficial y promociona tus descuentos ante miles de clientes activos.
-            </span>
+            <h4 className="text-sm font-bold text-foreground">¿Tienes un comercio o negocio propio?</h4>
+            <p className="text-xs text-muted-foreground">Únete como patrocinador oficial y recibe clientes de la comunidad todos los días.</p>
           </div>
         </div>
 
-        <Button asChild size="sm" variant="outline" className="text-amber-400 border-amber-500/40 hover:bg-amber-500/10 text-xs shrink-0">
+        <Button asChild size="sm" variant="outline" className="dark:text-amber-400 text-amber-700 border-amber-500/40 hover:bg-amber-500/10 text-xs shrink-0">
           <Link to="/sponsors">
             Afiliar mi Comercio Gratis →
           </Link>
@@ -234,10 +232,10 @@ export function SponsorsLandingSection() {
 
       {/* MODAL LIGHTBOX DE IMAGEN EN GRANDE */}
       <Dialog open={!!imagenGrande} onOpenChange={(open) => !open && setImagenGrande(null)}>
-        <DialogContent className="max-w-2xl bg-zinc-950/95 border-amber-500/40 p-4 sm:p-6 text-foreground backdrop-blur-2xl shadow-2xl">
+        <DialogContent className="max-w-2xl dark:bg-zinc-950/95 bg-white/95 border dark:border-amber-500/40 border-amber-500/50 p-4 sm:p-6 text-foreground backdrop-blur-2xl shadow-2xl">
           <DialogHeader className="pb-3 border-b border-border/70">
             <div className="flex items-center gap-2">
-              <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[11px] font-bold text-amber-400">
+              <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[11px] font-bold dark:text-amber-400 text-amber-700">
                 {imagenGrande?.categoria}
               </span>
               <DialogTitle className="text-base sm:text-xl font-black text-foreground">
@@ -257,6 +255,7 @@ export function SponsorsLandingSection() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </section>
   );
 }

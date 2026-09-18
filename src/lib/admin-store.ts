@@ -262,6 +262,19 @@ export type Config = {
   paquetesBotonComprar?: string;
   paqueteTagPopular?: string;
   paqueteTagBest?: string;
+  // 6. Control de Secciones de la Landing (Poner / Quitar / Modificar)
+  mostrarSeccionAperturaPremios?: boolean;
+  mostrarSeccionTermometro?: boolean;
+  mostrarSeccionDetallePremios?: boolean;
+  mostrarSeccionComoFunciona?: boolean;
+  mostrarSeccionReferidos?: boolean;
+  mostrarSeccionSponsors?: boolean;
+  mostrarSeccionMiniSorteos?: boolean;
+  mostrarSeccionGanadores?: boolean;
+  mostrarSeccionFaqs?: boolean;
+  mostrarSalaRemates?: boolean;
+  heroTituloApertura?: string;
+  heroSubtituloApertura?: string;
 };
 
 export type ReferenteStat = {
@@ -498,7 +511,7 @@ export const CONFIG_DEFAULT: Config = {
   heroBadgeSuperToken: "",
   heroBadgeGasolina: "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5",
   heroBadgeComercios: "Descuentos en Comercios ↗",
-  heroSubtitulo: "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales.",
+  heroSubtitulo: "Plataforma costarricense de eventos promocionales digitales y sorteos de vehículos de alta gama, diseñada para brindar una experiencia 100% digital, transparente y con total respaldo legal.",
   heroBotonCta: "🔥 ¡QUIERO PARTICIPAR AHORA!",
   heroBotonSecundario: "¿Cómo funciona? ↓",
   heroMicroPrueba1: "Pago Seguro SINPE y Tarjeta",
@@ -546,6 +559,19 @@ export const CONFIG_DEFAULT: Config = {
   paquetesBotonComprar: "Adquirir ahora →",
   paqueteTagPopular: "Más popular",
   paqueteTagBest: "EL MEJOR · MÁS VENDIDO",
+  // 6. Control de Secciones de la Landing (Poner / Quitar / Modificar)
+  mostrarSeccionAperturaPremios: true,
+  mostrarSeccionTermometro: true,
+  mostrarSeccionDetallePremios: true,
+  mostrarSeccionComoFunciona: true,
+  mostrarSeccionReferidos: true,
+  mostrarSeccionSponsors: true,
+  mostrarSeccionMiniSorteos: false, // Fuera por ahora hasta que se entienda la dinámica principal
+  mostrarSeccionGanadores: false, // Fuera por ahora hasta que se entienda la dinámica principal
+  mostrarSeccionFaqs: true,
+  mostrarSalaRemates: false, // Fuera para no confundir a los usuarios sobre la compra de tokens
+  heroTituloApertura: "Tres Entregas Espectaculares",
+  heroSubtituloApertura: "Con cada paquete adquieres triple oportunidad según las combinaciones oficiales de la JPS.",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -1159,7 +1185,11 @@ export async function fetchConfig(): Promise<Config> {
       heroBadgeSuperToken: extra.heroBadgeSuperToken !== undefined ? extra.heroBadgeSuperToken : CONFIG_DEFAULT.heroBadgeSuperToken,
       heroBadgeGasolina: extra.heroBadgeGasolina !== undefined ? extra.heroBadgeGasolina : CONFIG_DEFAULT.heroBadgeGasolina,
       heroBadgeComercios: extra.heroBadgeComercios !== undefined ? extra.heroBadgeComercios : CONFIG_DEFAULT.heroBadgeComercios,
-      heroSubtitulo: extra.heroSubtitulo !== undefined ? extra.heroSubtitulo : CONFIG_DEFAULT.heroSubtitulo,
+      heroSubtitulo:
+        extra.heroSubtitulo !== undefined &&
+        !extra.heroSubtitulo.startsWith("La plataforma de eventos promocionales digitales más transparente")
+          ? extra.heroSubtitulo
+          : CONFIG_DEFAULT.heroSubtitulo,
       heroBotonCta: extra.heroBotonCta !== undefined ? extra.heroBotonCta : CONFIG_DEFAULT.heroBotonCta,
       heroBotonSecundario: extra.heroBotonSecundario !== undefined ? extra.heroBotonSecundario : CONFIG_DEFAULT.heroBotonSecundario,
       heroMicroPrueba1: extra.heroMicroPrueba1 !== undefined ? extra.heroMicroPrueba1 : CONFIG_DEFAULT.heroMicroPrueba1,

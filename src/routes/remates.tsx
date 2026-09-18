@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   Gavel,
@@ -40,11 +40,23 @@ import {
   type Remate,
   type Puja,
 } from "@/lib/remates-store";
+import { fetchConfig } from "@/lib/admin-store";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/remates")({
+  beforeLoad: async () => {
+    try {
+      const config = await fetchConfig();
+      if (!config.mostrarSalaRemates) {
+        throw redirect({ to: "/" });
+      }
+    } catch (err) {
+      if (err && typeof err === "object" && "to" in err) throw err;
+      throw redirect({ to: "/" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Sala de Remates VIP | Aval Community CR" },
@@ -103,6 +115,18 @@ function RematesPage() {
 
   const [modalEditar, setModalEditar] = useState(false);
   const [modalNuevo, setModalNuevo] = useState(false);
+
+  useEffect(() => {
+    fetchConfig()
+      .then((cfg) => {
+        if (!cfg.mostrarSalaRemates) {
+          window.location.replace("/");
+        }
+      })
+      .catch(() => {
+        window.location.replace("/");
+      });
+  }, []);
 
   // Formulario Editar
   const [editTitulo, setEditTitulo] = useState("");

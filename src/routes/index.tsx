@@ -19,8 +19,10 @@ import {
   Sparkles,
   Star,
   Store,
+  Ticket,
   Timer,
   ZoomIn,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,12 +38,13 @@ import { FaqSection } from "@/components/FaqSection";
 import { Footer } from "@/components/Footer";
 import { FlyerPromocional } from "@/components/FlyerPromocional";
 import { FomoNotifications } from "@/components/FomoNotifications";
-import { RankingReferidos } from "@/components/RankingReferidos";
-import { ReferidosLandingSection } from "@/components/ReferidosLandingSection";
+import { ProgramaReferidosUnificado } from "@/components/ProgramaReferidosUnificado";
 import { MiniSorteosSection } from "@/components/MiniSorteosSection";
 import { SponsorsLandingSection } from "@/components/SponsorsLandingSection";
 import { SuperTokenSection } from "@/components/SuperTokenSection";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import { PremioModal } from "@/components/PremioModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import carroImg from "@/assets/premio-carro.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
 import consolaImg from "@/assets/premio-consola.jpg";
@@ -276,6 +279,8 @@ function IndexPage() {
   });
   const [openRaspa, setOpenRaspa] = useState(false);
   const [fotoZoom, setFotoZoom] = useState<{ url: string; titulo: string; nivel?: string } | null>(null);
+  const [premioModal, setPremioModal] = useState<Premio | null>(null);
+  const [premioDetalleIdx, setPremioDetalleIdx] = useState<number>(0);
 
   const superMoneda = config.supertokenMoneda || (Number(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "CRC");
   const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
@@ -475,62 +480,37 @@ function IndexPage() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setOpenRaspa(true)}
-                className="hidden md:inline-flex h-8 px-3 text-xs border-amber-500/60 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold gap-1.5"
-              >
-                {sorteo.raspaConfig?.modo === "ruleta" ? (
-                  <>
-                    <span className="text-sm">🎡</span> Ruleta de la Fortuna
-                  </>
-                ) : sorteo.raspaConfig?.modo === "ambos" ? (
-                  <>
-                    <Sparkles className="size-3.5 text-amber-400" /> Raspa y Ruleta
-                  </>
-                ) : (
-                  <>
-                    <Gift className="size-3.5 text-amber-400" /> Raspa y Gana
-                  </>
-                )}
-              </Button>
-            )}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Button
               variant="ghost"
               size="sm"
               asChild
-              className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 font-semibold"
+              className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
             >
-              <Link to="/remates">
-                <span className="mr-1">🏷️</span> Remates VIP
-              </Link>
+              <a href="#como-funciona">¿Cómo funciona?</a>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               asChild
-              className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 font-bold"
+              className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 font-bold"
             >
-              <Link to="/sponsors">
-                <Store className="size-3.5 mr-1 text-amber-400" /> Descuentos
-              </Link>
+              <a href="#detalle-premios">Premios</a>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               asChild
-              className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-neutral-300 hover:text-white"
+              className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
             >
               <Link to="/validar">Validar Tokens</Link>
             </Button>
+            <ThemeToggle compact />
             <Button
               variant="hero"
               size="sm"
               onClick={irAPaquetes}
-              className={`h-8 px-3 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap ${
+              className={`h-8 px-3 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap cursor-pointer ${
                 cierrePrevio
                   ? "bg-amber-600 hover:bg-amber-500 text-black shadow-none"
                   : enCurso
@@ -543,90 +523,54 @@ function IndexPage() {
                 : cierrePrevio
                 ? "🔒 Sorteo en Breve"
                 : config.ventasActivas
-                ? "Participar"
+                ? "Comprar Tokens"
                 : "🔥 Preventa"}
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Botón Flotante Móvil de Juegos Express */}
-      {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
-        <button
-          type="button"
-          onClick={() => setOpenRaspa(true)}
-          className="md:hidden fixed bottom-22 right-4 z-30 flex items-center gap-2 rounded-full border-2 border-amber-400 bg-zinc-950/95 px-3.5 py-2 text-xs font-black text-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.35)] backdrop-blur active:scale-95 transition-transform"
-        >
-          <span className="text-base">
-            {sorteo.raspaConfig?.modo === "ruleta" ? "🎡" : sorteo.raspaConfig?.modo === "ambos" ? "✨" : "🎁"}
-          </span>
-          <span>
-            {sorteo.raspaConfig?.modo === "ruleta"
-              ? "Ruleta Express"
-              : sorteo.raspaConfig?.modo === "ambos"
-                ? "Raspa y Ruleta"
-                : "Raspa y Gana"}
-          </span>
-        </button>
-      )}
-
       <main>
         {/* HERO SECTION DE ALTO IMPACTO */}
         <section className="relative overflow-hidden pt-12 pb-20 md:pt-16 md:pb-28">
           {/* Luces de fondo */}
           <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 size-[42rem] rounded-full bg-primary/20 blur-[150px]" />
-          <div className="pointer-events-none absolute top-1/3 right-0 size-[25rem] rounded-full bg-amber-500/10 blur-[120px]" />
-
           <div className="relative mx-auto max-w-6xl px-5 text-center">
-            {/* Badges de Conversión en el Hero */}
+            {/* Badges de Foco 100% en Tokens */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${
-                enCurso
-                  ? "border-red-500/50 bg-red-500/15 text-red-400 animate-pulse"
-                  : cierrePrevio
-                  ? "border-amber-500/50 bg-amber-500/15 text-amber-400 font-bold"
-                  : "border-primary/50 bg-primary/10 text-primary"
-              }`}>
-                <Sparkles className="size-3.5" />{" "}
-                {enCurso
-                  ? "🎯 SORTEO OFICIAL EN CURSO"
-                  : cierrePrevio
-                  ? "🔒 VENTAS CERRADAS · PREPARANDO EMISIÓN"
-                  : config.ventasActivas
-                  ? (config.heroBadgeEvento || "Evento Promocional Oficial Costa Rica")
-                  : "🔥 PREVENTA EXCLUSIVA 2026"}
-              </div>
-
-              {/* Badge del Paquete Más Popular destacado arriba (₡8 000) */}
-              {paquetes.length > 1 && (
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-bold text-amber-400 shadow-md">
-                  <Flame className="size-3.5 text-amber-400" />
-                  <span>{config.heroBadgePopular || `Más Popular: ${(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡${formatNumber((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000)}`}</span>
+                <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${
+                  enCurso
+                    ? "border-red-500/50 bg-red-500/15 text-red-400 animate-pulse"
+                    : cierrePrevio
+                    ? "border-amber-500/50 bg-amber-500/15 text-amber-400 font-bold"
+                    : "border-primary/50 bg-primary/10 text-primary"
+                }`}>
+                  <Sparkles className="size-3.5" />{" "}
+                  {enCurso
+                    ? "🎯 SORTEO OFICIAL EN CURSO"
+                    : cierrePrevio
+                    ? "🔒 VENTAS CERRADAS · PREPARANDO EMISIÓN"
+                    : config.ventasActivas
+                    ? (config.heroBadgeEvento || "Evento Promocional Oficial Costa Rica")
+                    : "🔥 PREVENTA EXCLUSIVA 2026"}
                 </div>
-              )}
 
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-500">
-                <Crown className="size-3.5 text-amber-400" />
-                <span>{config.heroBadgeSuperToken || `SuperToken: Hasta +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash Extra`}</span>
-              </div>
+                {/* Badge del Paquete Más Popular destacado arriba */}
+                {paquetes.length > 1 && (
+                  <button
+                    onClick={irAPaquetes}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-bold dark:text-amber-400 text-amber-800 shadow-md hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    <Flame className="size-3.5 dark:text-amber-400 text-amber-600" />
+                    <span>{config.heroBadgePopular || `Más Elegido: ${(paquetes.find(p => p.popular) || paquetes[1])?.cantidad} Tokens por ₡${formatNumber((paquetes.find(p => p.popular) || paquetes[1])?.precio || 8000)}`}</span>
+                  </button>
+                )}
 
-              {/* Badge Mini-Sorteos Semanales Gasolina + Play */}
-              {config.miniSorteosActivo !== false && (
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 bg-emerald-500/15 px-4 py-1.5 text-xs font-bold text-emerald-400 shadow-md">
-                  <Fuel className="size-3.5 text-emerald-400" />
-                  <span>{config.heroBadgeGasolina || "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5"}</span>
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold dark:text-emerald-400 text-emerald-700">
+                  <CheckCircle2 className="size-3.5 dark:text-emerald-400 text-emerald-600" />
+                  <span>Emisión Oficial JPS · Triple Oportunidad</span>
                 </div>
-              )}
-
-              {/* Badge Comercios Aliados & Descuentos */}
-              <Link
-                to="/sponsors"
-                className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-amber-500/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 shadow-md hover:bg-amber-500/25 transition-colors"
-              >
-                <Store className="size-3.5 text-amber-400" />
-                <span>{config.heroBadgeComercios || "Descuentos en Comercios ↗"}</span>
-              </Link>
-            </div>
+              </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
               {sorteo.heroTitulo ? (
@@ -638,122 +582,271 @@ function IndexPage() {
               )}
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+            <p className="mx-auto mt-6 max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
               {cierrePrevio
                 ? `Las ventas para esta edición han finalizado formalmente 2 horas antes para auditoría. El sorteo oficial inicia a las ${formatearHora12(sorteo.horaSorteo || "19:30")}.`
                 : enCurso
                 ? "El sorteo oficial se encuentra en transmisión y verificación de números favorecidos. Consulta tus tokens en el validador."
-                : config.ventasActivas
-                ? (config.heroSubtitulo || "La plataforma de eventos promocionales digitales más transparente de Costa Rica. Auditados directamente con los resultados oficiales.")
-                : config.promoSubtitulo || "Estamos afinando los últimos detalles. ¡Escríbenos por WhatsApp para ser de los primeros en acceder a la Preventa Exclusiva y asegurar tus números!"}
+                : (config.heroSubtitulo && !config.heroSubtitulo.includes("transparente de Costa Rica. Auditados")
+                    ? config.heroSubtitulo
+                    : "Plataforma costarricense de eventos promocionales digitales y sorteos de vehículos de alta gama, diseñada para brindar una experiencia 100% digital, transparente y con total respaldo legal.")}
             </p>
 
-            {/* Imagen Principal Showcase con Badges Flotantes y Clic para Ampliar */}
-            <div
-              className="relative mx-auto mt-12 max-w-5xl group cursor-zoom-in"
-              onClick={() =>
-                setFotoZoom({
-                  url: primerPremioVisible?.imagen || carroImg,
-                  titulo: primerPremioVisible?.nombre || "Gran Entrega 2026",
-                  nivel: "1° Lugar · Premio Mayor",
-                })
-              }
-            >
-              <div className="overflow-hidden rounded-3xl border-2 border-primary/40 bg-neutral-950 p-2 sm:p-4 shadow-[var(--shadow-card)] transition-all duration-500 group-hover:scale-[1.01] group-hover:border-primary/70 relative min-h-[340px] sm:min-h-[480px] flex items-center justify-center">
-                {/* Fondo difuminado para rellenar los bordes con los tonos reales de la foto */}
-                <img
-                  src={primerPremioVisible?.imagen || carroImg}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
-                />
-                {/* Vehículo completo que se amolda al 100% sin recortarse */}
-                <img
-                  src={primerPremioVisible?.imagen || carroImg}
-                  alt={primerPremioVisible?.nombre || "Gran Entrega 2026"}
-                  className="relative z-0 max-h-[460px] sm:max-h-[520px] max-w-full w-auto h-auto object-contain mx-auto rounded-2xl brightness-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105"
-                />
+            {/* VITRINA DE LAS TRES ENTREGAS ESPECTACULARES EN LA APERTURA */}
+            {config.mostrarSeccionAperturaPremios !== false && premiosVisibles.length > 0 && (
+              <div className="mt-12 text-left">
+                <div className="text-center max-w-2xl mx-auto mb-6">
+                  <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                    Más oportunidades de ser favorecido
+                  </span>
+                  <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
+                    {config.heroTituloApertura || (premiosVisibles.length === 1
+                      ? "Gran Entrega Destacada"
+                      : premiosVisibles.length === 2
+                      ? "Dos Entregas Espectaculares"
+                      : "Tres Entregas Espectaculares")}
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {config.heroSubtituloApertura || "Con cada paquete adquieres triple oportunidad según las combinaciones oficiales de la JPS."}
+                  </p>
+                </div>
 
-                {/* Botón flotante para indicar que se puede ampliar */}
-                <div className="absolute bottom-4 left-6 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <ZoomIn className="size-3.5 text-amber-400" /> {config.vitrinaBotonAmpliar || "Clic para ampliar en grande"}
+                {/* Banner Dinámico de Dinámica / Regla de Premiación */}
+                {sorteo.mostrarDinamica !== false && Boolean(textoDinamicaFinal) && (
+                  <div className="mt-4 mb-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
+                    <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider dark:text-amber-400 text-amber-700">
+                      <Award className="size-4 text-amber-500 dark:text-amber-400" /> Dinámica Oficial de Premiación
+                    </div>
+                    <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
+                      {textoDinamicaFinal}
+                    </p>
+                  </div>
+                )}
+
+                <div
+                  className={`grid gap-6 ${
+                    premiosVisibles.length === 1
+                      ? "max-w-md mx-auto"
+                      : premiosVisibles.length === 2
+                      ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"
+                      : "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
+                  }`}
+                >
+                  {premiosVisibles.map((p, idx) => {
+                    const nivelStr = (p.nivel || "").trim();
+                    const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
+                    const isEleccion2 = nivelStr === "2° Lugar" || nivelStr === "2° Lugar (A Elección)";
+                    const isEfectivo3 = nivelStr === "3° Lugar" || nivelStr === "3° Lugar (Efectivo)";
+                    const isExtra = nivelStr === "Premio Extra";
+                    const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (idx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
+                    const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (idx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
+
+                    const tagLugar = isMayor
+                      ? "1° Lugar"
+                      : isSegundo
+                      ? "2° Lugar"
+                      : isEfectivo3
+                      ? "3° Lugar"
+                      : isExtra
+                      ? "Premio Extra"
+                      : "3° Lugar";
+
+                    const nombreLower = (p.nombre || "").toLowerCase();
+                    const defaultImg =
+                      nombreLower.includes("subaru") || nombreLower.includes("impreza")
+                        ? subaruImg
+                        : nombreLower.includes("moto")
+                        ? motoImg
+                        : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo")
+                        ? consolaImg
+                        : isMayor
+                        ? carroImg
+                        : isSegundo
+                        ? motoImg
+                        : consolaImg;
+
+                    const tagBadgeClass =
+                      isMayor || isEleccion1
+                        ? "bg-amber-500 text-black border border-amber-400 font-bold"
+                        : isEleccion2
+                        ? "bg-blue-600 text-white border border-blue-400 font-bold"
+                        : isSegundo
+                        ? "bg-black/80 text-slate-200 border border-slate-500/60 font-bold"
+                        : isEfectivo3
+                        ? "bg-emerald-600 text-white border border-emerald-400 font-bold"
+                        : isExtra
+                        ? "bg-purple-600 text-white border border-purple-400 font-bold"
+                        : "bg-black/80 text-zinc-300 border border-white/20 font-bold";
+
+                    const cardBorderClass =
+                      isMayor || isEleccion1
+                        ? "border-amber-500/50 shadow-[0_0_25px_rgba(245,158,11,0.12)]"
+                        : isEleccion2
+                        ? "border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                        : isEfectivo3
+                        ? "border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                        : "border-border";
+
+                    return (
+                      <div
+                        key={p.id || idx}
+                        className={`group rounded-2xl border bg-card overflow-hidden shadow-[var(--shadow-card)] relative flex flex-col justify-between transition-all duration-300 hover:border-primary/40 hover:shadow-xl ${cardBorderClass}`}
+                      >
+                        {/* Badges Flotantes de Posición y SuperToken */}
+                        <div className="absolute top-3 right-3 flex gap-1.5 z-10">
+                          {config.supertokenActivo !== false && (
+                            isMayor || isEleccion1 ? (
+                              <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                                <Crown className="size-3 text-amber-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo}`}
+                              </span>
+                            ) : isSegundo || isEleccion2 ? (
+                              <span className="rounded-full bg-black/80 text-sky-400 border border-sky-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                                <Crown className="size-3 text-sky-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo}`}
+                              </span>
+                            ) : isEfectivo3 ? (
+                              <span className="rounded-full bg-black/80 text-yellow-400 border border-yellow-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
+                                <Crown className="size-3 text-yellow-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo}`}
+                              </span>
+                            ) : null
+                          )}
+                          <span
+                            className={`rounded-full px-3 py-0.5 text-[11px] uppercase backdrop-blur shadow-md ${tagBadgeClass}`}
+                          >
+                            {tagLugar}
+                          </span>
+                        </div>
+
+                        {/* Foto con Clic para abrir el Popup del Premio */}
+                        <div
+                          className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900 cursor-pointer group/img"
+                          onClick={() => setPremioModal(p)}
+                        >
+                          <img
+                            src={p.imagen || defaultImg}
+                            alt={p.nombre}
+                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
+                          <div className="absolute bottom-2.5 right-3 bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1.5 backdrop-blur shadow-md group-hover/img:bg-amber-500 group-hover/img:text-black transition-colors">
+                            <Sparkles className="size-3" /> Ver "Comprá y ganá"
+                          </div>
+                        </div>
+
+                        <div className="p-5 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-xl leading-snug group-hover:text-primary transition-colors cursor-pointer" onClick={() => setPremioModal(p)}>
+                              {p.nombre}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                              {isEleccion1
+                                ? "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos."
+                                : isEleccion2
+                                ? "Vehículo adjudicado al 2° Lugar (el restante no seleccionado) 100% legal y listo para rodar."
+                                : isEfectivo3
+                                ? "Premio oficial en efectivo entregado formalmente o consola de última generación."
+                                : isMayor
+                                ? "Vehículo 0 KM con traspaso y marchamo incluidos."
+                                : isSegundo
+                                ? "Deportiva para dominar la calle y la pista con estilo."
+                                : "Consola de última generación con controles y juegos incluidos."}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-border/60">
+                            {config.supertokenActivo !== false && (
+                              isMayor || isEleccion1 ? (
+                                <p className="text-xs font-semibold text-amber-400 mb-2.5 flex items-center gap-1.5">
+                                  <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash extra!`}
+                                </p>
+                              ) : isSegundo || isEleccion2 ? (
+                                <p className="text-xs font-semibold text-sky-400 mb-2.5 flex items-center gap-1.5">
+                                  <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo} Cash extra!`}
+                                </p>
+                              ) : isEfectivo3 ? (
+                                <p className="text-xs font-semibold text-yellow-400 mb-2.5 flex items-center gap-1.5">
+                                  <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo} Cash extra!`}
+                                </p>
+                              ) : null
+                            )}
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setPremioModal(p)}
+                              className="w-full text-xs font-bold border-amber-500/50 hover:bg-amber-500/15 hover:border-amber-500 dark:text-amber-300 text-amber-700 flex items-center justify-center gap-1.5 py-4 rounded-xl cursor-pointer"
+                            >
+                              <Sparkles className="size-3.5 text-amber-500 dark:text-amber-400" />
+                              Ver Ficha & "Comprá y ganá" →
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-
-              {/* Badges Flotantes de Lujo */}
-              <div className="absolute -top-4 left-6 hidden sm:flex items-center gap-2 rounded-xl border border-primary/40 bg-card/90 px-4 py-2 text-xs font-bold text-foreground backdrop-blur shadow-lg pointer-events-none">
-                <Key className="size-4 text-primary" /> {config.vitrinaBadgeKm || "0 Kilómetros · Año 2026"}
-              </div>
-
-              <div className="absolute -top-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-amber-500/50 bg-card/90 px-4 py-2 text-xs font-bold text-amber-400 backdrop-blur shadow-lg pointer-events-none">
-                <Crown className="size-4 text-amber-500" />
-                <span>{config.vitrinaBadgeSuperToken || `Bono +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} con SuperToken`}</span>
-              </div>
-
-              <div className="absolute -bottom-4 right-6 hidden sm:flex items-center gap-2 rounded-xl border border-success/40 bg-card/90 px-4 py-2 text-xs font-bold text-success backdrop-blur shadow-lg pointer-events-none">
-                <ShieldCheck className="size-4 text-success" /> {config.vitrinaBadgeTraspaso || "Traspaso y Marchamo Incluidos"}
-              </div>
-            </div>
+            )}
 
             {/* Termómetro de Disponibilidad y Cuenta Regresiva Oficial en el Hero */}
-            <div className={`mx-auto mt-10 max-w-2xl rounded-2xl border-2 p-5 backdrop-blur text-left ${
-              enCurso
-                ? "border-red-500/60 bg-red-950/90 shadow-[0_0_40px_rgba(239,68,68,0.25)]"
-                : cierrePrevio
-                ? "border-amber-500/70 bg-amber-950/80 shadow-[0_0_35px_rgba(245,158,11,0.25)]"
-                : "border-amber-500/40 bg-zinc-950/90 shadow-[0_0_35px_rgba(245,158,11,0.15)]"
-            }`}>
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
-                    }`}></span>
-                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                      enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
-                    }`}></span>
-                  </span>
-                  <span className={`font-black uppercase tracking-wider text-xs ${
-                    enCurso ? "text-red-400" : cierrePrevio ? "text-amber-400" : "text-emerald-400"
-                  }`}>
-                    {enCurso
-                      ? "🎯 Sorteo Oficial en Curso"
-                      : cierrePrevio
-                      ? "🔒 Ventas Cerradas (Conteo Final)"
-                      : config.ventasActivas
-                      ? "Ventas Abiertas en Vivo"
-                      : "Preventa Exclusiva"}
+            {config.mostrarSeccionTermometro !== false && (
+              <div className={`mx-auto mt-10 max-w-2xl rounded-2xl border-2 p-5 backdrop-blur text-left ${
+                enCurso
+                  ? "border-red-500/60 dark:bg-red-950/90 bg-red-50/90 shadow-[0_0_40px_rgba(239,68,68,0.25)]"
+                  : cierrePrevio
+                  ? "border-amber-500/70 dark:bg-amber-950/80 bg-amber-50/90 shadow-[0_0_35px_rgba(245,158,11,0.25)]"
+                  : "dark:border-amber-500/40 border-amber-500/50 dark:bg-zinc-950/90 bg-white/95 shadow-xl dark:shadow-[0_0_35px_rgba(245,158,11,0.15)]"
+              }`}>
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                        enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
+                      }`}></span>
+                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                        enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
+                      }`}></span>
+                    </span>
+                    <span className={`font-black uppercase tracking-wider text-xs ${
+                      enCurso ? "text-red-500 dark:text-red-400" : cierrePrevio ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
+                    }`}>
+                      {enCurso
+                        ? "🎯 Sorteo Oficial en Curso"
+                        : cierrePrevio
+                        ? "🔒 Ventas Cerradas (Conteo Final)"
+                        : config.ventasActivas
+                        ? "Ventas Abiertas en Vivo"
+                        : "Preventa Exclusiva"}
+                    </span>
+                  </div>
+                  <span className="font-mono text-lg sm:text-xl font-black dark:text-amber-400 text-amber-600 flex items-center gap-1.5" suppressHydrationWarning>
+                    <Flame className="size-5 text-amber-500 fill-amber-500" />
+                    {`${progreso}% Vendido`}
                   </span>
                 </div>
-                <span className="font-mono text-lg sm:text-xl font-black text-amber-400 flex items-center gap-1.5" suppressHydrationWarning>
-                  <Flame className="size-5 text-amber-500 fill-amber-500" />
-                  {`${progreso}% Vendido`}
-                </span>
-              </div>
 
-              {/* Barra Brillante */}
-              <div className="mt-3.5 h-4 w-full overflow-hidden rounded-full bg-secondary/80 p-0.5 border border-amber-500/30">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
-                  style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
-                />
-              </div>
+                {/* Barra Brillante */}
+                <div className="mt-3.5 h-4 w-full overflow-hidden rounded-full dark:bg-secondary/80 bg-slate-100 p-0.5 border dark:border-amber-500/30 border-slate-300">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+                    style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
+                  />
+                </div>
 
-              {/* Fecha y Contador en vivo */}
-              <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5" suppressHydrationWarning>
-                  <Calendar className="size-3.5 text-primary" />
-                  Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
-                </span>
-                <span className="font-mono font-bold text-amber-400 text-xs sm:text-sm" suppressHydrationWarning>
-                  {enCurso
-                    ? "🎯 En transmisión oficial"
-                    : cierrePrevio
-                    ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
-                    : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
-                </span>
+                {/* Fecha y Contador en vivo */}
+                <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5" suppressHydrationWarning>
+                    <Calendar className="size-3.5 text-primary" />
+                    Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
+                  </span>
+                  <span className="font-mono font-bold dark:text-amber-400 text-amber-600 text-xs sm:text-sm" suppressHydrationWarning>
+                    {enCurso
+                      ? "🎯 En transmisión oficial"
+                      : cierrePrevio
+                      ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
+                      : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* CTA Principal de Conversión */}
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -804,455 +897,18 @@ function IndexPage() {
           </div>
         </section>
 
-        {/* CÓMO FUNCIONA EN 3 PASOS (PROCESO 100% DIGITAL Y TRANSPARENTE) */}
-        <section id="como-funciona" className="py-20 bg-secondary/30 border-y border-border">
-          <div className="mx-auto max-w-6xl px-5">
-            <div className="text-center max-w-2xl mx-auto">
-              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                {config.pasosBadge || "Proceso 100% Digital y Transparente"}
-              </span>
-              <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-                {config.pasosTitulo || "Participa en 3 Simples Pasos"}
-              </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {config.pasosSubtitulo || "Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo."}
-              </p>
-            </div>
-
-            <div className="mt-14 grid gap-8 md:grid-cols-3">
-              {pasos.map((paso, idx) => (
-                <div
-                  key={idx}
-                  className="relative rounded-2xl border border-border bg-card p-8 shadow-sm flex flex-col justify-between hover:border-primary/50 transition-colors"
-                >
-                  <div>
-                    <div className="font-display text-6xl text-primary/30">{paso.num}</div>
-                    <h3 className="mt-4 font-bold text-xl">{paso.titulo}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{paso.desc}</p>
-                    {idx === 1 && metodosActivosLista.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-1.5">
-                        {metodosActivosLista.map((m) => (
-                          <span
-                            key={m.id}
-                            className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-foreground shadow-xs"
-                          >
-                            <span>{m.icono}</span>
-                            <span>{m.nombre}</span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-12 text-center">
-              <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
-                {config.ventasActivas ? (config.pasosBotonCta || "Comenzar y Elegir mis Tokens →") : "🔥 Consultar Preventa por WhatsApp →"}
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* LAS ENTREGAS DE LA EDICIÓN (CUADRÍCULA DINÁMICA AUTO-ADAPTABLE) */}
-        {premiosVisibles.length > 0 && (
-          <section className="bg-secondary/40 py-20 border-y border-border">
-            <div className="mx-auto max-w-7xl px-5">
-              <div className="text-center max-w-2xl mx-auto">
-                <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                  Más oportunidades de ser favorecido
-                </span>
-                <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
-                  {premiosVisibles.length === 1
-                    ? "Gran Entrega Destacada"
-                    : premiosVisibles.length === 2
-                    ? "Dos Entregas Espectaculares"
-                    : premiosVisibles.length === 3
-                    ? "Tres Entregas Espectaculares"
-                    : premiosVisibles.length === 4
-                    ? "Cuatro Entregas de Lujo"
-                    : `${premiosVisibles.length} Entregas Espectaculares`}
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {premiosVisibles.length === 1
-                    ? "Con cada paquete de Tokens participas directamente por la Gran Entrega según las combinaciones oficiales."
-                    : premiosVisibles.length === 2
-                    ? "Con cada paquete adquieres doble oportunidad según las combinaciones oficiales."
-                    : premiosVisibles.length === 3
-                    ? "Con cada paquete adquieres triple oportunidad según las combinaciones oficiales."
-                    : `Con cada paquete adquieres múltiples oportunidades (${premiosVisibles.length} entregas) según las combinaciones oficiales.`}
-                </p>
-              </div>
-
-              {/* Banner Dinámico de Dinámica / Regla de Premiación */}
-              {sorteo.mostrarDinamica !== false && Boolean(textoDinamicaFinal) && (
-                <div className="mt-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
-                  <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400">
-                    <Award className="size-4 text-amber-400" /> Dinámica Oficial de Premiación
-                  </div>
-                  <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
-                    {textoDinamicaFinal}
-                  </p>
-                </div>
-              )}
-
-              <div
-                className={`mt-12 grid gap-6 ${
-                  premiosVisibles.length === 1
-                    ? "max-w-md mx-auto"
-                    : premiosVisibles.length === 2
-                    ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"
-                    : premiosVisibles.length === 3
-                    ? "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
-                    : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto"
-                }`}
-              >
-                {premiosVisibles.map((p, idx) => {
-                  const nivelStr = (p.nivel || "").trim();
-                  const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
-                  const isEleccion2 = nivelStr === "2° Lugar" || nivelStr === "2° Lugar (A Elección)";
-                  const isEfectivo3 = nivelStr === "3° Lugar" || nivelStr === "3° Lugar (Efectivo)";
-                  const isExtra = nivelStr === "Premio Extra";
-                  const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (idx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
-                  const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (idx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
-
-                  const tagLugar = isMayor
-                    ? "1° Lugar"
-                    : isSegundo
-                    ? "2° Lugar"
-                    : isEfectivo3
-                    ? "3° Lugar"
-                    : isExtra
-                    ? "Premio Extra"
-                    : "3° Lugar";
-
-                  const nombreLower = (p.nombre || "").toLowerCase();
-                  const defaultImg =
-                    nombreLower.includes("subaru") || nombreLower.includes("impreza")
-                      ? subaruImg
-                      : nombreLower.includes("moto")
-                      ? motoImg
-                      : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo")
-                      ? consolaImg
-                      : isMayor
-                      ? carroImg
-                      : isSegundo
-                      ? motoImg
-                      : consolaImg;
-
-                  const tagBadgeClass =
-                    isMayor || isEleccion1
-                      ? "bg-amber-500 text-black border border-amber-400 font-bold"
-                      : isEleccion2
-                      ? "bg-blue-600 text-white border border-blue-400 font-bold"
-                      : isSegundo
-                      ? "bg-black/80 text-slate-200 border border-slate-500/60 font-bold"
-                      : isEfectivo3
-                      ? "bg-emerald-600 text-white border border-emerald-400 font-bold"
-                      : isExtra
-                      ? "bg-purple-600 text-white border border-purple-400 font-bold"
-                      : "bg-black/80 text-zinc-300 border border-white/20 font-bold";
-
-                  const cardBorderClass =
-                    isMayor || isEleccion1
-                      ? "border-amber-500/50 shadow-[0_0_25px_rgba(245,158,11,0.12)]"
-                      : isEleccion2
-                      ? "border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
-                      : isEfectivo3
-                      ? "border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
-                      : "border-border";
-
-                  return (
-                    <div
-                      key={p.id || idx}
-                      className={`group rounded-2xl border bg-card overflow-hidden shadow-[var(--shadow-card)] relative flex flex-col justify-between transition-all duration-300 hover:border-primary/40 hover:shadow-xl ${cardBorderClass}`}
-                    >
-                      {/* Badges Flotantes de Posición y SuperToken */}
-                      <div className="absolute top-3 right-3 flex gap-1.5 z-10">
-                        {config.supertokenActivo !== false && (
-                          isMayor || isEleccion1 ? (
-                            <span className="rounded-full bg-black/80 text-amber-400 border border-amber-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
-                              <Crown className="size-3 text-amber-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo}`}
-                            </span>
-                          ) : isSegundo || isEleccion2 ? (
-                            <span className="rounded-full bg-black/80 text-sky-400 border border-sky-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
-                              <Crown className="size-3 text-sky-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo}`}
-                            </span>
-                          ) : isEfectivo3 ? (
-                            <span className="rounded-full bg-black/80 text-yellow-400 border border-yellow-500/60 px-2.5 py-0.5 text-[10px] font-bold uppercase backdrop-blur flex items-center gap-1 shadow-md">
-                              <Crown className="size-3 text-yellow-400" /> {`+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo}`}
-                            </span>
-                          ) : null
-                        )}
-                        <span
-                          className={`rounded-full px-3 py-0.5 text-[11px] uppercase backdrop-blur shadow-md ${tagBadgeClass}`}
-                        >
-                          {tagLugar}
-                        </span>
-                      </div>
-
-                      {/* Foto que llena de forma atractiva la parte superior de la tarjeta con Clic para Ampliar */}
-                      <div
-                        className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
-                        onClick={() =>
-                          setFotoZoom({
-                            url: p.imagen || defaultImg,
-                            titulo: p.nombre,
-                            nivel: tagLugar,
-                          })
-                        }
-                      >
-                        <img
-                          src={p.imagen || defaultImg}
-                          alt={p.nombre}
-                          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
-                        <div className="absolute bottom-2.5 right-3 opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1 backdrop-blur shadow-md">
-                          <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
-                        </div>
-                      </div>
-
-                      <div className="p-5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="font-bold text-xl leading-snug group-hover:text-primary transition-colors">
-                            {p.nombre}
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                            {isEleccion1
-                              ? "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos."
-                              : isEleccion2
-                              ? "Vehículo adjudicado al 2° Lugar (el restante no seleccionado) 100% legal y listo para rodar."
-                              : isEfectivo3
-                              ? "Premio oficial en efectivo entregado formalmente o consola de última generación."
-                              : isMayor
-                              ? "Vehículo 0 KM con traspaso y marchamo incluidos."
-                              : isSegundo
-                              ? "Deportiva para dominar la calle y la pista con estilo."
-                              : "Consola de última generación con controles y juegos incluidos."}
-                          </p>
-                        </div>
-                        {config.supertokenActivo !== false && (
-                          isMayor || isEleccion1 ? (
-                            <p className="text-xs font-semibold text-amber-400 mt-3 pt-2.5 border-t border-amber-500/20 flex items-center gap-1.5">
-                              <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash extra!`}
-                            </p>
-                          ) : isSegundo || isEleccion2 ? (
-                            <p className="text-xs font-semibold text-sky-400 mt-3 pt-2.5 border-t border-sky-500/20 flex items-center gap-1.5">
-                              <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo} Cash extra!`}
-                            </p>
-                          ) : isEfectivo3 ? (
-                            <p className="text-xs font-semibold text-yellow-400 mt-3 pt-2.5 border-t border-yellow-500/20 flex items-center gap-1.5">
-                              <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo} Cash extra!`}
-                            </p>
-                          ) : null
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* FICHA TÉCNICA DEL CARRO / PREMIO DETALLADO */}
-        <section className="py-20 mx-auto max-w-6xl px-5 border-t border-border/40">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-                Gran Entrega Detallada
-              </span>
-              <h2 className="mt-2 font-display text-4xl sm:text-5xl leading-tight uppercase">
-                {sorteo.detalleTitulo || (primerPremioVisible?.nombre ? `${primerPremioVisible.nombre}: Entrega Oficial y Garantizada` : "Vehículos de Alta Gama y Premios Oficiales")}
-              </h2>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                {sorteo.detalleSubtitulo || "Vehículos certificados, sacados de agencia con garantía y entregados formalmente a tu nombre con marchamo y traspaso incluido."}
-              </p>
-
-              <div className="mt-8 space-y-4">
-                {(sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT).map((c: { titulo: string; desc: string }, i: number) => {
-                  const Icono = featureIcons[i % featureIcons.length] || Gauge;
-                  return (
-                    <div key={i} className="flex items-start gap-4 rounded-xl border border-border bg-secondary/40 p-4">
-                      <div className="rounded-lg bg-primary/10 p-2.5 text-primary shrink-0">
-                        <Icono className="size-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-sm">{c.titulo}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">{c.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div
-                className="overflow-hidden rounded-2xl border border-border shadow-lg bg-neutral-950 relative h-80 flex items-center justify-center group cursor-zoom-in"
-                onClick={() =>
-                  setFotoZoom({
-                    url: sorteo.detalleImagen || premios[0]?.imagen || carroImg,
-                    titulo: sorteo.detalleTitulo || "Entrega Detallada",
-                    nivel: "Ficha Técnica",
-                  })
-                }
-              >
-                <img
-                  src={sorteo.detalleImagen || premios[0]?.imagen || carroImg}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-25 scale-110 pointer-events-none"
-                />
-                <img
-                  src={sorteo.detalleImagen || premios[0]?.imagen || carroImg}
-                  alt={sorteo.detalleTitulo || "Entrega Detallada"}
-                  className="relative z-0 max-h-76 max-w-full w-auto h-auto object-contain p-2 drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
-                />
-                <div className="absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 rounded-full bg-black/80 px-3 py-1 text-[11px] font-semibold text-zinc-300 border border-white/15 backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ZoomIn className="size-3 text-amber-400" /> Clic para ampliar
-                </div>
-              </div>
-              <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 to-transparent p-6">
-                <h4 className="font-bold text-base text-primary flex items-center gap-2">
-                  <Award className="size-5" /> Garantía Aval Community CR
-                </h4>
-                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                  {sorteo.detalleGarantia || "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* MODALIDAD VIP: SUPERTOKEN (1°, 2° Y 3° LUGAR EN EFECTIVO) */}
-        {config.supertokenActivo !== false && (
-          <div className="mx-auto max-w-6xl px-5 py-8">
-            <SuperTokenSection config={config} />
-          </div>
-        )}
-
-        {/* ZONA DE COMPRA Y CUENTA REGRESIVA */}
-        <section className="py-20 mx-auto max-w-6xl px-5">
-          {/* Contador y Progreso */}
-          <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-[var(--shadow-card)] text-center mb-16 space-y-6">
-            {/* Header del contador y estado */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
-                  }`}></span>
-                  <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                    enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
-                  }`}></span>
-                </span>
-                <span className={`text-xs font-bold uppercase tracking-widest ${
-                  enCurso ? "text-red-400" : cierrePrevio ? "text-amber-400" : "text-emerald-400"
-                }`}>
-                  {enCurso
-                    ? "🎯 Sorteo Oficial en Curso"
-                    : cierrePrevio
-                    ? "🔒 Ventas Cerradas (Conteo Final)"
-                    : config.ventasActivas
-                    ? "Ventas Abiertas"
-                    : "Preventa Exclusiva"}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Calendar className="size-3.5 text-primary" />
-                <span suppressHydrationWarning>
-                  Sorteo Oficial: <strong className="text-foreground" suppressHydrationWarning>{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
-                </span>
-              </div>
-            </div>
-
-            {/* Cuenta Regresiva */}
-            <div>
-              <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-3 font-semibold">
-                {enCurso ? "Sorteo Oficial en proceso de transmisión" : "Tiempo restante para el Sorteo Oficial"}
-              </p>
-              <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
-                {[
-                  { label: "Días", val: t.d },
-                  { label: "Horas", val: t.h },
-                  { label: "Min", val: t.m },
-                  { label: "Seg", val: t.s },
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-2xl border border-border/80 bg-secondary/50 p-2.5 sm:p-3.5 text-center shadow-inner"
-                  >
-                    <div className="font-mono text-2xl sm:text-4xl font-black text-primary tracking-tight" suppressHydrationWarning>
-                      {String(item.val).padStart(2, "0")}
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Barra de Progreso del Evento */}
-            <div className="space-y-2.5 max-w-xl mx-auto pt-2">
-              <div className="flex items-end justify-between text-xs">
-                <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-muted-foreground">
-                  <Flame className="size-4 text-amber-500 fill-amber-500" />
-                  {config.termometroFaseTitulo || "Progreso de la Edición"}
-                </span>
-                <span className="font-mono text-base sm:text-lg font-black text-foreground" suppressHydrationWarning>
-                  {`${progreso}% Vendido`}
-                </span>
-              </div>
-              <div className="h-3 w-full overflow-hidden rounded-full bg-secondary/80 p-0.5 border border-border/50">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-sm"
-                  style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
-                />
-              </div>
-              <p className="text-[11px] text-muted-foreground text-center">
-                ⚡ Asignación oficial en tiempo real · 100% verificado en Supabase
-              </p>
-            </div>
-
-            {/* Tarjetas de Transparencia y Reglas (Estándar Competencia) */}
-            <div className="grid sm:grid-cols-2 gap-3.5 text-left pt-4 border-t border-border/60">
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1.5">
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="size-3 text-emerald-400" /> Si llegamos al 100%
-                </span>
-                <h4 className="font-bold text-sm text-foreground">Cierre Inmediato del Sorteo</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-1.5">
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                  <ShieldCheck className="size-3 text-amber-400" /> Garantía de Cumplimiento
-                </span>
-                <h4 className="font-bold text-sm text-foreground">La Edición Continúa</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div id="paquetes-compra" className="scroll-mt-28" />
-          <div id="tickets-seleccion" className="text-center max-w-2xl mx-auto scroll-mt-28">
-            <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+        {/* ZONA PRINCIPAL DE COMPRA DE TOKENS (EL FOCO ABSOLUTO DE LA LANDING) */}
+        <section id="paquetes-compra" className="py-16 md:py-24 mx-auto max-w-6xl px-5 scroll-mt-24">
+          <div id="tickets-seleccion" className="text-center max-w-3xl mx-auto scroll-mt-24">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
+              <Sparkles className="size-3.5" />
               {cierrePrevio || enCurso
                 ? "🔒 Emisión en Proceso"
                 : config.ventasActivas
                 ? (config.paquetesBadge || "Elige tu Paquete Digital")
                 : "🔥 Preventa Exclusiva de Tokens"}
             </span>
-            <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
+            <h2 className="mt-3 font-display text-4xl sm:text-6xl tracking-tight uppercase">
               {cierrePrevio || enCurso
                 ? "Ventas Finalizadas para esta Edición"
                 : paquetes.length === 1
@@ -1261,20 +917,20 @@ function IndexPage() {
                 ? (config.paquetesTitulo || "Elige tu paquete de Tokens")
                 : "Paquetes Oficiales del Evento"}
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">
               {cierrePrevio
                 ? `Las ventas para este evento han cerrado formalmente 2 horas antes para el escrutinio notarial y preparación del sorteo de las ${formatearHora12(sorteo.horaSorteo || "19:30")}. Puedes consultar tus números en el validador.`
                 : enCurso
                 ? "El evento promocional se encuentra en proceso de transmisión y verificación de ganadores oficiales."
                 : paquetes.length === 1
-                ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${formatNumber(paquetes[0]?.precio || 5000)}. Puedes generarlos al azar o elegir tus números favoritos.`
+                ? `Participa con tu paquete especial de ${paquetes[0]?.cantidad || 3} combinaciones oficiales por ₡${formatNumber(paquetes[0]?.precio || 5000)}. Generación automática al azar o escoge tus números preferidos.`
                 : config.ventasActivas
-                ? (config.paquetesSubtitulo || "Más Tokens, más oportunidades. Puedes generarlos al azar o elegir tus números favoritos.")
+                ? (config.paquetesSubtitulo || "Más Tokens, más oportunidades de ganar. Generación al instante o selección manual de números. Respaldado con los resultados oficiales de la JPS.")
                 : "La venta directa abrirá muy pronto. ¡Contáctanos por WhatsApp para apartar tus números antes del lanzamiento público!"}
             </p>
           </div>
 
-          <div className={`mt-12 ${paquetes.length === 1 ? "max-w-md mx-auto" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4"}`}>
+          <div className={`mt-10 ${paquetes.length === 1 ? "max-w-md mx-auto" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4"}`}>
             {paquetes.map((p) => {
               const esUnico = paquetes.length === 1;
               const esPopular = p.popular || (sorteo.modalidadVenta === "multiplos_3" ? p.cantidad === 6 : p.cantidad === 8);
@@ -1302,7 +958,7 @@ function IndexPage() {
                     </span>
                   ) : null}
 
-                  <div className={`font-display text-5xl sm:text-6xl ${esPopular ? "text-amber-400" : "text-primary"}`}>
+                  <div className={`font-display text-5xl sm:text-6xl ${esPopular ? "dark:text-amber-400 text-amber-600" : "text-primary"}`}>
                     {p.cantidad}
                   </div>
                   <div className="text-xs sm:text-sm uppercase tracking-widest text-muted-foreground mt-1">
@@ -1312,13 +968,13 @@ function IndexPage() {
                     {`₡${formatNumber(p.precio)}`}
                   </div>
                   {config.supertokenActivo !== false && (
-                    <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-400">
-                      <Crown className="size-3 text-amber-400 shrink-0" />
+                    <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold dark:text-amber-400 text-amber-700">
+                      <Crown className="size-3 text-amber-500 dark:text-amber-400 shrink-0" />
                       <span>{`SuperToken: +₡${formatNumber(calcularCostoSuperToken(p.cantidad, config.supertokenPrecio || 1500))}`}</span>
                     </div>
                   )}
                   <div className={`mt-5 inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold group-hover:translate-x-0.5 transition-transform ${
-                    cierrePrevio || enCurso ? "text-amber-400" : "text-primary"
+                    cierrePrevio || enCurso ? "dark:text-amber-400 text-amber-600" : "text-primary"
                   }`}>
                     {cierrePrevio ? "🔒 Ventas cerradas (Consultar) →" : enCurso ? "🎯 Sorteo en curso (Validar) →" : config.ventasActivas ? (config.paquetesBotonComprar || "Adquirir ahora →") : "Apartar por WhatsApp →"}
                   </div>
@@ -1326,86 +982,423 @@ function IndexPage() {
               );
             })}
           </div>
+
+          {/* Tarjetas de Transparencia y Respaldo Inmediatas */}
+          <div className="grid sm:grid-cols-2 gap-4 text-left mt-10 max-w-3xl mx-auto">
+            <div className="rounded-2xl border border-emerald-500/30 dark:bg-emerald-500/5 bg-emerald-500/10 p-4 space-y-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider dark:text-emerald-400 text-emerald-700 flex items-center gap-1">
+                <CheckCircle2 className="size-3 text-emerald-500 dark:text-emerald-400" /> Si llegamos al 100%
+              </span>
+              <h4 className="font-bold text-sm text-foreground">Cierre Inmediato del Sorteo</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-amber-500/30 dark:bg-amber-500/5 bg-amber-500/10 p-4 space-y-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider dark:text-amber-400 text-amber-700 flex items-center gap-1">
+                <ShieldCheck className="size-3 text-amber-500 dark:text-amber-400" /> Garantía de Cumplimiento
+              </span>
+              <h4 className="font-bold text-sm text-foreground">La Edición Continúa</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.
+              </p>
+            </div>
+          </div>
         </section>
 
-        {/* BANNER INTERACTIVO JUEGOS EXPRESS (SOLO SI ESTÁ ACTIVO EN ADMIN, POR DEFECTO APAGADO) */}
-        {Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno" && (
-          <div className="mx-auto max-w-5xl px-5 py-6">
-            <div
-              onClick={() => setOpenRaspa(true)}
-              className="cursor-pointer group relative overflow-hidden rounded-3xl border-2 border-amber-500/60 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 sm:p-6 shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.01] hover:border-amber-400"
-            >
-              <div className="pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-amber-500/15 blur-[80px]" />
+        {/* CÓMO FUNCIONA EN 3 PASOS (PROCESO 100% DIGITAL Y TRANSPARENTE) */}
+        {config.mostrarSeccionComoFunciona !== false && (
+          <section id="como-funciona" className="py-20 bg-secondary/30 border-y border-border">
+            <div className="mx-auto max-w-6xl px-5">
+              <div className="text-center max-w-2xl mx-auto">
+                <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                  {config.pasosBadge || "Proceso 100% Digital y Transparente"}
+                </span>
+                <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
+                  {config.pasosTitulo || "Participa en 3 Simples Pasos"}
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {config.pasosSubtitulo || "Sin filas ni boletos físicos. Todo queda registrado digitalmente en tu dispositivo."}
+                </p>
+              </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-between gap-5">
-                <div className="flex items-center gap-4 text-center md:text-left">
-                  <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg font-bold text-3xl group-hover:rotate-12 group-hover:scale-110 transition-transform">
-                    {sorteo.raspaConfig?.modo === "ruleta" ? "🎡" : sorteo.raspaConfig?.modo === "ambos" ? "✨" : "🎁"}
-                  </div>
-                  <div>
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-0.5 text-xs font-black uppercase tracking-wider text-amber-300 border border-amber-500/40">
-                      <Sparkles className="size-3.5 text-amber-400" /> ¡JUEGO INSTANTÁNEO EXPRESS!
+              <div className="mt-14 grid gap-8 md:grid-cols-3">
+                {pasos.map((paso, idx) => (
+                  <div
+                    key={idx}
+                    className="relative rounded-2xl border border-border bg-card p-8 shadow-sm flex flex-col justify-between hover:border-primary/50 transition-colors"
+                  >
+                    <div>
+                      <div className="font-display text-6xl text-primary/30">{paso.num}</div>
+                      <h3 className="mt-4 font-bold text-xl">{paso.titulo}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{paso.desc}</p>
+                      {idx === 1 && metodosActivosLista.length > 0 && (
+                        <div className="mt-4 flex flex-wrap gap-1.5">
+                          {metodosActivosLista.map((m) => (
+                            <span
+                              key={m.id}
+                              className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-foreground shadow-xs"
+                            >
+                              <span>{m.icono}</span>
+                              <span>{m.nombre}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <h3 className="font-display text-2xl sm:text-3xl text-white font-bold tracking-wide mt-1">
-                      {sorteo.raspaConfig?.modo === "ruleta"
-                        ? (sorteo.raspaConfig?.ruletaTitulo || "Ruleta de la Fortuna Express")
-                        : (sorteo.raspaConfig?.titulo || "Raspa y Gana Digital")} · ¡Gana en SINPE al Instante!
-                    </h3>
-                    <p className="text-xs sm:text-sm text-zinc-300 mt-0.5">
-                      {sorteo.raspaConfig?.modo === "ruleta"
-                        ? (sorteo.raspaConfig?.ruletaSubtitulo || "Gira la ruleta de casino y gana hasta ₡100,000 en SINPE Móvil o Tokens oficiales.")
-                        : (sorteo.raspaConfig?.subtitulo || "Pasa tu dedo o mouse sobre la tarjeta dorada o gira la ruleta y descubre tu premio.")}
-                    </p>
                   </div>
-                </div>
+                ))}
+              </div>
 
-                <Button
-                  variant="hero"
-                  size="lg"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenRaspa(true);
-                  }}
-                  className="w-full md:w-auto shadow-[var(--shadow-fire)] font-bold text-sm px-6 py-6 shrink-0 gap-2 border border-amber-400/40 cursor-pointer"
-                >
-                  <Sparkles className="size-4" /> {`¡JUGAR AHORA (₡${formatNumber(sorteo.raspaConfig?.precio || 1000)})!`}
+              <div className="mt-12 text-center">
+                <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
+                  {config.ventasActivas ? (config.pasosBotonCta || "Comenzar y Elegir mis Tokens →") : "🔥 Consultar Preventa por WhatsApp →"}
                 </Button>
               </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* MINI-SORTEOS SEMANALES */}
-        {config.miniSorteosActivo && (
+        {/* SECCIÓN DETALLADA DE PREMIOS (FUERA DEL BLOQUE PRINCIPAL) CON MÁS INFORMACIÓN Y CTAS PROPIOS */}
+        {config.mostrarSeccionDetallePremios !== false && premiosVisibles.length > 0 && (() => {
+          const premioActivo = premiosVisibles[premioDetalleIdx] || premiosVisibles[0];
+          const nivelStr = (premioActivo?.nivel || "").trim();
+          const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
+          const isEleccion2 = nivelStr === "2° Lugar" || nivelStr === "2° Lugar (A Elección)";
+          const isEfectivo3 = nivelStr === "3° Lugar" || nivelStr === "3° Lugar (Efectivo)";
+          const isExtra = nivelStr === "Premio Extra";
+          const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (premioDetalleIdx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
+          const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (premioDetalleIdx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
+
+          const tagLugar = isMayor
+            ? "1° Lugar Oficial"
+            : isSegundo
+            ? "2° Lugar Oficial"
+            : isEfectivo3
+            ? "3° Lugar Oficial"
+            : isExtra
+            ? "Premio Extra"
+            : "Premio Oficial";
+
+          const nombreLower = (premioActivo?.nombre || "").toLowerCase();
+          const esDucati = nombreLower.includes("ducati") || nombreLower.includes("multistrada") || nombreLower.includes("moto");
+          const esSubaru = nombreLower.includes("subaru") || nombreLower.includes("impreza") || nombreLower.includes("wrx");
+          const esEfectivoReal = isEfectivo3 || nombreLower.includes("efectivo") || nombreLower.includes("colones") || nombreLower.includes("plata");
+
+          const defaultImg =
+            esSubaru
+              ? subaruImg
+              : esDucati
+              ? motoImg
+              : esEfectivoReal
+              ? consolaImg
+              : isMayor
+              ? carroImg
+              : isSegundo
+              ? motoImg
+              : consolaImg;
+
+          const imagenFinal = premioActivo?.imagen || defaultImg;
+
+          const bonoSupertoken =
+            isMayor || isEleccion1
+              ? config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000
+              : isSegundo || isEleccion2
+              ? config.supertokenPremioSegundoUsd || 250000
+              : config.supertokenPremioTerceroUsd || 1500000;
+
+          const infoDetalle = esDucati
+            ? {
+                subtitulo: "La máxima expresión de superbike italiana en formato trail touring. Rendimiento brutal con motor Desmosedici Stradale V4 derivado de MotoGP, escape Akrapovič de titanio y acabados exclusivos en fibra de carbono.",
+                features: [
+                  { icono: Gauge, titulo: "Motor Desmosedici Stradale V4", desc: "1,103 cc con embrague en seco STM-EVO SBK y distribución desmodrómica de competición." },
+                  { icono: Flame, titulo: "Potencia Brutal de 180 CV", desc: "Aceleración demoledora, escape Akrapovič homologado de titanio y modos de conducción Race." },
+                  { icono: Star, titulo: "Chasis Monocasco & Carbono", desc: "Subchasis de titanio, rines forjados Marchesini y elementos aerodinámicos de competición." },
+                  { icono: ShieldCheck, titulo: "0 KM · Marchamo y Notario Pagos", desc: "Sacada de agencia 0KM, traspaso notarial y marchamo 2026 100% cubiertos por la empresa." },
+                ],
+                garantia: "Si resultas favorecido con el 1° Lugar, nos encargamos de todo el trámite de traspaso notarial, placas metálicas a tu nombre, marchamo 2026 y entrega con tanque lleno.",
+                ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR LA DUCATI MULTISTRADA! →",
+                waTexto: "¡Hola! Quiero participar por la Ducati Multistrada V4 RS en Aval Community CR. ¿Me dan más información?",
+              }
+            : esSubaru
+            ? {
+                subtitulo: "La leyenda indiscutible del Campeonato Mundial de Rally. Tracción total simétrica permanente (Symmetrical AWD), motor Boxer Turbo 2.5L de alto rendimiento y control supremo en asfalto y pista.",
+                features: [
+                  { icono: Gauge, titulo: "Motor Boxer 2.5L Turbo High-Output", desc: "Potencia turboalimentada con intercooler frontal y el rugido inconfundible Boxer." },
+                  { icono: Compass, titulo: "Tracción Symmetrical AWD + DCCD", desc: "Tracción integral permanente con diferencial central controlado electrónicamente por el piloto." },
+                  { icono: Star, titulo: "Frenos Brembo & Caja Manual 6V", desc: "Pinzas deportivas Brembo ventiladas de alta respuesta y transmisión manual pura de 6 marchas." },
+                  { icono: ShieldCheck, titulo: "100% Legalizado y Marchamo al Día", desc: "Condiciones mecánicas impecables, inspección técnica aprobada y traspaso formal ante Notario." },
+                ],
+                garantia: "El favorecido del 2° Lugar recibe este vehículo formalmente adjudicado ante Notario Público con todos los derechos al día y listo para rodar.",
+                ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR EL SUBARU WRX STI! →",
+                waTexto: "¡Hola! Me interesa participar por el Subaru Impreza WRX STI en Aval Community CR. ¿Cómo elijo mis tokens?",
+              }
+            : esEfectivoReal
+            ? {
+                subtitulo: "Premio oficial en dinero líquido transferido inmediatamente a tu cuenta bancaria o consola PlayStation 5 Slim Digital 0KM con controles inalámbricos y juegos.",
+                features: [
+                  { icono: Sparkles, titulo: "₡4,000,000 CRC en Efectivo Líquido", desc: "Transferencia bancaria directa o por SINPE Móvil oficial a tu cuenta sin comisiones ni retenciones." },
+                  { icono: Star, titulo: "Libre Disposición Inmediata", desc: "Dinero en mano para invertir, pagar deudas, viajar, emprender tu proyecto o ahorrar." },
+                  { icono: Flame, titulo: "Opción Consola PS5 Slim Sellada", desc: "Consola PlayStation 5 Slim 0KM sellada de fábrica con controles DualSense y videojuegos." },
+                  { icono: ShieldCheck, titulo: "Acta Notarial y Comprobante Formal", desc: "Entrega legal con comprobante de depósito bancario formal avalado por Notario Público." },
+                ],
+                garantia: "El 3° Lugar cuenta con entrega formal garantizada. Transferimos el dinero de inmediato con respaldo legal para tu total tranquilidad.",
+                ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR LOS ₡4,000,000 CRC! →",
+                waTexto: "¡Hola! Quiero participar por el 3° Lugar en Efectivo / PS5 en Aval Community CR. ¿Cuáles números quedan?",
+              }
+            : {
+                subtitulo: sorteo.detalleSubtitulo || "Vehículo o beneficio de alta gama certificado, sacado de agencia con garantía y entregado formalmente a tu nombre con marchamo y traspaso incluido.",
+                features: (sorteo.detalleFeatures && sorteo.detalleFeatures.length > 0 ? sorteo.detalleFeatures : FEATURES_DEFAULT).map((f: any, i: number) => ({
+                  icono: featureIcons[i % featureIcons.length] || Gauge,
+                  titulo: f.titulo,
+                  desc: f.desc,
+                })),
+                garantia: sorteo.detalleGarantia || "Si resultas favorecido, nos encargamos de todo el trámite de traspaso notarial, placas, marchamo del año y entrega con tanque lleno.",
+                ctaTexto: `🔥 ¡QUIERO PARTICIPAR POR ${premioActivo.nombre.toUpperCase()}! →`,
+                waTexto: `¡Hola! Quiero participar por el premio "${premioActivo.nombre}" en Aval Community CR.`,
+              };
+
+          const waUrlPremio = `https://wa.me/${config.promoWhatsapp || "50686344772"}?text=${encodeURIComponent(infoDetalle.waTexto)}`;
+
+          return (
+            <section id="detalle-premios" className="py-20 bg-secondary/20 border-t border-border/60">
+              <div className="mx-auto max-w-6xl px-5">
+                {/* Encabezado de la Sección */}
+                <div className="text-center max-w-3xl mx-auto">
+                  <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                    Ficha Técnica y Detalles de Cada Entrega
+                  </span>
+                  <h2 className="mt-2 font-display text-4xl sm:text-5xl tracking-wide uppercase">
+                    Conocé en Detalle Cada Premio
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    Información técnica exhaustiva, garantía de traspaso notarial, bonos de SuperToken y llamados a la acción exclusivos para cada uno de los premios de esta edición.
+                  </p>
+                </div>
+
+                {/* Selector de Pestañas (Tabs) de los Premios */}
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                  {premiosVisibles.map((p, idx) => {
+                    const isSelected = premioDetalleIdx === idx;
+                    const pNombreLower = (p.nombre || "").toLowerCase();
+                    const iconoEmoji =
+                      pNombreLower.includes("ducati") || pNombreLower.includes("moto")
+                        ? "🏍️"
+                        : pNombreLower.includes("subaru") || pNombreLower.includes("carro")
+                        ? "🚗"
+                        : "💵";
+
+                    const pNivel =
+                      idx === 0 ? "1° Lugar" : idx === 1 ? "2° Lugar" : idx === 2 ? "3° Lugar" : p.nivel;
+
+                    return (
+                      <button
+                        key={p.id || idx}
+                        onClick={() => setPremioDetalleIdx(idx)}
+                        className={`px-4 sm:px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 flex items-center gap-2.5 cursor-pointer shadow-md ${
+                          isSelected
+                            ? "bg-gradient-to-r from-amber-500 to-amber-600 text-black border-2 border-amber-400 scale-[1.03] shadow-[0_0_25px_rgba(245,158,11,0.35)]"
+                            : "bg-card/80 text-foreground border border-border hover:border-amber-500/50 hover:bg-secondary"
+                        }`}
+                      >
+                        <span className="text-base sm:text-lg">{iconoEmoji}</span>
+                        <span className="flex flex-col text-left leading-tight">
+                          <span className={`text-[10px] uppercase tracking-wider ${isSelected ? "text-black/80 font-black" : "text-primary"}`}>
+                            {pNivel}
+                          </span>
+                          <span className="font-bold truncate max-w-[150px] sm:max-w-[200px]">
+                            {p.nombre}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Contenedor Principal del Premio Seleccionado (2 Columnas) */}
+                <div className="mt-12 grid gap-10 lg:grid-cols-12 items-center bg-card/60 rounded-3xl border border-border/80 p-6 sm:p-10 shadow-xl backdrop-blur">
+                  {/* Columna Izquierda: Especificaciones Técnicas y CTAs Propios */}
+                  <div className="lg:col-span-7 space-y-6 text-left">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-amber-500/15 dark:text-amber-400 text-amber-700 border border-amber-500/40 px-3 py-1 text-xs font-black uppercase">
+                        {tagLugar}
+                      </span>
+                      {config.supertokenActivo !== false && (
+                        <span className="rounded-full bg-black/80 text-amber-300 border border-amber-500/60 px-3 py-1 text-xs font-bold uppercase flex items-center gap-1.5 shadow-sm">
+                          <Crown className="size-3.5 text-amber-400" />
+                          {`+${superSimbolo}${formatNumber(bonoSupertoken)} ${superCodigo} Cash`}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-foreground">
+                        {premioActivo.nombre}
+                      </h3>
+                      <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed">
+                        {infoDetalle.subtitulo}
+                      </p>
+                    </div>
+
+                    {/* 4 Tarjetas de Especificaciones Técnicas */}
+                    <div className="grid sm:grid-cols-2 gap-3.5 pt-2">
+                      {infoDetalle.features.map((feat: any, i: number) => {
+                        const Icono = feat.icono || Gauge;
+                        return (
+                          <div
+                            key={i}
+                            className="rounded-2xl border border-border/80 bg-secondary/50 p-4 flex items-start gap-3.5 hover:border-amber-500/40 transition-colors"
+                          >
+                            <div className="rounded-xl bg-primary/10 p-2.5 text-primary shrink-0">
+                              <Icono className="size-5 dark:text-amber-400 text-amber-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-sm text-foreground">{feat.titulo}</h4>
+                              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{feat.desc}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* SUS PROPIOS LLAMADOS A LA ACCIÓN (CTAs INDEPENDIENTES) */}
+                    <div className="pt-4 space-y-3">
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          variant="hero"
+                          size="xl"
+                          onClick={() => {
+                            setPaquete(paquetes[1] || paquetes[0]);
+                            irAPaquetes();
+                          }}
+                          className="flex-1 py-7 text-base font-black shadow-[var(--shadow-fire)] cursor-pointer"
+                        >
+                          <Ticket className="size-5" />
+                          {infoDetalle.ctaTexto}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="xl"
+                          asChild
+                          className="py-7 text-xs sm:text-sm border-emerald-500/50 dark:text-emerald-400 text-emerald-700 hover:bg-emerald-500/10"
+                        >
+                          <a href={waUrlPremio} target="_blank" rel="noopener noreferrer">
+                            <MessageCircle className="size-4" /> Consultar por WhatsApp
+                          </a>
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
+                        <button
+                          onClick={() => setPremioModal(premioActivo)}
+                          className="inline-flex items-center gap-1.5 dark:text-amber-400 text-amber-600 hover:text-amber-700 font-semibold cursor-pointer underline underline-offset-4"
+                        >
+                          <Sparkles className="size-3.5" /> Ver ficha emergente "Comprá y ganá" completa
+                        </button>
+                        <span className="flex items-center gap-1 text-[11px]">
+                          <ShieldCheck className="size-3.5 dark:text-emerald-400 text-emerald-600" /> Traspaso notarial 100% incluido
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Columna Derecha: Foto Showcase en HD y Garantía Aval */}
+                  <div className="lg:col-span-5 space-y-4">
+                    <div
+                      className="overflow-hidden rounded-3xl border-2 border-amber-500/40 shadow-2xl bg-neutral-950 relative h-80 sm:h-96 flex items-center justify-center group cursor-pointer"
+                      onClick={() => setPremioModal(premioActivo)}
+                    >
+                      <img
+                        src={imagenFinal}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none"
+                      />
+                      <img
+                        src={imagenFinal}
+                        alt={premioActivo.nombre}
+                        className="relative z-0 max-h-80 sm:max-h-92 max-w-full w-auto h-auto object-contain p-3 drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                      <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-black/85 px-3 py-1.5 text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-md group-hover:bg-amber-500 group-hover:text-black transition-colors">
+                        <ZoomIn className="size-3.5" /> Tocar para ampliar & "Comprá y ganá"
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 via-secondary/40 to-transparent p-5 text-left">
+                      <h4 className="font-bold text-sm sm:text-base text-primary flex items-center gap-2">
+                        <Award className="size-4 sm:size-5 dark:text-amber-400 text-amber-600" /> Garantía Aval Community CR
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        {infoDetalle.garantia}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* MODALIDAD VIP: SUPERTOKEN (1°, 2° Y 3° LUGAR EN EFECTIVO) */}
+        {config.supertokenActivo !== false && (
           <div className="mx-auto max-w-6xl px-5 py-8">
-            <MiniSorteosSection config={config} />
+            <SuperTokenSection config={config} />
           </div>
         )}
 
-        {/* GANADORES ANTERIORES Y TESTIMONIOS */}
-        <GanadoresSection ganadores={sorteo.ganadoresTestimonios} />
-
-        {/* PROGRAMA DE REFERIDOS Y PADRINOS */}
-        {config.referidosActivo !== false && config.referidosPromoLandingActivo !== false && (
-          <div className="mx-auto max-w-6xl px-5 py-8">
-            <ReferidosLandingSection config={config} />
-          </div>
+        {/* PROGRAMA DE REFERIDOS Y AMIGOS INVITADOS UNIFICADO (TODO EN UN SOLO MÓDULO) */}
+        {config.mostrarSeccionReferidos !== false && config.referidosActivo !== false && (
+          <ProgramaReferidosUnificado config={config} />
         )}
 
-        {/* COMERCIOS ALIADOS & SPONSORS (DESCUENTOS PARA LA COMUNIDAD) */}
-        <div className="mx-auto max-w-6xl px-5 py-8">
+        {/* DESCUENTOS EN COMERCIOS AFILIADOS (SECCIÓN APARTE) */}
+        {config.mostrarSeccionSponsors !== false && (
           <SponsorsLandingSection />
-        </div>
-
-        {/* RANKING Y CONCURSO DE REFERIDOS */}
-        {config.rankingReferidosActivo && (
-          <div id="ranking-referidos" className="mx-auto max-w-6xl px-5 py-4">
-            <RankingReferidos config={config} />
-          </div>
         )}
 
-        {/* PREGUNTAS FRECUENTES */}
-        <FaqSection faqs={sorteo.faqs} />
+        {/* MINI-SORTEOS SEMANALES (ACTIVABLE DESDE ADMIN) */}
+        {config.mostrarSeccionMiniSorteos === true && (
+          <MiniSorteosSection config={config} sorteo={sorteo} />
+        )}
+
+        {/* GANADORES Y TESTIMONIOS (ACTIVABLE DESDE ADMIN) */}
+        {config.mostrarSeccionGanadores === true && (
+          <GanadoresSection ganadores={sorteo.ganadoresTestimonios} />
+        )}
+
+        {/* BANNER CTA FINAL ENFOCADO 100% EN TOKENS */}
+        <section className="py-16 mx-auto max-w-5xl px-5 text-center">
+          <div className="rounded-3xl border-2 border-primary/50 bg-gradient-to-b from-card via-card to-primary/10 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-primary/15 blur-[100px]" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-wider text-primary">
+              <Sparkles className="size-3.5" /> Edición Limitada Oficial
+            </span>
+            <h3 className="mt-4 font-display text-3xl sm:text-5xl tracking-tight uppercase">
+              ¿Listo para estrenar tu vehículo soñado?
+            </h3>
+            <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Selecciona tu paquete de tokens hoy mismo. Asignación inmediata, resultados 100% auditados por la JPS y entrega legal ante notario público.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button
+                variant="hero"
+                size="xl"
+                onClick={irAPaquetes}
+                className="w-full sm:w-auto px-10 py-7 text-base shadow-[var(--shadow-fire)] font-black cursor-pointer"
+              >
+                <Ticket className="size-5" />
+                {config.ventasActivas ? "Elegir mis Tokens Ahora →" : "Consultar Preventa por WhatsApp →"}
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* PREGUNTAS FRECUENTES (RESOLUCIÓN DE DUDAS DE COMPRA) */}
+        {config.mostrarSeccionFaqs !== false && (
+          <FaqSection faqs={sorteo.faqs} config={config} />
+        )}
       </main>
 
       <Footer />
@@ -1422,6 +1415,19 @@ function IndexPage() {
         config={config}
       />
 
+      <PremioModal
+        premio={premioModal}
+        open={!!premioModal}
+        onOpenChange={(v) => { if (!v) setPremioModal(null); }}
+        onSelectTokens={(paq) => {
+          if (paq) setPaquete(paq);
+          setOpen(true);
+        }}
+        config={config}
+        sorteo={sorteo}
+        paquetes={paquetes}
+      />
+
       <JuegosExpressModal
         open={openRaspa}
         onOpenChange={setOpenRaspa}
@@ -1430,11 +1436,11 @@ function IndexPage() {
 
       {/* MODAL LIGHTBOX / ZOOM DE FOTO EN PANTALLA COMPLETA */}
       <Dialog open={!!fotoZoom} onOpenChange={(v) => { if (!v) setFotoZoom(null); }}>
-        <DialogContent className="max-w-5xl w-[95vw] border border-amber-500/40 bg-zinc-950/95 p-3 sm:p-5 shadow-[0_0_80px_rgba(0,0,0,0.95)] backdrop-blur-2xl text-foreground">
+        <DialogContent className="max-w-5xl w-[95vw] border dark:border-amber-500/40 border-amber-500/50 dark:bg-zinc-950/95 bg-white/95 p-3 sm:p-5 shadow-[0_0_80px_rgba(0,0,0,0.5)] backdrop-blur-2xl text-foreground">
           <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/50 text-left">
             <div>
               {fotoZoom?.nivel && (
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/40">
+                <span className="text-[10px] font-bold uppercase tracking-wider dark:text-amber-400 text-amber-700 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/40">
                   {fotoZoom.nivel}
                 </span>
               )}

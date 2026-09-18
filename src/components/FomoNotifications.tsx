@@ -132,8 +132,8 @@ export function FomoNotifications({ config }: { config: Config }) {
       aria-label="Notificaciones de actividad en vivo"
       className="fixed bottom-4 left-3 max-w-[calc(100%-5.5rem)] sm:bottom-6 sm:left-6 sm:max-w-xs z-40 animate-in fade-in slide-in-from-bottom-5 duration-500"
     >
-      <div className="flex items-start gap-3 rounded-2xl border border-primary/40 bg-zinc-950/95 p-3.5 shadow-2xl backdrop-blur-md text-foreground">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">
+      <div className="flex items-start gap-3 rounded-2xl border dark:border-primary/40 border-slate-300/90 dark:bg-zinc-950/95 bg-white/95 p-3.5 shadow-2xl backdrop-blur-md text-foreground">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
           {eventoActual.icono === "flame" ? (
             <Flame className="size-5 text-amber-500 animate-bounce" />
           ) : eventoActual.icono === "coins" ? (

@@ -182,15 +182,6 @@ export function AdminSidebarContent({
               <ExternalLink className="size-3 text-muted-foreground" />
             </Link>
             <Link
-              to="/remates"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-500 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-400"
-            >
-              <Gavel className="size-4 shrink-0 text-amber-500" />
-              <span className="flex-1">Sala de Remates VIP</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
-            <Link
               to="/validar"
               onClick={onItemClick}
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"

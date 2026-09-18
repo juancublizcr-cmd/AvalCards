@@ -120,6 +120,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="es-CR" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('aval_theme')||'dark';if(t==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light')}else{document.documentElement.classList.add('dark');document.documentElement.classList.remove('light')}}catch(e){}})()`,
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
         {children}

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { FileText, Flame, Lock, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Footer() {
   const abrirWhatsApp = (asunto: string) => {
@@ -43,11 +44,6 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/remates" className="text-amber-500 font-semibold hover:text-amber-400 transition-colors">
-                Sala de Remates VIP
-              </Link>
-            </li>
-            <li>
               <Link to="/validar" className="hover:text-primary transition-colors">
                 Validar mis Tokens
               </Link>
@@ -58,12 +54,12 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/impacto-social" className="text-emerald-400 font-semibold hover:text-emerald-300 transition-colors">
+              <Link to="/impacto-social" className="dark:text-emerald-400 text-emerald-700 font-semibold hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors">
                 ❤️ Impacto y Bien Social
               </Link>
             </li>
             <li>
-              <Link to="/sponsors" className="text-amber-400 font-semibold hover:text-amber-300 transition-colors">
+              <Link to="/sponsors" className="dark:text-amber-400 text-amber-700 font-semibold hover:text-amber-600 dark:hover:text-amber-300 transition-colors">
                 🤝 Comercios & Descuentos
               </Link>
             </li>
@@ -110,6 +106,8 @@ export function Footer() {
           <Link to="/terminos" className="hover:text-foreground transition-colors">Reglamento</Link>
           <Link to="/privacidad" className="hover:text-foreground transition-colors">Privacidad</Link>
           <Link to="/reembolso" className="hover:text-foreground transition-colors">Reembolsos</Link>
+          <span className="opacity-25">·</span>
+          <ThemeToggle compact />
           <span className="opacity-25">·</span>
           <Link
             to="/comercio"
