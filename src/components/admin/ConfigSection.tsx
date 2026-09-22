@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Bot,
   Coins,
@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Save,
   ShieldAlert,
+  SlidersHorizontal,
   Smartphone,
   Sparkles,
   Timer,
@@ -42,20 +43,24 @@ import { FacturaOSConfigCard } from "@/components/FacturaOSConfigCard";
 export function ConfigSection({
   config,
   setConfig,
+  onCambiarSeccion,
 }: {
   config: Config;
   setConfig: (c: Config) => void;
+  onCambiarSeccion?: (s: any) => void;
 }) {
   const [borrador, setBorrador] = useState<Config>(config);
   const [guardando, setGuardando] = useState(false);
   const [probandoIA, setProbandoIA] = useState(false);
   const [mostrarKeys, setMostrarKeys] = useState<Record<string, boolean>>({});
-  const [modoSimulacion, setModoSimulacion] = useState<string>(() => {
+  const [modoSimulacion, setModoSimulacion] = useState<string>("auto");
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("aval_simulador_sorteo_estado") || "auto";
+      const guardado = localStorage.getItem("aval_simulador_sorteo_estado");
+      if (guardado) setModoSimulacion(guardado);
     }
-    return "auto";
-  });
+  }, []);
 
   const cambiarModoSimulacion = (nuevo: string) => {
     setModoSimulacion(nuevo);
@@ -159,12 +164,22 @@ export function ConfigSection({
             </p>
           </div>
         </div>
-        <a
-          href="/admin?seccion=disenoWeb"
-          className="shrink-0 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow hover:bg-primary/90 transition-colors"
-        >
-          Ir a Textos y Botones Web →
-        </a>
+        {onCambiarSeccion ? (
+          <button
+            type="button"
+            onClick={() => onCambiarSeccion("disenoWeb")}
+            className="shrink-0 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow hover:bg-primary/90 transition-colors cursor-pointer"
+          >
+            Ir a Textos y Botones Web →
+          </button>
+        ) : (
+          <a
+            href="/admin?seccion=disenoWeb"
+            className="shrink-0 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow hover:bg-primary/90 transition-colors"
+          >
+            Ir a Textos y Botones Web →
+          </a>
+        )}
       </div>
 
       {/* FACTURACIÓN ELECTRÓNICA FACTURAOS */}
@@ -549,7 +564,7 @@ export function ConfigSection({
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">{borrador.paypalActivo ? "Activo" : "Inactivo"}</span>
             <Switch
-              checked={borrador.paypalActivo ?? true}
+              checked={Boolean(borrador.paypalActivo)}
               onCheckedChange={(v) => setBorrador({ ...borrador, paypalActivo: v })}
             />
           </div>
@@ -605,7 +620,7 @@ export function ConfigSection({
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">{borrador.applePayActivo ? "Activo" : "Inactivo"}</span>
             <Switch
-              checked={borrador.applePayActivo ?? true}
+              checked={Boolean(borrador.applePayActivo)}
               onCheckedChange={(v) => setBorrador({ ...borrador, applePayActivo: v })}
             />
           </div>
@@ -645,7 +660,7 @@ export function ConfigSection({
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">{borrador.googlePayActivo ? "Activo" : "Inactivo"}</span>
             <Switch
-              checked={borrador.googlePayActivo ?? true}
+              checked={Boolean(borrador.googlePayActivo)}
               onCheckedChange={(v) => setBorrador({ ...borrador, googlePayActivo: v })}
             />
           </div>

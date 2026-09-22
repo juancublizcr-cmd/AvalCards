@@ -13,11 +13,8 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-5 grid gap-8 md:grid-cols-4">
         {/* Col 1: Marca e info */}
         <div className="md:col-span-2 space-y-3">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <img src="/isotipo.png" alt="Aval Community CR" className="size-6 sm:size-7 object-contain shrink-0" />
-            <span className="font-display text-2xl tracking-widest">
-              AVAL <span className="text-primary">COMMUNITY CR</span>
-            </span>
+          <Link to="/" className="inline-flex items-center">
+            <img src="/logo.png" alt="Aval Community CR" style={{ mixBlendMode: "screen" }} className="h-8 sm:h-9 w-auto object-contain" />
           </Link>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
             Eventos promocionales 100% transparentes auditados con los resultados de la Emisión Oficial de la JPS en Costa Rica.

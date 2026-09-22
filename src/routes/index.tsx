@@ -291,17 +291,18 @@ function IndexPage() {
   const t = useCuentaRegresiva(fechaSorteo, sorteo.horaSorteo, config.horasCierrePrevio);
   const ventasAbiertas = config.ventasActivas && t.estado === "VENTAS_ABIERTAS";
   const cierrePrevio = t.estado === "CIERRE_PREVIO";
-  const enCurso = t.estado === "EN_CURSO" || t.estado === "FINALIZADO";
+  const sorteoFinalizado = t.estado === "FINALIZADO";
+  const enCurso = t.estado === "EN_CURSO";
 
   const featureIcons = [Gauge, Compass, Star, FileCheck];
 
   const metodosActivosLista = [
-    { id: "sinpe", nombre: "SINPE Móvil", icono: "📱", activo: config.sinpeActivo ?? true },
-    { id: "tarjeta", nombre: "Tarjeta", icono: "💳", activo: config.tilopayActivo ?? true },
-    { id: "paypal", nombre: "PayPal", icono: "🅿️", activo: config.paypalActivo ?? true },
-    { id: "applepay", nombre: "Apple Pay", icono: "🍏", activo: config.applePayActivo ?? true },
-    { id: "googlepay", nombre: "Google Pay", icono: "🌐", activo: config.googlePayActivo ?? true },
-    { id: "crypto", nombre: "Cripto USDT", icono: "🪙", activo: config.cryptoActivo ?? true },
+    { id: "sinpe", nombre: "SINPE Móvil", icono: "📱", activo: config.sinpeActivo !== false },
+    { id: "tarjeta", nombre: "Tarjeta", icono: "💳", activo: config.tilopayActivo !== false },
+    { id: "paypal", nombre: "PayPal", icono: "🅿️", activo: Boolean(config.paypalActivo) },
+    { id: "applepay", nombre: "Apple Pay", icono: "🍏", activo: Boolean(config.applePayActivo) },
+    { id: "googlepay", nombre: "Google Pay", icono: "🌐", activo: Boolean(config.googlePayActivo) },
+    { id: "crypto", nombre: "Cripto USDT", icono: "🪙", activo: Boolean(config.cryptoActivo) },
   ].filter((m) => m.activo);
 
   const nombresMetodos = metodosActivosLista.map((m) => m.nombre);
@@ -421,7 +422,7 @@ function IndexPage() {
   };
 
   const abrir = (p: Paquete) => {
-    if (cierrePrevio || enCurso) {
+    if (cierrePrevio || enCurso || sorteoFinalizado) {
       window.location.href = "/validar";
       return;
     }
@@ -434,7 +435,7 @@ function IndexPage() {
   };
 
   const irAPaquetes = () => {
-    if (cierrePrevio || enCurso) {
+    if (cierrePrevio || enCurso || sorteoFinalizado) {
       window.location.href = "/validar";
       return;
     }
@@ -456,95 +457,67 @@ function IndexPage() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Barra de Notificación Superior */}
-      <div className={`py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase ${
-        cierrePrevio
-          ? "bg-amber-600 animate-pulse text-black font-black"
-          : enCurso
-          ? "bg-red-600 font-black text-white"
-          : "bg-[image:var(--gradient-fire)]"
-      }`}>
-        {enCurso
-          ? "🎯 ¡SORTEO OFICIAL EN PROCESO! · TRANSMISIÓN Y AUDITORÍA EN CURSO"
-          : cierrePrevio
-          ? `🔒 VENTAS CERRADAS · PREPARANDO SORTEO OFICIAL DE LAS ${formatearHora12(sorteo.horaSorteo || "19:30")}`
-          : config.ventasActivas
-          ? "🔥 Edición Especial 2026 · Más del 85% de Tokens colocados · ¡Quedan pocos cupos!"
-          : config.promoTitulo || "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"}
-      </div>
+      {config.mostrarBarraNotificacion !== false && (
+        <div className={`py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase ${
+          cierrePrevio
+            ? "bg-amber-600 animate-pulse text-black font-black"
+            : enCurso
+            ? "bg-red-600 font-black text-white"
+            : "bg-[image:var(--gradient-fire)]"
+        }`}>
+          {enCurso
+            ? "🎯 ¡SORTEO OFICIAL EN PROCESO! · TRANSMISIÓN Y AUDITORÍA EN CURSO"
+            : cierrePrevio
+            ? `🔒 VENTAS CERRADAS · PREPARANDO SORTEO OFICIAL DE LAS ${formatearHora12(sorteo.horaSorteo || "19:30")}`
+            : config.ventasActivas
+            ? "🔥 Edición Especial 2026 · Más del 85% de Tokens colocados · ¡Quedan pocos cupos!"
+            : config.promoTitulo || "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"}
+        </div>
+      )}
 
       {/* Header Sticky */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 gap-2">
-          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            <img src="/isotipo.png" alt="Aval Community CR" className="size-6 sm:size-7 object-contain shrink-0" />
-            <span className="font-display text-lg sm:text-2xl tracking-widest whitespace-nowrap">
-              AVAL <span className="text-primary">COMMUNITY CR</span>
-            </span>
+          <Link to="/" className="flex items-center shrink-0">
+            <img
+              src="/logo.png"
+              alt="Aval Community CR"
+              className="h-9 sm:h-10 w-auto object-contain transition-transform hover:scale-105"
+            />
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
-            >
-              <a href="#como-funciona">¿Cómo funciona?</a>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 font-bold"
-            >
-              <a href="#detalle-premios">Premios</a>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
-            >
-              <Link to="/referidos">Referidos</Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
-            >
-              <Link to="/sponsors">Comercios</Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground"
-            >
-              <Link to="/validar">Validar Tokens</Link>
-            </Button>
-            <ThemeToggle compact />
-            <Button
-              variant="hero"
-              size="sm"
-              onClick={irAPaquetes}
-              className={`h-8 px-3 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap cursor-pointer ${
-                cierrePrevio
-                  ? "bg-amber-600 hover:bg-amber-500 text-black shadow-none"
-                  : enCurso
-                  ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
+          {config.mostrarNavegacion !== false && (
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <Button variant="ghost" size="sm" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })} className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground cursor-pointer">
+                ¿Cómo funciona?
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => document.getElementById("detalle-premios")?.scrollIntoView({ behavior: "smooth" })} className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 font-bold cursor-pointer">
+                Premios
+              </Button>
+              <Button variant="ghost" size="sm" asChild className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
+                <Link to="/referidos">Referidos</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
+                <Link to="/sponsors">Comercios</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
+                <Link to="/validar">Validar Tokens</Link>
+              </Button>
+              <ThemeToggle compact />
+              <Button
+                variant="hero"
+                size="sm"
+                onClick={irAPaquetes}
+                className={`h-8 px-3 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap cursor-pointer ${
+                  cierrePrevio ? "bg-amber-600 hover:bg-amber-500 text-black shadow-none"
+                  : enCurso ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
                   : "shadow-[var(--shadow-fire)]"
-              }`}
-            >
-              {enCurso
-                ? "🎯 Sorteo en Vivo"
-                : cierrePrevio
-                ? "🔒 Sorteo en Breve"
-                : config.ventasActivas
-                ? "Comprar Tokens"
-                : "🔥 Preventa"}
-            </Button>
-          </div>
+                }`}
+              >
+                {enCurso ? "🎯 Sorteo en Vivo" : cierrePrevio ? "🔒 Sorteo en Breve" : config.ventasActivas ? "Comprar Tokens" : "🔥 Preventa"}
+              </Button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -556,25 +529,27 @@ function IndexPage() {
           <div className="relative mx-auto max-w-6xl px-5 text-center">
             {/* Badges de Foco 100% en Tokens */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${
-                  enCurso
-                    ? "border-red-500/50 bg-red-500/15 text-red-400 animate-pulse"
-                    : cierrePrevio
-                    ? "border-amber-500/50 bg-amber-500/15 text-amber-400 font-bold"
-                    : "border-primary/50 bg-primary/10 text-primary"
-                }`}>
-                  <Sparkles className="size-3.5" />{" "}
-                  {enCurso
-                    ? "🎯 SORTEO OFICIAL EN CURSO"
-                    : cierrePrevio
-                    ? "🔒 VENTAS CERRADAS · PREPARANDO EMISIÓN"
-                    : config.ventasActivas
-                    ? (config.heroBadgeEvento || "Evento Promocional Oficial Costa Rica")
-                    : "🔥 PREVENTA EXCLUSIVA 2026"}
-                </div>
+                {config.mostrarBadgeSorteo !== false && (
+                  <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${
+                    enCurso
+                      ? "border-red-500/50 bg-red-500/15 text-red-400 animate-pulse"
+                      : cierrePrevio
+                      ? "border-amber-500/50 bg-amber-500/15 text-amber-400 font-bold"
+                      : "border-primary/50 bg-primary/10 text-primary"
+                  }`}>
+                    <Sparkles className="size-3.5" />{" "}
+                    {enCurso
+                      ? "🎯 SORTEO OFICIAL EN CURSO"
+                      : cierrePrevio
+                      ? "🔒 VENTAS CERRADAS · PREPARANDO EMISIÓN"
+                      : config.ventasActivas
+                      ? (config.heroBadgeEvento || "Evento Promocional Oficial Costa Rica")
+                      : "🔥 PREVENTA EXCLUSIVA 2026"}
+                  </div>
+                )}
 
                 {/* Badge del Paquete Más Popular destacado arriba */}
-                {paquetes.length > 1 && (
+                {config.mostrarBadgePopular !== false && paquetes.length > 1 && (
                   <button
                     onClick={irAPaquetes}
                     className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/60 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 px-4 py-1.5 text-xs font-bold dark:text-amber-400 text-amber-800 shadow-md hover:scale-105 transition-transform cursor-pointer"
@@ -584,10 +559,12 @@ function IndexPage() {
                   </button>
                 )}
 
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold dark:text-emerald-400 text-emerald-700">
-                  <CheckCircle2 className="size-3.5 dark:text-emerald-400 text-emerald-600" />
-                  <span>Emisión Oficial JPS · Triple Oportunidad</span>
-                </div>
+                {config.mostrarBadgeJPS !== false && (
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold dark:text-emerald-400 text-emerald-700">
+                    <CheckCircle2 className="size-3.5 dark:text-emerald-400 text-emerald-600" />
+                    <span>Emisión Oficial JPS · Triple Oportunidad</span>
+                  </div>
+                )}
               </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
@@ -610,7 +587,15 @@ function IndexPage() {
                     : "Plataforma costarricense de eventos promocionales digitales y sorteos de vehículos de alta gama, diseñada para brindar una experiencia 100% digital, transparente y con total respaldo legal.")}
             </p>
 
-            {/* VITRINA DE LAS TRES ENTREGAS ESPECTACULARES EN LA APERTURA */}
+            {/* Logo Aval Community CR */}
+            <div className="mt-8 mb-4 flex justify-center">
+              <img
+                src="/logo-hero.png"
+                alt="Aval Community CR"
+                className="w-[300px] sm:w-[420px] md:w-[500px] max-w-full h-auto object-contain"
+              />
+            </div>
+
             {config.mostrarSeccionAperturaPremios !== false && premiosVisibles.length > 0 && (
               <div className="mt-12 text-left">
                 <div className="text-center max-w-2xl mx-auto mb-6">
@@ -805,7 +790,7 @@ function IndexPage() {
             )}
 
             {/* Termómetro de Disponibilidad y Cuenta Regresiva Oficial en el Hero */}
-            {config.mostrarSeccionTermometro !== false && (
+            {config.mostrarSeccionTermometro === true && (
               <div className={`mx-auto mt-10 max-w-2xl rounded-2xl border-2 p-5 backdrop-blur text-left ${
                 enCurso
                   ? "border-red-500/60 dark:bg-red-950/90 bg-red-50/90 shadow-[0_0_40px_rgba(239,68,68,0.25)]"
@@ -867,57 +852,62 @@ function IndexPage() {
             )}
 
             {/* CTA Principal de Conversión */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                variant="hero"
-                size="xl"
-                onClick={irAPaquetes}
-                className={`w-full sm:w-auto text-base px-8 py-7 group cursor-pointer ${
-                  cierrePrevio
-                    ? "bg-amber-500 hover:bg-amber-400 text-black font-black shadow-lg"
-                    : enCurso
-                    ? "bg-red-600 hover:bg-red-500 text-white font-black animate-pulse"
-                    : "shadow-[var(--shadow-fire)]"
-                }`}
-              >
-                {enCurso ? (
-                  <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
-                ) : cierrePrevio ? (
-                  <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
-                ) : config.ventasActivas ? (
-                  <>
-                    {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
-                    <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-                  </>
-                ) : (
-                  <>
-                    {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
-                  </>
-                )}
-              </Button>
-              <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-base px-8 py-7">
-                <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
-              </Button>
-            </div>
+            {config.mostrarCtaHero === true && (
+              <>
+                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Button
+                    variant="hero"
+                    size="xl"
+                    onClick={irAPaquetes}
+                    className={`w-full sm:w-auto text-base px-8 py-7 group cursor-pointer ${
+                      cierrePrevio
+                        ? "bg-amber-500 hover:bg-amber-400 text-black font-black shadow-lg"
+                        : enCurso
+                        ? "bg-red-600 hover:bg-red-500 text-white font-black animate-pulse"
+                        : "shadow-[var(--shadow-fire)]"
+                    }`}
+                  >
+                    {enCurso ? (
+                      <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
+                    ) : cierrePrevio ? (
+                      <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
+                    ) : config.ventasActivas ? (
+                      <>
+                        {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
+                        <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                      </>
+                    ) : (
+                      <>
+                        {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
+                      </>
+                    )}
+                  </Button>
+                  <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-base px-8 py-7">
+                    <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
+                  </Button>
+                </div>
 
-            {/* Micro-prueba social */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
-              </div>
-            </div>
+                {/* Micro-prueba social */}
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
         {/* ZONA PRINCIPAL DE COMPRA DE TOKENS (EL FOCO ABSOLUTO DE LA LANDING) */}
-        <section id="paquetes-compra" className="py-16 md:py-24 mx-auto max-w-6xl px-5 scroll-mt-24">
-          <div id="tickets-seleccion" className="text-center max-w-3xl mx-auto scroll-mt-24">
+        {config.mostrarSeccionPaquetes === true && (
+          <section id="paquetes-compra" className="py-16 md:py-24 mx-auto max-w-6xl px-5 scroll-mt-24">
+            <div id="tickets-seleccion" className="text-center max-w-3xl mx-auto scroll-mt-24">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
               <Sparkles className="size-3.5" />
               {cierrePrevio || enCurso
@@ -1024,6 +1014,7 @@ function IndexPage() {
             </div>
           </div>
         </section>
+      )}
 
         {/* CÓMO FUNCIONA EN 3 PASOS (PROCESO 100% DIGITAL Y TRANSPARENTE) */}
         {config.mostrarSeccionComoFunciona !== false && (
@@ -1069,17 +1060,19 @@ function IndexPage() {
                 ))}
               </div>
 
-              <div className="mt-12 text-center">
-                <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
-                  {config.ventasActivas ? (config.pasosBotonCta || "Comenzar y Elegir mis Tokens →") : "🔥 Consultar Preventa por WhatsApp →"}
-                </Button>
-              </div>
+              {config.mostrarSeccionPaquetes === true && (
+                <div className="mt-12 text-center">
+                  <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
+                    {config.ventasActivas ? (config.pasosBotonCta || "Comenzar y Elegir mis Tokens →") : "🔥 Consultar Preventa por WhatsApp →"}
+                  </Button>
+                </div>
+              )}
             </div>
           </section>
         )}
 
         {/* SECCIÓN DETALLADA DE PREMIOS (FUERA DEL BLOQUE PRINCIPAL) CON MÁS INFORMACIÓN Y CTAS PROPIOS */}
-        {config.mostrarSeccionDetallePremios !== false && premiosVisibles.length > 0 && (() => {
+        {config.mostrarSeccionDetallePremios === true && premiosVisibles.length > 0 && (() => {
           const premioActivo = premiosVisibles[premioDetalleIdx] || premiosVisibles[0];
           const nivelStr = (premioActivo?.nivel || "").trim();
           const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
@@ -1282,7 +1275,7 @@ function IndexPage() {
 
                     {/* SUS PROPIOS LLAMADOS A LA ACCIÓN (CTAs INDEPENDIENTES) */}
                     <div className="pt-4 space-y-3">
-                      <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex flex-col xl:flex-row gap-3">
                         <Button
                           variant="hero"
                           size="xl"
@@ -1290,17 +1283,17 @@ function IndexPage() {
                             setPaquete(paquetes[1] || paquetes[0]);
                             irAPaquetes();
                           }}
-                          className="flex-1 py-7 text-base font-black shadow-[var(--shadow-fire)] cursor-pointer"
+                          className="w-full xl:flex-1 py-6 sm:py-7 text-xs sm:text-sm font-black shadow-[var(--shadow-fire)] cursor-pointer"
                         >
-                          <Ticket className="size-5" />
-                          {infoDetalle.ctaTexto}
+                          <Ticket className="size-4 sm:size-5 shrink-0" />
+                          <span className="truncate">{infoDetalle.ctaTexto}</span>
                         </Button>
 
                         <Button
                           variant="outline"
                           size="xl"
                           asChild
-                          className="py-7 text-xs sm:text-sm border-emerald-500/50 dark:text-emerald-400 text-emerald-700 hover:bg-emerald-500/10"
+                          className="w-full xl:w-auto shrink-0 py-6 sm:py-7 text-xs sm:text-sm border-emerald-500/50 dark:text-emerald-400 text-emerald-700 hover:bg-emerald-500/10"
                         >
                           <a href={waUrlPremio} target="_blank" rel="noopener noreferrer">
                             <MessageCircle className="size-4" /> Consultar por WhatsApp
@@ -1367,11 +1360,11 @@ function IndexPage() {
         )}
 
         {/* ACCESOS SEPARADOS: REFERIDOS Y COMERCIOS ALIADOS (MODO LIMPIO Y LIGERO) */}
-        {(config.mostrarSeccionReferidos !== false || config.mostrarSeccionSponsors !== false) && (
+        {(config.mostrarSeccionReferidos === true || config.mostrarSeccionSponsors === true) && (
           <section className="py-12 mx-auto max-w-6xl px-5">
             <div className="grid sm:grid-cols-2 gap-5">
               {/* Tarjeta Enlace: Programa de Referidos */}
-              {config.mostrarSeccionReferidos !== false && config.referidosActivo !== false && (
+              {config.mostrarSeccionReferidos === true && config.referidosActivo !== false && (
                 <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-b from-card via-card to-amber-500/5 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-amber-500 transition-all group">
                   <div className="space-y-3">
                     <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-amber-600 dark:text-amber-400">
@@ -1395,7 +1388,7 @@ function IndexPage() {
               )}
 
               {/* Tarjeta Enlace: Comercios Aliados */}
-              {config.mostrarSeccionSponsors !== false && (
+              {config.mostrarSeccionSponsors === true && (
                 <div className="rounded-3xl border border-border bg-gradient-to-b from-card via-card to-secondary/30 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-emerald-500/60 transition-all group">
                   <div className="space-y-3">
                     <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-emerald-600 dark:text-emerald-400">
@@ -1432,31 +1425,33 @@ function IndexPage() {
         )}
 
         {/* BANNER CTA FINAL ENFOCADO 100% EN TOKENS */}
-        <section className="py-16 mx-auto max-w-5xl px-5 text-center">
-          <div className="rounded-3xl border-2 border-primary/50 bg-gradient-to-b from-card via-card to-primary/10 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-primary/15 blur-[100px]" />
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-              <Sparkles className="size-3.5" /> Edición Limitada Oficial
-            </span>
-            <h3 className="mt-4 font-display text-3xl sm:text-5xl tracking-tight uppercase">
-              ¿Listo para estrenar tu vehículo soñado?
-            </h3>
-            <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Selecciona tu paquete de tokens hoy mismo. Asignación inmediata, resultados 100% auditados por la JPS y entrega legal ante notario público.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                variant="hero"
-                size="xl"
-                onClick={irAPaquetes}
-                className="w-full sm:w-auto px-10 py-7 text-base shadow-[var(--shadow-fire)] font-black cursor-pointer"
-              >
-                <Ticket className="size-5" />
-                {config.ventasActivas ? "Elegir mis Tokens Ahora →" : "Consultar Preventa por WhatsApp →"}
-              </Button>
+        {config.mostrarSeccionPaquetes === true && (
+          <section className="py-16 mx-auto max-w-5xl px-5 text-center">
+            <div className="rounded-3xl border-2 border-primary/50 bg-gradient-to-b from-card via-card to-primary/10 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+              <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-primary/15 blur-[100px]" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-wider text-primary">
+                <Sparkles className="size-3.5" /> Edición Limitada Oficial
+              </span>
+              <h3 className="mt-4 font-display text-3xl sm:text-5xl tracking-tight uppercase">
+                ¿Listo para estrenar tu vehículo soñado?
+              </h3>
+              <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Selecciona tu paquete de tokens hoy mismo. Asignación inmediata, resultados 100% auditados por la JPS y entrega legal ante notario público.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button
+                  variant="hero"
+                  size="xl"
+                  onClick={irAPaquetes}
+                  className="w-full sm:w-auto px-10 py-7 text-base shadow-[var(--shadow-fire)] font-black cursor-pointer"
+                >
+                  <Ticket className="size-5" />
+                  {config.ventasActivas ? "Elegir mis Tokens Ahora →" : "Consultar Preventa por WhatsApp →"}
+                </Button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* PREGUNTAS FRECUENTES (RESOLUCIÓN DE DUDAS DE COMPRA) */}
         {config.mostrarSeccionFaqs !== false && (

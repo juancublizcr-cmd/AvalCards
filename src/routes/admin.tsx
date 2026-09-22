@@ -57,13 +57,15 @@ export const Route = createFileRoute("/admin")({
 
 function Admin() {
   const navigate = useNavigate();
-  const [seccion, setSeccion] = useState<AdminSeccion>(() => {
-    if (typeof window !== "undefined") {
-      const s = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
-      if (s && SECCIONES.some((sec) => sec.id === s)) return s;
+  const [seccion, setSeccion] = useState<AdminSeccion>("resumen");
+
+  useEffect(() => {
+    // Sincronizar sección desde URL de forma segura tras montar en el cliente (evita hydration mismatch)
+    const s = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+    if (s && SECCIONES.some((sec) => sec.id === s)) {
+      setSeccion(s);
     }
-    return "resumen";
-  });
+  }, []);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -278,7 +280,9 @@ function Admin() {
               {seccion === "social" ? <ImpactoSocialSection /> : null}
               {seccion === "sponsors" ? <SponsorsSection /> : null}
               {seccion === "disenoWeb" ? <DisenoWebSection config={config} setConfig={setConfig} /> : null}
-              {seccion === "config" ? <ConfigSection config={config} setConfig={setConfig} /> : null}
+              {seccion === "config" ? (
+                <ConfigSection config={config} setConfig={setConfig} onCambiarSeccion={handleCambiarSeccion} />
+              ) : null}
             </>
           )}
         </main>

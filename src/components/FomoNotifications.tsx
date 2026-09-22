@@ -62,7 +62,7 @@ export function FomoNotifications({ config }: { config: Config }) {
   const [descartado, setDescartado] = useState(false);
 
   useEffect(() => {
-    if (config.fomoActivo === false || descartado) return;
+    if (config.fomoActivo !== true || descartado) return;
 
     let montado = true;
     const cargarOrdenesReales = async () => {
@@ -122,7 +122,7 @@ export function FomoNotifications({ config }: { config: Config }) {
     };
   }, [config.fomoActivo, descartado, eventos]);
 
-  if (config.fomoActivo === false || descartado || !visible || !eventoActual) {
+  if (config.fomoActivo !== true || descartado || !visible || !eventoActual) {
     return null;
   }
 

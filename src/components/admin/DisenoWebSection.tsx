@@ -63,6 +63,13 @@ export function DisenoWebSection({
     if (confirm("¿Deseas restaurar todos los textos y badges a sus valores predeterminados de fábrica?")) {
       const restaurado: Config = {
         ...borrador,
+        mostrarBarraNotificacion: CONFIG_DEFAULT.mostrarBarraNotificacion,
+        mostrarNavegacion: CONFIG_DEFAULT.mostrarNavegacion,
+        mostrarBadgeSorteo: CONFIG_DEFAULT.mostrarBadgeSorteo,
+        mostrarBadgePopular: CONFIG_DEFAULT.mostrarBadgePopular,
+        mostrarBadgeJPS: CONFIG_DEFAULT.mostrarBadgeJPS,
+        mostrarSeccionTermometro: CONFIG_DEFAULT.mostrarSeccionTermometro,
+        mostrarCtaHero: CONFIG_DEFAULT.mostrarCtaHero,
         heroBadgeEvento: CONFIG_DEFAULT.heroBadgeEvento,
         heroBadgePopular: CONFIG_DEFAULT.heroBadgePopular,
         heroBadgeSuperToken: CONFIG_DEFAULT.heroBadgeSuperToken,
@@ -295,17 +302,17 @@ export function DisenoWebSection({
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-foreground">3. Zona de Paquetes de Tokens</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.ventasActivas !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-amber-500/20 text-amber-400 border border-amber-500/40"}`}>
-                        {borrador.ventasActivas !== false ? "Ventas Abiertas" : "Modo Preventa"}
+                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionPaquetes === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
+                        {borrador.mostrarSeccionPaquetes === true ? "Activo" : "Oculto"}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      El foco absoluto de la plataforma. Si desactivas ventas, cambia a botones de notificación y preventa por WhatsApp.
+                      Zona de compra de tokens. Al estar apagada, la sección completa desaparece de la landing page para periodos de prelanzamiento o suspenso.
                     </p>
                   </div>
                   <Switch
-                    checked={borrador.ventasActivas !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, ventasActivas: v })}
+                    checked={borrador.mostrarSeccionPaquetes === true}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionPaquetes: v })}
                   />
                 </div>
                 <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
@@ -581,6 +588,81 @@ export function DisenoWebSection({
                 <p className="text-xs text-muted-foreground">
                   Estas son las píldoras destacadas que aparecen en la parte superior antes del título principal.
                 </p>
+              </div>
+            </div>
+
+            {/* Switches de visibilidad de badges */}
+            <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Visibilidad de Elementos</p>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <span className="size-2 rounded-full bg-orange-400 inline-block" />
+                  Barra de Notificación Superior
+                </Label>
+                <Switch
+                  checked={borrador.mostrarBarraNotificacion !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBarraNotificacion: v })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <span className="size-2 rounded-full bg-blue-400 inline-block" />
+                  Menú de Navegación (links + botón Comprar)
+                </Label>
+                <Switch
+                  checked={borrador.mostrarNavegacion !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarNavegacion: v })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <span className="size-2 rounded-full bg-red-400 animate-pulse inline-block" />
+                  Badge Sorteo / Estado Oficial
+                </Label>
+                <Switch
+                  checked={borrador.mostrarBadgeSorteo !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBadgeSorteo: v })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <Flame className="size-3.5 text-amber-400" />
+                  Badge Paquete Más Popular
+                </Label>
+                <Switch
+                  checked={borrador.mostrarBadgePopular !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBadgePopular: v })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <CheckCircle2 className="size-3.5 text-emerald-400" />
+                  Badge Emisión Oficial JPS
+                </Label>
+                <Switch
+                  checked={borrador.mostrarBadgeJPS !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBadgeJPS: v })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <span className="size-2 rounded-full bg-amber-400 inline-block" />
+                  Termómetro de Meta y Cuenta Regresiva
+                </Label>
+                <Switch
+                  checked={borrador.mostrarSeccionTermometro !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionTermometro: v })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm flex items-center gap-2 cursor-pointer">
+                  <span className="size-2 rounded-full bg-primary inline-block" />
+                  Botones de Compra (CTA) y Garantías del Hero
+                </Label>
+                <Switch
+                  checked={borrador.mostrarCtaHero !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarCtaHero: v })}
+                />
               </div>
             </div>
 

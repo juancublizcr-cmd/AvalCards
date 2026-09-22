@@ -59,8 +59,8 @@ export function AiAgentBubble() {
     }
   }, [mensajes, cargando, abierto]);
 
-  // Si la IA está desactivada por el admin, no renderizar
-  if (config.aiActivo === false) {
+  // Si la IA no está activada explícitamente por el admin, no renderizar
+  if (config.aiActivo !== true) {
     return null;
   }
 

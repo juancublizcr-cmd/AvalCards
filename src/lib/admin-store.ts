@@ -214,6 +214,26 @@ export type Config = {
   heroBadgeSuperToken?: string;
   heroBadgeGasolina?: string;
   heroBadgeComercios?: string;
+  // Visibilidad de elementos del header/hero
+  mostrarBarraNotificacion?: boolean;
+  mostrarNavegacion?: boolean;
+  mostrarBadgeSorteo?: boolean;
+  mostrarBadgePopular?: boolean;
+  mostrarBadgeJPS?: boolean;
+  mostrarSeccionTermometro?: boolean;
+  mostrarSeccionPaquetes?: boolean;
+  mostrarCtaHero?: boolean;
+  mostrarSeccionAperturaPremios?: boolean;
+  mostrarSeccionComoFunciona?: boolean;
+  mostrarSeccionDetallePremios?: boolean;
+  mostrarSeccionReferidos?: boolean;
+  mostrarSeccionSponsors?: boolean;
+  mostrarSeccionMiniSorteos?: boolean;
+  mostrarSeccionGanadores?: boolean;
+  mostrarSeccionFaqs?: boolean;
+  mostrarSalaRemates?: boolean;
+  fomoActivo?: boolean;
+  aiActivo?: boolean;
   heroSubtitulo?: string;
   heroBotonCta?: string;
   heroBotonSecundario?: string;
@@ -451,19 +471,19 @@ export const CONFIG_DEFAULT: Config = {
   tilopayApiKey: "4l0b31649987",
   tilopayApiPassword: "pass",
   tilopaySandbox: false,
-  cryptoActivo: true,
+  cryptoActivo: false,
   cryptoWalletUsdt: "0x71C...TuWalletUSDT",
   cryptoRed: "TRC20 (Tron)",
   cryptoBinanceId: "123456789",
-  paypalActivo: true,
+  paypalActivo: false,
   paypalClientId: "TU_PAYPAL_CLIENT_ID_AQUI",
   paypalEmail: "pagos@avalcommunity.com",
   paypalSandbox: false,
-  applePayActivo: true,
+  applePayActivo: false,
   applePayMerchantId: "merchant.com.avalcommunity.cr",
-  googlePayActivo: true,
+  googlePayActivo: false,
   googlePayMerchantId: "avalcommunity-cr-google-pay",
-  fomoActivo: true,
+  fomoActivo: false,
   rankingReferidosActivo: true,
   rankingPremioPrimero: "₡250,000 SINPE",
   rankingPremioSegundo: "₡100,000 SINPE",
@@ -511,6 +531,25 @@ export const CONFIG_DEFAULT: Config = {
   heroBadgeSuperToken: "",
   heroBadgeGasolina: "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5",
   heroBadgeComercios: "Descuentos en Comercios ↗",
+  mostrarBadgeSorteo: true,
+  mostrarBadgePopular: false,
+  mostrarBadgeJPS: false,
+  mostrarBarraNotificacion: false,
+  mostrarNavegacion: false,
+  mostrarSeccionTermometro: false,
+  mostrarSeccionPaquetes: false,
+  mostrarCtaHero: false,
+  mostrarSeccionAperturaPremios: true,
+  mostrarSeccionComoFunciona: true,
+  mostrarSeccionDetallePremios: false,
+  mostrarSeccionReferidos: false,
+  mostrarSeccionSponsors: false,
+  mostrarSeccionMiniSorteos: false,
+  mostrarSeccionGanadores: false,
+  mostrarSeccionFaqs: true,
+  mostrarSalaRemates: false,
+  fomoActivo: false,
+  aiActivo: false,
   heroSubtitulo: "Plataforma costarricense de eventos promocionales digitales y sorteos de vehículos de alta gama, diseñada para brindar una experiencia 100% digital, transparente y con total respaldo legal.",
   heroBotonCta: "🔥 ¡QUIERO PARTICIPAR AHORA!",
   heroBotonSecundario: "¿Cómo funciona? ↓",
@@ -1185,6 +1224,23 @@ export async function fetchConfig(): Promise<Config> {
       heroBadgeSuperToken: extra.heroBadgeSuperToken !== undefined ? extra.heroBadgeSuperToken : CONFIG_DEFAULT.heroBadgeSuperToken,
       heroBadgeGasolina: extra.heroBadgeGasolina !== undefined ? extra.heroBadgeGasolina : CONFIG_DEFAULT.heroBadgeGasolina,
       heroBadgeComercios: extra.heroBadgeComercios !== undefined ? extra.heroBadgeComercios : CONFIG_DEFAULT.heroBadgeComercios,
+      mostrarBadgeSorteo: extra.mostrarBadgeSorteo !== undefined ? extra.mostrarBadgeSorteo : CONFIG_DEFAULT.mostrarBadgeSorteo,
+      mostrarBadgePopular: extra.mostrarBadgePopular !== undefined ? extra.mostrarBadgePopular : CONFIG_DEFAULT.mostrarBadgePopular,
+      mostrarBadgeJPS: extra.mostrarBadgeJPS !== undefined ? extra.mostrarBadgeJPS : CONFIG_DEFAULT.mostrarBadgeJPS,
+      mostrarBarraNotificacion: extra.mostrarBarraNotificacion !== undefined ? extra.mostrarBarraNotificacion : CONFIG_DEFAULT.mostrarBarraNotificacion,
+      mostrarNavegacion: extra.mostrarNavegacion !== undefined ? extra.mostrarNavegacion : CONFIG_DEFAULT.mostrarNavegacion,
+      mostrarSeccionTermometro: extra.mostrarSeccionTermometro !== undefined ? extra.mostrarSeccionTermometro : CONFIG_DEFAULT.mostrarSeccionTermometro,
+      mostrarSeccionPaquetes: extra.mostrarSeccionPaquetes !== undefined ? extra.mostrarSeccionPaquetes : CONFIG_DEFAULT.mostrarSeccionPaquetes,
+      mostrarCtaHero: extra.mostrarCtaHero !== undefined ? extra.mostrarCtaHero : CONFIG_DEFAULT.mostrarCtaHero,
+      mostrarSeccionAperturaPremios: extra.mostrarSeccionAperturaPremios !== undefined ? extra.mostrarSeccionAperturaPremios : CONFIG_DEFAULT.mostrarSeccionAperturaPremios,
+      mostrarSeccionComoFunciona: extra.mostrarSeccionComoFunciona !== undefined ? extra.mostrarSeccionComoFunciona : CONFIG_DEFAULT.mostrarSeccionComoFunciona,
+      mostrarSeccionDetallePremios: extra.mostrarSeccionDetallePremios !== undefined ? extra.mostrarSeccionDetallePremios : CONFIG_DEFAULT.mostrarSeccionDetallePremios,
+      mostrarSeccionReferidos: extra.mostrarSeccionReferidos !== undefined ? extra.mostrarSeccionReferidos : CONFIG_DEFAULT.mostrarSeccionReferidos,
+      mostrarSeccionSponsors: extra.mostrarSeccionSponsors !== undefined ? extra.mostrarSeccionSponsors : CONFIG_DEFAULT.mostrarSeccionSponsors,
+      mostrarSeccionMiniSorteos: extra.mostrarSeccionMiniSorteos !== undefined ? extra.mostrarSeccionMiniSorteos : CONFIG_DEFAULT.mostrarSeccionMiniSorteos,
+      mostrarSeccionGanadores: extra.mostrarSeccionGanadores !== undefined ? extra.mostrarSeccionGanadores : CONFIG_DEFAULT.mostrarSeccionGanadores,
+      mostrarSeccionFaqs: extra.mostrarSeccionFaqs !== undefined ? extra.mostrarSeccionFaqs : CONFIG_DEFAULT.mostrarSeccionFaqs,
+      mostrarSalaRemates: extra.mostrarSalaRemates !== undefined ? extra.mostrarSalaRemates : CONFIG_DEFAULT.mostrarSalaRemates,
       heroSubtitulo:
         extra.heroSubtitulo !== undefined &&
         !extra.heroSubtitulo.startsWith("La plataforma de eventos promocionales digitales más transparente")

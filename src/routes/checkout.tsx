@@ -838,7 +838,7 @@ function Checkout() {
                 </button>
               )}
 
-              {(config.paypalActivo ?? true) && (
+              {Boolean(config.paypalActivo) && (
                 <button
                   type="button"
                   onClick={() => setMetodo("paypal")}
@@ -854,7 +854,7 @@ function Checkout() {
                 </button>
               )}
 
-              {(config.applePayActivo ?? true) && (
+              {Boolean(config.applePayActivo) && (
                 <button
                   type="button"
                   onClick={() => setMetodo("applepay")}
@@ -870,7 +870,7 @@ function Checkout() {
                 </button>
               )}
 
-              {(config.googlePayActivo ?? true) && (
+              {Boolean(config.googlePayActivo) && (
                 <button
                   type="button"
                   onClick={() => setMetodo("googlepay")}
@@ -886,7 +886,7 @@ function Checkout() {
                 </button>
               )}
 
-              {config.cryptoActivo && (
+              {Boolean(config.cryptoActivo) && (
                 <button
                   type="button"
                   onClick={() => setMetodo("crypto")}
