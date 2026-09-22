@@ -224,6 +224,13 @@ export type Config = {
   mostrarSeccionPaquetes?: boolean;
   mostrarCtaHero?: boolean;
   mostrarSeccionAperturaPremios?: boolean;
+  modoVistaPremios?: "agrupado" | "individual";
+  podio1Ceja?: string;
+  podio1Titulo?: string;
+  podio1Badge?: string;
+  podio2Ceja?: string;
+  podio2Titulo?: string;
+  podio2Badge?: string;
   mostrarSeccionComoFunciona?: boolean;
   mostrarSeccionDetallePremios?: boolean;
   mostrarSeccionReferidos?: boolean;
@@ -295,6 +302,16 @@ export type Config = {
   mostrarSalaRemates?: boolean;
   heroTituloApertura?: string;
   heroSubtituloApertura?: string;
+  // 7. Pie de Página (Footer) - Visibilidad de Enlaces
+  footerMostrarColumnaPlataforma?: boolean;
+  footerMostrarImpactoSocial?: boolean;
+  footerMostrarReferidos?: boolean;
+  footerMostrarComercios?: boolean;
+  footerMostrarComerciosEnlace?: boolean;
+  footerMostrarAccesoAdmin?: boolean;
+  footerMostrarThemeToggle?: boolean;
+  footerMostrarLegal?: boolean;
+  footerMostrarWhatsApp?: boolean;
 };
 
 export type ReferenteStat = {
@@ -540,6 +557,13 @@ export const CONFIG_DEFAULT: Config = {
   mostrarSeccionPaquetes: false,
   mostrarCtaHero: false,
   mostrarSeccionAperturaPremios: true,
+  modoVistaPremios: "agrupado",
+  podio1Ceja: "1° Lugar Oficial · Tu comunidad te respalda",
+  podio1Titulo: "Con tu aval: Vos tenés el mando del premio",
+  podio1Badge: "Elegí con total libertad entre las 2 opciones",
+  podio2Ceja: "2° Lugar Oficial · Tu comunidad te respalda",
+  podio2Titulo: "Con tu aval: Vos tenés el mando del premio",
+  podio2Badge: "Elegí con total libertad entre las 2 opciones",
   mostrarSeccionComoFunciona: true,
   mostrarSeccionDetallePremios: false,
   mostrarSeccionReferidos: false,
@@ -611,6 +635,16 @@ export const CONFIG_DEFAULT: Config = {
   mostrarSalaRemates: false, // Fuera para no confundir a los usuarios sobre la compra de tokens
   heroTituloApertura: "Tres Entregas Espectaculares",
   heroSubtituloApertura: "Con cada paquete adquieres triple oportunidad según las combinaciones oficiales de la JPS.",
+  // 7. Pie de Página (Footer) - Visibilidad de Enlaces
+  footerMostrarColumnaPlataforma: false,
+  footerMostrarImpactoSocial: false,
+  footerMostrarReferidos: false,
+  footerMostrarComercios: false,
+  footerMostrarComerciosEnlace: false,
+  footerMostrarAccesoAdmin: false,
+  footerMostrarThemeToggle: false,
+  footerMostrarLegal: true,
+  footerMostrarWhatsApp: true,
 };
 
 // ────────────────────────────────────────────────────────────
@@ -1233,6 +1267,13 @@ export async function fetchConfig(): Promise<Config> {
       mostrarSeccionPaquetes: extra.mostrarSeccionPaquetes !== undefined ? extra.mostrarSeccionPaquetes : CONFIG_DEFAULT.mostrarSeccionPaquetes,
       mostrarCtaHero: extra.mostrarCtaHero !== undefined ? extra.mostrarCtaHero : CONFIG_DEFAULT.mostrarCtaHero,
       mostrarSeccionAperturaPremios: extra.mostrarSeccionAperturaPremios !== undefined ? extra.mostrarSeccionAperturaPremios : CONFIG_DEFAULT.mostrarSeccionAperturaPremios,
+      modoVistaPremios: extra.modoVistaPremios !== undefined ? extra.modoVistaPremios : CONFIG_DEFAULT.modoVistaPremios,
+      podio1Ceja: extra.podio1Ceja !== undefined ? extra.podio1Ceja : CONFIG_DEFAULT.podio1Ceja,
+      podio1Titulo: extra.podio1Titulo !== undefined ? extra.podio1Titulo : CONFIG_DEFAULT.podio1Titulo,
+      podio1Badge: extra.podio1Badge !== undefined ? extra.podio1Badge : CONFIG_DEFAULT.podio1Badge,
+      podio2Ceja: extra.podio2Ceja !== undefined ? extra.podio2Ceja : CONFIG_DEFAULT.podio2Ceja,
+      podio2Titulo: extra.podio2Titulo !== undefined ? extra.podio2Titulo : CONFIG_DEFAULT.podio2Titulo,
+      podio2Badge: extra.podio2Badge !== undefined ? extra.podio2Badge : CONFIG_DEFAULT.podio2Badge,
       mostrarSeccionComoFunciona: extra.mostrarSeccionComoFunciona !== undefined ? extra.mostrarSeccionComoFunciona : CONFIG_DEFAULT.mostrarSeccionComoFunciona,
       mostrarSeccionDetallePremios: extra.mostrarSeccionDetallePremios !== undefined ? extra.mostrarSeccionDetallePremios : CONFIG_DEFAULT.mostrarSeccionDetallePremios,
       mostrarSeccionReferidos: extra.mostrarSeccionReferidos !== undefined ? extra.mostrarSeccionReferidos : CONFIG_DEFAULT.mostrarSeccionReferidos,
@@ -1289,6 +1330,15 @@ export async function fetchConfig(): Promise<Config> {
       paquetesBotonComprar: extra.paquetesBotonComprar !== undefined ? extra.paquetesBotonComprar : CONFIG_DEFAULT.paquetesBotonComprar,
       paqueteTagPopular: extra.paqueteTagPopular !== undefined ? extra.paqueteTagPopular : CONFIG_DEFAULT.paqueteTagPopular,
       paqueteTagBest: extra.paqueteTagBest !== undefined ? extra.paqueteTagBest : CONFIG_DEFAULT.paqueteTagBest,
+      footerMostrarColumnaPlataforma: extra.footerMostrarColumnaPlataforma !== undefined ? extra.footerMostrarColumnaPlataforma : CONFIG_DEFAULT.footerMostrarColumnaPlataforma,
+      footerMostrarImpactoSocial: extra.footerMostrarImpactoSocial !== undefined ? extra.footerMostrarImpactoSocial : CONFIG_DEFAULT.footerMostrarImpactoSocial,
+      footerMostrarReferidos: extra.footerMostrarReferidos !== undefined ? extra.footerMostrarReferidos : CONFIG_DEFAULT.footerMostrarReferidos,
+      footerMostrarComercios: extra.footerMostrarComercios !== undefined ? extra.footerMostrarComercios : CONFIG_DEFAULT.footerMostrarComercios,
+      footerMostrarComerciosEnlace: extra.footerMostrarComerciosEnlace !== undefined ? extra.footerMostrarComerciosEnlace : CONFIG_DEFAULT.footerMostrarComerciosEnlace,
+      footerMostrarAccesoAdmin: extra.footerMostrarAccesoAdmin !== undefined ? extra.footerMostrarAccesoAdmin : CONFIG_DEFAULT.footerMostrarAccesoAdmin,
+      footerMostrarThemeToggle: extra.footerMostrarThemeToggle !== undefined ? extra.footerMostrarThemeToggle : CONFIG_DEFAULT.footerMostrarThemeToggle,
+      footerMostrarLegal: extra.footerMostrarLegal !== undefined ? extra.footerMostrarLegal : CONFIG_DEFAULT.footerMostrarLegal,
+      footerMostrarWhatsApp: extra.footerMostrarWhatsApp !== undefined ? extra.footerMostrarWhatsApp : CONFIG_DEFAULT.footerMostrarWhatsApp,
     };
   } catch {
     return CONFIG_DEFAULT;

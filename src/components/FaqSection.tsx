@@ -3,13 +3,29 @@ import { ChevronDown, HelpCircle, MessageCircle, CheckCircle2 } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { FAQS_DEFAULT, type FaqItem, type Config } from "@/lib/admin-store";
 
+function formatCostaRicaPhone(numStr: string): string {
+  const digits = numStr.replace(/\D/g, "");
+  if (digits.startsWith("506") && digits.length === 11) {
+    const local = digits.slice(3);
+    return `+506 ${local.slice(0, 4)}-${local.slice(4)}`;
+  }
+  if (digits.length === 8) {
+    return `+506 ${digits.slice(0, 4)}-${digits.slice(4)}`;
+  }
+  if (digits.length > 8) {
+    return `+${digits}`;
+  }
+  return digits ? `+506 ${digits}` : "+506 8634-4772";
+}
+
 export function FaqSection({ faqs, config }: { faqs?: FaqItem[]; config?: Config }) {
   const [abierto, setAbierto] = useState<number | null>(0);
   const lista = faqs && faqs.length > 0 ? faqs : FAQS_DEFAULT;
 
-  const rawTel = config?.promoWhatsapp || "50686344772";
-  const whatsappNum = rawTel.replace(/\D/g, "") || "50686344772";
-  const displayTel = "+506 8634-4772";
+  const rawTel = config?.promoWhatsapp || config?.telefonoSinpe || "50686344772";
+  const cleanDigits = rawTel.replace(/\D/g, "") || "50686344772";
+  const whatsappNum = cleanDigits.length === 8 ? `506${cleanDigits}` : cleanDigits;
+  const displayTel = formatCostaRicaPhone(cleanDigits);
   const mensajeWhatsapp = "¡Hola! Tengo dudas sobre cómo participar en el evento promocional de Aval Community CR. ¿Me pueden ayudar?";
 
   return (
@@ -89,7 +105,7 @@ export function FaqSection({ faqs, config }: { faqs?: FaqItem[]; config?: Config
                 rel="noopener noreferrer"
               >
                 <MessageCircle className="size-5 text-white" />
-                <span>Chatear por WhatsApp ({displayTel})</span>
+                <span>Chatear por WhatsApp</span>
               </a>
             </Button>
           </div>

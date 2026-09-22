@@ -482,6 +482,25 @@ export function ConfigSection({
               placeholder="LUXX CR CAR WASH"
             />
           </div>
+
+          <div className="space-y-2 sm:col-span-2 pt-2 border-t border-border/40">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+              <Label className="text-xs font-bold text-foreground">
+                📱 WhatsApp Oficial de Soporte y Consultas (Tarjeta "¿Tenés Dudas?" y FAQs)
+              </Label>
+              <span className="text-[11px] text-emerald-500 font-mono font-bold">
+                Línea activa: {borrador.promoWhatsapp ? `+506 ${borrador.promoWhatsapp.replace(/\D/g, "").slice(-8).replace(/(\d{4})(\d{4})/, "$1-$2")}` : "+506 8634-4772"}
+              </span>
+            </div>
+            <Input
+              value={borrador.promoWhatsapp || ""}
+              onChange={(e) => setBorrador({ ...borrador, promoWhatsapp: e.target.value })}
+              placeholder="50686344772 o 8634-4772"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Número al que son dirigidos los usuarios al pulsar en "Chatear por WhatsApp" en la tarjeta verde "¿Tenés Dudas?", en el pie de página y en los enlaces de soporte.
+            </p>
+          </div>
         </div>
       </section>
 

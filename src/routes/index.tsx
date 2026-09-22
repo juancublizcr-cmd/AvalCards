@@ -350,7 +350,7 @@ function IndexPage() {
 
     const partes: string[] = [];
     if (p1.length > 0) partes.push(`1° Lugar: ${p1.join(" o ")}`);
-    if (p2.length > 0) partes.push(`2° Lugar: ${p2.join(" y ")}`);
+    if (p2.length > 0) partes.push(`2° Lugar: ${p2.join(" o ")}`);
     if (p3.length > 0) partes.push(`3° Lugar: ${p3.join(" y ")}`);
 
     return partes.join(". ") + (partes.length > 0 ? "." : "");
@@ -626,23 +626,15 @@ function IndexPage() {
                   </div>
                 )}
 
-                <div
-                  className={`grid gap-6 ${
-                    premiosVisibles.length === 1
-                      ? "max-w-md mx-auto"
-                      : premiosVisibles.length === 2
-                      ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"
-                      : "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
-                  }`}
-                >
-                  {premiosVisibles.map((p, idx) => {
-                    const nivelStr = (p.nivel || "").trim();
-                    const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
-                    const isEleccion2 = nivelStr === "2° Lugar" || nivelStr === "2° Lugar (A Elección)";
-                    const isEfectivo3 = nivelStr === "3° Lugar" || nivelStr === "3° Lugar (Efectivo)";
+                {(() => {
+                  const renderPremioCard = (p: Premio, idx: number, forzarNivelBadge?: string) => {
+                    const nivelStr = (forzarNivelBadge || p.nivel || "").trim();
+                    const isEleccion1 = nivelStr.includes("1° Lugar") || nivelStr === "Premio Mayor";
+                    const isEleccion2 = nivelStr.includes("2° Lugar") || nivelStr === "Segundo Premio";
+                    const isEfectivo3 = nivelStr.includes("3° Lugar") || nivelStr === "Tercer Premio";
                     const isExtra = nivelStr === "Premio Extra";
-                    const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (idx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
-                    const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (idx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
+                    const isMayor = isEleccion1 || (!isEleccion2 && !isEfectivo3 && !isExtra && idx === 0);
+                    const isSegundo = isEleccion2 || (!isEleccion1 && !isEfectivo3 && !isExtra && idx === 1);
 
                     const tagLugar = isMayor
                       ? "1° Lugar"
@@ -658,9 +650,9 @@ function IndexPage() {
                     const defaultImg =
                       nombreLower.includes("subaru") || nombreLower.includes("impreza")
                         ? subaruImg
-                        : nombreLower.includes("moto")
+                        : nombreLower.includes("moto") || nombreLower.includes("ducati")
                         ? motoImg
-                        : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo")
+                        : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo") || nombreLower.includes("colones")
                         ? consolaImg
                         : isMayor
                         ? carroImg
@@ -672,7 +664,7 @@ function IndexPage() {
                       isMayor || isEleccion1
                         ? "bg-amber-500 text-black border border-amber-400 font-bold"
                         : isEleccion2
-                        ? "bg-blue-600 text-white border border-blue-400 font-bold"
+                        ? "bg-sky-500 text-white border border-sky-400 font-bold"
                         : isSegundo
                         ? "bg-black/80 text-slate-200 border border-slate-500/60 font-bold"
                         : isEfectivo3
@@ -685,7 +677,7 @@ function IndexPage() {
                       isMayor || isEleccion1
                         ? "border-amber-500/50 shadow-[0_0_25px_rgba(245,158,11,0.12)]"
                         : isEleccion2
-                        ? "border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                        ? "border-sky-500/40 shadow-[0_0_20px_rgba(14,165,233,0.12)]"
                         : isEfectivo3
                         ? "border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
                         : "border-border";
@@ -744,14 +736,14 @@ function IndexPage() {
                               {isEleccion1
                                 ? "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos."
                                 : isEleccion2
-                                ? "Vehículo adjudicado al 2° Lugar (el restante no seleccionado) 100% legal y listo para rodar."
+                                ? "Vehículo a escoger por el favorecido del 2° Lugar con traspaso notarial y marchamo incluidos."
                                 : isEfectivo3
-                                ? "Premio oficial en efectivo entregado formalmente o consola de última generación."
+                                ? "Premio oficial entregado formalmente ante Notario Público sin retenciones ni comisiones."
                                 : isMayor
                                 ? "Vehículo 0 KM con traspaso y marchamo incluidos."
                                 : isSegundo
                                 ? "Deportiva para dominar la calle y la pista con estilo."
-                                : "Consola de última generación con controles y juegos incluidos."}
+                                : "Consola de última generación o dinero en efectivo con entrega formal."}
                             </p>
                           </div>
                           <div className="mt-4 pt-3 border-t border-border/60">
@@ -784,8 +776,180 @@ function IndexPage() {
                         </div>
                       </div>
                     );
-                  })}
-                </div>
+                  };
+
+                  const modoAgrupado = (config.modoVistaPremios ?? "agrupado") === "agrupado";
+
+                  if (!modoAgrupado) {
+                    return (
+                      <div
+                        className={`grid gap-6 ${
+                          premiosVisibles.length === 1
+                            ? "max-w-md mx-auto"
+                            : premiosVisibles.length === 2
+                            ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"
+                            : "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
+                        }`}
+                      >
+                        {premiosVisibles.map((p, idx) => renderPremioCard(p, idx))}
+                      </div>
+                    );
+                  }
+
+                  // ─── MODO AGRUPADO POR PODIO (DOBLE ELECCIÓN CARA A CARA) ───
+                  const p1List = premiosVisibles.filter(
+                    (p) => p.nivel === "1° Lugar" || p.nivel === "Premio Mayor" || (p.nivel as string) === "1° Lugar (A Elección)"
+                  );
+                  const p2List = premiosVisibles.filter(
+                    (p) => p.nivel === "2° Lugar" || p.nivel === "Segundo Premio" || (p.nivel as string) === "2° Lugar (A Elección)"
+                  );
+                  const p3List = premiosVisibles.filter(
+                    (p) => p.nivel === "3° Lugar" || p.nivel === "Tercer Premio" || (p.nivel as string) === "3° Lugar (Efectivo)"
+                  );
+                  const pExtraList = premiosVisibles.filter(
+                    (p) =>
+                      p.nivel === "Premio Extra" ||
+                      (!p1List.includes(p) && !p2List.includes(p) && !p3List.includes(p))
+                  );
+
+                  return (
+                    <div className="space-y-10 max-w-6xl mx-auto">
+                      {/* BLOQUE 1° LUGAR */}
+                      {p1List.length > 0 && (
+                        <div className="rounded-3xl border-2 border-amber-500/40 bg-gradient-to-b from-amber-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
+                            <div className="flex items-center gap-3.5">
+                              <div className="relative size-12 shrink-0 flex items-center justify-center rounded-2xl bg-white border-2 border-amber-500 shadow-[0_0_18px_rgba(245,158,11,0.4)] p-1.5">
+                                <img src="/icons/icon-192.png" alt="Aval" className="size-full object-contain" />
+                                <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black text-xs font-black shadow-md border-2 border-background">
+                                  👑
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-[11px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-400">
+                                  {p1List.length > 1
+                                    ? (config?.podio1Ceja || "1° Lugar Oficial · Tu comunidad te respalda")
+                                    : "1° Lugar Oficial"}
+                                </span>
+                                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                  {p1List.length > 1
+                                    ? (config?.podio1Titulo || "Con tu aval: Vos tenés el mando del premio")
+                                    : p1List[0].nombre}
+                                </h3>
+                              </div>
+                            </div>
+                            {p1List.length > 1 && (
+                              <span className="self-start sm:self-auto rounded-full bg-amber-500/20 border border-amber-500/40 px-3.5 py-1 text-xs font-black text-amber-600 dark:text-amber-300">
+                                {config?.podio1Badge || "Elegí con total libertad entre las 2 opciones"}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className={`grid gap-6 relative items-stretch ${p1List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                            {p1List.length === 2 && (
+                              <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-11 items-center justify-center rounded-full bg-amber-500 text-black font-black text-sm shadow-[0_0_25px_rgba(245,158,11,0.6)] border-2 border-black">
+                                O
+                              </div>
+                            )}
+                            {p1List.map((p, idx) => renderPremioCard(p, idx, "1° Lugar (A Elección)"))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* BLOQUE 2° LUGAR */}
+                      {p2List.length > 0 && (
+                        <div className="rounded-3xl border-2 border-sky-500/40 bg-gradient-to-b from-sky-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sky-500/20 pb-4">
+                            <div className="flex items-center gap-3.5">
+                              <div className="relative size-12 shrink-0 flex items-center justify-center rounded-2xl bg-white border-2 border-sky-400 shadow-[0_0_18px_rgba(14,165,233,0.4)] p-1.5">
+                                <img src="/icons/icon-192.png" alt="Aval" className="size-full object-contain" />
+                                <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-gradient-to-tr from-slate-200 to-slate-400 text-black text-xs font-black shadow-md border-2 border-background">
+                                  🥈
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-[11px] font-black uppercase tracking-wider text-sky-500 dark:text-sky-400">
+                                  {p2List.length > 1
+                                    ? (config?.podio2Ceja || "2° Lugar Oficial · Tu comunidad te respalda")
+                                    : "2° Lugar Oficial"}
+                                </span>
+                                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                  {p2List.length > 1
+                                    ? (config?.podio2Titulo || "Con tu aval: Vos tenés el mando del premio")
+                                    : p2List[0].nombre}
+                                </h3>
+                              </div>
+                            </div>
+                            {p2List.length > 1 && (
+                              <span className="self-start sm:self-auto rounded-full bg-sky-500/20 border border-sky-500/40 px-3.5 py-1 text-xs font-black text-sky-600 dark:text-sky-300">
+                                {config?.podio2Badge || "Elegí con total libertad entre las 2 opciones"}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className={`grid gap-6 relative items-stretch ${p2List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                            {p2List.length === 2 && (
+                              <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-11 items-center justify-center rounded-full bg-sky-500 text-white font-black text-sm shadow-[0_0_25px_rgba(14,165,233,0.5)] border-2 border-black">
+                                O
+                              </div>
+                            )}
+                            {p2List.map((p, idx) => renderPremioCard(p, idx, "2° Lugar (A Elección)"))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* BLOQUE 3° LUGAR */}
+                      {p3List.length > 0 && (
+                        <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
+                            <div className="flex items-center gap-3.5">
+                              <div className="relative size-12 shrink-0 flex items-center justify-center rounded-2xl bg-white border-2 border-amber-600 shadow-[0_0_18px_rgba(217,119,6,0.4)] p-1.5">
+                                <img src="/icons/icon-192.png" alt="Aval" className="size-full object-contain" />
+                                <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-orange-400 text-white text-xs font-black shadow-md border-2 border-background">
+                                  🥉
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-500 dark:text-emerald-400">
+                                  3° Lugar Oficial · Premio Garantizado
+                                </span>
+                                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                  {p3List.length === 1 ? p3List[0].nombre : "Premio en Efectivo / Consola"}
+                                </h3>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className={`grid gap-6 ${p3List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"}`}>
+                            {p3List.map((p, idx) => renderPremioCard(p, idx, "3° Lugar"))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* BLOQUE PREMIOS EXTRAS (SI EXISTEN) */}
+                      {pExtraList.length > 0 && (
+                        <div className="rounded-3xl border-2 border-purple-500/40 bg-gradient-to-b from-purple-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
+                          <div className="flex items-center gap-3 border-b border-purple-500/20 pb-4">
+                            <span className="flex size-10 items-center justify-center rounded-xl bg-purple-500 text-white text-lg font-black shadow-md shrink-0">
+                              ⭐
+                            </span>
+                            <div>
+                              <span className="text-[11px] font-black uppercase tracking-wider text-purple-500 dark:text-purple-400">
+                                Premios Adicionales Oficiales
+                              </span>
+                              <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                Entregas Especiales
+                              </h3>
+                            </div>
+                          </div>
+                          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                            {pExtraList.map((p, idx) => renderPremioCard(p, idx, "Premio Extra"))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -1459,7 +1623,7 @@ function IndexPage() {
         )}
       </main>
 
-      <Footer />
+      <Footer config={config} />
 
       {/* NOTIFICACIONES FOMO Y BANNER PWA */}
       <FomoNotifications config={config} />

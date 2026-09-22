@@ -21,6 +21,11 @@ import {
   Zap,
   ArrowRightLeft,
   RotateCw,
+  Link as LinkIcon,
+  Upload,
+  X,
+  Globe,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -29,12 +34,75 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+async function comprimirImagen(file: File, maxDim = 1600, quality = 0.85): Promise<File> {
+  if (typeof window === "undefined") return file;
+  if (!file.type.startsWith("image/") || file.type.includes("svg") || file.type.includes("gif")) {
+    return file;
+  }
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return resolve(file);
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return resolve(file);
+            const optimizedFile = new File([blob], file.name.replace(/\.[^.]+$/, ".webp"), {
+              type: "image/webp",
+            });
+            resolve(optimizedFile);
+          },
+          "image/webp",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 import {
   deletePremio,
   FAQS_DEFAULT,
@@ -122,6 +190,63 @@ export function PremiosSection({
     }
   }, [config]);
 
+  // Estados para textos dinámicos de Podio Dúo
+  const [podio1Ceja, setPodio1Ceja] = useState<string>(
+    config?.podio1Ceja ?? "1° Lugar Oficial · Tu comunidad te respalda"
+  );
+  const [podio1Titulo, setPodio1Titulo] = useState<string>(
+    config?.podio1Titulo ?? "Con tu aval: Vos tenés el mando del premio"
+  );
+  const [podio1Badge, setPodio1Badge] = useState<string>(
+    config?.podio1Badge ?? "Elegí con total libertad entre las 2 opciones"
+  );
+
+  const [podio2Ceja, setPodio2Ceja] = useState<string>(
+    config?.podio2Ceja ?? "2° Lugar Oficial · Tu comunidad te respalda"
+  );
+  const [podio2Titulo, setPodio2Titulo] = useState<string>(
+    config?.podio2Titulo ?? "Con tu aval: Vos tenés el mando del premio"
+  );
+  const [podio2Badge, setPodio2Badge] = useState<string>(
+    config?.podio2Badge ?? "Elegí con total libertad entre las 2 opciones"
+  );
+
+  const [guardandoPodio, setGuardandoPodio] = useState(false);
+
+  useEffect(() => {
+    if (config) {
+      if (config.podio1Ceja !== undefined) setPodio1Ceja(config.podio1Ceja);
+      if (config.podio1Titulo !== undefined) setPodio1Titulo(config.podio1Titulo);
+      if (config.podio1Badge !== undefined) setPodio1Badge(config.podio1Badge);
+      if (config.podio2Ceja !== undefined) setPodio2Ceja(config.podio2Ceja);
+      if (config.podio2Titulo !== undefined) setPodio2Titulo(config.podio2Titulo);
+      if (config.podio2Badge !== undefined) setPodio2Badge(config.podio2Badge);
+    }
+  }, [config]);
+
+  const guardarTextosPodio = async () => {
+    if (!config || !setConfig) return;
+    setGuardandoPodio(true);
+    try {
+      const nextCfg: Config = {
+        ...config,
+        podio1Ceja,
+        podio1Titulo,
+        podio1Badge,
+        podio2Ceja,
+        podio2Titulo,
+        podio2Badge,
+      };
+      setConfig(nextCfg);
+      await upsertConfig(nextCfg);
+      toast.success("¡Textos de podio guardados con éxito en la web!");
+    } catch (err: any) {
+      toast.error("Error al guardar: " + (err?.message || "inténtalo de nuevo"));
+    } finally {
+      setGuardandoPodio(false);
+    }
+  };
+
   const convertirAColones = () => {
     if (supertokenMoneda === "CRC") {
       toast.info("Los bonos ya están marcados en Colones (CRC)");
@@ -162,6 +287,15 @@ export function PremiosSection({
   const [guardandoPremios, setGuardandoPremios] = useState(false);
   const [guardandoGanadores, setGuardandoGanadores] = useState(false);
   const [guardandoFaqs, setGuardandoFaqs] = useState(false);
+
+  // Estados para modal de agregar cualquier premio libremente
+  const [modalAgregarOpen, setModalAgregarOpen] = useState(false);
+  const [nuevoNombre, setNuevoNombre] = useState("");
+  const [nuevoNivel, setNuevoNivel] = useState<Nivel>("1° Lugar");
+  const [nuevaImagen, setNuevaImagen] = useState("");
+  const [subiendoNuevo, setSubiendoNuevo] = useState(false);
+  const [mostrarInputUrl, setMostrarInputUrl] = useState<Record<string, boolean>>({});
+  const inputNuevoFileRef = useRef<HTMLInputElement | null>(null);
 
   const NIVEL_ORDEN: Record<Nivel, number> = {
     "1° Lugar": 1,
@@ -260,26 +394,68 @@ export function PremiosSection({
     }
   };
 
-  const agregar = async () => {
-    if (premios.length >= 8) return;
+  const abrirModalAgregar = () => {
+    setNuevoNombre("");
+    setNuevoNivel("1° Lugar");
+    setNuevaImagen("");
+    setSubiendoNuevo(false);
+    setModalAgregarOpen(true);
+  };
+
+  const subirFotoNuevo = async (file?: File) => {
+    if (!file) return;
+    setSubiendoNuevo(true);
+    try {
+      const optimizado = await comprimirImagen(file);
+      let url = "";
+      try {
+        url = await subirImagenPremio(`nuevo_${Date.now()}`, optimizado);
+      } catch (storageErr) {
+        console.warn("Storage upload falló, usando DataURL de respaldo:", storageErr);
+        url = await fileToDataUrl(optimizado);
+      }
+      setNuevaImagen(url);
+      toast.success("Foto cargada con éxito para la nueva entrega");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Error al procesar la imagen", { description: err?.message });
+    } finally {
+      setSubiendoNuevo(false);
+      if (inputNuevoFileRef.current) {
+        inputNuevoFileRef.current.value = "";
+      }
+    }
+  };
+
+  const confirmarAgregarPremio = async () => {
+    const nombreLimpio = nuevoNombre.trim() || "Nueva Entrega";
+    const nuevoId = `p${Date.now()}`;
     const next: Premio[] = [
       ...premios,
       {
-        id: `p${Date.now()}`,
-        nombre: "Subaru Impreza WRX",
-        nivel: "1° Lugar",
-        imagen: "/premio-subaru.jpg",
-        orden: premios.length + 1,
+        id: nuevoId,
+        nombre: nombreLimpio,
+        nivel: nuevoNivel,
+        imagen: nuevaImagen.trim(),
+        orden: NIVEL_ORDEN[nuevoNivel] ?? premios.length + 1,
         activo: true,
       },
     ];
-    setPremios(next);
+
+    const reordenados = [...next].sort((a, b) => (NIVEL_ORDEN[a.nivel] ?? 99) - (NIVEL_ORDEN[b.nivel] ?? 99));
+    setPremios(reordenados);
+
     try {
-      await upsertPremios(next);
-      toast.success("Nueva entrega agregada (Subaru Impreza WRX). Puedes personalizarla cuando desees.");
-    } catch (err) {
+      await upsertPremios(reordenados);
+      toast.success("¡Entrega agregada y guardada con éxito!", {
+        description: `Se registró "${nombreLimpio}" (${nuevoNivel}).`,
+      });
+      setModalAgregarOpen(false);
+      setNuevoNombre("");
+      setNuevaImagen("");
+    } catch (err: any) {
       console.error(err);
-      toast.error("Error al agregar premio");
+      toast.error("Error al guardar entrega", { description: err?.message });
     }
   };
 
@@ -302,16 +478,26 @@ export function PremiosSection({
     if (!file) return;
     setSubiendoImagen(id);
     try {
-      const url = await subirImagenPremio(id, file);
+      const optimizado = await comprimirImagen(file);
+      let url = "";
+      try {
+        url = await subirImagenPremio(id, optimizado);
+      } catch (storageErr) {
+        console.warn("Storage upload falló, usando DataURL de respaldo:", storageErr);
+        url = await fileToDataUrl(optimizado);
+      }
       await actualizar(id, { imagen: url });
       toast.success("¡Foto subida y guardada perfectamente!", {
-        description: "La nueva foto ya está activa en la página principal.",
+        description: "La foto del premio quedó actualizada y guardada.",
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Error al subir imagen");
+      toast.error("Error al subir imagen", { description: err?.message });
     } finally {
       setSubiendoImagen(null);
+      if (inputs.current[id]) {
+        inputs.current[id]!.value = "";
+      }
     }
   };
 
@@ -917,19 +1103,184 @@ export function PremiosSection({
 
       {/* 2. PREMIOS Y ENTREGAS DE LA LANDING PAGE */}
       <section className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
           <div>
             <div className="flex items-center gap-2 font-bold text-lg">
               <Trophy className="size-5 text-amber-500" /> Vehículos y Entregas Destacadas
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Administra los vehículos y entregas. Puedes agregar el Subaru Impreza, conectar o desconectar entregas con el switch. La cuadrícula de la landing se auto-acomoda automáticamente.
+              Administra libremente todos los premios, vehículos y entregas de tu sorteo. Puedes agregar cualquier premio que desees, subir fotos desde tu dispositivo o pegar enlaces web, cambiar niveles y activar u ocultar cualquier entrega.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => { void agregar(); }} disabled={premios.length >= 8}>
-            <Plus className="size-4" /> Agregar Entrega
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 bg-secondary/60 border border-border p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (config && setConfig) {
+                    const nextCfg: Config = { ...config, modoVistaPremios: "agrupado" };
+                    setConfig(nextCfg);
+                    await upsertConfig(nextCfg);
+                    toast.success("Vista Web cambiada a: Agrupado por Podio (Doble Elección)");
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  (config?.modoVistaPremios ?? "agrupado") === "agrupado"
+                    ? "bg-amber-500 text-black shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                🏆 Agrupado por Podio (Dúos)
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (config && setConfig) {
+                    const nextCfg: Config = { ...config, modoVistaPremios: "individual" };
+                    setConfig(nextCfg);
+                    await upsertConfig(nextCfg);
+                    toast.success("Vista Web cambiada a: Cuadrícula Individual clásica");
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  config?.modoVistaPremios === "individual"
+                    ? "bg-amber-500 text-black shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                📋 Cuadrícula Individual
+              </button>
+            </div>
+
+            <Button
+              variant="hero"
+              size="sm"
+              onClick={abrirModalAgregar}
+              className="shadow-[var(--shadow-fire)] font-bold gap-1.5 shrink-0 cursor-pointer"
+            >
+              <Plus className="size-4" /> Agregar Entrega
+            </Button>
+          </div>
         </div>
+
+        {/* PANEL DE EDICIÓN DE TEXTOS DE PODIO (DÚOS 1° Y 2° LUGAR) */}
+        {(config?.modoVistaPremios ?? "agrupado") === "agrupado" && (
+          <div className="mt-4 rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-card/90 to-card p-4 sm:p-6 space-y-4 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+              <div>
+                <div className="font-bold text-sm sm:text-base flex items-center gap-2 text-foreground">
+                  <Crown className="size-4 text-amber-500" />
+                  Personalizar Títulos, Subtítulos e Insignias del Podio
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Edita la redacción de la cabecera (ceja), título con tu aval y la insignia para los premios dobles en el front-end.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                onClick={guardarTextosPodio}
+                disabled={guardandoPodio}
+                className="bg-amber-500 hover:bg-amber-400 text-black font-bold shrink-0 cursor-pointer shadow-md"
+              >
+                {guardandoPodio ? (
+                  <>
+                    <Loader2 className="size-4 mr-1.5 animate-spin" /> Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="size-4 mr-1.5" /> Guardar Textos de Podio
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Bloque 1° Lugar */}
+              <div className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2 border-b border-amber-500/20 pb-2">
+                  <span className="font-black text-xs uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
+                    👑 1° Lugar (Motos Ducati)
+                  </span>
+                  <span className="text-[10px] text-amber-500/80 font-mono bg-amber-500/10 px-2 py-0.5 rounded">
+                    Frente a Frente
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-muted-foreground">Ceja Superior (Subtítulo pequeño)</Label>
+                  <Input
+                    value={podio1Ceja}
+                    onChange={(e) => setPodio1Ceja(e.target.value)}
+                    placeholder="1° Lugar Oficial · Tu comunidad te respalda"
+                    className="text-xs h-9 bg-background/80"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-foreground">Título Principal</Label>
+                  <Input
+                    value={podio1Titulo}
+                    onChange={(e) => setPodio1Titulo(e.target.value)}
+                    placeholder="Con tu aval: Vos tenés el mando del premio"
+                    className="text-xs h-9 bg-background/80 font-semibold text-amber-400"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-muted-foreground">Insignia Derecha (Píldora destacada)</Label>
+                  <Input
+                    value={podio1Badge}
+                    onChange={(e) => setPodio1Badge(e.target.value)}
+                    placeholder="Elegí con total libertad entre las 2 opciones"
+                    className="text-xs h-9 bg-background/80"
+                  />
+                </div>
+              </div>
+
+              {/* Bloque 2° Lugar */}
+              <div className="rounded-xl border border-sky-500/40 bg-sky-500/5 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2 border-b border-sky-500/20 pb-2">
+                  <span className="font-black text-xs uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+                    🥈 2° Lugar (Autos Subaru / Mercedes)
+                  </span>
+                  <span className="text-[10px] text-sky-400/80 font-mono bg-sky-500/10 px-2 py-0.5 rounded">
+                    Frente a Frente
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-muted-foreground">Ceja Superior (Subtítulo pequeño)</Label>
+                  <Input
+                    value={podio2Ceja}
+                    onChange={(e) => setPodio2Ceja(e.target.value)}
+                    placeholder="2° Lugar Oficial · Tu comunidad te respalda"
+                    className="text-xs h-9 bg-background/80"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-foreground">Título Principal</Label>
+                  <Input
+                    value={podio2Titulo}
+                    onChange={(e) => setPodio2Titulo(e.target.value)}
+                    placeholder="Con tu aval: Vos tenés el mando del premio"
+                    className="text-xs h-9 bg-background/80 font-semibold text-sky-400"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-muted-foreground">Insignia Derecha (Píldora destacada)</Label>
+                  <Input
+                    value={podio2Badge}
+                    onChange={(e) => setPodio2Badge(e.target.value)}
+                    placeholder="Elegí con total libertad entre las 2 opciones"
+                    className="text-xs h-9 bg-background/80"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {premios.map((p) => {
@@ -978,86 +1329,279 @@ export function PremiosSection({
                   </div>
                 </div>
 
-              {p.imagen ? (
-                <div className="relative mb-3 h-48 w-full rounded-lg overflow-hidden bg-neutral-900 border border-border/60">
-                  <img
-                    src={p.imagen}
-                    alt={p.nombre}
-                    className="w-full h-full object-cover object-center"
+                {p.imagen ? (
+                  <div className="relative mb-3 h-48 w-full rounded-lg overflow-hidden bg-neutral-900 border border-border/60 group">
+                    <img
+                      src={p.imagen}
+                      alt={p.nombre}
+                      className="w-full h-full object-cover object-center"
+                    />
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => { void actualizar(p.id, { imagen: "" }); }}
+                        className="rounded-md bg-black/75 hover:bg-destructive text-white p-1 text-xs transition-colors shadow-sm"
+                        title="Quitar foto"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-3 flex flex-col gap-2 h-48 items-center justify-center rounded-lg border-2 border-dashed border-border/80 bg-secondary/20 text-muted-foreground p-4 text-center">
+                    <Gift className="size-7 text-muted-foreground/60" />
+                    <span className="text-xs font-medium">Sin foto asignada</span>
+                    <div className="flex gap-2 mt-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1 font-bold"
+                        onClick={() => inputs.current[p.id]?.click()}
+                      >
+                        <Upload className="size-3" /> Subir foto
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1"
+                        onClick={() => setMostrarInputUrl((prev) => ({ ...prev, [p.id]: !prev[p.id] }))}
+                      >
+                        <LinkIcon className="size-3" /> Pegar Link
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Campo desplegable para ingresar URL directa */}
+                {mostrarInputUrl[p.id] && (
+                  <div className="mb-3 p-2.5 rounded-lg border border-primary/40 bg-primary/5 space-y-1.5 animate-in fade-in-50">
+                    <Label className="text-[11px] font-bold flex items-center gap-1 text-primary">
+                      <LinkIcon className="size-3" /> URL directa de la imagen:
+                    </Label>
+                    <div className="flex gap-1.5">
+                      <Input
+                        placeholder="https://ejemplo.com/foto.jpg"
+                        defaultValue={p.imagen || ""}
+                        className="h-8 text-xs font-mono"
+                        id={`url_input_${p.id}`}
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="h-8 text-xs px-2.5 font-bold"
+                        onClick={() => {
+                          const el = document.getElementById(`url_input_${p.id}`) as HTMLInputElement;
+                          if (el) {
+                            void actualizar(p.id, { imagen: el.value.trim() });
+                            setMostrarInputUrl((prev) => ({ ...prev, [p.id]: false }));
+                            toast.success("Enlace de imagen actualizado y guardado");
+                          }
+                        }}
+                      >
+                        Guardar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2"
+                        onClick={() => setMostrarInputUrl((prev) => ({ ...prev, [p.id]: false }))}
+                      >
+                        <X className="size-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold">Nombre del Vehículo / Entrega</Label>
+                    <Input
+                      value={p.nombre}
+                      onChange={(e) => { void actualizar(p.id, { nombre: e.target.value }); }}
+                      placeholder="Ej: Toyota Prado, Ducati V4, PlayStation 5..."
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold">Posición / Nivel</Label>
+                    <Select
+                      value={
+                        p.nivel === "1° Lugar (A Elección)" || p.nivel === "Premio Mayor"
+                          ? "1° Lugar"
+                          : p.nivel === "2° Lugar (A Elección)" || p.nivel === "Segundo Premio"
+                          ? "2° Lugar"
+                          : p.nivel === "3° Lugar (Efectivo)" || p.nivel === "Tercer Premio"
+                          ? "3° Lugar"
+                          : p.nivel
+                      }
+                      onValueChange={(v) => { void cambiarNivel(p.id, v as Nivel); }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {NIVELES.map((n) => (
+                          <SelectItem key={n} value={n}>
+                            {n}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <input
+                    ref={(el) => {
+                      inputs.current[p.id] = el;
+                    }}
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={(e) => { void subirImagen(p.id, e.target.files?.[0]); }}
                   />
-                </div>
-              ) : (
-                <div className="mb-3 flex h-48 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-                  Sin imagen
-                </div>
-              )}
-              <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label>Nombre del Vehículo / Entrega</Label>
-                  <Input
-                    value={p.nombre}
-                    onChange={(e) => { void actualizar(p.id, { nombre: e.target.value }); }}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Posición / Nivel</Label>
-                  <Select
-                    value={
-                      p.nivel === "1° Lugar (A Elección)" || p.nivel === "Premio Mayor"
-                        ? "1° Lugar"
-                        : p.nivel === "2° Lugar (A Elección)" || p.nivel === "Segundo Premio"
-                        ? "2° Lugar"
-                        : p.nivel === "3° Lugar (Efectivo)" || p.nivel === "Tercer Premio"
-                        ? "3° Lugar"
-                        : p.nivel
-                    }
-                    onValueChange={(v) => { void cambiarNivel(p.id, v as Nivel); }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {NIVELES.map((n) => (
-                        <SelectItem key={n} value={n}>
-                          {n}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <input
-                  ref={(el) => {
-                    inputs.current[p.id] = el;
-                  }}
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={(e) => { void subirImagen(p.id, e.target.files?.[0]); }}
-                />
-                <div className="flex gap-2 pt-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => inputs.current[p.id]?.click()}
-                    disabled={subiendoImagen === p.id}
-                  >
-                    {subiendoImagen === p.id ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <ImagePlus className="size-4" />
-                    )}{" "}
-                    Cambiar foto
-                  </Button>
-                  <Button variant="destructive" size="sm" onClick={() => { void eliminar(p.id); }}>
-                    <Trash2 className="size-4" />
-                  </Button>
+                  <div className="flex gap-2 pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs gap-1.5"
+                      onClick={() => inputs.current[p.id]?.click()}
+                      disabled={subiendoImagen === p.id}
+                    >
+                      {subiendoImagen === p.id ? (
+                        <Loader2 className="animate-spin size-3.5" />
+                      ) : (
+                        <ImagePlus className="size-3.5" />
+                      )}{" "}
+                      Cambiar foto
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="px-2.5 text-xs"
+                      title="Pegar o editar enlace directo (URL)"
+                      onClick={() => setMostrarInputUrl((prev) => ({ ...prev, [p.id]: !prev[p.id] }))}
+                    >
+                      <LinkIcon className="size-3.5" />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="px-2.5"
+                      title="Eliminar esta entrega"
+                      onClick={() => { void eliminar(p.id); }}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
+
+        {/* MODAL PARA AGREGAR CUALQUIER PREMIO O ENTREGA PERSONALIZADA */}
+        <Dialog open={modalAgregarOpen} onOpenChange={setModalAgregarOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-primary font-bold">
+                <Trophy className="size-5 text-amber-500" /> Agregar Nuevo Vehículo o Entrega
+              </DialogTitle>
+              <DialogDescription>
+                Configura libremente el premio que desees sortear (auto, moto, consola, dinero en efectivo u otro).
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label className="font-bold text-xs">Nombre del Vehículo / Premio</Label>
+                <Input
+                  value={nuevoNombre}
+                  onChange={(e) => setNuevoNombre(e.target.value)}
+                  placeholder="Ej: Toyota Hilux 2026, Kawasaki Ninja 400, ₡5,000,000 en Efectivo..."
+                  autoFocus
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="font-bold text-xs">Posición / Nivel del Sorteo</Label>
+                <Select value={nuevoNivel} onValueChange={(v) => setNuevoNivel(v as Nivel)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NIVELES.map((n) => (
+                      <SelectItem key={n} value={n}>
+                        {n}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="font-bold text-xs">Foto del Premio (Subir archivo o pegar enlace)</Label>
+
+                {nuevaImagen ? (
+                  <div className="relative h-44 w-full rounded-lg overflow-hidden border border-border bg-neutral-900">
+                    <img src={nuevaImagen} alt="Vista previa" className="w-full h-full object-cover object-center" />
+                    <button
+                      type="button"
+                      onClick={() => setNuevaImagen("")}
+                      className="absolute top-2 right-2 rounded-md bg-black/75 hover:bg-destructive text-white p-1 text-xs transition-colors shadow-sm"
+                      title="Quitar foto"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3 rounded-xl border border-dashed border-border bg-secondary/20 p-4 text-center">
+                    <input
+                      ref={inputNuevoFileRef}
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => { void subirFotoNuevo(e.target.files?.[0]); }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-2 font-bold"
+                      onClick={() => inputNuevoFileRef.current?.click()}
+                      disabled={subiendoNuevo}
+                    >
+                      {subiendoNuevo ? <Loader2 className="animate-spin size-4" /> : <Upload className="size-4" />}
+                      Subir foto desde tu computadora o celular
+                    </Button>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground before:flex-1 before:border-t before:border-border after:flex-1 after:border-t after:border-border">
+                      o pega una URL directa
+                    </div>
+                    <Input
+                      placeholder="https://... (URL de la imagen)"
+                      value={nuevaImagen}
+                      onChange={(e) => setNuevaImagen(e.target.value)}
+                      className="text-xs font-mono"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter className="flex flex-row justify-end gap-2 pt-2">
+              <Button variant="outline" type="button" onClick={() => setModalAgregarOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                variant="hero"
+                type="button"
+                onClick={() => { void confirmarAgregarPremio(); }}
+                className="shadow-[var(--shadow-fire)] font-bold gap-1.5"
+              >
+                <Save className="size-4" /> Guardar y Crear Entrega
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Botón de Guardar Cambios de Premios y Vehículos */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">

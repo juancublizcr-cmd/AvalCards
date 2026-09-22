@@ -21,6 +21,7 @@ import {
   Eye,
   EyeOff,
   LayoutGrid,
+  Globe,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,7 @@ export function DisenoWebSection({
   const [borrador, setBorrador] = useState<Config>(config);
   const [guardando, setGuardando] = useState(false);
   const [seccionActiva, setSeccionActiva] = useState<
-    "secciones" | "hero" | "vitrina" | "pasos" | "minisorteos" | "paquetes"
+    "secciones" | "hero" | "vitrina" | "pasos" | "minisorteos" | "paquetes" | "footer"
   >("secciones");
 
   const handleGuardar = async () => {
@@ -131,6 +132,15 @@ export function DisenoWebSection({
         mostrarSalaRemates: CONFIG_DEFAULT.mostrarSalaRemates,
         heroTituloApertura: CONFIG_DEFAULT.heroTituloApertura,
         heroSubtituloApertura: CONFIG_DEFAULT.heroSubtituloApertura,
+        footerMostrarColumnaPlataforma: CONFIG_DEFAULT.footerMostrarColumnaPlataforma,
+        footerMostrarImpactoSocial: CONFIG_DEFAULT.footerMostrarImpactoSocial,
+        footerMostrarReferidos: CONFIG_DEFAULT.footerMostrarReferidos,
+        footerMostrarComercios: CONFIG_DEFAULT.footerMostrarComercios,
+        footerMostrarComerciosEnlace: CONFIG_DEFAULT.footerMostrarComerciosEnlace,
+        footerMostrarAccesoAdmin: CONFIG_DEFAULT.footerMostrarAccesoAdmin,
+        footerMostrarThemeToggle: CONFIG_DEFAULT.footerMostrarThemeToggle,
+        footerMostrarLegal: CONFIG_DEFAULT.footerMostrarLegal,
+        footerMostrarWhatsApp: CONFIG_DEFAULT.footerMostrarWhatsApp,
       };
       setBorrador(restaurado);
       toast.info("Valores restablecidos en el borrador. Recuerda hacer clic en 'Guardar Cambios'.");
@@ -144,6 +154,7 @@ export function DisenoWebSection({
     { id: "pasos", label: "3 Pasos (¿Cómo Funciona?)", icono: HelpCircle },
     { id: "minisorteos", label: "Mini-Sorteos Semanales", icono: Fuel },
     { id: "paquetes", label: "Paquetes & Compra", icono: Package },
+    { id: "footer", label: "Pie de Página (Footer)", icono: Globe },
   ] as const;
 
   return (
@@ -1312,6 +1323,278 @@ export function DisenoWebSection({
                 placeholder="EL MEJOR · MÁS VENDIDO"
                 onChange={(e) => setBorrador({ ...borrador, paqueteTagBest: e.target.value })}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Pestaña: Pie de Página (Footer) */}
+      {seccionActiva === "footer" && (
+        <div className="space-y-6 animate-in fade-in-50 duration-300">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-2">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <Globe className="size-5 text-amber-500" /> Control y Visibilidad del Pie de Página (Footer)
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Activa o desactiva en cualquier momento cada enlace o módulo del pie de página público de tu plataforma.
+            </p>
+          </div>
+
+          {/* Grupo 1: Columna "Plataforma" */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+              <div>
+                <h4 className="font-bold text-sm uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                  <Layers className="size-4" /> Columna "Plataforma"
+                </h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Muestra u oculta por completo la columna central "Plataforma" (Adquirir Tokens, Validar Tokens, Checkout y Programas).
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.footerMostrarColumnaPlataforma === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
+                  {borrador.footerMostrarColumnaPlataforma === true ? "Columna Activa" : "Columna Desactivada (Oculta)"}
+                </span>
+                <Switch
+                  checked={borrador.footerMostrarColumnaPlataforma === true}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarColumnaPlataforma: v })}
+                />
+              </div>
+            </div>
+
+            {borrador.footerMostrarColumnaPlataforma === true && (
+              <div className="space-y-3 pt-1">
+                <p className="text-xs text-muted-foreground font-semibold">
+                  Enlaces adicionales dentro de la columna Plataforma:
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {/* Impacto Social */}
+                  <div className="rounded-xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                          ❤️ Impacto y Bien Social
+                        </span>
+                        <p className="text-[11px] text-muted-foreground">
+                          Enlace a la página de causas benéficas y transparencia social (/impacto-social).
+                        </p>
+                      </div>
+                      <Switch
+                        checked={borrador.footerMostrarImpactoSocial === true}
+                        onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarImpactoSocial: v })}
+                      />
+                    </div>
+                    <div className="text-[10px] font-mono font-bold">
+                      {borrador.footerMostrarImpactoSocial === true ? (
+                        <span className="text-emerald-400">🟢 Visible en Footer</span>
+                      ) : (
+                        <span className="text-zinc-500">⚪ Desactivado</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Programa de Referidos */}
+                  <div className="rounded-xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                          🎁 Programa de Referidos
+                        </span>
+                        <p className="text-[11px] text-muted-foreground">
+                          Enlace al portal de padrinos, comisiones y tokens de bono (/referidos).
+                        </p>
+                      </div>
+                      <Switch
+                        checked={borrador.footerMostrarReferidos === true}
+                        onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarReferidos: v })}
+                      />
+                    </div>
+                    <div className="text-[10px] font-mono font-bold">
+                      {borrador.footerMostrarReferidos === true ? (
+                        <span className="text-emerald-400">🟢 Visible en Footer</span>
+                      ) : (
+                        <span className="text-zinc-500">⚪ Desactivado</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Comercios & Descuentos */}
+                  <div className="rounded-xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                          🤝 Comercios & Descuentos
+                        </span>
+                        <p className="text-[11px] text-muted-foreground">
+                          Enlace a la vitrina de comercios aliados y beneficios (/sponsors).
+                        </p>
+                      </div>
+                      <Switch
+                        checked={borrador.footerMostrarComercios === true}
+                        onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarComercios: v })}
+                      />
+                    </div>
+                    <div className="text-[10px] font-mono font-bold">
+                      {borrador.footerMostrarComercios === true ? (
+                        <span className="text-emerald-400">🟢 Visible en Footer</span>
+                      ) : (
+                        <span className="text-zinc-500">⚪ Desactivado</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Grupo 2: Barra Inferior (Sub-footer) */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <div>
+              <h4 className="font-bold text-sm uppercase tracking-wider text-sky-400 flex items-center gap-2">
+                <ShieldCheck className="size-4" /> Enlaces de la Barra Inferior (Sub-Footer)
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Controla los botones discretos que aparecen al lado del selector de tema claro/oscuro.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {/* Selector de Tema Claro / Oscuro */}
+              <div className="rounded-xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <span className="font-bold text-xs text-foreground">
+                      Modo Claro / Oscuro (Icono Sol)
+                    </span>
+                    <p className="text-[11px] text-muted-foreground">
+                      Permite a los usuarios cambiar el tema de la web entre oscuro y claro en la barra inferior.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={borrador.footerMostrarThemeToggle === true}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarThemeToggle: v })}
+                  />
+                </div>
+                <div className="text-[10px] font-mono font-bold">
+                  {borrador.footerMostrarThemeToggle === true ? (
+                    <span className="text-emerald-400">🟢 Visible en Barra Inferior</span>
+                  ) : (
+                    <span className="text-zinc-500">⚪ Desactivado (Oculto)</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Acceso Comercios */}
+              <div className="rounded-xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <span className="font-bold text-xs text-foreground">
+                      Enlace "Comercios" en barra inferior
+                    </span>
+                    <p className="text-[11px] text-muted-foreground">
+                      Acceso rápido al portal de comercios (/comercio) al final de la página.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={borrador.footerMostrarComerciosEnlace === true}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarComerciosEnlace: v })}
+                  />
+                </div>
+                <div className="text-[10px] font-mono font-bold">
+                  {borrador.footerMostrarComerciosEnlace === true ? (
+                    <span className="text-emerald-400">🟢 Visible en Barra Inferior</span>
+                  ) : (
+                    <span className="text-zinc-500">⚪ Desactivado (Oculto)</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Acceso Consola Admin */}
+              <div className="rounded-xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <span className="font-bold text-xs text-foreground">
+                      Enlace "Acceso" (Consola Admin) en barra inferior
+                    </span>
+                    <p className="text-[11px] text-muted-foreground">
+                      Oculta el acceso directo a /admin para mayor discreción visual. Siempre puedes entrar escribiendo /admin en la barra de tu navegador.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={borrador.footerMostrarAccesoAdmin === true}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarAccesoAdmin: v })}
+                  />
+                </div>
+                <div className="text-[10px] font-mono font-bold">
+                  {borrador.footerMostrarAccesoAdmin === true ? (
+                    <span className="text-emerald-400">🟢 Visible en Barra Inferior</span>
+                  ) : (
+                    <span className="text-zinc-500">⚪ Desactivado (Oculto - Solo entras por URL /admin)</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grupo 3: Legal y Soporte */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <div>
+              <h4 className="font-bold text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <CheckCircle2 className="size-4" /> Enlaces Legales y Soporte WhatsApp
+              </h4>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-xl border border-border bg-secondary/20 p-4 flex items-start justify-between gap-2">
+                <div className="space-y-1">
+                  <span className="font-bold text-xs text-foreground">
+                    Enlaces Legales (Reglamento, Privacidad, Reembolsos)
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">
+                    Garantizan el respaldo legal y transparencia de la plataforma ante los clientes.
+                  </p>
+                </div>
+                <Switch
+                  checked={borrador.footerMostrarLegal !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarLegal: v })}
+                />
+              </div>
+
+              <div className="rounded-xl border border-border bg-secondary/20 p-4 flex items-start justify-between gap-2">
+                <div className="space-y-1">
+                  <span className="font-bold text-xs text-foreground">
+                    Botón de Atención Directa WhatsApp
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">
+                    Permite a los usuarios contactar a soporte vía WhatsApp con un solo clic.
+                  </p>
+                </div>
+                <Switch
+                  checked={borrador.footerMostrarWhatsApp !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, footerMostrarWhatsApp: v })}
+                />
+              </div>
+            </div>
+
+            {/* Número de WhatsApp Oficial para Soporte y FAQs */}
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <Label className="text-xs font-bold text-foreground">
+                  Número Oficial de WhatsApp (Soporte & Sección "¿Tenés Dudas?")
+                </Label>
+                <span className="text-[11px] text-emerald-500 font-mono font-bold">
+                  Vista previa: {borrador.promoWhatsapp ? `+506 ${borrador.promoWhatsapp.replace(/\D/g, "").slice(-8).replace(/(\d{4})(\d{4})/, "$1-$2")}` : "+506 8634-4772"}
+                </span>
+              </div>
+              <Input
+                value={borrador.promoWhatsapp || ""}
+                onChange={(e) => setBorrador({ ...borrador, promoWhatsapp: e.target.value })}
+                placeholder="50686344772 o 8634-4772"
+                className="bg-background/80 font-mono"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Controla el número de teléfono del botón <strong className="text-foreground">"Chatear por WhatsApp"</strong> en la tarjeta <strong className="text-foreground">"¿Tenés Dudas?"</strong>, el pie de página y la atención en vivo.
+              </p>
             </div>
           </div>
         </div>
