@@ -525,3 +525,42 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 3. **Acceso Administrativo Directo en Barra Lateral (`AdminSidebar.tsx`):**
    - Incorporación del acceso directo **"🧾 FacturaOS / Hacienda"** en el panel administrativo de AvalCar para auditar el historial de comprobantes, expedientes y anulaciones sin salir del entorno de control.
+
+---
+
+## 🚀 Hito 30: Personalización de Podio Oficial Aval, Controles Dinámicos de Pie de Página (Footer) en Admin y Gestión Reactiva de WhatsApp Oficial
+
+1. **Personalización del Podio Oficial Aval ("CON TU AVAL"):**
+   - Incorporación de controles editoriales para los textos del Podio Dúo (1° y 2° Lugar) directamente desde el panel administrativo (`/admin` &rarr; Premios): Ceja, Título e Insignia con persistencia en Supabase y local.
+   - Textos oficiales configurados para destacar la autonomía del ganador:
+     - **Ceja:** `1°/2° Lugar Oficial · Tu comunidad te respalda`
+     - **Título:** `CON TU AVAL: VOS TENÉS EL MANDO DEL PREMIO`
+     - **Insignia:** `Elegí con total libertad entre las 2 opciones`
+   - Sustitución de los emojis planos anteriores por el isotipo oficial octagonal de Aval sobre un contenedor cuadrado redondeado con fondo blanco sólido (`rounded-2xl bg-white border-2`), complementado con insignias distintivas flotantes:
+     - 👑 Corona dorada para 1° Lugar.
+     - 🥈 Medalla de plata para 2° Lugar.
+     - 🥉 Medalla de bronce para 3° Lugar.
+
+2. **Panel de Control Integral del Pie de Página (Footer) en Admin (`DisenoWebSection.tsx`):**
+   - Creación de la subpestaña **"🌐 Pie de Página (Footer)"** dentro del módulo "🎨 Diseño Web".
+   - **Columna "PLATAFORMA"**: Switch maestro para apagar o encender la columna entera y switches individuales para *Impacto Social*, *Programa de Referidos* y *Comercios & Descuentos*.
+   - **Barra Inferior (Sub-Footer)**:
+     - Toggle para el **Selector de Tema Claro / Oscuro (Icono Sol/Luna)**, permitiendo ocultarlo para mayor sobriedad visual (desactivado por defecto).
+     - Toggle para enlace discreto de **Comercios**.
+     - Toggle para enlace discreto de **Acceso (Consola Admin)**.
+     - Toggles para Enlaces Legales (Reglamento, Privacidad, Reembolsos) y Soporte Directo.
+   - Adaptación automática del diseño del pie de página (`Footer.tsx`) para centrar y distribuir equilibradamente los elementos cuando las columnas o accesos están ocultos.
+
+3. **Gestión Dinámica y Reactiva del WhatsApp Oficial:**
+   - Desacople de números estáticos hardcodeados en `Footer.tsx` y `FaqSection.tsx`.
+   - Control centralizado del número oficial (`promoWhatsapp`) editable desde:
+     - Pestaña **"⚙️ General"** en el bloque de contacto oficial y SINPE Móvil.
+     - Pestaña **"🎨 Diseño Web" &rarr; "🌐 Pie de Página (Footer)"** con vista previa de formato telefónico costarricense (`+506 XXXX-XXXX`).
+   - Optimización de la tarjeta **"¿TENÉS DUDAS?"** en la sección de preguntas frecuentes:
+     - El botón principal se simplificó limpiamente a **"Chatear por WhatsApp"** (eliminando la redundancia de mostrar el número dentro del botón).
+     - La línea oficial y el estado activo se mantienen de forma elegante en la parte inferior: `🟢 En línea ahora · Línea oficial: +506 XXXX-XXXX`.
+   - Actualización inmediata y reactiva del enlace de WhatsApp en la columna de *Legal y Soporte* del pie de página.
+
+4. **Sincronización en Repositorio GitHub:**
+   - Commit `fc1442a` y despliegue exitoso mediante push a la rama `main` del repositorio oficial.
+
