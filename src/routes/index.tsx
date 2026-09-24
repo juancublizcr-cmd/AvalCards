@@ -1235,6 +1235,117 @@ function IndexPage() {
           </section>
         )}
 
+        {/* ========================================================================= */}
+        {/* GRAN BLOQUE DE IMPACTO: SUSCRIPCIÓN COMUNITARIA (AVAL COMMUNITY CR)       */}
+        {/* ========================================================================= */}
+        {config.mostrarSeccionSuscripcion !== false && (() => {
+          const rawWa = (config.promoWhatsapp || config.telefonoSinpe || "50663842433").replace(/\D/g, "");
+          const waNum = rawWa.length === 8 ? `506${rawWa}` : rawWa;
+          const waMsg = encodeURIComponent("¡Hola! Quiero afiliarme a la suscripción AVAL para obtener mi 50% de descuento en LUXX CR CAR WASH y recibir mis 3 tokens.");
+          const waLink = `https://wa.me/${waNum}?text=${waMsg}`;
+
+          return (
+            <section id="suscripcion" className="py-14 sm:py-20 mx-auto max-w-5xl px-5 scroll-mt-24">
+              <div className="relative rounded-3xl border-2 border-amber-500/50 bg-gradient-to-b from-card via-card to-amber-950/20 p-7 sm:p-14 text-center shadow-[0_0_60px_rgba(245,158,11,0.18)] overflow-hidden">
+                {/* Resplandores ambientales de fondo */}
+                <div className="pointer-events-none absolute -top-28 left-1/2 -translate-x-1/2 size-96 rounded-full bg-amber-500/15 blur-[120px]" />
+                <div className="pointer-events-none absolute -bottom-24 right-10 size-72 rounded-full bg-emerald-500/10 blur-[100px]" />
+
+                <div className="relative z-10 space-y-6 max-w-3xl mx-auto">
+                  {/* Badge superior */}
+                  <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-xs font-black tracking-widest text-amber-500 dark:text-amber-400 uppercase shadow-xs">
+                    <Sparkles className="size-4 animate-pulse text-amber-400" />
+                    <span>{config.suscripcionBadge || "Comunidad Exclusiva · Membresía Oficial AVAL"}</span>
+                  </div>
+
+                  {/* TÍTULO ENORME DE IMPACTO */}
+                  <h2 className="font-display text-5xl sm:text-7xl lg:text-8xl tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 drop-shadow-[0_4px_25px_rgba(245,158,11,0.4)]">
+                    {config.suscripcionTitulo || "SUSCRIBITE"}
+                  </h2>
+
+                  {/* Texto exacto del usuario */}
+                  <p className="text-base sm:text-lg lg:text-xl text-foreground/90 dark:text-zinc-200 leading-relaxed font-normal max-w-2xl mx-auto">
+                    {config.suscripcionTexto || "Afiliate a AVAL y formá parte de una comunidad con beneficios. Con tu suscripción obtenés 50% de descuento en LUXX CR CAR WASH, recibís 3 tokens para participar y accedés a una plataforma con dinámicas transparentes y verificables, respaldadas por resultados oficiales."}
+                  </p>
+
+                  {/* 3 Tarjetas de Beneficios Clave (Impacto Visual) */}
+                  <div className="pt-4 grid sm:grid-cols-3 gap-4 text-left">
+                    {/* Beneficio 1: 50% Descuento */}
+                    <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-transparent p-5 space-y-2 hover:border-amber-500/60 transition-all shadow-md">
+                      <div className="size-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                        <Percent className="size-5" />
+                      </div>
+                      <div className="text-[11px] font-bold text-amber-500 uppercase tracking-wider">Ahorro Inmediato</div>
+                      <h4 className="font-black text-lg text-foreground leading-snug">50% de Descuento</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        En todos los servicios de LUXX CR CAR WASH para mantener tu vehículo impecable.
+                      </p>
+                    </div>
+
+                    {/* Beneficio 2: 3 Tokens */}
+                    <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-transparent p-5 space-y-2 hover:border-amber-500/60 transition-all shadow-md">
+                      <div className="size-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                        <Ticket className="size-5" />
+                      </div>
+                      <div className="text-[11px] font-bold text-amber-500 uppercase tracking-wider">Oportunidad Real</div>
+                      <h4 className="font-black text-lg text-foreground leading-snug">3 Tokens Incluidos</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Participación directa en las 3 entregas espectaculares de motos, carros y efectivo.
+                      </p>
+                    </div>
+
+                    {/* Beneficio 3: 100% Oficial */}
+                    <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-transparent p-5 space-y-2 hover:border-amber-500/60 transition-all shadow-md">
+                      <div className="size-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                        <ShieldCheck className="size-5" />
+                      </div>
+                      <div className="text-[11px] font-bold text-amber-500 uppercase tracking-wider">Transparencia Total</div>
+                      <h4 className="font-black text-lg text-foreground leading-snug">Resultados Oficiales</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Dinámicas 100% verificables y auditadas con los sorteos oficiales de la JPS.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Botón CTA Grande con Glow y pulsación */}
+                  <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Button
+                      asChild
+                      size="xl"
+                      className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black text-base sm:text-lg px-10 py-8 rounded-2xl shadow-[0_10px_35px_rgba(245,158,11,0.4)] cursor-pointer transition-all hover:scale-[1.03] active:scale-[0.98] border border-amber-300/60"
+                    >
+                      <a
+                        href={waLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-3"
+                      >
+                        <Sparkles className="size-6 text-black fill-black" />
+                        <span>{config.suscripcionBotonTexto || "¡QUIERO MI SUSCRIPCIÓN Y MIS 3 TOKENS! →"}</span>
+                      </a>
+                    </Button>
+                  </div>
+
+                  {/* Micro-garantías debajo del botón */}
+                  <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground pt-1">
+                    <span className="flex items-center gap-1.5 text-amber-500 font-semibold">
+                      <CheckCircle2 className="size-3.5" /> Activación Inmediata
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1.5 text-foreground font-medium">
+                      <MessageCircle className="size-3.5 text-emerald-400" /> Atención Personalizada por WhatsApp
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1.5 text-zinc-400">
+                      <Award className="size-3.5 text-amber-400" /> Beneficios Reales en Costa Rica
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
         {/* SECCIÓN DETALLADA DE PREMIOS (FUERA DEL BLOQUE PRINCIPAL) CON MÁS INFORMACIÓN Y CTAS PROPIOS */}
         {config.mostrarSeccionDetallePremios === true && premiosVisibles.length > 0 && (() => {
           const premioActivo = premiosVisibles[premioDetalleIdx] || premiosVisibles[0];

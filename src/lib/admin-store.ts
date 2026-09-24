@@ -232,6 +232,11 @@ export type Config = {
   podio2Titulo?: string;
   podio2Badge?: string;
   mostrarSeccionComoFunciona?: boolean;
+  mostrarSeccionSuscripcion?: boolean;
+  suscripcionBadge?: string;
+  suscripcionTitulo?: string;
+  suscripcionTexto?: string;
+  suscripcionBotonTexto?: string;
   mostrarSeccionDetallePremios?: boolean;
   mostrarSeccionReferidos?: boolean;
   mostrarSeccionSponsors?: boolean;
@@ -565,6 +570,11 @@ export const CONFIG_DEFAULT: Config = {
   podio2Titulo: "Con tu aval: Vos tenés el mando del premio",
   podio2Badge: "Elegí con total libertad entre las 2 opciones",
   mostrarSeccionComoFunciona: true,
+  mostrarSeccionSuscripcion: true,
+  suscripcionBadge: "Comunidad Exclusiva · Membresía Oficial AVAL",
+  suscripcionTitulo: "SUSCRIBITE",
+  suscripcionTexto: "Afiliate a AVAL y formá parte de una comunidad con beneficios. Con tu suscripción obtenés 50% de descuento en LUXX CR CAR WASH, recibís 3 tokens para participar y accedés a una plataforma con dinámicas transparentes y verificables, respaldadas por resultados oficiales.",
+  suscripcionBotonTexto: "¡QUIERO MI SUSCRIPCIÓN Y MIS 3 TOKENS! →",
   mostrarSeccionDetallePremios: false,
   mostrarSeccionReferidos: false,
   mostrarSeccionSponsors: false,
@@ -1275,6 +1285,11 @@ export async function fetchConfig(): Promise<Config> {
       podio2Titulo: extra.podio2Titulo !== undefined ? extra.podio2Titulo : CONFIG_DEFAULT.podio2Titulo,
       podio2Badge: extra.podio2Badge !== undefined ? extra.podio2Badge : CONFIG_DEFAULT.podio2Badge,
       mostrarSeccionComoFunciona: extra.mostrarSeccionComoFunciona !== undefined ? extra.mostrarSeccionComoFunciona : CONFIG_DEFAULT.mostrarSeccionComoFunciona,
+      mostrarSeccionSuscripcion: extra.mostrarSeccionSuscripcion !== undefined ? extra.mostrarSeccionSuscripcion : CONFIG_DEFAULT.mostrarSeccionSuscripcion,
+      suscripcionBadge: extra.suscripcionBadge !== undefined ? extra.suscripcionBadge : CONFIG_DEFAULT.suscripcionBadge,
+      suscripcionTitulo: extra.suscripcionTitulo !== undefined ? extra.suscripcionTitulo : CONFIG_DEFAULT.suscripcionTitulo,
+      suscripcionTexto: extra.suscripcionTexto !== undefined ? extra.suscripcionTexto : CONFIG_DEFAULT.suscripcionTexto,
+      suscripcionBotonTexto: extra.suscripcionBotonTexto !== undefined ? extra.suscripcionBotonTexto : CONFIG_DEFAULT.suscripcionBotonTexto,
       mostrarSeccionDetallePremios: extra.mostrarSeccionDetallePremios !== undefined ? extra.mostrarSeccionDetallePremios : CONFIG_DEFAULT.mostrarSeccionDetallePremios,
       mostrarSeccionReferidos: extra.mostrarSeccionReferidos !== undefined ? extra.mostrarSeccionReferidos : CONFIG_DEFAULT.mostrarSeccionReferidos,
       mostrarSeccionSponsors: extra.mostrarSeccionSponsors !== undefined ? extra.mostrarSeccionSponsors : CONFIG_DEFAULT.mostrarSeccionSponsors,

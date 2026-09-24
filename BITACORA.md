@@ -564,3 +564,30 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 4. **Sincronización en Repositorio GitHub:**
    - Commit `fc1442a` y despliegue exitoso mediante push a la rama `main` del repositorio oficial.
 
+---
+
+## 🚀 Hito 31: Módulo de Suscripción Comunitaria de Alto Impacto ("SUSCRIBITE"), Beneficio Oficial 50% en LUXX CR CAR WASH y Gestión en Panel Admin
+
+1. **Diseño e Integración del Bloque "SUSCRIBITE" en Landing Page (`src/routes/index.tsx`):**
+   - Incorporación del gran bloque de membresía comunitaria posicionado estratégicamente en la **Ubicación 1** (inmediatamente después de la sección *"Participa en 3 Simples Pasos"* y antes de las *Preguntas Frecuentes*).
+   - Estilizado de alto impacto visual con tarjeta contenedora premium, resplandor ambiental áureo/esmeralda y tipografía display de gran escala:
+     - **Insignia superior:** `✨ COMUNIDAD EXCLUSIVA · MEMBRESÍA OFICIAL AVAL`
+     - **Título display:** `SUSCRIBITE` con gradiente brillante.
+     - **Propuesta de valor:** *"Afiliate a AVAL y formá parte de una comunidad con beneficios. Con tu suscripción obtenés 50% de descuento en LUXX CR CAR WASH, recibís 3 tokens para participar y accedés a una plataforma con dinámicas transparentes y verificables, respaldadas por resultados oficiales."*
+   - **Terna de tarjetas visuales de beneficios clave:**
+     - 🚗 **50% de Descuento:** Ahorro directo en todos los servicios de LUXX CR CAR WASH para el cuidado automotriz.
+     - 🎟️ **3 Tokens Incluidos:** Oportunidad real con asignación inmediata de boletos para participar en las 3 entregas de vehículos y efectivo.
+     - 🛡️ **Resultados Oficiales:** Transparencia total respaldada por los sorteos oficiales de la Junta de Protección Social (JPS).
+   - **Botón de llamado a la acción (CTA):**
+     - Botón de alto contraste y relieve lumínico: `¡QUIERO MI SUSCRIPCIÓN Y MIS 3 TOKENS! →`.
+     - Enlace directo a WhatsApp oficial con mensaje predeterminado estructurado para afiliar al usuario de inmediato.
+     - Micro-garantías de confianza: *Activación Inmediata*, *Atención Personalizada por WhatsApp* y *Beneficios Reales en Costa Rica*.
+
+2. **Parametrización y Control en Panel Administrativo (`admin-store.ts` y `DisenoWebSection.tsx`):**
+   - Adición de campos tipados en `Config` y `CONFIG_DEFAULT`: `mostrarSeccionSuscripcion`, `suscripcionBadge`, `suscripcionTitulo`, `suscripcionTexto` y `suscripcionBotonTexto`.
+   - Interruptor de activación/desactivación en tiempo real dentro de `/admin` &rarr; *"🎨 Diseño Web"* &rarr; *"Secciones Públicas"*.
+
+3. **Estandarización de Marca Oficial:**
+   - Verificación y actualización de la razón comercial a **LUXX CR CAR WASH** en el copy de beneficios, la tarjeta visual y el mensaje de apertura de chat de WhatsApp.
+
+

@@ -355,7 +355,31 @@ export function DisenoWebSection({
                 </div>
               </div>
 
-              {/* 5. Detalle Extendido de Premios (Fuera del Bloque) */}
+              {/* 5. Gran Bloque de Suscripción AVAL Community (Membresía & Beneficios) */}
+              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/60 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-foreground">5. Gran Bloque de Suscripción AVAL Community</span>
+                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionSuscripcion !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
+                        {borrador.mostrarSeccionSuscripcion !== false ? "Activo" : "Oculto"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Llamado a la acción de alto impacto: "SUSCRIBITE" con 50% de descuento en LUXX CR CAR WASH, 3 tokens de participación y dinámicas transparentes respaldadas por la JPS.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={borrador.mostrarSeccionSuscripcion !== false}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionSuscripcion: v })}
+                  />
+                </div>
+                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50 flex items-center justify-between">
+                  <span>💡 Ubicado estratégicamente justo después de los 3 simples pasos.</span>
+                </div>
+              </div>
+
+              {/* 6. Detalle Extendido de Premios (Fuera del Bloque) */}
               <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
