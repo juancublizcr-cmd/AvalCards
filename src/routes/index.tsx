@@ -711,19 +711,19 @@ function IndexPage() {
                           </span>
                         </div>
 
-                        {/* Foto con Clic para abrir el Popup del Premio */}
+                        {/* Foto — clic para ver en grande (lightbox) */}
                         <div
-                          className="relative w-full h-64 sm:h-72 overflow-hidden bg-neutral-900 cursor-pointer group/img"
-                          onClick={() => setPremioModal(p)}
+                          className="relative w-full h-56 sm:h-64 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
+                          onClick={() => setFotoZoom({ url: p.imagen || defaultImg, titulo: p.nombre, nivel: tagLugar })}
                         >
                           <img
                             src={p.imagen || defaultImg}
                             alt={p.nombre}
-                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
+                            className="w-full h-full object-contain object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-black/30 pointer-events-none" />
-                          <div className="absolute bottom-2.5 right-3 bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1.5 backdrop-blur shadow-md group-hover/img:bg-amber-500 group-hover/img:text-black transition-colors">
-                            <Sparkles className="size-3" /> Ver "Comprá y ganá"
+                          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/10 to-transparent pointer-events-none" />
+                          <div className="absolute bottom-2.5 right-3 bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1.5 backdrop-blur shadow-md group-hover/img:bg-white/90 group-hover/img:text-black transition-colors">
+                            <Sparkles className="size-3" /> Ver foto en grande
                           </div>
                         </div>
 

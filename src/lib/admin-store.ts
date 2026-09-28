@@ -317,6 +317,11 @@ export type Config = {
   footerMostrarThemeToggle?: boolean;
   footerMostrarLegal?: boolean;
   footerMostrarWhatsApp?: boolean;
+  // Redes Sociales
+  footerInstagram?: string;
+  footerFacebook?: string;
+  footerTiktok?: string;
+  footerYoutube?: string;
 };
 
 export type ReferenteStat = {
@@ -655,6 +660,11 @@ export const CONFIG_DEFAULT: Config = {
   footerMostrarThemeToggle: false,
   footerMostrarLegal: true,
   footerMostrarWhatsApp: true,
+  // Redes Sociales
+  footerInstagram: "https://www.instagram.com/avalcommunity26/",
+  footerFacebook: "https://www.facebook.com/share/14nL2DgWw9B/?mibextid=wwXIfr",
+  footerTiktok: "",
+  footerYoutube: "",
 };
 
 // ────────────────────────────────────────────────────────────
@@ -1354,6 +1364,11 @@ export async function fetchConfig(): Promise<Config> {
       footerMostrarThemeToggle: extra.footerMostrarThemeToggle !== undefined ? extra.footerMostrarThemeToggle : CONFIG_DEFAULT.footerMostrarThemeToggle,
       footerMostrarLegal: extra.footerMostrarLegal !== undefined ? extra.footerMostrarLegal : CONFIG_DEFAULT.footerMostrarLegal,
       footerMostrarWhatsApp: extra.footerMostrarWhatsApp !== undefined ? extra.footerMostrarWhatsApp : CONFIG_DEFAULT.footerMostrarWhatsApp,
+      // Redes Sociales
+      footerInstagram: extra.footerInstagram ?? CONFIG_DEFAULT.footerInstagram,
+      footerFacebook: extra.footerFacebook ?? CONFIG_DEFAULT.footerFacebook,
+      footerTiktok: extra.footerTiktok ?? CONFIG_DEFAULT.footerTiktok,
+      footerYoutube: extra.footerYoutube ?? CONFIG_DEFAULT.footerYoutube,
     };
   } catch {
     return CONFIG_DEFAULT;

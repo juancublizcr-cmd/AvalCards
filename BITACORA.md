@@ -590,4 +590,33 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 3. **Estandarización de Marca Oficial:**
    - Verificación y actualización de la razón comercial a **LUXX CR CAR WASH** en el copy de beneficios, la tarjeta visual y el mensaje de apertura de chat de WhatsApp.
 
+---
+
+## 🚀 Hito 32: Optimización de Imágenes de Motos (Podio Dúo), Visor Lightbox Independiente, Rediseño del Modal de Ficha con CTA "Muy Pronto" y Redes Sociales en Footer y Admin
+
+1. **Corrección Visual de Imágenes de Vehículos y Motos en Podio Dúo (`src/routes/index.tsx`):**
+   - Transición del encuadre de `object-cover` a `object-contain` en las tarjetas del podio, eliminando el corte agresivo de la Ducati Multistrada V4 RS y Ducati Panigale V4 S.
+   - Las motos ahora se aprecian íntegras, con proporciones reales y sin truncamiento frontal o de escape.
+   - Ajuste de dimensiones de contenedor y fondo neutral para máxima elegancia visual.
+
+2. **Separación de Acciones en Tarjetas de Premios:**
+   - **Clic en la foto:** Abre directamente el visor en pantalla completa (`fotoZoom` Lightbox) con indicador visual `cursor-zoom-in` e insignia *"Ver foto en grande"*.
+   - **Clic en "Ver Ficha & Comprá y ganá":** Abre el modal detallado de especificaciones técnicas y garantías legales.
+
+3. **Reingeniería Visual y Funcional de la Ficha Técnica (`PremioModal.tsx`):**
+   - **Solución a desbordes de texto:** Aplicación de `overflow-x-hidden` y `break-words` en descripciones, especificaciones y lista de garantías para evitar cualquier corte horizontal en móviles y escritorios.
+   - **Botón de cierre (X):** Elevado a `z-[60]` para garantizar su funcionalidad inmediata y evitar que las insignias superiores de premio y supertoken intercepten el clic.
+   - **Botón de Compra a "Muy Pronto":** Botón de llamado a la acción transformado a estado deshabilitado elegante: `⏳ ¡MUY PRONTO! — Tokens próximamente disponibles` (`opacity-55`, `cursor-not-allowed`).
+   - **Botones apilados verticalmente:** Distribución en columna (`flex-col`) para que tanto el aviso de tokens como el botón de consulta vía WhatsApp cuenten con ancho completo sin solaparse.
+   - **Tarjetas de paquetes de tokens:** Desactivadas temporalmente en modo vista previa informativa.
+
+4. **Integración Completa de Redes Sociales Oficiales (`Footer.tsx`, `admin-store.ts`, `DisenoWebSection.tsx`):**
+   - **Canales Oficiales Configurados:**
+     - 📸 **Instagram:** `https://www.instagram.com/avalcommunity26/`
+     - 📘 **Facebook:** `https://www.facebook.com/share/14nL2DgWw9B/?mibextid=wwXIfr`
+     - 🎵 **TikTok** y ▶️ **YouTube:** Campos listos para habilitarse en el momento que se creen las cuentas.
+   - **Renderizado Dinámico:** Los íconos solo aparecen en el pie de página si cuentan con un enlace registrado.
+   - **Panel Administrativo:** Nueva sección dedicada *"📱 Enlaces de Redes Sociales (Pie de Página)"* dentro de `/admin` &rarr; *"🎨 Diseño Web"* &rarr; *"🌐 Pie de Página (Footer)"* con inputs directos para cada red.
+
+
 

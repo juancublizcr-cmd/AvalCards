@@ -137,15 +137,15 @@ export function PremioModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[95vw] max-h-[92vh] overflow-y-auto border-2 border-amber-500/50 bg-zinc-950/95 p-0 shadow-[0_0_80px_rgba(245,158,11,0.25)] backdrop-blur-2xl text-foreground rounded-3xl">
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[92vh] overflow-y-auto overflow-x-hidden border-2 border-amber-500/50 bg-zinc-950/95 p-0 shadow-[0_0_80px_rgba(245,158,11,0.25)] backdrop-blur-2xl text-foreground rounded-3xl">
         {/* Cabecera con Foto Grande e Insignias */}
         <div className="relative w-full h-64 sm:h-72 bg-neutral-900 overflow-hidden">
           <img
             src={imagenFinal}
             alt={premio.nombre}
-            className="w-full h-full object-cover object-center brightness-[1.03]"
+            className="w-full h-full object-contain object-center brightness-[1.03]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-black/60 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-black/50 pointer-events-none" />
 
           {/* Badges Flotantes en la Imagen */}
           <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 z-10">
@@ -162,23 +162,23 @@ export function PremioModal({
           </div>
 
           <div className="absolute bottom-3 left-4 right-4 text-left">
-            <h2 className="text-2xl sm:text-3xl font-display uppercase tracking-wide text-white drop-shadow-md">
+            <h2 className="text-xl sm:text-3xl font-display uppercase tracking-wide text-white drop-shadow-md break-words">
               {premio.nombre}
             </h2>
             <div className="flex items-center gap-2 mt-1 text-xs text-emerald-400 font-semibold">
-              <ShieldCheck className="size-4" /> Traspaso notarial y marchamo 100% incluidos
+              <ShieldCheck className="size-4 shrink-0" /> Traspaso notarial y marchamo 100% incluidos
             </div>
           </div>
         </div>
 
         {/* Contenido del Modal */}
-        <div className="p-6 space-y-6 text-left">
+        <div className="p-5 sm:p-6 space-y-5 text-left overflow-x-hidden">
           {/* Descripción */}
           <div>
             <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
               Descripción del Premio
             </h3>
-            <p className="mt-2 text-sm sm:text-base text-foreground/90 leading-relaxed">
+            <p className="mt-2 text-sm sm:text-base text-foreground/90 leading-relaxed break-words">
               {descripcionLarga}
             </p>
           </div>
@@ -188,12 +188,12 @@ export function PremioModal({
             {especificaciones.map((spec, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-border/80 bg-secondary/40 p-3 flex flex-col justify-between"
+                className="rounded-xl border border-border/80 bg-secondary/40 p-3 flex flex-col justify-between overflow-hidden"
               >
                 <span className="text-[11px] font-bold text-muted-foreground uppercase">
                   {spec.label}
                 </span>
-                <span className="text-xs sm:text-sm font-semibold text-foreground mt-0.5">
+                <span className="text-xs sm:text-sm font-semibold text-foreground mt-0.5 break-words">
                   {spec.val}
                 </span>
               </div>
@@ -207,33 +207,33 @@ export function PremioModal({
               <span>Comprá y Ganá</span>
             </div>
 
-            <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed">
+            <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed break-words">
               Al adquirir tu paquete de Tokens digitales oficiales participas directamente por este premio y todas las entregas de la edición:
             </p>
 
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>
+                <span className="break-words">
                   <strong className="text-foreground">Asignación 100% Digital:</strong> Tus números quedan registrados de inmediato en tu dispositivo y validados en Supabase.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>
+                <span className="break-words">
                   <strong className="text-foreground">Resultados Transparentes JPS:</strong> El ganador se define con la emisión oficial pública de la Junta de Protección Social.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>
+                <span className="break-words">
                   <strong className="text-foreground">Cero Gastos Ocultos:</strong> Traspaso notarial, placas, marchamo 2026 y entrega garantizada con tanque lleno por Aval Community CR.
                 </span>
               </li>
               {config.supertokenActivo !== false && (
                 <li className="flex items-start gap-2 text-amber-300 font-semibold">
                   <Crown className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                  <span>
+                  <span className="break-words">
                     Bono SuperToken: ¡Suma hasta +{superSimbolo}{formatNumber(bonoSupertoken)} {superCodigo} en efectivo directo si tu token resulta favorecido!
                   </span>
                 </li>
@@ -241,58 +241,51 @@ export function PremioModal({
             </ul>
           </div>
 
-          {/* Resumen de Paquetes Disponibles */}
+          {/* Resumen de Paquetes Disponibles — solo informativo, deshabilitado */}
           {paquetes.length > 0 && (
             <div className="pt-1">
-              <div className="text-[11px] font-bold text-muted-foreground uppercase mb-2 flex items-center justify-between">
+              <div className="text-[11px] font-bold text-muted-foreground uppercase mb-2 flex flex-wrap items-center justify-between gap-1">
                 <span>Paquetes de Tokens Disponibles:</span>
                 <span className="text-amber-400 font-semibold">Desde solo ₡4 000</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 opacity-50 pointer-events-none select-none">
                 {paquetes.slice(0, 4).map((p, idx) => (
-                  <button
+                  <div
                     key={idx}
-                    onClick={() => {
-                      onOpenChange(false);
-                      onSelectTokens(p);
-                    }}
-                    className="p-2.5 rounded-xl border border-border hover:border-amber-500/70 bg-card hover:bg-amber-500/10 transition-all text-center cursor-pointer group"
+                    className="p-2.5 rounded-xl border border-border bg-card text-center"
                   >
-                    <div className="text-xs font-bold text-foreground group-hover:text-amber-400">
+                    <div className="text-xs font-bold text-foreground">
                       {p.cantidad} Tokens
                     </div>
                     <div className="text-[11px] text-muted-foreground font-mono">
                       ₡{formatNumber(p.precio)}
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* CTA DE TOKENS (SIN SALIR DEL BLOQUE PRINCIPAL) */}
-          <div className="pt-2 flex flex-col sm:flex-row gap-3">
+          {/* CTA — MUY PRONTO (deshabilitado) */}
+          <div className="pt-2 flex flex-col gap-3">
             <Button
-              variant="hero"
+              variant="outline"
               size="lg"
-              onClick={() => {
-                onOpenChange(false);
-                onSelectTokens();
-              }}
-              className="flex-1 py-6 text-base font-bold shadow-[var(--shadow-fire)] cursor-pointer"
+              disabled
+              className="w-full py-5 text-sm font-bold cursor-not-allowed opacity-55 border-zinc-600 text-zinc-400 bg-zinc-900/60 flex items-center justify-center gap-2"
             >
-              <Ticket className="size-5" />
-              🔥 ¡COMPRAR TOKENS Y PARTICIPAR! →
+              <Ticket className="size-4 shrink-0" />
+              ⏳ ¡MUY PRONTO! — Tokens próximamente disponibles
             </Button>
 
             <Button
               variant="outline"
               size="lg"
               asChild
-              className="py-6 text-xs sm:text-sm border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+              className="w-full py-5 text-sm border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 flex items-center justify-center gap-2"
             >
               <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="size-4" /> Consultar por WhatsApp
+                <MessageCircle className="size-4 shrink-0" /> Consultar por WhatsApp
               </a>
             </Button>
           </div>

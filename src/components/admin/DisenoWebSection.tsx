@@ -141,6 +141,10 @@ export function DisenoWebSection({
         footerMostrarThemeToggle: CONFIG_DEFAULT.footerMostrarThemeToggle,
         footerMostrarLegal: CONFIG_DEFAULT.footerMostrarLegal,
         footerMostrarWhatsApp: CONFIG_DEFAULT.footerMostrarWhatsApp,
+        footerInstagram: CONFIG_DEFAULT.footerInstagram,
+        footerFacebook: CONFIG_DEFAULT.footerFacebook,
+        footerTiktok: CONFIG_DEFAULT.footerTiktok,
+        footerYoutube: CONFIG_DEFAULT.footerYoutube,
       };
       setBorrador(restaurado);
       toast.info("Valores restablecidos en el borrador. Recuerda hacer clic en 'Guardar Cambios'.");
@@ -1619,6 +1623,86 @@ export function DisenoWebSection({
               <p className="text-[11px] text-muted-foreground">
                 Controla el número de teléfono del botón <strong className="text-foreground">"Chatear por WhatsApp"</strong> en la tarjeta <strong className="text-foreground">"¿Tenés Dudas?"</strong>, el pie de página y la atención en vivo.
               </p>
+            </div>
+
+            {/* Redes Sociales Oficiales */}
+            <div className="rounded-2xl border-2 border-primary/20 bg-secondary/15 p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                <div className="space-y-0.5">
+                  <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                    📱 Enlaces de Redes Sociales (Pie de Página)
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Los íconos solo aparecerán en el footer si la casilla tiene un enlace ingresado.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                {/* Instagram */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <span className="text-pink-500 font-bold">📸</span> Instagram
+                  </Label>
+                  <Input
+                    value={borrador.footerInstagram || ""}
+                    onChange={(e) => setBorrador({ ...borrador, footerInstagram: e.target.value })}
+                    placeholder="https://www.instagram.com/tu_cuenta/"
+                    className="bg-background/80 text-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    Ej: https://www.instagram.com/avalcommunity26/
+                  </p>
+                </div>
+
+                {/* Facebook */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <span className="text-blue-500 font-bold">📘</span> Facebook
+                  </Label>
+                  <Input
+                    value={borrador.footerFacebook || ""}
+                    onChange={(e) => setBorrador({ ...borrador, footerFacebook: e.target.value })}
+                    placeholder="https://www.facebook.com/tu_pagina"
+                    className="bg-background/80 text-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    Pega el enlace de la página o perfil de Facebook.
+                  </p>
+                </div>
+
+                {/* TikTok */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <span className="text-foreground font-bold">🎵</span> TikTok
+                  </Label>
+                  <Input
+                    value={borrador.footerTiktok || ""}
+                    onChange={(e) => setBorrador({ ...borrador, footerTiktok: e.target.value })}
+                    placeholder="https://www.tiktok.com/@tu_cuenta"
+                    className="bg-background/80 text-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    Dejar vacío si aún no está activo.
+                  </p>
+                </div>
+
+                {/* YouTube */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <span className="text-red-500 font-bold">▶️</span> YouTube
+                  </Label>
+                  <Input
+                    value={borrador.footerYoutube || ""}
+                    onChange={(e) => setBorrador({ ...borrador, footerYoutube: e.target.value })}
+                    placeholder="https://www.youtube.com/@tu_canal"
+                    className="bg-background/80 text-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    Dejar vacío si aún no está activo.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
