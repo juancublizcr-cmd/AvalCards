@@ -665,7 +665,7 @@ export const CONFIG_DEFAULT: Config = {
   // Redes Sociales
   footerInstagram: "https://www.instagram.com/avalcommunity26/",
   footerFacebook: "https://www.facebook.com/share/14nL2DgWw9B/?mibextid=wwXIfr",
-  footerTiktok: "",
+  footerTiktok: "https://www.tiktok.com/@aval_community?is_from_webapp=1&sender_device=pc",
   footerYoutube: "",
 };
 

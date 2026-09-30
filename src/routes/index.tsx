@@ -37,7 +37,7 @@ import { StickersModal, type Paquete } from "@/components/StickersModal";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
 import { GanadoresSection } from "@/components/GanadoresSection";
 import { FaqSection } from "@/components/FaqSection";
-import { Footer, IconInstagram, IconFacebook } from "@/components/Footer";
+import { Footer, IconInstagram, IconFacebook, IconTiktok } from "@/components/Footer";
 import { FlyerPromocional } from "@/components/FlyerPromocional";
 import { FomoNotifications } from "@/components/FomoNotifications";
 import { ProgramaReferidosUnificado } from "@/components/ProgramaReferidosUnificado";
@@ -1312,12 +1312,12 @@ function IndexPage() {
                     <p className="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-400">
                       Seguinos en nuestras redes sociales
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+                    <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5">
                       <a
                         href={config.footerInstagram || "https://www.instagram.com/avalcommunity26/"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-pink-600 via-rose-500 to-amber-500 hover:opacity-95 shadow-[0_4px_20px_rgba(236,72,153,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-pink-400/40"
+                        className="w-full sm:w-auto min-w-[170px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-pink-600 via-rose-500 to-amber-500 hover:opacity-95 shadow-[0_4px_20px_rgba(236,72,153,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-pink-400/40"
                       >
                         <IconInstagram className="size-5 shrink-0" />
                         <span>Instagram</span>
@@ -1326,10 +1326,19 @@ function IndexPage() {
                         href={config.footerFacebook || "https://www.facebook.com/share/14nL2DgWw9B/?mibextid=wwXIfr"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 hover:opacity-95 shadow-[0_4px_20px_rgba(37,99,235,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-blue-400/40"
+                        className="w-full sm:w-auto min-w-[170px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 hover:opacity-95 shadow-[0_4px_20px_rgba(37,99,235,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-blue-400/40"
                       >
                         <IconFacebook className="size-5 shrink-0" />
                         <span>Facebook</span>
+                      </a>
+                      <a
+                        href={config.footerTiktok || "https://www.tiktok.com/@aval_community?is_from_webapp=1&sender_device=pc"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto min-w-[170px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-neutral-800 via-zinc-900 to-black hover:opacity-95 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-white/20"
+                      >
+                        <IconTiktok className="size-5 shrink-0" />
+                        <span>TikTok</span>
                       </a>
                     </div>
                   </div>
