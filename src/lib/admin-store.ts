@@ -243,6 +243,7 @@ export type Config = {
   mostrarSeccionMiniSorteos?: boolean;
   mostrarSeccionGanadores?: boolean;
   mostrarSeccionFaqs?: boolean;
+  mostrarTarjetaDudas?: boolean;
   mostrarSalaRemates?: boolean;
   fomoActivo?: boolean;
   aiActivo?: boolean;
@@ -586,6 +587,7 @@ export const CONFIG_DEFAULT: Config = {
   mostrarSeccionMiniSorteos: false,
   mostrarSeccionGanadores: false,
   mostrarSeccionFaqs: true,
+  mostrarTarjetaDudas: false,
   mostrarSalaRemates: false,
   fomoActivo: false,
   aiActivo: false,
@@ -1306,6 +1308,7 @@ export async function fetchConfig(): Promise<Config> {
       mostrarSeccionMiniSorteos: extra.mostrarSeccionMiniSorteos !== undefined ? extra.mostrarSeccionMiniSorteos : CONFIG_DEFAULT.mostrarSeccionMiniSorteos,
       mostrarSeccionGanadores: extra.mostrarSeccionGanadores !== undefined ? extra.mostrarSeccionGanadores : CONFIG_DEFAULT.mostrarSeccionGanadores,
       mostrarSeccionFaqs: extra.mostrarSeccionFaqs !== undefined ? extra.mostrarSeccionFaqs : CONFIG_DEFAULT.mostrarSeccionFaqs,
+      mostrarTarjetaDudas: extra.mostrarTarjetaDudas !== undefined ? Boolean(extra.mostrarTarjetaDudas) : CONFIG_DEFAULT.mostrarTarjetaDudas,
       mostrarSalaRemates: extra.mostrarSalaRemates !== undefined ? extra.mostrarSalaRemates : CONFIG_DEFAULT.mostrarSalaRemates,
       heroSubtitulo:
         extra.heroSubtitulo !== undefined &&

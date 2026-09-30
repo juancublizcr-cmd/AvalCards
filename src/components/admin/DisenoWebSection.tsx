@@ -129,6 +129,7 @@ export function DisenoWebSection({
         mostrarSeccionMiniSorteos: CONFIG_DEFAULT.mostrarSeccionMiniSorteos,
         mostrarSeccionGanadores: CONFIG_DEFAULT.mostrarSeccionGanadores,
         mostrarSeccionFaqs: CONFIG_DEFAULT.mostrarSeccionFaqs,
+        mostrarTarjetaDudas: CONFIG_DEFAULT.mostrarTarjetaDudas,
         mostrarSalaRemates: CONFIG_DEFAULT.mostrarSalaRemates,
         heroTituloApertura: CONFIG_DEFAULT.heroTituloApertura,
         heroSubtituloApertura: CONFIG_DEFAULT.heroSubtituloApertura,
@@ -538,7 +539,7 @@ export function DisenoWebSection({
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Acordeón inferior que aclara dudas sobre legalidad notarial, SINPE Móvil y cierre con WhatsApp directo (+506 8634-4772).
+                      Acordeón inferior que aclara dudas sobre legalidad notarial, SINPE Móvil y dinámicas de participación.
                     </p>
                   </div>
                   <Switch
@@ -548,6 +549,30 @@ export function DisenoWebSection({
                 </div>
                 <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
                   <span>💡 Resuelve objeciones y genera confianza antes del cierre.</span>
+                </div>
+              </div>
+
+              {/* 11.1. Tarjeta ¿Tenés Dudas? (WhatsApp en FAQs) */}
+              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-foreground">Tarjeta "¿Tenés Dudas?" (WhatsApp en FAQs)</span>
+                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarTarjetaDudas === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
+                        {borrador.mostrarTarjetaDudas === true ? "Activo" : "Desactivado"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Caja verde con botón "Chatear por WhatsApp" ubicada al pie del acordeón de preguntas frecuentes.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={borrador.mostrarTarjetaDudas === true}
+                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarTarjetaDudas: v })}
+                  />
+                </div>
+                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
+                  <span>💬 Activa o desactiva la tarjeta de contacto directo al pie de las FAQs.</span>
                 </div>
               </div>
 

@@ -37,7 +37,7 @@ import { StickersModal, type Paquete } from "@/components/StickersModal";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
 import { GanadoresSection } from "@/components/GanadoresSection";
 import { FaqSection } from "@/components/FaqSection";
-import { Footer } from "@/components/Footer";
+import { Footer, IconInstagram, IconFacebook } from "@/components/Footer";
 import { FlyerPromocional } from "@/components/FlyerPromocional";
 import { FomoNotifications } from "@/components/FomoNotifications";
 import { ProgramaReferidosUnificado } from "@/components/ProgramaReferidosUnificado";
@@ -569,7 +569,7 @@ function IndexPage() {
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
               {sorteo.heroTitulo ? (
-                sorteo.heroTitulo
+                sorteo.heroTitulo.replace(/\besta\s+por\s+llegar\b/gi, "está por llegar")
               ) : (
                 <>
                   ¿Te imaginas estrenar tu <span className="text-fire">{primerPremioVisible?.nombre || "Moto Alta Cilindrada"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
@@ -1307,23 +1307,31 @@ function IndexPage() {
                     </div>
                   </div>
 
-                  {/* Botón CTA Grande con Glow y pulsación */}
-                  <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button
-                      asChild
-                      size="xl"
-                      className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black text-base sm:text-lg px-10 py-8 rounded-2xl shadow-[0_10px_35px_rgba(245,158,11,0.4)] cursor-pointer transition-all hover:scale-[1.03] active:scale-[0.98] border border-amber-300/60"
-                    >
+                  {/* Redes Sociales CTA */}
+                  <div className="pt-6 space-y-4">
+                    <p className="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-400">
+                      Seguinos en nuestras redes sociales
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
                       <a
-                        href={waLink}
+                        href={config.footerInstagram || "https://www.instagram.com/avalcommunity26/"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-3"
+                        className="w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-pink-600 via-rose-500 to-amber-500 hover:opacity-95 shadow-[0_4px_20px_rgba(236,72,153,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-pink-400/40"
                       >
-                        <Sparkles className="size-6 text-black fill-black" />
-                        <span>{config.suscripcionBotonTexto || "¡QUIERO MI SUSCRIPCIÓN Y MIS 3 TOKENS! →"}</span>
+                        <IconInstagram className="size-5 shrink-0" />
+                        <span>Instagram</span>
                       </a>
-                    </Button>
+                      <a
+                        href={config.footerFacebook || "https://www.facebook.com/share/14nL2DgWw9B/?mibextid=wwXIfr"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 hover:opacity-95 shadow-[0_4px_20px_rgba(37,99,235,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98] border border-blue-400/40"
+                      >
+                        <IconFacebook className="size-5 shrink-0" />
+                        <span>Facebook</span>
+                      </a>
+                    </div>
                   </div>
 
                   {/* Micro-garantías debajo del botón */}
