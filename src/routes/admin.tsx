@@ -22,6 +22,7 @@ import {
 } from "@/lib/admin-store";
 import { AdminSidebar, SECCIONES, type AdminSeccion } from "@/components/admin/AdminSidebar";
 import { ResumenSection } from "@/components/admin/ResumenSection";
+import { SinpeAutoSection } from "@/components/admin/SinpeAutoSection";
 import { RematesSection } from "@/components/admin/RematesSection";
 import { PagosSection } from "@/components/admin/PagosSection";
 import { PremiosSection } from "@/components/admin/PremiosSection";
@@ -234,6 +235,14 @@ function Admin() {
             <>
               {seccion === "resumen" ? (
                 <ResumenSection ordenes={ordenes} onIrAPagos={() => setSeccion("pagos")} />
+              ) : null}
+              {seccion === "sinpeAuto" ? (
+                <SinpeAutoSection
+                  ordenes={ordenes}
+                  onEstadoOrden={cambiarEstado}
+                  config={config}
+                  setConfig={setConfig}
+                />
               ) : null}
               {seccion === "remates" ? <RematesSection /> : null}
               {seccion === "pagos" ? (

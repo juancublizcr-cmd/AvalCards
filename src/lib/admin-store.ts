@@ -142,6 +142,15 @@ export type Config = {
   referidosMensajeShare?: string;
   // Pasarelas de Pago
   sinpeActivo?: boolean;
+  sinpeTitulo?: string;
+  sinpeDescripcion?: string;
+  sinpeImapHost?: string;
+  sinpeImapPuerto?: number;
+  sinpeImapSeguridad?: "ssl" | "tls" | "ninguna";
+  sinpeImapUsuario?: string;
+  sinpeImapPassword?: string;
+  sinpeDebug?: boolean;
+  sinpeBancoMonitoreado?: "BCR" | "BAC" | "BNCR";
   tilopayActivo?: boolean;
   tilopayMerchantId?: string;
   tilopayApiKey?: string;
@@ -494,6 +503,15 @@ export const CONFIG_DEFAULT: Config = {
   referidosComisionPct: 10,
   referidosMensajeShare: "¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!",
   sinpeActivo: true,
+  sinpeTitulo: "SINPE Móvil",
+  sinpeDescripcion: "Paga por SINPE Móvil e ingresa el código generado en el motivo.",
+  sinpeImapHost: "imap.gmail.com",
+  sinpeImapPuerto: 993,
+  sinpeImapSeguridad: "ssl",
+  sinpeImapUsuario: "",
+  sinpeImapPassword: "",
+  sinpeDebug: true,
+  sinpeBancoMonitoreado: "BCR",
   tilopayActivo: true,
   tilopayMerchantId: "36737",
   tilopayApiKey: "4l0b31649987",

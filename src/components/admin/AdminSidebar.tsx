@@ -20,6 +20,7 @@ import {
   Share2,
   ShoppingCart,
   SlidersHorizontal,
+  Smartphone,
   Store,
   Target,
   Trophy,
@@ -37,6 +38,7 @@ import {
 
 export type AdminSeccion =
   | "resumen"
+  | "sinpeAuto"
   | "remates"
   | "pagos"
   | "sorteos"
@@ -53,6 +55,7 @@ export type AdminSeccion =
 
 export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
   { id: "resumen", label: "Resumen", icono: BarChart3 },
+  { id: "sinpeAuto", label: "SINPE Auto", icono: Smartphone },
   { id: "remates", label: "Remates & Subastas VIP", icono: Gavel },
   { id: "pagos", label: "Pagos y Transacciones", icono: CreditCard },
   { id: "sorteos", label: "Fecha del Evento y Premios", icono: Trophy },
@@ -117,6 +120,9 @@ export function AdminSidebarContent({
               >
                 <s.icono className="size-4 shrink-0" />
                 <span className="flex-1">{s.label}</span>
+                {s.id === "sinpeAuto" && (
+                  <span className="size-2 rounded-full bg-emerald-400 animate-pulse" title="Conexión en vivo" />
+                )}
                 {s.id === "pagos" && pendientes > 0 ? (
                   <span className="rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
                     {pendientes}

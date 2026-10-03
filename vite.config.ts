@@ -5,8 +5,42 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
+function imapTestPlugin() {
+  return {
+    name: "imap-test-middleware",
+    configureServer(server: any) {
+      server.middlewares.use("/api/test-imap", (req: any, res: any) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        let body = "";
+        req.on("data", (chunk: any) => {
+          body += chunk;
+        });
+        req.on("end", async () => {
+          try {
+            const { host, port, user, password } = JSON.parse(body || "{}");
+            const { probarConexionImapReal } = await import("./scripts/test-imap-cli.js");
+            const resultado = await probarConexionImapReal({ host, port, user, password });
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify(resultado));
+          } catch (e: any) {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: false, mensaje: e.message || "Error al conectar con IMAP" }));
+          }
+        });
+      });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
+    imapTestPlugin(),
     // 1. TanStack Start (incluye router, SSR y file-based routing)
     tanstackStart({
       server: { entry: "server" },

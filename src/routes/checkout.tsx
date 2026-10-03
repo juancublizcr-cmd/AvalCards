@@ -34,6 +34,7 @@ import { Footer } from "@/components/Footer";
 import { calcularGirosPorTokens, guardarGiros } from "@/lib/giros-store";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
 import { StoryShareModal } from "@/components/StoryShareModal";
+import { SinpeWidget } from "@/components/checkout/SinpeWidget";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -119,6 +120,11 @@ function Checkout() {
   const [ordenCreadaId, setOrdenCreadaId] = useState<string>("");
   const [ordenAprobadaDirecta, setOrdenAprobadaDirecta] = useState(false);
   const [copiadoSinpe, setCopiadoSinpe] = useState(false);
+  const [copiadoCodigoSinpe, setCopiadoCodigoSinpe] = useState(false);
+  const [codigoSinpe] = useState(() => "AVAL-" + Math.floor(100000 + Math.random() * 900000));
+  const [sinpeAutoAprobado, setSinpeAutoAprobado] = useState(false);
+  const [sinpeRefVerificada, setSinpeRefVerificada] = useState("");
+  const [mostrarUploadManual, setMostrarUploadManual] = useState(false);
   const [copiadoCrypto, setCopiadoCrypto] = useState(false);
   const [copiadoRef, setCopiadoRef] = useState(false);
   const [referidoPor, setReferidoPor] = useState<string>("");
@@ -185,6 +191,15 @@ function Checkout() {
     setTimeout(() => setCopiadoSinpe(false), 2500);
   };
 
+  const copiarCodigoSinpe = () => {
+    void navigator.clipboard.writeText(codigoSinpe);
+    setCopiadoCodigoSinpe(true);
+    toast.success("Código de verificación copiado", {
+      description: `Escribe "${codigoSinpe}" en el motivo de tu transferencia SINPE.`,
+    });
+    setTimeout(() => setCopiadoCodigoSinpe(false), 2500);
+  };
+
   const copiarCrypto = () => {
     void navigator.clipboard.writeText(config.cryptoWalletUsdt);
     setCopiadoCrypto(true);
@@ -230,8 +245,8 @@ function Checkout() {
       for (const i of res.error.issues) nuevos[i.path[0] as keyof Errores] = i.message;
     }
 
-    if (metodo === "sinpe" && !archivo) {
-      nuevos["archivo"] = "Adjunta la captura de tu SINPE Móvil";
+    if (metodo === "sinpe" && !archivo && !sinpeAutoAprobado) {
+      nuevos["archivo"] = "Presiona 'Ya hice el SINPE Móvil' para verificar automáticamente o adjunta tu comprobante";
     }
 
     if (metodo === "tarjeta") {
@@ -276,15 +291,15 @@ function Checkout() {
       ? seleccion.numeros
       : Array.from({ length: cantidadTokens }, () => String(Math.floor(10000 + Math.random() * 90000)));
 
-    // Si paga con Tarjeta o Crypto, la aprobación es inmediata o registrada con ID
-    const esPagoInstantaneo = metodo === "tarjeta";
+    // Si paga con Tarjeta o con SINPE verificado automáticamente, la aprobación es inmediata
+    const esPagoInstantaneo = metodo === "tarjeta" || (metodo === "sinpe" && sinpeAutoAprobado);
     const estadoInicial = esPagoInstantaneo ? "aprobada" : "pendiente";
     const transaccionId =
       metodo === "tarjeta"
         ? `TILO-${Date.now()}`
         : metodo === "crypto"
           ? cryptoHash.trim() || `TX-${Date.now()}`
-          : "";
+          : sinpeRefVerificada || `SINPE-${codigoSinpe}`;
 
     const juegosActivos = Boolean(sorteo?.raspaConfig?.activo) && sorteo?.raspaConfig?.modo !== "ninguno";
     const girosBonus = juegosActivos ? calcularGirosPorTokens(cantidadTokens) : 0;
@@ -903,45 +918,36 @@ function Checkout() {
               )}
             </div>
 
-            {/* A. BLOQUE SINPE MÓVIL */}
+            {/* A. BLOQUE SINPE MÓVIL AUTOMÁTICO (IDÉNTICO A PLUGIN DOMINIOSAI) */}
             {metodo === "sinpe" && (
-              <div className="mt-4 rounded-xl border-2 border-primary/50 bg-secondary/50 p-5 space-y-4 animate-in fade-in-50">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-primary flex items-center gap-2">
-                    <Smartphone className="size-4" /> Transferencia SINPE Móvil
-                  </span>
-                  <button
-                    type="button"
-                    onClick={abrirSoporteWhatsApp}
-                    className="text-xs text-emerald-500 hover:text-emerald-400 font-medium flex items-center gap-1"
-                  >
-                    <MessageCircle className="size-3.5" /> Ayuda WhatsApp
-                  </button>
-                </div>
+              <div className="mt-4 space-y-4 animate-in fade-in-50">
+                <SinpeWidget
+                  telefono={config.telefonoSinpe || "88658279"}
+                  monto={seleccion?.precio ?? 4000}
+                  codigo={codigoSinpe}
+                  onPagoVerificado={({ referencia, monto }) => {
+                    setSinpeAutoAprobado(true);
+                    setSinpeRefVerificada(referencia);
+                    toast.success("¡Pago verificado con éxito!", {
+                      description: `Comprobante bancario #${referencia} confirmado.`,
+                    });
+                  }}
+                />
 
-                <p className="text-xs text-muted-foreground">
-                  Transfiere a nombre de <strong className="text-foreground">{config.razonSocial}</strong>:
-                </p>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-card p-4">
-                  <div>
-                    <div className="text-[11px] text-muted-foreground">Número de teléfono SINPE</div>
-                    <div className="font-mono text-2xl font-bold text-primary">{config.telefonoSinpe}</div>
+                <div className="rounded-xl border border-border/80 bg-secondary/20 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="archivo-input" className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+                      <Receipt className="size-3.5" />
+                      <span>Comprobante adicional / respaldo (Opcional):</span>
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={abrirSoporteWhatsApp}
+                      className="text-xs text-emerald-500 hover:text-emerald-400 font-medium flex items-center gap-1"
+                    >
+                      <MessageCircle className="size-3.5" /> Ayuda WhatsApp
+                    </button>
                   </div>
-                  <Button
-                    type="button"
-                    variant={copiadoSinpe ? "success" : "outline"}
-                    size="sm"
-                    onClick={copiarSinpe}
-                    className="gap-2"
-                  >
-                    {copiadoSinpe ? <Check className="size-4" /> : <Copy className="size-4" />}
-                    {copiadoSinpe ? "¡Copiado!" : "Copiar"}
-                  </Button>
-                </div>
-
-                <div>
-                  <Label htmlFor="archivo-input" className="text-xs">Adjuntar captura del comprobante SINPE</Label>
                   {preview && archivo ? (
                     <div className="mt-2 relative rounded-2xl border-2 border-emerald-500/60 bg-emerald-950/20 p-4 space-y-3">
                       <div className="flex items-center justify-between">
