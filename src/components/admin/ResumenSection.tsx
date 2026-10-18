@@ -1,4 +1,4 @@
-import { AlertTriangle, Copy, Download, ExternalLink, FileSpreadsheet, ShoppingCart, TrendingUp, Trophy, Wallet } from "lucide-react";
+import { AlertTriangle, Copy, Download, ExternalLink, FileSpreadsheet, ShoppingCart, SlidersHorizontal, TrendingUp, Trophy, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -49,9 +49,11 @@ function Anillo({ porcentaje }: { porcentaje: number }) {
 export function ResumenSection({
   ordenes,
   onIrAPagos,
+  onIrACentroControl,
 }: {
   ordenes: Orden[];
   onIrAPagos?: () => void;
+  onIrACentroControl?: () => void;
 }) {
   const aprobadas = useMemo(() => ordenes.filter((o) => o.estado === "aprobada"), [ordenes]);
   const pendientes = useMemo(() => ordenes.filter((o) => o.estado === "pendiente"), [ordenes]);
@@ -138,6 +140,34 @@ export function ResumenSection({
           <FileSpreadsheet className="size-4 text-emerald-500" /> Exportar Reporte Global a Excel
         </Button>
       </div>
+
+      {/* Banner de Acceso Rápido: Centro de Control e Interruptores */}
+      {onIrACentroControl && (
+        <div className="rounded-xl border-2 border-primary/40 bg-gradient-to-r from-card via-card to-primary/10 p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="flex size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-wider text-primary">
+                Gestión Unificada del Sitio Web
+              </span>
+            </div>
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <SlidersHorizontal className="size-4 text-primary" /> Centro de Control e Interruptores
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+              Activa o apaga en un solo clic la tienda de tokens, modo preventa, pasarelas de pago (SINPE, TiloPay) y secciones visibles de la web sin enredos.
+            </p>
+          </div>
+
+          <Button
+            onClick={onIrACentroControl}
+            size="sm"
+            className="font-bold text-xs gap-1.5 shadow-sm cursor-pointer shrink-0"
+          >
+            <SlidersHorizontal className="size-3.5" /> Abrir Centro de Control →
+          </Button>
+        </div>
+      )}
 
       {/* Banner de Campaña Publicitaria / Landing RRSS */}
       <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/15 via-card to-background p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

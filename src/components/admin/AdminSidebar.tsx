@@ -8,6 +8,7 @@ import {
   Gavel,
   Gift,
   HeartHandshake,
+  Layout,
   LogOut,
   Megaphone,
   Plus,
@@ -21,6 +22,7 @@ import {
   ShoppingCart,
   SlidersHorizontal,
   Smartphone,
+  Sparkles,
   Store,
   Target,
   Trophy,
@@ -38,6 +40,7 @@ import {
 
 export type AdminSeccion =
   | "resumen"
+  | "centroControl"
   | "sinpeAuto"
   | "remates"
   | "pagos"
@@ -53,23 +56,58 @@ export type AdminSeccion =
   | "disenoWeb"
   | "config";
 
-export const SECCIONES: { id: AdminSeccion; label: string; icono: LucideIcon }[] = [
-  { id: "resumen", label: "Resumen", icono: BarChart3 },
-  { id: "sinpeAuto", label: "SINPE Auto", icono: Smartphone },
-  { id: "remates", label: "Remates & Subastas VIP", icono: Gavel },
-  { id: "pagos", label: "Pagos y Transacciones", icono: CreditCard },
-  { id: "sorteos", label: "Fecha del Evento y Premios", icono: Trophy },
-  { id: "raspa", label: "Raspa y Gana Express", icono: Gift },
-  { id: "inventario", label: "Inventario de Tokens", icono: Dices },
-  { id: "escrutinio", label: "Escrutinio del Sorteo", icono: Target },
-  { id: "clientes", label: "Clientes (CRM)", icono: Users },
-  { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
-  { id: "legal", label: "Protocolo Notarial & Legal", icono: Scale },
-  { id: "social", label: "Bien Social & Causas", icono: HeartHandshake },
-  { id: "sponsors", label: "Sponsors & Comercios", icono: Store },
-  { id: "disenoWeb", label: "Textos y Botones Web", icono: SlidersHorizontal },
-  { id: "config", label: "Configuración y Pasarelas", icono: Settings },
+export interface ItemSeccion {
+  id: AdminSeccion;
+  label: string;
+  icono: LucideIcon;
+  badge?: string;
+}
+
+export interface GrupoSecciones {
+  titulo: string;
+  items: ItemSeccion[];
+}
+
+export const GRUPOS_SECCIONES: GrupoSecciones[] = [
+  {
+    titulo: "Operación & Control",
+    items: [
+      { id: "resumen", label: "Resumen y Métricas", icono: BarChart3 },
+      { id: "centroControl", label: "Centro de Control", icono: SlidersHorizontal, badge: "INTERRUPTORES" },
+      { id: "sinpeAuto", label: "SINPE Auto (Tiempo Real)", icono: Smartphone },
+      { id: "pagos", label: "Pagos y Transacciones", icono: CreditCard },
+      { id: "inventario", label: "Inventario de Tokens", icono: Dices },
+      { id: "clientes", label: "Clientes (CRM)", icono: Users },
+    ],
+  },
+  {
+    titulo: "Sorteo Oficial & Premios",
+    items: [
+      { id: "sorteos", label: "Premios y Fechas", icono: Trophy },
+      { id: "escrutinio", label: "Escrutinio del Sorteo", icono: Target },
+      { id: "legal", label: "Protocolo Notarial & Legal", icono: Scale },
+    ],
+  },
+  {
+    titulo: "Dinámicas & Comunidad",
+    items: [
+      { id: "raspa", label: "Raspa y Gana Express", icono: Gift },
+      { id: "remates", label: "Remates & Subastas VIP", icono: Gavel },
+      { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
+      { id: "sponsors", label: "Sponsors & Comercios", icono: Store },
+      { id: "social", label: "Bien Social & Causas", icono: HeartHandshake },
+    ],
+  },
+  {
+    titulo: "Personalización & Ajustes",
+    items: [
+      { id: "disenoWeb", label: "Textos y Botones Web", icono: Layout },
+      { id: "config", label: "Configuración y Pasarelas", icono: Settings },
+    ],
+  },
 ];
+
+export const SECCIONES: ItemSeccion[] = GRUPOS_SECCIONES.flatMap((g) => g.items);
 
 export function AdminSidebarContent({
   activa,
@@ -98,54 +136,66 @@ export function AdminSidebarContent({
         <p className="mt-1 text-xs text-muted-foreground">Consola administrativa</p>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Gestión Interna
-        </div>
-        {SECCIONES.map((s) => {
-          const activo = s.id === activa;
-          return (
-            <div key={s.id} className="space-y-1">
-              <button
-                type="button"
-                onClick={() => {
-                  onChange(s.id);
-                  onItemClick?.();
-                }}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors cursor-pointer ${
-                  activo
-                    ? "bg-primary font-semibold text-primary-foreground shadow-[var(--shadow-fire)]"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
-              >
-                <s.icono className="size-4 shrink-0" />
-                <span className="flex-1">{s.label}</span>
-                {s.id === "sinpeAuto" && (
-                  <span className="size-2 rounded-full bg-emerald-400 animate-pulse" title="Conexión en vivo" />
-                )}
-                {s.id === "pagos" && pendientes > 0 ? (
-                  <span className="rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
-                    {pendientes}
-                  </span>
-                ) : null}
-              </button>
-
-              {s.id === "pagos" && (
-                <a
-                  href="http://localhost:3000/app/invoices"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all group my-1"
-                  title="Abrir panel de FacturaOS para AvalCar"
-                >
-                  <Receipt className="size-4 shrink-0 text-blue-400" />
-                  <span className="flex-1 text-blue-300">Facturación Electrónica</span>
-                  <ExternalLink className="size-3 text-blue-400/70 group-hover:translate-x-0.5 transition-transform" />
-                </a>
-              )}
+      <nav className="flex-1 space-y-5 overflow-y-auto p-3">
+        {GRUPOS_SECCIONES.map((grupo, gIdx) => (
+          <div key={gIdx} className="space-y-1">
+            <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground/80">
+              {grupo.titulo}
             </div>
-          );
-        })}
+            {grupo.items.map((s) => {
+              const activo = s.id === activa;
+              return (
+                <div key={s.id} className="space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange(s.id);
+                      onItemClick?.();
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all cursor-pointer ${
+                      activo
+                        ? "bg-primary font-semibold text-primary-foreground shadow-[var(--shadow-fire)]"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    <s.icono className="size-4 shrink-0" />
+                    <span className="flex-1 text-xs sm:text-sm font-medium">{s.label}</span>
+
+                    {s.badge && !activo && (
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 tracking-wider">
+                        {s.badge}
+                      </span>
+                    )}
+
+                    {s.id === "sinpeAuto" && (
+                      <span className="size-2 rounded-full bg-emerald-400 animate-pulse" title="Conexión en vivo" />
+                    )}
+
+                    {s.id === "pagos" && pendientes > 0 ? (
+                      <span className="rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
+                        {pendientes}
+                      </span>
+                    ) : null}
+                  </button>
+
+                  {s.id === "pagos" && (
+                    <a
+                      href="http://localhost:3000/app/invoices"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all group my-1"
+                      title="Abrir panel de FacturaOS para AvalCar"
+                    >
+                      <Receipt className="size-3.5 shrink-0 text-blue-400" />
+                      <span className="flex-1 text-blue-300 text-[11px]">Facturación Electrónica</span>
+                      <ExternalLink className="size-3 text-blue-400/70 group-hover:translate-x-0.5 transition-transform" />
+                    </a>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
 
         <div className="pt-5">
           <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">

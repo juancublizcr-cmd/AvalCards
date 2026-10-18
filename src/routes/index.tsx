@@ -954,7 +954,7 @@ function IndexPage() {
             )}
 
             {/* Termómetro de Disponibilidad y Cuenta Regresiva Oficial en el Hero */}
-            {config.mostrarSeccionTermometro === true && (
+            {config.mostrarSeccionTermometro !== false && (
               <div className={`mx-auto mt-10 max-w-2xl rounded-2xl border-2 p-5 backdrop-blur text-left ${
                 enCurso
                   ? "border-red-500/60 dark:bg-red-950/90 bg-red-50/90 shadow-[0_0_40px_rgba(239,68,68,0.25)]"
@@ -1016,7 +1016,7 @@ function IndexPage() {
             )}
 
             {/* CTA Principal de Conversión */}
-            {config.mostrarCtaHero === true && (
+            {config.mostrarCtaHero !== false && (
               <>
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Button
@@ -1069,7 +1069,7 @@ function IndexPage() {
         </section>
 
         {/* ZONA PRINCIPAL DE COMPRA DE TOKENS (EL FOCO ABSOLUTO DE LA LANDING) */}
-        {config.mostrarSeccionPaquetes === true && (
+        {config.mostrarSeccionPaquetes !== false && (
           <section id="paquetes-compra" className="py-16 md:py-24 mx-auto max-w-6xl px-5 scroll-mt-24">
             <div id="tickets-seleccion" className="text-center max-w-3xl mx-auto scroll-mt-24">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
@@ -1224,7 +1224,7 @@ function IndexPage() {
                 ))}
               </div>
 
-              {config.mostrarSeccionPaquetes === true && (
+              {config.mostrarSeccionPaquetes !== false && (
                 <div className="mt-12 text-center">
                   <Button variant="hero" size="xl" onClick={irAPaquetes} className="px-10 py-7 text-base shadow-[var(--shadow-fire)] cursor-pointer">
                     {config.ventasActivas ? (config.pasosBotonCta || "Comenzar y Elegir mis Tokens →") : "🔥 Consultar Preventa por WhatsApp →"}
@@ -1717,7 +1717,7 @@ function IndexPage() {
         )}
 
         {/* BANNER CTA FINAL ENFOCADO 100% EN TOKENS */}
-        {config.mostrarSeccionPaquetes === true && (
+        {config.mostrarSeccionPaquetes !== false && (
           <section className="py-16 mx-auto max-w-5xl px-5 text-center">
             <div className="rounded-3xl border-2 border-primary/50 bg-gradient-to-b from-card via-card to-primary/10 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
               <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-primary/15 blur-[100px]" />
