@@ -1520,9 +1520,9 @@ function IndexPage() {
                 </div>
 
                 {/* Contenedor Principal del Premio Seleccionado (2 Columnas) */}
-                <div className="mt-12 grid gap-10 lg:grid-cols-12 items-center bg-card/60 rounded-3xl border border-border/80 p-6 sm:p-10 shadow-xl backdrop-blur">
+                <div className="mt-12 grid gap-8 lg:grid-cols-12 items-start bg-card/60 rounded-3xl border border-border/80 p-6 sm:p-10 shadow-xl backdrop-blur">
                   {/* Columna Izquierda: Especificaciones Técnicas y CTAs Propios */}
-                  <div className="lg:col-span-7 space-y-6 text-left">
+                  <div className="lg:col-span-7 min-w-0 space-y-6 text-left">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-full bg-amber-500/15 dark:text-amber-400 text-amber-700 border border-amber-500/40 px-3 py-1 text-xs font-black uppercase">
                         {tagLugar}
@@ -1556,7 +1556,7 @@ function IndexPage() {
                             <div className="rounded-xl bg-primary/10 p-2.5 text-primary shrink-0">
                               <Icono className="size-5 dark:text-amber-400 text-amber-600" />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                               <h4 className="font-bold text-sm text-foreground">{feat.titulo}</h4>
                               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{feat.desc}</p>
                             </div>
@@ -1566,39 +1566,37 @@ function IndexPage() {
                     </div>
 
                     {/* SUS PROPIOS LLAMADOS A LA ACCIÓN (CTAs INDEPENDIENTES) */}
-                    <div className="pt-4 space-y-3">
-                      <div className="flex flex-col xl:flex-row gap-3">
-                        <Button
-                          variant="hero"
-                          size="xl"
-                          onClick={() => {
-                            setPaquete(paquetes[1] || paquetes[0]);
-                            irAPaquetes();
-                          }}
-                          className="w-full xl:flex-1 py-6 sm:py-7 text-xs sm:text-sm font-black shadow-[var(--shadow-fire)] cursor-pointer"
-                        >
-                          <Ticket className="size-4 sm:size-5 shrink-0" />
-                          <span className="truncate">{infoDetalle.ctaTexto}</span>
-                        </Button>
+                    <div className="pt-4 space-y-3.5">
+                      <Button
+                        variant="hero"
+                        size="xl"
+                        onClick={() => {
+                          setPaquete(paquetes[1] || paquetes[0]);
+                          irAPaquetes();
+                        }}
+                        className="w-full py-6 sm:py-7 text-xs sm:text-sm font-black shadow-[var(--shadow-fire)] cursor-pointer"
+                      >
+                        <Ticket className="size-4 sm:size-5 shrink-0" />
+                        <span className="truncate">{infoDetalle.ctaTexto}</span>
+                      </Button>
 
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground pt-1">
                         <Button
                           variant="outline"
-                          size="xl"
+                          size="sm"
                           asChild
-                          className="w-full xl:w-auto shrink-0 py-6 sm:py-7 text-xs sm:text-sm border-emerald-500/50 dark:text-emerald-400 text-emerald-700 hover:bg-emerald-500/10"
+                          className="border-emerald-500/50 dark:text-emerald-400 text-emerald-700 hover:bg-emerald-500/10 text-xs font-bold gap-1.5"
                         >
                           <a href={waUrlPremio} target="_blank" rel="noopener noreferrer">
-                            <MessageCircle className="size-4" /> Consultar por WhatsApp
+                            <MessageCircle className="size-3.5" /> Consultar por WhatsApp
                           </a>
                         </Button>
-                      </div>
 
-                      <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
                         <button
                           onClick={() => setPremioModal(premioActivo)}
-                          className="inline-flex items-center gap-1.5 dark:text-amber-400 text-amber-600 hover:text-amber-700 font-semibold cursor-pointer underline underline-offset-4"
+                          className="inline-flex items-center gap-1.5 dark:text-amber-400 text-amber-600 hover:text-amber-700 font-semibold cursor-pointer underline underline-offset-4 text-xs"
                         >
-                          <Sparkles className="size-3.5" /> Ver ficha emergente "Comprá y ganá" completa
+                          <Sparkles className="size-3.5" /> Ver ficha completa
                         </button>
                         <span className="flex items-center gap-1 text-[11px]">
                           <ShieldCheck className="size-3.5 dark:text-emerald-400 text-emerald-600" /> Traspaso notarial 100% incluido
@@ -1608,23 +1606,24 @@ function IndexPage() {
                   </div>
 
                   {/* Columna Derecha: Foto Showcase en HD y Garantía Aval */}
-                  <div className="lg:col-span-5 space-y-4">
+                  <div className="lg:col-span-5 min-w-0 space-y-4">
                     <div
-                      className="overflow-hidden rounded-3xl border-2 border-amber-500/40 shadow-2xl bg-neutral-950 relative h-80 sm:h-96 flex items-center justify-center group cursor-pointer"
+                      className="overflow-hidden rounded-3xl border-2 border-amber-500/40 shadow-2xl bg-zinc-900 relative aspect-[4/3] sm:aspect-square flex items-center justify-center group cursor-pointer"
                       onClick={() => setPremioModal(premioActivo)}
                     >
                       <img
                         src={imagenFinal}
                         alt=""
                         aria-hidden="true"
-                        className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none"
+                        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-125 pointer-events-none"
                       />
                       <img
                         src={imagenFinal}
                         alt={premioActivo.nombre}
-                        className="relative z-0 max-h-80 sm:max-h-92 max-w-full w-auto h-auto object-contain p-3 drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-[1.03]"
+                        className="relative z-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-black/85 px-3 py-1.5 text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-md group-hover:bg-amber-500 group-hover:text-black transition-colors">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none z-10" />
+                      <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 rounded-full bg-black/85 px-3 py-1.5 text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-md group-hover:bg-amber-500 group-hover:text-black transition-colors">
                         <ZoomIn className="size-3.5" /> Tocar para ampliar & "Comprá y ganá"
                       </div>
                     </div>
