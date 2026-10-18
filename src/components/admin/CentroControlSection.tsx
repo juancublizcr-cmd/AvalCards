@@ -6,6 +6,7 @@ import {
   Calendar,
   CheckCircle2,
   Coins,
+  Compass,
   CreditCard,
   Crown,
   Dices,
@@ -19,6 +20,7 @@ import {
   Info,
   Layout,
   MessageSquare,
+  Navigation,
   Package,
   Radio,
   RotateCw,
@@ -29,6 +31,7 @@ import {
   Smartphone,
   Sparkles,
   Store,
+  Sun,
   Timer,
   Trophy,
   Users,
@@ -223,10 +226,84 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
         </div>
 
         <div className="space-y-8">
-          {/* GRUPO 1: CABECERA & HERO PRINCIPAL */}
+          {/* GRUPO 1: MENÚ SUPERIOR DE NAVEGACIÓN (NAVBAR) */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-500 pb-1 border-b border-border/60">
-              <Sparkles className="size-3.5" /> 1. Cabecera & Hero Principal
+              <Navigation className="size-3.5" /> 1. Menú Superior de Navegación (Navbar)
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardInterruptor
+                numero="N1"
+                titulo="Barra Flotante Completa (Navbar)"
+                desc="Muestra u oculta la barra flotante superior de navegación en toda la plataforma."
+                tip="💡 Al estar activa, los visitantes navegan ordenadamente por las secciones clave."
+                activo={borrador.mostrarNavegacion !== false}
+                onToggle={() => toggleSwitch("mostrarNavegacion", borrador.mostrarNavegacion, true)}
+                destacado={true}
+              />
+              <CardInterruptor
+                numero="N2"
+                titulo="Enlace 1: 'Premios' (#premios)"
+                desc="Botón dorado que traslada la vista directamente al podio interactivo de los 3 premios en la parte superior."
+                tip="💡 Desplaza en suave secuencia hacia la sección de apertura de premios."
+                activo={borrador.navMostrarPremios !== false}
+                onToggle={() => toggleSwitch("navMostrarPremios", borrador.navMostrarPremios, true)}
+              />
+              <CardInterruptor
+                numero="N3"
+                titulo="Enlace 2: 'Paquetes' (#paquetes-compra)"
+                desc="Botón que traslada al visitante directo a la sección de selección de lotes y compra de tokens."
+                tip="💡 Lleva al usuario a la zona de conversión y checkout."
+                activo={borrador.navMostrarPaquetes !== false}
+                onToggle={() => toggleSwitch("navMostrarPaquetes", borrador.navMostrarPaquetes, true)}
+              />
+              <CardInterruptor
+                numero="N4"
+                titulo="Enlace 3: '¿Cómo funciona?' (#como-funciona)"
+                desc="Botón explicativo que traslada al bloque de los 3 simples pasos de la dinámica digital."
+                tip="💡 Resuelve el funcionamiento en un clic."
+                activo={borrador.navMostrarComoFunciona !== false}
+                onToggle={() => toggleSwitch("navMostrarComoFunciona", borrador.navMostrarComoFunciona, true)}
+              />
+              <CardInterruptor
+                numero="N5"
+                titulo="Enlace 4: 'Comercios' (/sponsors)"
+                desc="Enlace directo al catálogo de comercios asociados y descuentos exclusivos para participantes."
+                tip="💡 Solo se muestra si la sección de Comercios también está encendida en el admin."
+                activo={borrador.navMostrarComercios !== false}
+                onToggle={() => toggleSwitch("navMostrarComercios", borrador.navMostrarComercios, true)}
+              />
+              <CardInterruptor
+                numero="N6"
+                titulo="Enlace 5: 'Referidos' (/referidos)"
+                desc="Enlace directo al portal donde los usuarios pueden generar su enlace de recomendación."
+                tip="💡 Solo se muestra si el Programa de Referidos está encendido en el admin."
+                activo={borrador.navMostrarReferidos !== false}
+                onToggle={() => toggleSwitch("navMostrarReferidos", borrador.navMostrarReferidos, true)}
+              />
+              <CardInterruptor
+                numero="N7"
+                titulo="Enlace 6: 'Validar Tokens' (/validar)"
+                desc="Enlace directo para que cualquier comprador consulte y verifique la autenticidad de sus tokens."
+                tip="💡 Genera confianza y transparencia inmediata."
+                activo={borrador.navMostrarValidar !== false}
+                onToggle={() => toggleSwitch("navMostrarValidar", borrador.navMostrarValidar, true)}
+              />
+              <CardInterruptor
+                numero="N8"
+                titulo="Selector Modo Claro / Oscuro (Sol/Luna)"
+                desc="Ícono para alternar entre diseño oscuro y claro. Apagado por defecto para mantener la identidad visual oscura premium."
+                tip="💡 Actívalo solo si deseas permitir a los visitantes cambiar a modo claro."
+                activo={borrador.navMostrarThemeToggle === true}
+                onToggle={() => toggleSwitch("navMostrarThemeToggle", borrador.navMostrarThemeToggle, false)}
+              />
+            </div>
+          </div>
+
+          {/* GRUPO 2: CABECERA & HERO PRINCIPAL */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-500 pb-1 border-b border-border/60">
+              <Sparkles className="size-3.5" /> 2. Cabecera & Hero Principal
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <CardInterruptor
@@ -264,10 +341,10 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             </div>
           </div>
 
-          {/* GRUPO 2: VENTA PRINCIPAL DE TOKENS & GARANTÍAS */}
+          {/* GRUPO 3: VENTA PRINCIPAL DE TOKENS & GARANTÍAS */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-primary pb-1 border-b border-border/60">
-              <Package className="size-3.5" /> 2. Venta Principal de Tokens & Garantías
+              <Package className="size-3.5" /> 3. Venta Principal de Tokens & Garantías
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <CardInterruptor
@@ -289,10 +366,10 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             </div>
           </div>
 
-          {/* GRUPO 3: COMUNIDAD, REFERIDOS & COMERCIOS */}
+          {/* GRUPO 4: COMUNIDAD, REFERIDOS & COMERCIOS */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-500 pb-1 border-b border-border/60">
-              <Users className="size-3.5" /> 3. Comunidad, Referidos & Comercios
+              <Users className="size-3.5" /> 4. Comunidad, Referidos & Comercios
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <CardInterruptor
@@ -323,10 +400,10 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             </div>
           </div>
 
-          {/* GRUPO 4: INFORMACIÓN & TRANSPARENCIA */}
+          {/* GRUPO 5: INFORMACIÓN & TRANSPARENCIA */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-sky-500 pb-1 border-b border-border/60">
-              <HelpCircle className="size-3.5" /> 4. Información, Proceso & Soporte
+              <HelpCircle className="size-3.5" /> 5. Información, Proceso & Soporte
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <CardInterruptor
@@ -356,10 +433,10 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             </div>
           </div>
 
-          {/* GRUPO 5: MÓDULOS OPCIONALES & ESPECIALES */}
+          {/* GRUPO 6: MÓDULOS OPCIONALES & ESPECIALES */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-400 pb-1 border-b border-border/60">
-              <Crown className="size-3.5" /> 5. Módulos Opcionales & Especiales
+              <Crown className="size-3.5" /> 6. Módulos Opcionales & Especiales
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <CardInterruptor

@@ -340,6 +340,14 @@ export type Config = {
   footerFacebook?: string;
   footerTiktok?: string;
   footerYoutube?: string;
+  // 8. Control del Menú Superior (Navbar)
+  navMostrarPremios?: boolean;
+  navMostrarPaquetes?: boolean;
+  navMostrarComoFunciona?: boolean;
+  navMostrarComercios?: boolean;
+  navMostrarReferidos?: boolean;
+  navMostrarValidar?: boolean;
+  navMostrarThemeToggle?: boolean;
 };
 
 export type ReferenteStat = {
@@ -701,6 +709,14 @@ export const CONFIG_DEFAULT: Config = {
   footerFacebook: "https://www.facebook.com/share/14nL2DgWw9B/?mibextid=wwXIfr",
   footerTiktok: "https://www.tiktok.com/@aval_community?is_from_webapp=1&sender_device=pc",
   footerYoutube: "",
+  // 8. Control del Menú Superior (Navbar)
+  navMostrarPremios: true,
+  navMostrarPaquetes: true,
+  navMostrarComoFunciona: true,
+  navMostrarComercios: true,
+  navMostrarReferidos: true,
+  navMostrarValidar: true,
+  navMostrarThemeToggle: false,
 };
 
 // ────────────────────────────────────────────────────────────
@@ -1413,6 +1429,14 @@ export async function fetchConfig(): Promise<Config> {
       footerFacebook: extra.footerFacebook ?? CONFIG_DEFAULT.footerFacebook,
       footerTiktok: extra.footerTiktok ?? CONFIG_DEFAULT.footerTiktok,
       footerYoutube: extra.footerYoutube ?? CONFIG_DEFAULT.footerYoutube,
+      // 8. Control del Menú Superior (Navbar)
+      navMostrarPremios: extra.navMostrarPremios !== undefined ? extra.navMostrarPremios : CONFIG_DEFAULT.navMostrarPremios,
+      navMostrarPaquetes: extra.navMostrarPaquetes !== undefined ? extra.navMostrarPaquetes : CONFIG_DEFAULT.navMostrarPaquetes,
+      navMostrarComoFunciona: extra.navMostrarComoFunciona !== undefined ? extra.navMostrarComoFunciona : CONFIG_DEFAULT.navMostrarComoFunciona,
+      navMostrarComercios: extra.navMostrarComercios !== undefined ? extra.navMostrarComercios : CONFIG_DEFAULT.navMostrarComercios,
+      navMostrarReferidos: extra.navMostrarReferidos !== undefined ? extra.navMostrarReferidos : CONFIG_DEFAULT.navMostrarReferidos,
+      navMostrarValidar: extra.navMostrarValidar !== undefined ? extra.navMostrarValidar : CONFIG_DEFAULT.navMostrarValidar,
+      navMostrarThemeToggle: extra.navMostrarThemeToggle !== undefined ? extra.navMostrarThemeToggle : CONFIG_DEFAULT.navMostrarThemeToggle,
     };
   } catch {
     return CONFIG_DEFAULT;

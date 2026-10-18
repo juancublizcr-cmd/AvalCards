@@ -483,23 +483,70 @@ function IndexPage() {
           </Link>
 
           {config.mostrarNavegacion !== false && (
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              <Button variant="ghost" size="sm" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })} className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground cursor-pointer">
-                ¿Cómo funciona?
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => document.getElementById("detalle-premios")?.scrollIntoView({ behavior: "smooth" })} className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 font-bold cursor-pointer">
-                Premios
-              </Button>
-              <Button variant="ghost" size="sm" asChild className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
-                <Link to="/referidos">Referidos</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
-                <Link to="/sponsors">Comercios</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
-                <Link to="/validar">Validar Tokens</Link>
-              </Button>
-              <ThemeToggle compact />
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* 1. Premios (Podio en Hero Superior) */}
+              {config.navMostrarPremios !== false && config.mostrarSeccionAperturaPremios !== false && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => document.getElementById("premios")?.scrollIntoView({ behavior: "smooth" })}
+                  className="hidden sm:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 font-bold cursor-pointer"
+                >
+                  Premios
+                </Button>
+              )}
+
+              {/* 2. Paquetes de Tokens (Zona de Compra) */}
+              {config.navMostrarPaquetes !== false && config.mostrarSeccionPaquetes !== false && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={irAPaquetes}
+                  className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground cursor-pointer"
+                >
+                  Paquetes
+                </Button>
+              )}
+
+              {/* 3. ¿Cómo funciona? (3 Pasos Explicativos) */}
+              {config.navMostrarComoFunciona !== false && config.mostrarSeccionComoFunciona !== false && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
+                  className="hidden md:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground cursor-pointer"
+                >
+                  ¿Cómo funciona?
+                </Button>
+              )}
+
+              {/* 4. Comercios Aliados (Solo si la sección está encendida en el admin) */}
+              {config.navMostrarComercios !== false && config.mostrarSeccionSponsors === true && (
+                <Button variant="ghost" size="sm" asChild className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
+                  <Link to="/sponsors">Comercios</Link>
+                </Button>
+              )}
+
+              {/* 5. Referidos (Solo si el programa de referidos está encendido en el admin) */}
+              {config.navMostrarReferidos !== false && config.mostrarSeccionReferidos === true && config.referidosActivo !== false && (
+                <Button variant="ghost" size="sm" asChild className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
+                  <Link to="/referidos">Referidos</Link>
+                </Button>
+              )}
+
+              {/* 6. Validar Tokens */}
+              {config.navMostrarValidar !== false && (
+                <Button variant="ghost" size="sm" asChild className="h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
+                  <Link to="/validar">Validar Tokens</Link>
+                </Button>
+              )}
+
+              {/* 7. Modo Claro / Oscuro (Oculto por defecto; solo si se activa en admin) */}
+              {config.navMostrarThemeToggle === true && (
+                <ThemeToggle compact />
+              )}
+
+              {/* 8. Botón Principal CTA */}
               <Button
                 variant="hero"
                 size="sm"
@@ -601,7 +648,7 @@ function IndexPage() {
             </div>
 
             {config.mostrarSeccionAperturaPremios !== false && premiosVisibles.length > 0 && (
-              <div className="mt-12 text-left">
+              <div id="premios" className="mt-12 text-left scroll-mt-24">
                 <div className="text-center max-w-2xl mx-auto mb-6">
                   <span className="text-xs uppercase tracking-widest text-primary font-semibold">
                     Más oportunidades de ser favorecido
