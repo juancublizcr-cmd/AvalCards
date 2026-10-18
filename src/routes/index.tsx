@@ -1429,12 +1429,12 @@ function IndexPage() {
         {config.mostrarSeccionDetallePremios === true && premiosVisibles.length > 0 && (() => {
           const premioActivo = premiosVisibles[premioDetalleIdx] || premiosVisibles[0];
           const nivelStr = (premioActivo?.nivel || "").trim();
-          const isEleccion1 = nivelStr === "1° Lugar" || nivelStr === "1° Lugar (A Elección)";
-          const isEleccion2 = nivelStr === "2° Lugar" || nivelStr === "2° Lugar (A Elección)";
-          const isEfectivo3 = nivelStr === "3° Lugar" || nivelStr === "3° Lugar (Efectivo)";
-          const isExtra = nivelStr === "Premio Extra";
-          const isMayor = isEleccion1 || nivelStr === "Premio Mayor" || (premioDetalleIdx === 0 && !isEleccion2 && !isEfectivo3 && !isExtra);
-          const isSegundo = isEleccion2 || nivelStr === "Segundo Premio" || (premioDetalleIdx === 1 && !isEleccion1 && !isEfectivo3 && !isExtra);
+          const isEleccion1 = nivelStr.includes("1") || nivelStr.toLowerCase().includes("primer") || nivelStr === "Premio Mayor";
+          const isEleccion2 = nivelStr.includes("2") || nivelStr.toLowerCase().includes("segund") || nivelStr === "Segundo Premio";
+          const isEfectivo3 = nivelStr.includes("3") || nivelStr.toLowerCase().includes("tercer") || nivelStr === "Tercer Premio";
+          const isExtra = nivelStr.toLowerCase().includes("extra");
+          const isMayor = isEleccion1;
+          const isSegundo = isEleccion2;
 
           const tagLugar = isMayor
             ? "1° Lugar Oficial"
@@ -1447,21 +1447,25 @@ function IndexPage() {
             : "Premio Oficial";
 
           const nombreLower = (premioActivo?.nombre || "").toLowerCase();
-          const esDucati = nombreLower.includes("ducati") || nombreLower.includes("multistrada") || nombreLower.includes("moto");
+          const esPanigale = nombreLower.includes("panigale");
+          const esMultistrada = nombreLower.includes("multistrada") || (!esPanigale && (nombreLower.includes("ducati") || nombreLower.includes("moto")));
+          const esMercedes = nombreLower.includes("mercedes") || nombreLower.includes("gle");
           const esSubaru = nombreLower.includes("subaru") || nombreLower.includes("impreza") || nombreLower.includes("wrx");
           const esEfectivoReal = isEfectivo3 || nombreLower.includes("efectivo") || nombreLower.includes("colones") || nombreLower.includes("plata");
 
           const defaultImg =
             esSubaru
               ? subaruImg
-              : esDucati
+              : esMultistrada || esPanigale
               ? motoImg
+              : esMercedes
+              ? carroImg
               : esEfectivoReal
               ? consolaImg
               : isMayor
-              ? carroImg
-              : isSegundo
               ? motoImg
+              : isSegundo
+              ? carroImg
               : consolaImg;
 
           const imagenFinal = premioActivo?.imagen || defaultImg;
@@ -1473,7 +1477,20 @@ function IndexPage() {
               ? config.supertokenPremioSegundoUsd || 250000
               : config.supertokenPremioTerceroUsd || 1500000;
 
-          const infoDetalle = esDucati
+          const infoDetalle = esPanigale
+            ? {
+                subtitulo: "La reina indiscutible de las superbikes de pista italianas. 216 CV de pura adrenalina con motor Desmosedici Stradale V4 de 1,103 cc, suspensión electrónica semi-activa Öhlins Smart EC 2.0 y alas aerodinámicas de competición MotoGP.",
+                features: [
+                  { icono: Gauge, titulo: "Motor Desmosedici Stradale V4", desc: "1,103 cc con 216 CV a 13,500 rpm, sonido inconfundible V4 y embrague en seco STM-EVO SBK." },
+                  { icono: Flame, titulo: "Suspensión Öhlins Smart EC 2.0", desc: "Ajuste electrónico continuo de compresión y rebote para máximo control en curvas y frenadas." },
+                  { icono: Star, titulo: "Aerodinámica MotoGP Wings", desc: "Alerones de doble perfil para generar carga vertical y estabilidad absoluta a alta velocidad." },
+                  { icono: ShieldCheck, titulo: "0 KM · Marchamo y Notario Pagos", desc: "Sacada de agencia 0KM, traspaso notarial y marchamo 2026 100% cubiertos por la empresa." },
+                ],
+                garantia: "Si resultas favorecido con el 1° Lugar y eliges la Panigale V4 S, nos encargamos de todo el trámite de traspaso notarial, placas metálicas a tu nombre, marchamo 2026 y entrega con tanque lleno.",
+                ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR LA DUCATI PANIGALE V4 S! →",
+                waTexto: "¡Hola! Quiero participar por la Ducati Panigale V4 S 2025 en Aval Community CR. ¿Me dan más información?",
+              }
+            : esMultistrada
             ? {
                 subtitulo: "La máxima expresión de superbike italiana en formato trail touring. Rendimiento brutal con motor Desmosedici Stradale V4 derivado de MotoGP, escape Akrapovič de titanio y acabados exclusivos en fibra de carbono.",
                 features: [
@@ -1482,9 +1499,22 @@ function IndexPage() {
                   { icono: Star, titulo: "Chasis Monocasco & Carbono", desc: "Subchasis de titanio, rines forjados Marchesini y elementos aerodinámicos de competición." },
                   { icono: ShieldCheck, titulo: "0 KM · Marchamo y Notario Pagos", desc: "Sacada de agencia 0KM, traspaso notarial y marchamo 2026 100% cubiertos por la empresa." },
                 ],
-                garantia: "Si resultas favorecido con el 1° Lugar, nos encargamos de todo el trámite de traspaso notarial, placas metálicas a tu nombre, marchamo 2026 y entrega con tanque lleno.",
+                garantia: "Si resultas favorecido con el 1° Lugar y eliges la Multistrada V4 RS, nos encargamos de todo el trámite de traspaso notarial, placas metálicas a tu nombre, marchamo 2026 y entrega con tanque lleno.",
                 ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR LA DUCATI MULTISTRADA! →",
                 waTexto: "¡Hola! Quiero participar por la Ducati Multistrada V4 RS en Aval Community CR. ¿Me dan más información?",
+              }
+            : esMercedes
+            ? {
+                subtitulo: "Elegancia, lujo supremo y poderío alemán. SUV premium con tracción integral permanente 4MATIC, acabados en cuero noble, tecnología de asistencia a la conducción y el confort inigualable de Mercedes-Benz.",
+                features: [
+                  { icono: Gauge, titulo: "Motor V6 Turbo & Confort Supremo", desc: "Potencia contundente con aceleración refinada y suave respuesta en carretera y autopista." },
+                  { icono: Compass, titulo: "Tracción Integral 4MATIC", desc: "Tracción total inteligente permanente para máxima adherencia y seguridad en cualquier terreno." },
+                  { icono: Star, titulo: "Lujo Interior & Acabados Nobles", desc: "Asientos de cuero con ajuste eléctrico, techo panorámico y sistema multimedia de alta fidelidad." },
+                  { icono: ShieldCheck, titulo: "100% Legalizado y Marchamo al Día", desc: "Condiciones mecánicas impecables, inspección técnica aprobada y traspaso formal ante Notario." },
+                ],
+                garantia: "El favorecido del 2° Lugar que elija este vehículo lo recibe formalmente adjudicado ante Notario Público con marchamo, placas y todos los derechos al día.",
+                ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR LA MERCEDES-BENZ GLE! →",
+                waTexto: "¡Hola! Me interesa participar por la Mercedes-Benz Clase GLE en Aval Community CR. ¿Cómo elijo mis tokens?",
               }
             : esSubaru
             ? {
@@ -1495,22 +1525,22 @@ function IndexPage() {
                   { icono: Star, titulo: "Frenos Brembo & Caja Manual 6V", desc: "Pinzas deportivas Brembo ventiladas de alta respuesta y transmisión manual pura de 6 marchas." },
                   { icono: ShieldCheck, titulo: "100% Legalizado y Marchamo al Día", desc: "Condiciones mecánicas impecables, inspección técnica aprobada y traspaso formal ante Notario." },
                 ],
-                garantia: "El favorecido del 2° Lugar recibe este vehículo formalmente adjudicado ante Notario Público con todos los derechos al día y listo para rodar.",
+                garantia: "El favorecido del 2° Lugar que elija este vehículo lo recibe formalmente adjudicado ante Notario Público con todos los derechos al día y listo para rodar.",
                 ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR EL SUBARU WRX STI! →",
                 waTexto: "¡Hola! Me interesa participar por el Subaru Impreza WRX STI en Aval Community CR. ¿Cómo elijo mis tokens?",
               }
             : esEfectivoReal
             ? {
-                subtitulo: "Premio oficial en dinero líquido transferido inmediatamente a tu cuenta bancaria o consola PlayStation 5 Slim Digital 0KM con controles inalámbricos y juegos.",
+                subtitulo: "Premio oficial de ₡4,000,000 en dinero líquido transferido inmediatamente a tu cuenta bancaria o por SINPE Móvil oficial con acta notarial de entrega sin intermediarios ni retenciones.",
                 features: [
                   { icono: Sparkles, titulo: "₡4,000,000 CRC en Efectivo Líquido", desc: "Transferencia bancaria directa o por SINPE Móvil oficial a tu cuenta sin comisiones ni retenciones." },
                   { icono: Star, titulo: "Libre Disposición Inmediata", desc: "Dinero en mano para invertir, pagar deudas, viajar, emprender tu proyecto o ahorrar." },
                   { icono: Flame, titulo: "Opción Consola PS5 Slim Sellada", desc: "Consola PlayStation 5 Slim 0KM sellada de fábrica con controles DualSense y videojuegos." },
                   { icono: ShieldCheck, titulo: "Acta Notarial y Comprobante Formal", desc: "Entrega legal con comprobante de depósito bancario formal avalado por Notario Público." },
                 ],
-                garantia: "El 3° Lugar cuenta con entrega formal garantizada. Transferimos el dinero de inmediato con respaldo legal para tu total tranquilidad.",
+                garantia: "El 3° Lugar cuenta con entrega formal garantizada. Transferimos los ₡4,000,000 de inmediato con respaldo legal y notarial para tu total tranquilidad.",
                 ctaTexto: "🔥 ¡QUIERO PARTICIPAR POR LOS ₡4,000,000 CRC! →",
-                waTexto: "¡Hola! Quiero participar por el 3° Lugar en Efectivo / PS5 en Aval Community CR. ¿Cuáles números quedan?",
+                waTexto: "¡Hola! Quiero participar por el 3° Lugar de ₡4,000,000 en Efectivo en Aval Community CR. ¿Cuáles números quedan?",
               }
             : {
                 subtitulo: sorteo.detalleSubtitulo || "Vehículo o beneficio de alta gama certificado, sacado de agencia con garantía y entregado formalmente a tu nombre con marchamo y traspaso incluido.",
@@ -1548,14 +1578,23 @@ function IndexPage() {
                     const isSelected = premioDetalleIdx === idx;
                     const pNombreLower = (p.nombre || "").toLowerCase();
                     const iconoEmoji =
-                      pNombreLower.includes("ducati") || pNombreLower.includes("moto")
+                      pNombreLower.includes("ducati") || pNombreLower.includes("moto") || pNombreLower.includes("panigale")
                         ? "🏍️"
-                        : pNombreLower.includes("subaru") || pNombreLower.includes("carro")
+                        : pNombreLower.includes("subaru") || pNombreLower.includes("carro") || pNombreLower.includes("mercedes") || pNombreLower.includes("gle") || pNombreLower.includes("auto") || pNombreLower.includes("impreza")
                         ? "🚗"
                         : "💵";
 
+                    const pNivelRaw = (p.nivel || "").trim();
                     const pNivel =
-                      idx === 0 ? "1° Lugar" : idx === 1 ? "2° Lugar" : idx === 2 ? "3° Lugar" : p.nivel;
+                      pNivelRaw.includes("1") || pNivelRaw.toLowerCase().includes("primer") || pNivelRaw === "Premio Mayor"
+                        ? "1° Lugar"
+                        : pNivelRaw.includes("2") || pNivelRaw.toLowerCase().includes("segund") || pNivelRaw === "Segundo Premio"
+                        ? "2° Lugar"
+                        : pNivelRaw.includes("3") || pNivelRaw.toLowerCase().includes("tercer") || pNivelRaw === "Tercer Premio"
+                        ? "3° Lugar"
+                        : pNivelRaw.toLowerCase().includes("extra")
+                        ? "Premio Extra"
+                        : p.nivel;
 
                     return (
                       <button
