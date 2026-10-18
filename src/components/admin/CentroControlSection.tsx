@@ -1,20 +1,26 @@
 import { useState } from "react";
 import {
   AlertCircle,
+  Award,
   Bot,
+  Calendar,
   CheckCircle2,
   Coins,
   CreditCard,
   Dices,
   ExternalLink,
   Flame,
+  Fuel,
   Gavel,
   Gift,
+  Globe,
   HelpCircle,
   Info,
   Layout,
   MessageSquare,
+  Package,
   Radio,
+  RotateCw,
   Save,
   Share2,
   ShieldAlert,
@@ -60,7 +66,7 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
       }
 
       toast.success("✅ Cambios guardados correctamente", {
-        description: "La configuración pública del sitio se ha actualizado en tiempo real.",
+        description: "La configuración pública se actualizó en tiempo real.",
       });
     } catch (err) {
       console.error(err);
@@ -106,23 +112,25 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
       {/* Encabezado Principal */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/20 text-primary">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-primary/20 text-primary border border-primary/30">
               <SlidersHorizontal className="size-5" />
             </span>
-            <h1 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-foreground">
-              Centro de Control e Interruptores
-            </h1>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-foreground">
+                Centro de Control e Interruptores
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                El panel único donde activas, quitas o modificas todas las secciones, módulos y pasarelas de la plataforma.
+              </p>
+            </div>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Activa o desactiva cualquier función, sección o pasarela de pago del sitio web en un solo lugar.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <Button variant="outline" size="sm" asChild className="gap-1.5 text-xs">
             <Link to="/" target="_blank">
-              <ExternalLink className="size-3.5" /> Ver Sitio en Vivo
+              <ExternalLink className="size-3.5" /> Ver en Vivo ↗
             </Link>
           </Button>
           <Button
@@ -132,7 +140,7 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             className="gap-2 font-bold"
           >
             <Save className="size-4" />
-            {guardando ? "Guardando..." : "Guardar Todo"}
+            {guardando ? "Guardando..." : "Guardar Todos los Cambios"}
           </Button>
         </div>
       </div>
@@ -196,367 +204,394 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. SECCIONES DE LA PÁGINA PRINCIPAL (LANDING PAGE)                        */}
+      {/* 2. ACTIVAR, QUITAR Y MODIFICAR SECCIONES DE LA LANDING (BLOQUE COMPLETO)   */}
       {/* ========================================================================= */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Layout className="size-5 text-primary" /> Secciones de la Página Web Principal
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Muestra u oculta bloques enteros de la portada sin alterar tus datos guardados.
-            </p>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+          <div className="flex items-center gap-2.5">
+            <SlidersHorizontal className="size-5 text-amber-400" />
+            <div>
+              <h2 className="text-lg font-bold text-foreground">
+                Activar, Quitar y Modificar Secciones de la Landing
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Controla con un solo interruptor qué bloques se muestran a tus visitantes en la página principal.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {/* Paquetes de Tokens */}
-          <ItemControl
-            titulo="Paquetes de Tokens & Carrito"
-            desc="Tarjetas de 4, 8, 12 y 24 tokens con botón de selección y compra."
-            icono={Dices}
-            activo={borrador.mostrarSeccionPaquetes !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionPaquetes", borrador.mostrarSeccionPaquetes, true)}
-            recomendado="Debe estar activo para vender"
-          />
-
-          {/* Termómetro de Progreso */}
-          <ItemControl
-            titulo="Termómetro & Cuenta Regresiva"
-            desc="Reloj hacia el sorteo de la JPS y barra de progreso de ventas de la edición."
-            icono={Flame}
-            activo={borrador.mostrarSeccionTermometro !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionTermometro", borrador.mostrarSeccionTermometro, true)}
-          />
-
-          {/* Vitrina de Premios Podio */}
-          <ItemControl
-            titulo="Vitrina de Premios (Podio 1° y 2°)"
-            desc="Fotos en alta resolución de los carros, motos y selector a elección."
-            icono={Trophy}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* 1. Apertura: 3 Premios Destacados */}
+          <CardInterruptor
+            numero="1"
+            titulo="Apertura: 3 Premios Destacados"
+            desc="Muestra las tarjetas interactivas de los 3 premios principales en la cabecera, con popup modal 'Comprá y ganá'."
+            tip="💡 Títulos y Quiénes Somos editables en la pestaña 'Apertura & Hero' de Textos Web."
             activo={borrador.mostrarSeccionAperturaPremios !== false}
             onToggle={() => toggleSwitch("mostrarSeccionAperturaPremios", borrador.mostrarSeccionAperturaPremios, true)}
           />
 
-          {/* Botón Principal Hero CTA */}
-          <ItemControl
-            titulo="Botón Principal Hero (Quiero Participar)"
-            desc="Botón grande de acción inmediata en el banner superior."
-            icono={Zap}
-            activo={borrador.mostrarCtaHero !== false}
-            onToggle={() => toggleSwitch("mostrarCtaHero", borrador.mostrarCtaHero, true)}
+          {/* 2. Barra de Meta y Conteo Regresivo */}
+          <CardInterruptor
+            numero="2"
+            titulo="Termómetro de Meta y Conteo"
+            desc="Barra luminosa con el porcentaje vendido en vivo y reloj regresivo sincronizado con la fecha oficial del sorteo."
+            tip="💡 Barra en tiempo real en la cabecera bajo los premios."
+            activo={borrador.mostrarSeccionTermometro !== false}
+            onToggle={() => toggleSwitch("mostrarSeccionTermometro", borrador.mostrarSeccionTermometro, true)}
           />
 
-          {/* Suscripción Comunitaria AVAL */}
-          <ItemControl
-            titulo="Membresía Comunitaria (Car Wash + Tokens)"
-            desc="Bloque SUSCRIBITE con 50% de descuento en LUXX CR y 3 tokens."
-            icono={Sparkles}
-            activo={borrador.mostrarSeccionSuscripcion !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionSuscripcion", borrador.mostrarSeccionSuscripcion, true)}
+          {/* 3. Paquetes de Tokens (Foco Central) */}
+          <CardInterruptor
+            numero="3"
+            titulo="Zona de Paquetes de Tokens"
+            desc="Zona de compra de tokens. Al estar apagada, la sección completa desaparece de la landing page para periodos de prelanzamiento o suspenso."
+            tip="💡 Edita precios y etiquetas en la pestaña 'Paquetes & Compra' de Textos Web."
+            activo={borrador.mostrarSeccionPaquetes !== false}
+            onToggle={() => toggleSwitch("mostrarSeccionPaquetes", borrador.mostrarSeccionPaquetes, true)}
           />
 
-          {/* Cómo Funciona */}
-          <ItemControl
-            titulo="Sección '¿Cómo Funciona?'"
-            desc="Los 3 pasos visuales para elegir números, pagar y verificar."
-            icono={Info}
+          {/* 4. Sección ¿Cómo Funciona? (3 Pasos) */}
+          <CardInterruptor
+            numero="4"
+            titulo="Sección ¿Cómo Funciona? (3 Pasos)"
+            desc="Explicación rápida del proceso 100% digital, métodos de pago aceptados y validación ante la JPS."
+            tip="💡 Textos de cada paso configurables en la pestaña '3 Pasos' de Textos Web."
             activo={borrador.mostrarSeccionComoFunciona !== false}
             onToggle={() => toggleSwitch("mostrarSeccionComoFunciona", borrador.mostrarSeccionComoFunciona, true)}
           />
 
-          {/* Ficha Técnica de Premios */}
-          <ItemControl
-            titulo="Ficha Técnica & Garantías de Premios"
-            desc="Detalles mecánicos de los vehículos, marchamo y notaría incluidos."
-            icono={CheckCircle2}
+          {/* 5. Gran Bloque de Suscripción AVAL Community (Membresía & Beneficios) */}
+          <CardInterruptor
+            numero="5"
+            titulo="Gran Bloque de Suscripción AVAL Community"
+            desc="Llamado a la acción de alto impacto: 'SUSCRIBITE' con 50% de descuento en LUXX CR CAR WASH, 3 tokens de participación y dinámicas transparentes respaldadas por la JPS."
+            tip="💡 Ubicado estratégicamente justo después de los 3 simples pasos."
+            activo={borrador.mostrarSeccionSuscripcion !== false}
+            onToggle={() => toggleSwitch("mostrarSeccionSuscripcion", borrador.mostrarSeccionSuscripcion, true)}
+            destacado={true}
+          />
+
+          {/* 6. Detalle Extendido de Premios */}
+          <CardInterruptor
+            numero="6"
+            titulo="Detalle Extendido de Premios"
+            desc="Bloque completo fuera del hero con selector de pestañas (Ducati, Subaru, Efectivo/PS5) y botones de compra propios."
+            tip="💡 Permite inspeccionar la ficha técnica sin salir de la página."
             activo={borrador.mostrarSeccionDetallePremios === true}
             onToggle={() => toggleSwitch("mostrarSeccionDetallePremios", borrador.mostrarSeccionDetallePremios, false)}
           />
 
-          {/* Preguntas Frecuentes FAQs */}
-          <ItemControl
+          {/* 7. Modalidad SuperToken (Bono Cash) */}
+          <CardInterruptor
+            numero="7"
+            titulo="Modalidad SuperToken (Bono Cash)"
+            desc="Muestra la opción opcional del multiplicador VIP en efectivo para el 1°, 2° y 3° lugar sumado a sus vehículos."
+            tip="💡 Ajuste de bonos en la sección de Configuración General."
+            activo={borrador.supertokenActivo ?? true}
+            onToggle={() => toggleSwitch("supertokenActivo", borrador.supertokenActivo, true)}
+          />
+
+          {/* 8. Programa de Referidos Unificado */}
+          <CardInterruptor
+            numero="8"
+            titulo="Programa de Referidos Unificado"
+            desc="Módulo todo-en-uno que reúne dinámica de padrinos, generador de enlace en vivo y tabla de líderes mensual."
+            tip="💡 Modifica los montos de premios por referido en la sección 'Referidos'."
+            activo={borrador.referidosActivo ?? true}
+            onToggle={() => toggleSwitch("referidosActivo", borrador.referidosActivo, true)}
+          />
+
+          {/* 9. Descuentos en Comercios Afiliados */}
+          <CardInterruptor
+            numero="9"
+            titulo="Comercios Afiliados & Descuentos"
+            desc="Vitrina de beneficios exclusivos y descuentos de hasta 50% en comercios aliados para los participantes."
+            tip="💡 Administra comercios y cupones en la sección 'Comercios / Sponsors'."
+            activo={borrador.mostrarSeccionSponsors ?? false}
+            onToggle={() => toggleSwitch("mostrarSeccionSponsors", borrador.mostrarSeccionSponsors, false)}
+          />
+
+          {/* 10. Mini-Sorteos Semanales (Gasolina / Play 5) */}
+          <CardInterruptor
+            numero="10"
+            titulo="Mini-Sorteos Semanales"
+            desc="Dinámica de gasolina y PlayStation semanal. Se mantiene apagado por ahora para no competir con el mensaje de tokens."
+            tip="💡 Actívalo cuando tus clientes ya dominen la dinámica principal."
+            activo={borrador.miniSorteosActivo ?? false}
+            onToggle={() => toggleSwitch("miniSorteosActivo", borrador.miniSorteosActivo, false)}
+          />
+
+          {/* 11. Sección de Ganadores y Testimonios */}
+          <CardInterruptor
+            numero="11"
+            titulo="Ganadores y Testimonios"
+            desc="Galería de ganadores y testimonios. Oculto para la primera edición hasta tener las primeras entregas oficiales."
+            tip="💡 Se alimenta de testimonios cargados en el panel de Premios."
+            activo={borrador.mostrarSeccionGanadores ?? false}
+            onToggle={() => toggleSwitch("mostrarSeccionGanadores", borrador.mostrarSeccionGanadores, false)}
+          />
+
+          {/* 12. Preguntas Frecuentes (FAQs) */}
+          <CardInterruptor
+            numero="12"
             titulo="Preguntas Frecuentes (FAQs)"
-            desc="Respuestas a dudas comunes de legalidad, pagos y entrega."
-            icono={HelpCircle}
+            desc="Acordeón inferior que aclara dudas sobre legalidad notarial, SINPE Móvil y dinámicas de participación."
+            tip="💡 Resuelve objeciones y genera confianza antes del cierre."
             activo={borrador.mostrarSeccionFaqs !== false}
             onToggle={() => toggleSwitch("mostrarSeccionFaqs", borrador.mostrarSeccionFaqs, true)}
           />
 
-          {/* Barra Superior de Notificación */}
-          <ItemControl
+          {/* 13. Tarjeta ¿Tenés Dudas? (WhatsApp en FAQs) */}
+          <CardInterruptor
+            numero="13"
+            titulo="Tarjeta '¿Tenés Dudas?' (WhatsApp en FAQs)"
+            desc="Caja verde con botón 'Chatear por WhatsApp' ubicada al pie del acordeón de preguntas frecuentes."
+            tip="💬 Activa o desactiva la tarjeta de contacto directo al pie de las FAQs."
+            activo={borrador.mostrarTarjetaDudas === true}
+            onToggle={() => toggleSwitch("mostrarTarjetaDudas", borrador.mostrarTarjetaDudas, false)}
+          />
+
+          {/* 14. Sala de Remates VIP */}
+          <CardInterruptor
+            numero="14"
+            titulo="Sala de Remates & Subastas VIP"
+            desc="Desactivada para no confundir a los participantes. Al estar apagada, se retira de la navegación pública y la ruta redirige a la compra de tokens."
+            tip="💡 El foco absoluto se mantiene en que el cliente comprenda cómo adquirir tokens."
+            activo={borrador.mostrarSalaRemates === true}
+            onToggle={() => toggleSwitch("mostrarSalaRemates", borrador.mostrarSalaRemates, false)}
+          />
+
+          {/* 15. Barra de Notificación Superior */}
+          <CardInterruptor
+            numero="15"
             titulo="Barra de Notificación Superior"
-            desc="Cintillo dorado con anuncio de preventa o noticias en la cabecera."
-            icono={Radio}
+            desc="Cintillo dorado con anuncio de preventa o noticias en la cabecera principal."
+            tip="📢 Avisa noticias urgentes o promociones especiales."
             activo={borrador.mostrarBarraNotificacion !== false}
             onToggle={() => toggleSwitch("mostrarBarraNotificacion", borrador.mostrarBarraNotificacion, true)}
           />
 
-          {/* Menú de Navegación Header */}
-          <ItemControl
-            titulo="Menú de Navegación Superior"
-            desc="Enlaces hacia las secciones en la barra de navegación del sitio."
-            icono={Layout}
-            activo={borrador.mostrarNavegacion !== false}
-            onToggle={() => toggleSwitch("mostrarNavegacion", borrador.mostrarNavegacion, true)}
-          />
-
-          {/* Badges del Hero */}
-          <ItemControl
-            titulo="Insignias de Confianza (JPS y Oficial)"
-            desc="Etiquetas verificadas de respaldo JPS y evento oficial en Costa Rica."
-            icono={CheckCircle2}
-            activo={borrador.mostrarBadgeJPS !== false}
-            onToggle={() => toggleSwitch("mostrarBadgeJPS", borrador.mostrarBadgeJPS, true)}
+          {/* 16. Botón Principal Hero (Quiero Participar) */}
+          <CardInterruptor
+            numero="16"
+            titulo="Botón Principal Hero (CTA)"
+            desc="Botón grande de acción inmediata en el banner superior de la página."
+            tip="⚡ Dirige inmediatamente a la compra de paquetes de tokens."
+            activo={borrador.mostrarCtaHero !== false}
+            onToggle={() => toggleSwitch("mostrarCtaHero", borrador.mostrarCtaHero, true)}
           />
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. DINÁMICAS, JUEGOS Y MÓDULOS ESPECIALES                                 */}
+      {/* 3. DINÁMICAS DIGITALES EXPRESS                                            */}
       {/* ========================================================================= */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Gift className="size-5 text-amber-500" /> Dinámicas, Juegos y Módulos Especiales
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Habilita módulos interactivos para multiplicar ventas y fidelizar participantes.
-          </p>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2.5 border-b border-border pb-3">
+          <Gift className="size-5 text-amber-500" />
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Dinámicas Digitales Express</h2>
+            <p className="text-xs text-muted-foreground">
+              Juegos interactivos de retención y asesoría comercial con Inteligencia Artificial.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {/* SuperToken */}
-          <ItemControl
-            titulo="SuperToken (Multiplicador de Premio)"
-            desc="Permite pagar un extra para optar por bonos millonarios en USD si ganan."
-            icono={Coins}
-            activo={borrador.supertokenActivo ?? true}
-            onToggle={() => toggleSwitch("supertokenActivo", borrador.supertokenActivo, true)}
-          />
-
+        <div className="grid gap-4 sm:grid-cols-2">
           {/* Raspa y Gana Express */}
-          <ItemControl
-            titulo="Raspa y Gana Express"
-            desc="Juego instantáneo tipo raspa digital para ganar tokens y premios directos."
-            icono={Gift}
-            activo={raspaActivo}
-            onToggle={toggleRaspa}
-          />
-
-          {/* Remates VIP */}
-          <ItemControl
-            titulo="Sala de Remates & Subastas VIP"
-            desc="Módulo de subastas de lotes de tokens con temporizador y puja en vivo."
-            icono={Gavel}
-            activo={borrador.mostrarSalaRemates ?? false}
-            onToggle={() => toggleSwitch("mostrarSalaRemates", borrador.mostrarSalaRemates, false)}
-          />
-
-          {/* Referidos y Afiliados */}
-          <ItemControl
-            titulo="Sistema de Referidos y Afiliados"
-            desc="Permite a los usuarios compartir su enlace y ganar comisiones o tokens."
-            icono={Share2}
-            activo={borrador.referidosActivo ?? true}
-            onToggle={() => toggleSwitch("referidosActivo", borrador.referidosActivo, true)}
-          />
-
-          {/* Mini Sorteos Semanales */}
-          <ItemControl
-            titulo="Mini Sorteos Semanales (Gasolina / PS5)"
-            desc="Premios de combustible y PlayStation los viernes y domingos."
-            icono={Flame}
-            activo={borrador.miniSorteosActivo ?? false}
-            onToggle={() => toggleSwitch("miniSorteosActivo", borrador.miniSorteosActivo, false)}
-          />
-
-          {/* Muro de Ganadores */}
-          <ItemControl
-            titulo="Muro de Ganadores y Testimonios"
-            desc="Fotografías y comentarios de ganadores de ediciones anteriores."
-            icono={Trophy}
-            activo={borrador.mostrarSeccionGanadores ?? false}
-            onToggle={() => toggleSwitch("mostrarSeccionGanadores", borrador.mostrarSeccionGanadores, false)}
-          />
-
-          {/* Sponsors y Comercios Aliados */}
-          <ItemControl
-            titulo="Red de Sponsors y Comercios"
-            desc="Muestra logotipos y convenios comerciales que ofrecen descuentos."
-            icono={Store}
-            activo={borrador.mostrarSeccionSponsors ?? false}
-            onToggle={() => toggleSwitch("mostrarSeccionSponsors", borrador.mostrarSeccionSponsors, false)}
-          />
+          <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-foreground">🎁 Raspa y Gana Digital Express</span>
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${raspaActivo ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
+                    {raspaActivo ? "Activo" : "Oculto"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Juego instantáneo táctil tipo raspa para ganar premios en SINPE Móvil o tokens directos.
+                </p>
+              </div>
+              <Switch checked={raspaActivo} onCheckedChange={toggleRaspa} />
+            </div>
+            <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50 flex items-center justify-between">
+              <span>💡 Configurable en detalle en la pestaña "Raspa y Gana Express".</span>
+              {onIrASeccion && (
+                <button
+                  type="button"
+                  onClick={() => onIrASeccion("raspa")}
+                  className="text-amber-400 font-bold hover:underline cursor-pointer"
+                >
+                  Abrir Raspa →
+                </button>
+              )}
+            </div>
+          </div>
 
           {/* Asesor Comercial IA */}
-          <ItemControl
-            titulo="Asesor Comercial con IA (Aval-IA)"
-            desc="Chatbot flotante inteligente que asesora y cierra ventas las 24 horas."
-            icono={Bot}
-            activo={borrador.aiActivo ?? true}
-            onToggle={() => toggleSwitch("aiActivo", borrador.aiActivo, true)}
-          />
-
-          {/* Notificaciones FOMO */}
-          <ItemControl
-            titulo="Notificaciones de Compras en Vivo (FOMO)"
-            desc="Popups flotantes que indican 'Alguien de Escazú compró 12 tokens hace 2m'."
-            icono={AlertCircle}
-            activo={borrador.fomoActivo ?? false}
-            onToggle={() => toggleSwitch("fomoActivo", borrador.fomoActivo, false)}
-          />
+          <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-foreground">🤖 Asesor Comercial con IA (Aval-IA)</span>
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.aiActivo ?? true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
+                    {borrador.aiActivo ?? true ? "Activo" : "Oculto"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Chatbot flotante inteligente que responde preguntas y promueve la compra de tokens 24/7.
+                </p>
+              </div>
+              <Switch checked={borrador.aiActivo ?? true} onCheckedChange={() => toggleSwitch("aiActivo", borrador.aiActivo, true)} />
+            </div>
+            <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
+              <span>💡 Impulsa el cierre de ventas guiando a los usuarios al checkout.</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* ========================================================================= */}
       {/* 4. PASARELAS Y MÉTODOS DE PAGO                                            */}
       {/* ========================================================================= */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <CreditCard className="size-5 text-emerald-500" /> Pasarelas y Métodos de Pago Activos
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Controla qué formas de pago están disponibles para los usuarios en el checkout.
-          </p>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2.5 border-b border-border pb-3">
+          <CreditCard className="size-5 text-emerald-500" />
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Pasarelas y Métodos de Pago Activos</h2>
+            <p className="text-xs text-muted-foreground">
+              Define cuáles formas de pago están disponibles para los usuarios en el checkout.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {/* SINPE Móvil */}
-          <ItemControl
-            titulo="SINPE Móvil Oficial"
-            desc="Conciliación bancaria al número oficial (8634-4772)."
-            icono={Smartphone}
-            activo={borrador.sinpeActivo !== false}
-            onToggle={() => toggleSwitch("sinpeActivo", borrador.sinpeActivo, true)}
-            destacado="Método #1 en Costa Rica"
-          />
+          <div className="rounded-xl border border-emerald-500/40 bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Smartphone className="size-4 text-emerald-400" /> SINPE Móvil Oficial
+              </span>
+              <Switch checked={borrador.sinpeActivo !== false} onCheckedChange={() => toggleSwitch("sinpeActivo", borrador.sinpeActivo, true)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">Conciliación automática con 8634-4772.</p>
+          </div>
 
           {/* Tarjetas TiloPay */}
-          <ItemControl
-            titulo="Tarjetas Débito / Crédito (TiloPay)"
-            desc="Cobros instantáneos en colones y dólares con Visa y Mastercard."
-            icono={CreditCard}
-            activo={borrador.tilopayActivo !== false}
-            onToggle={() => toggleSwitch("tilopayActivo", borrador.tilopayActivo, true)}
-          />
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <CreditCard className="size-4 text-blue-400" /> Tarjetas (TiloPay)
+              </span>
+              <Switch checked={borrador.tilopayActivo !== false} onCheckedChange={() => toggleSwitch("tilopayActivo", borrador.tilopayActivo, true)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">Visa y Mastercard con cobro directo.</p>
+          </div>
 
           {/* PayPal */}
-          <ItemControl
-            titulo="PayPal Internacional"
-            desc="Pagos internacionales directos con cuenta o tarjetas PayPal."
-            icono={CreditCard}
-            activo={borrador.paypalActivo === true}
-            onToggle={() => toggleSwitch("paypalActivo", borrador.paypalActivo, false)}
-          />
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <CreditCard className="size-4 text-indigo-400" /> PayPal Internacional
+              </span>
+              <Switch checked={borrador.paypalActivo === true} onCheckedChange={() => toggleSwitch("paypalActivo", borrador.paypalActivo, false)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">Depósitos internacionales seguros.</p>
+          </div>
 
           {/* Criptomonedas USDT */}
-          <ItemControl
-            titulo="Criptomonedas (USDT TRC20 / BEP20)"
-            desc="Acepta depósitos de Tether (USDT) en billeteras frías o Binance Pay."
-            icono={Coins}
-            activo={borrador.cryptoActivo === true}
-            onToggle={() => toggleSwitch("cryptoActivo", borrador.cryptoActivo, false)}
-          />
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Coins className="size-4 text-amber-400" /> Criptomonedas (USDT)
+              </span>
+              <Switch checked={borrador.cryptoActivo === true} onCheckedChange={() => toggleSwitch("cryptoActivo", borrador.cryptoActivo, false)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">Red TRC20 / BEP20 y Binance Pay.</p>
+          </div>
 
           {/* Apple Pay */}
-          <ItemControl
-            titulo="Apple Pay"
-            desc="Pago en un solo toque para usuarios de iPhone, iPad y Mac."
-            icono={Smartphone}
-            activo={borrador.applePayActivo === true}
-            onToggle={() => toggleSwitch("applePayActivo", borrador.applePayActivo, false)}
-          />
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Smartphone className="size-4 text-zinc-300" /> Apple Pay
+              </span>
+              <Switch checked={borrador.applePayActivo === true} onCheckedChange={() => toggleSwitch("applePayActivo", borrador.applePayActivo, false)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">Cobro rápido para dispositivos iOS.</p>
+          </div>
 
           {/* Google Pay */}
-          <ItemControl
-            titulo="Google Pay"
-            desc="Pago en un clic para billeteras Google en dispositivos Android."
-            icono={Smartphone}
-            activo={borrador.googlePayActivo === true}
-            onToggle={() => toggleSwitch("googlePayActivo", borrador.googlePayActivo, false)}
-          />
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Smartphone className="size-4 text-emerald-400" /> Google Pay
+              </span>
+              <Switch checked={borrador.googlePayActivo === true} onCheckedChange={() => toggleSwitch("googlePayActivo", borrador.googlePayActivo, false)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">Cobro en un clic para Android.</p>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function ItemControl({
+function CardInterruptor({
+  numero,
   titulo,
   desc,
-  icono: Icono,
+  tip,
   activo,
   onToggle,
   destacado,
-  recomendado,
 }: {
+  numero: string;
   titulo: string;
   desc: string;
-  icono: any;
+  tip?: string;
   activo: boolean;
   onToggle: () => void;
-  destacado?: string;
-  recomendado?: string;
+  destacado?: boolean;
 }) {
   return (
     <div
-      onClick={onToggle}
-      className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 flex flex-col justify-between gap-3 ${
-        activo
-          ? "border-emerald-500/40 bg-card hover:border-emerald-500/60 shadow-sm"
-          : "border-border/60 bg-secondary/20 opacity-75 hover:opacity-100 hover:border-border"
+      className={`rounded-2xl border p-4 flex flex-col justify-between space-y-3 transition-colors ${
+        destacado
+          ? "border-amber-500/40 bg-amber-500/5 hover:border-amber-500/60"
+          : activo
+          ? "border-border bg-secondary/20 hover:border-amber-500/40"
+          : "border-border/60 bg-secondary/10 opacity-75 hover:opacity-100"
       }`}
     >
-      <div className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-foreground">
+              {numero}. {titulo}
+            </span>
             <span
-              className={`flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors ${
-                activo ? "bg-emerald-500/20 text-emerald-400" : "bg-muted text-muted-foreground"
+              className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                activo
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                  : "bg-zinc-800 text-zinc-400"
               }`}
             >
-              <Icono className="size-4" />
-            </span>
-            <span className="font-bold text-xs sm:text-sm text-foreground leading-tight line-clamp-1">
-              {titulo}
+              {activo ? "Activo" : "Oculto"}
             </span>
           </div>
-
-          <Switch
-            checked={activo}
-            onCheckedChange={onToggle}
-            className="data-[state=checked]:bg-emerald-500 shrink-0 cursor-pointer"
-          />
+          <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
         </div>
-
-        <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-          {desc}
-        </p>
+        <Switch checked={activo} onCheckedChange={onToggle} className="cursor-pointer shrink-0" />
       </div>
 
-      <div className="flex items-center justify-between pt-1 border-t border-border/40 text-[10px]">
-        <div className="flex items-center gap-1.5">
-          <span className={`size-1.5 rounded-full ${activo ? "bg-emerald-400" : "bg-zinc-500"}`} />
-          <span className={`font-black uppercase tracking-wider ${activo ? "text-emerald-400" : "text-muted-foreground"}`}>
-            {activo ? "Activo" : "Desactivado"}
-          </span>
+      {tip && (
+        <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
+          <span>{tip}</span>
         </div>
-
-        {destacado && (
-          <span className="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-            {destacado}
-          </span>
-        )}
-
-        {recomendado && !destacado && (
-          <span className="text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-            {recomendado}
-          </span>
-        )}
-      </div>
+      )}
     </div>
   );
 }

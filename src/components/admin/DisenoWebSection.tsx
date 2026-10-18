@@ -41,8 +41,8 @@ export function DisenoWebSection({
   const [borrador, setBorrador] = useState<Config>(config);
   const [guardando, setGuardando] = useState(false);
   const [seccionActiva, setSeccionActiva] = useState<
-    "secciones" | "hero" | "vitrina" | "pasos" | "minisorteos" | "paquetes" | "footer"
-  >("secciones");
+    "hero" | "vitrina" | "pasos" | "minisorteos" | "paquetes" | "footer"
+  >("hero");
 
   const handleGuardar = async () => {
     setGuardando(true);
@@ -153,7 +153,6 @@ export function DisenoWebSection({
   };
 
   const pestanas = [
-    { id: "secciones", label: "Control de Secciones (On / Off)", icono: SlidersHorizontal },
     { id: "hero", label: "Apertura & Hero", icono: Sparkles },
     { id: "vitrina", label: "Vitrina de Premio", icono: Award },
     { id: "pasos", label: "3 Pasos (¿Cómo Funciona?)", icono: HelpCircle },
@@ -224,6 +223,16 @@ export function DisenoWebSection({
         </div>
       </div>
 
+      {/* Banner Informativo hacia Centro de Control */}
+      <div className="rounded-xl border border-primary/30 bg-primary/10 p-3.5 text-xs text-primary flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="size-4 shrink-0 text-primary" />
+          <span>
+            <strong>¿Buscas activar o apagar secciones completas de la web?</strong> Ahora todos los interruptores se gestionan de forma unificada desde la pestaña <strong>Centro de Control</strong> en el menú lateral.
+          </span>
+        </div>
+      </div>
+
       {/* Selector de Sección (Tabs ordenados) */}
       <div className="flex flex-wrap gap-2 border-b border-border pb-3">
         {pestanas.map((p) => {
@@ -247,362 +256,7 @@ export function DisenoWebSection({
         })}
       </div>
 
-      {/* ──────────────────────────────────────────────────────────── */}
-      {/* 0. SECCIÓN CONTROL DE SECCIONES DE LA LANDING (ON / OFF)    */}
-      {/* ──────────────────────────────────────────────────────────── */}
-      {seccionActiva === "secciones" && (
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 border-b border-border pb-3">
-              <SlidersHorizontal className="size-5 text-amber-400" />
-              <div>
-                <h3 className="text-base font-bold">Activar, Quitar y Modificar Secciones de la Landing</h3>
-                <p className="text-xs text-muted-foreground">
-                  Controla con un solo interruptor qué bloques se muestran a tus visitantes en la página principal.
-                </p>
-              </div>
-            </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 pt-1">
-              {/* 1. Apertura: 3 Premios Destacados */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">1. Apertura: 3 Premios Destacados</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionAperturaPremios !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionAperturaPremios !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Muestra las tarjetas interactivas de los 3 premios principales en la cabecera, con popup modal "Comprá y ganá".
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionAperturaPremios !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionAperturaPremios: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Títulos y Quiénes Somos editables en la pestaña "Apertura & Hero".</span>
-                </div>
-              </div>
-
-              {/* 2. Barra de Meta y Conteo Regresivo */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">2. Termómetro de Meta y Conteo</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionTermometro !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionTermometro !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Barra luminosa con el porcentaje vendido en vivo y reloj regresivo sincronizado con la fecha oficial del sorteo.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionTermometro !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionTermometro: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Barra en tiempo real en la cabecera bajo los premios.</span>
-                </div>
-              </div>
-
-              {/* 3. Paquetes de Tokens (Foco Central) */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">3. Zona de Paquetes de Tokens</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionPaquetes === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionPaquetes === true ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Zona de compra de tokens. Al estar apagada, la sección completa desaparece de la landing page para periodos de prelanzamiento o suspenso.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionPaquetes === true}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionPaquetes: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Edita precios y etiquetas en la pestaña "Paquetes & Compra".</span>
-                </div>
-              </div>
-
-              {/* 4. Sección ¿Cómo Funciona? (3 Pasos) */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">4. Sección ¿Cómo Funciona? (3 Pasos)</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionComoFunciona !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionComoFunciona !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Explicación rápida del proceso 100% digital, métodos de pago aceptados y validación ante la JPS.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionComoFunciona !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionComoFunciona: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Textos de cada paso configurables en la pestaña "3 Pasos".</span>
-                </div>
-              </div>
-
-              {/* 5. Gran Bloque de Suscripción AVAL Community (Membresía & Beneficios) */}
-              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/60 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">5. Gran Bloque de Suscripción AVAL Community</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionSuscripcion !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionSuscripcion !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Llamado a la acción de alto impacto: "SUSCRIBITE" con 50% de descuento en LUXX CR CAR WASH, 3 tokens de participación y dinámicas transparentes respaldadas por la JPS.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionSuscripcion !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionSuscripcion: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50 flex items-center justify-between">
-                  <span>💡 Ubicado estratégicamente justo después de los 3 simples pasos.</span>
-                </div>
-              </div>
-
-              {/* 6. Detalle Extendido de Premios (Fuera del Bloque) */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">5. Detalle Extendido de Premios</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionDetallePremios !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionDetallePremios !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Bloque completo fuera del hero con selector de pestañas (Ducati, Subaru, Efectivo/PS5) y botones de compra propios.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionDetallePremios !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionDetallePremios: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Permite inspeccionar la ficha técnica sin salir de la página.</span>
-                </div>
-              </div>
-
-              {/* 6. Multiplicador VIP SuperToken */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">6. Modalidad SuperToken (Bono Cash)</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.supertokenActivo !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.supertokenActivo !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Muestra la opción opcional del multiplicador VIP en efectivo para el 1°, 2° y 3° lugar sumado a sus vehículos.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.supertokenActivo !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, supertokenActivo: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Ajuste de bonos en la sección de Configuración General.</span>
-                </div>
-              </div>
-
-              {/* 7. Programa de Referidos Unificado */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">7. Programa de Referidos Unificado</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionReferidos !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionReferidos !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Módulo todo-en-uno que reúne dinámica de padrinos, generador de enlace en vivo y tabla de líderes mensual.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionReferidos !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionReferidos: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Modifica los montos de premios por referido en la sección "Referidos".</span>
-                </div>
-              </div>
-
-              {/* 8. Descuentos en Comercios Afiliados */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">8. Comercios Afiliados & Descuentos</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionSponsors !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionSponsors !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Vitrina de beneficios exclusivos y descuentos de hasta 50% en comercios aliados para los participantes.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionSponsors !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionSponsors: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Administra comercios y cupones en la sección "Comercios / Sponsors".</span>
-                </div>
-              </div>
-
-              {/* 9. Mini-Sorteos Semanales (Gasolina / Play 5) */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">9. Mini-Sorteos Semanales</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionMiniSorteos === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionMiniSorteos === true ? "Activo" : "Oculto (Recomendado inicio)"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Dinámica de gasolina y PlayStation semanal. Se mantiene apagado por ahora para no competir con el mensaje de tokens.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionMiniSorteos === true}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionMiniSorteos: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Actívalo cuando tus clientes ya dominen la dinámica principal.</span>
-                </div>
-              </div>
-
-              {/* 10. Sección de Ganadores y Testimonios */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">10. Ganadores y Testimonios</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionGanadores === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionGanadores === true ? "Activo" : "Oculto (Recomendado inicio)"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Galería de ganadores y testimonios. Oculto para la primera edición hasta tener las primeras entregas oficiales.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionGanadores === true}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionGanadores: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Se alimenta de testimonios cargados en el panel de Premios.</span>
-                </div>
-              </div>
-
-              {/* 11. Preguntas Frecuentes (FAQs) */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">11. Preguntas Frecuentes (FAQs)</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSeccionFaqs !== false ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarSeccionFaqs !== false ? "Activo" : "Oculto"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Acordeón inferior que aclara dudas sobre legalidad notarial, SINPE Móvil y dinámicas de participación.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSeccionFaqs !== false}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionFaqs: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 Resuelve objeciones y genera confianza antes del cierre.</span>
-                </div>
-              </div>
-
-              {/* 11.1. Tarjeta ¿Tenés Dudas? (WhatsApp en FAQs) */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">Tarjeta "¿Tenés Dudas?" (WhatsApp en FAQs)</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarTarjetaDudas === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-800 text-zinc-400"}`}>
-                        {borrador.mostrarTarjetaDudas === true ? "Activo" : "Desactivado"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Caja verde con botón "Chatear por WhatsApp" ubicada al pie del acordeón de preguntas frecuentes.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarTarjetaDudas === true}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarTarjetaDudas: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💬 Activa o desactiva la tarjeta de contacto directo al pie de las FAQs.</span>
-                </div>
-              </div>
-
-              {/* 12. Sala de Remates VIP */}
-              <div className="rounded-2xl border border-border bg-secondary/20 p-4 flex flex-col justify-between space-y-3 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">12. Sala de Remates & Subastas VIP</span>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${borrador.mostrarSalaRemates === true ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-rose-500/20 text-rose-400 border border-rose-500/40"}`}>
-                        {borrador.mostrarSalaRemates === true ? "Activo (Público)" : "Desactivada (Recomendado)"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Desactivada para no confundir a los participantes. Al estar apagada, se retira de la navegación pública y la ruta redirige a la compra de tokens.
-                    </p>
-                  </div>
-                  <Switch
-                    checked={borrador.mostrarSalaRemates === true}
-                    onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSalaRemates: v })}
-                  />
-                </div>
-                <div className="text-[11px] text-muted-foreground pt-2 border-t border-border/50">
-                  <span>💡 El foco absoluto se mantiene en que el cliente comprenda cómo adquirir tokens.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ──────────────────────────────────────────────────────────── */}
       {/* 1. SECCIÓN HERO Y BADGES SUPERIORES */}
