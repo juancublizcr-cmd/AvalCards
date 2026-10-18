@@ -519,7 +519,7 @@ function IndexPage() {
 
       <main>
         {/* HERO SECTION DE ALTO IMPACTO */}
-        <section className="relative overflow-hidden pt-12 pb-20 md:pt-16 md:pb-28">
+        <section className="relative overflow-hidden pt-10 pb-6 md:pt-14 md:pb-8">
           {/* Luces de fondo */}
           <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 size-[42rem] rounded-full bg-primary/20 blur-[150px]" />
           <div className="relative mx-auto max-w-6xl px-5 text-center">
@@ -959,7 +959,7 @@ function IndexPage() {
 
             {/* CONSOLA MAESTRA DE CONVERSIÓN Y RELOJ OFICIAL EN EL HERO */}
             {(config.mostrarSeccionTermometro !== false || config.mostrarCtaHero !== false) && (
-              <div className={`mx-auto mt-10 max-w-3xl rounded-3xl border-2 p-6 sm:p-8 backdrop-blur text-left shadow-2xl transition-all ${
+              <div className={`mx-auto mt-6 md:mt-8 max-w-3xl rounded-3xl border-2 p-5 sm:p-7 backdrop-blur text-left shadow-2xl transition-all ${
                 enCurso
                   ? "border-red-500/70 bg-gradient-to-b from-card/95 via-red-950/20 to-card/95 shadow-[0_0_50px_rgba(239,68,68,0.25)]"
                   : cierrePrevio
@@ -1078,8 +1078,8 @@ function IndexPage() {
 
         {/* ZONA PRINCIPAL DE COMPRA DE TOKENS (EL FOCO ABSOLUTO DE LA LANDING) */}
         {config.mostrarSeccionPaquetes !== false && (
-          <section id="paquetes-compra" className="py-16 md:py-24 mx-auto max-w-6xl px-5 scroll-mt-24">
-            <div id="tickets-seleccion" className="text-center max-w-3xl mx-auto scroll-mt-24">
+          <section id="paquetes-compra" className="pt-2 pb-14 md:pt-4 md:pb-20 mx-auto max-w-6xl px-5 scroll-mt-16">
+            <div id="tickets-seleccion" className="text-center max-w-3xl mx-auto scroll-mt-16">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
               <Sparkles className="size-3.5" />
               {cierrePrevio || enCurso
