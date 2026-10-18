@@ -28,6 +28,7 @@ import {
   Save,
   Share2,
   ShieldAlert,
+  ShieldCheck,
   SlidersHorizontal,
   Smartphone,
   Sparkles,

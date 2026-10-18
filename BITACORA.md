@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 16 de Septiembre de 2026 - 11:15 PM (Hito 29: Integración de Comprobantes Electrónicos v4.4 con Hacienda, Descarga de XML Firmado y Acuse MensajeHacienda en Checkout, y Acceso Rápido a FacturaOS)  
+**Última actualización:** 18 de Octubre de 2026 - 02:15 PM (Hito 33: Meta Mínima Configurable, Garantía de Cumplimiento Notarial y Gestor de Ciclos de Ediciones para Arrancar desde Cero con los Mismos Productos)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -620,3 +620,48 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 
 
+
+
+---
+
+## 🚀 Hito 33: Meta Mínima de Venta Configurable, Garantía de Cumplimiento con Modal Notarial, y Gestor de Ciclos de Vida del Sorteo (Archivado y Nueva Edición desde Cero)
+
+1. **Meta Mínima de Venta para Realizar el Sorteo (%) Configurable:**
+   - Incorporación del campo tipado `porcentajeMinimoSorteo` en `src/lib/admin-store.ts` (con valor por defecto del **80%**).
+   - Control de ajuste interactivo con selector numérico (min 10%, max 100%, paso 5%) en:
+     - **Centro de Control** (`CentroControlSection.tsx`): Bloque destacado dentro de *Control de Ventas* con 3 pilares explicativos de cómo actúa el sistema.
+     - **Diseño Web** (`DisenoWebSection.tsx`): Configuración directa con placeholders dinámicos adaptados al porcentaje actual.
+   - Campos configurables para personalizar el título (`garantiaModalTitulo`) y cuerpo explicativo (`garantiaModalTexto`) de la garantía legal notarial.
+
+2. **Dinamización de Tarjetas de Garantía en la Landing Page (`src/routes/index.tsx`):**
+   - Las 2 tarjetas informativas bajo los paquetes de compra ahora reflejan de forma automática y reactiva el porcentaje configurado:
+     - **Tarjeta 1:** `Si llegamos al {metaMinimaSorteo}%` &rarr; *"Al alcanzar el {metaMinimaSorteo}% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana."*
+     - **Tarjeta 2 (Garantía de Cumplimiento):** *"Si al vencer el contador aún no se alcanza el {metaMinimaSorteo}%, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez."*
+   - Al pulsar la tarjeta de Garantía, abre de inmediato el nuevo **Popup / Modal Notarial**.
+
+3. **Lógica de Protección y Garantía si se Vence el Tiempo sin Cumplir la Meta (`< 80%`):**
+   - Cálculo en vivo de `garantiaCumplimientoActiva = tiempoVencido && !metaAlcanzada`.
+   - **Ventas Abiertas Ininterrumpidas:** Si el reloj llega a cero pero la venta no alcanza el 80% mínimo, el sistema **no** bloquea ventas ni entra en estado de cierre forzado. Las ventas continúan 100% activas hasta cubrir el umbral de viabilidad.
+   - El cintillo superior y el termómetro reflejan con badge dorado que la edición sigue abierta acumulando ventas bajo fe notarial.
+
+4. **Modal Notarial de Garantía y Transparencia (`src/routes/index.tsx`):**
+   - Popup modal con diseño institucional y respaldo legal:
+     - Barra de progreso comparativa en vivo: `Progreso actual` vs `Meta mínima requerida`.
+     - 3 Pilares de Seguridad Jurídica:
+       1. **Tokens 100% Válidos:** Ningún número pierde validez ni vigencia legal.
+       2. **Premios Garantizados:** Los vehículos se entregan auditados junto a la JPS al completar la meta.
+       3. **Fe Pública Notarial:** Bases inscritas para la seguridad jurídica de cada comprador.
+     - Acceso directo para que el participante consulte sus tokens adquiridos (`/validar`) o compre más paquetes.
+
+5. **Módulo de Ciclos de Vida del Sorteo & Ediciones (`ModalNuevaEdicion.tsx` y `admin-store.ts`):**
+   - Diseñado para transicionar fácilmente de sorteos anteriores (o fase de pruebas) a nuevas ediciones de producción limpias desde cero:
+     - **Conservar los Mismos Premios:** Los vehículos (Toyota Prado, Subaru Impreza, Moto de Alta Cilindrada) y PlayStation 5 se conservan intactos con todas sus especificaciones y fotos sin tener que volver a cargarlos.
+     - **Archivado Histórico Automático:** Respalda la edición anterior con su nombre, fecha de realización, total de órdenes registradas, recaudación estimada y tokens vendidos dentro de `sorteo_config._meta._historialEdiciones`.
+     - **Limpieza de Órdenes Previas:** Purga en lotes seguros las órdenes de prueba anteriores de la base de datos Supabase para que el conteo de tokens arranque en **0**, el termómetro en **0%** y el inventario vuelva a **100,000 tokens disponibles**.
+     - **Pestaña de Historial:** Permite al administrador consultar en cualquier momento todas las ediciones archivadas con sus métricas.
+   - Accesible con un clic mediante el botón **"🔄 Archivar y Comenzar de 0"** en el **Centro de Control** y en **Premios y Sorteo**.
+
+6. **Corrección de Referencias e Integridad de Compilación:**
+   - Importaciones corregidas en `CentroControlSection.tsx` (`RefreshCw`, `ShieldCheck`).
+   - Corrección de enlaces de navegación interna a `/validar`.
+   - Verificación de compilación exitosa con `npm run build` y pre-renderizado de todas las rutas estáticas.
