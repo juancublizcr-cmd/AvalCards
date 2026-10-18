@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Coins,
   CreditCard,
+  Crown,
   Dices,
   ExternalLink,
   Flame,
@@ -221,177 +222,188 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* 1. Apertura: 3 Premios Destacados */}
-          <CardInterruptor
-            numero="1"
-            titulo="Apertura: 3 Premios Destacados"
-            desc="Muestra las tarjetas interactivas de los 3 premios principales en la cabecera, con popup modal 'Comprá y ganá'."
-            tip="💡 Títulos y Quiénes Somos editables en la pestaña 'Apertura & Hero' de Textos Web."
-            activo={borrador.mostrarSeccionAperturaPremios !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionAperturaPremios", borrador.mostrarSeccionAperturaPremios, true)}
-          />
+        <div className="space-y-8">
+          {/* GRUPO 1: CABECERA & HERO PRINCIPAL */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-500 pb-1 border-b border-border/60">
+              <Sparkles className="size-3.5" /> 1. Cabecera & Hero Principal
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardInterruptor
+                numero="1"
+                titulo="Apertura: 3 Premios Destacados"
+                desc="Muestra las tarjetas interactivas de los 3 premios principales en la cabecera, con popup modal 'Comprá y ganá'."
+                tip="💡 Títulos editables en 'Textos Web > Apertura & Hero'."
+                activo={borrador.mostrarSeccionAperturaPremios !== false}
+                onToggle={() => toggleSwitch("mostrarSeccionAperturaPremios", borrador.mostrarSeccionAperturaPremios, true)}
+              />
+              <CardInterruptor
+                numero="2"
+                titulo="Termómetro de Meta y Conteo"
+                desc="Barra luminosa con el porcentaje vendido en vivo y reloj regresivo sincronizado con la fecha oficial del sorteo."
+                tip="💡 Barra en tiempo real en la cabecera bajo los premios."
+                activo={borrador.mostrarSeccionTermometro !== false}
+                onToggle={() => toggleSwitch("mostrarSeccionTermometro", borrador.mostrarSeccionTermometro, true)}
+              />
+              <CardInterruptor
+                numero="3"
+                titulo="Botón Principal Hero (CTA)"
+                desc="Botón grande de acción inmediata en el banner superior de la página."
+                tip="⚡ Dirige inmediatamente a la compra de paquetes de tokens."
+                activo={borrador.mostrarCtaHero !== false}
+                onToggle={() => toggleSwitch("mostrarCtaHero", borrador.mostrarCtaHero, true)}
+              />
+              <CardInterruptor
+                numero="4"
+                titulo="Barra de Notificación Superior"
+                desc="Cintillo dorado con anuncio de preventa o noticias en la cabecera principal."
+                tip="📢 Avisa noticias urgentes o promociones especiales."
+                activo={borrador.mostrarBarraNotificacion !== false}
+                onToggle={() => toggleSwitch("mostrarBarraNotificacion", borrador.mostrarBarraNotificacion, true)}
+              />
+            </div>
+          </div>
 
-          {/* 2. Barra de Meta y Conteo Regresivo */}
-          <CardInterruptor
-            numero="2"
-            titulo="Termómetro de Meta y Conteo"
-            desc="Barra luminosa con el porcentaje vendido en vivo y reloj regresivo sincronizado con la fecha oficial del sorteo."
-            tip="💡 Barra en tiempo real en la cabecera bajo los premios."
-            activo={borrador.mostrarSeccionTermometro !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionTermometro", borrador.mostrarSeccionTermometro, true)}
-          />
+          {/* GRUPO 2: VENTA PRINCIPAL DE TOKENS & GARANTÍAS */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-primary pb-1 border-b border-border/60">
+              <Package className="size-3.5" /> 2. Venta Principal de Tokens & Garantías
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardInterruptor
+                numero="5"
+                titulo="Zona de Paquetes de Tokens"
+                desc="Zona de compra de tokens. Al estar apagada, la sección completa desaparece de la landing page para periodos de prelanzamiento o suspenso."
+                tip="💡 Edita precios y etiquetas en 'Textos Web > Paquetes & Transparencia'."
+                activo={borrador.mostrarSeccionPaquetes !== false}
+                onToggle={() => toggleSwitch("mostrarSeccionPaquetes", borrador.mostrarSeccionPaquetes, true)}
+              />
+              <CardInterruptor
+                numero="6"
+                titulo="Tarjetas de Transparencia y Garantía"
+                desc="Las 2 tarjetas informativas ('Si llegamos al 100%' y 'Garantía de Cumplimiento') situadas bajo los paquetes de tokens."
+                tip="🛡️ Edita sus textos en 'Textos Web > Paquetes & Transparencia'."
+                activo={borrador.mostrarTarjetasGarantia !== false}
+                onToggle={() => toggleSwitch("mostrarTarjetasGarantia", borrador.mostrarTarjetasGarantia, true)}
+              />
+            </div>
+          </div>
 
-          {/* 3. Paquetes de Tokens (Foco Central) */}
-          <CardInterruptor
-            numero="3"
-            titulo="Zona de Paquetes de Tokens"
-            desc="Zona de compra de tokens. Al estar apagada, la sección completa desaparece de la landing page para periodos de prelanzamiento o suspenso."
-            tip="💡 Edita precios y etiquetas en la pestaña 'Paquetes & Compra' de Textos Web."
-            activo={borrador.mostrarSeccionPaquetes !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionPaquetes", borrador.mostrarSeccionPaquetes, true)}
-          />
+          {/* GRUPO 3: COMUNIDAD, REFERIDOS & COMERCIOS */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-500 pb-1 border-b border-border/60">
+              <Users className="size-3.5" /> 3. Comunidad, Referidos & Comercios
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardInterruptor
+                numero="7"
+                titulo="Programa de Referidos Unificado"
+                desc="Módulo todo-en-uno que reúne dinámica de padrinos, generador de enlace en vivo y tabla de líderes mensual."
+                tip="💡 Modifica los montos de premios por referido en la sección 'Referidos'."
+                activo={borrador.referidosActivo ?? true}
+                onToggle={() => toggleSwitch("referidosActivo", borrador.referidosActivo, true)}
+              />
+              <CardInterruptor
+                numero="8"
+                titulo="Comercios Afiliados & Descuentos"
+                desc="Vitrina de beneficios exclusivos y descuentos de hasta 50% en comercios aliados para los participantes."
+                tip="💡 Administra comercios y cupones en la sección 'Comercios / Sponsors'."
+                activo={borrador.mostrarSeccionSponsors ?? false}
+                onToggle={() => toggleSwitch("mostrarSeccionSponsors", borrador.mostrarSeccionSponsors, false)}
+              />
+              <CardInterruptor
+                numero="9"
+                titulo="Gran Bloque de Suscripción AVAL Community"
+                desc="Llamado a la acción: 'SUSCRIBITE' con 50% de descuento en LUXX CR CAR WASH, 3 tokens de participación y dinámicas transparentes respaldadas por la JPS."
+                tip="💡 Ubicado estratégicamente justo después de los 3 simples pasos."
+                activo={borrador.mostrarSeccionSuscripcion !== false}
+                onToggle={() => toggleSwitch("mostrarSeccionSuscripcion", borrador.mostrarSeccionSuscripcion, true)}
+                destacado={true}
+              />
+            </div>
+          </div>
 
-          {/* 4. Sección ¿Cómo Funciona? (3 Pasos) */}
-          <CardInterruptor
-            numero="4"
-            titulo="Sección ¿Cómo Funciona? (3 Pasos)"
-            desc="Explicación rápida del proceso 100% digital, métodos de pago aceptados y validación ante la JPS."
-            tip="💡 Textos de cada paso configurables en la pestaña '3 Pasos' de Textos Web."
-            activo={borrador.mostrarSeccionComoFunciona !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionComoFunciona", borrador.mostrarSeccionComoFunciona, true)}
-          />
+          {/* GRUPO 4: INFORMACIÓN & TRANSPARENCIA */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-sky-500 pb-1 border-b border-border/60">
+              <HelpCircle className="size-3.5" /> 4. Información, Proceso & Soporte
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardInterruptor
+                numero="10"
+                titulo="Sección ¿Cómo Funciona? (3 Pasos)"
+                desc="Explicación rápida del proceso 100% digital, métodos de pago aceptados y validación ante la JPS."
+                tip="💡 Textos de cada paso configurables en 'Textos Web > 3 Pasos'."
+                activo={borrador.mostrarSeccionComoFunciona !== false}
+                onToggle={() => toggleSwitch("mostrarSeccionComoFunciona", borrador.mostrarSeccionComoFunciona, true)}
+              />
+              <CardInterruptor
+                numero="11"
+                titulo="Preguntas Frecuentes (FAQs)"
+                desc="Acordeón inferior que aclara dudas sobre legalidad notarial, SINPE Móvil y dinámicas de participación."
+                tip="💡 Resuelve objeciones y genera confianza antes del cierre."
+                activo={borrador.mostrarSeccionFaqs !== false}
+                onToggle={() => toggleSwitch("mostrarSeccionFaqs", borrador.mostrarSeccionFaqs, true)}
+              />
+              <CardInterruptor
+                numero="12"
+                titulo="Tarjeta '¿Tenés Dudas?' (WhatsApp en FAQs)"
+                desc="Caja verde con botón 'Chatear por WhatsApp' ubicada al pie del acordeón de preguntas frecuentes."
+                tip="💬 Activa o desactiva la tarjeta de contacto directo al pie de las FAQs."
+                activo={borrador.mostrarTarjetaDudas === true}
+                onToggle={() => toggleSwitch("mostrarTarjetaDudas", borrador.mostrarTarjetaDudas, false)}
+              />
+            </div>
+          </div>
 
-          {/* 5. Gran Bloque de Suscripción AVAL Community (Membresía & Beneficios) */}
-          <CardInterruptor
-            numero="5"
-            titulo="Gran Bloque de Suscripción AVAL Community"
-            desc="Llamado a la acción de alto impacto: 'SUSCRIBITE' con 50% de descuento en LUXX CR CAR WASH, 3 tokens de participación y dinámicas transparentes respaldadas por la JPS."
-            tip="💡 Ubicado estratégicamente justo después de los 3 simples pasos."
-            activo={borrador.mostrarSeccionSuscripcion !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionSuscripcion", borrador.mostrarSeccionSuscripcion, true)}
-            destacado={true}
-          />
-
-          {/* 6. Detalle Extendido de Premios */}
-          <CardInterruptor
-            numero="6"
-            titulo="Detalle Extendido de Premios"
-            desc="Bloque completo fuera del hero con selector de pestañas (Ducati, Subaru, Efectivo/PS5) y botones de compra propios."
-            tip="💡 Permite inspeccionar la ficha técnica sin salir de la página."
-            activo={borrador.mostrarSeccionDetallePremios === true}
-            onToggle={() => toggleSwitch("mostrarSeccionDetallePremios", borrador.mostrarSeccionDetallePremios, false)}
-          />
-
-          {/* 7. Modalidad SuperToken (Bono Cash) */}
-          <CardInterruptor
-            numero="7"
-            titulo="Modalidad SuperToken (Bono Cash)"
-            desc="Muestra la opción opcional del multiplicador VIP en efectivo para el 1°, 2° y 3° lugar sumado a sus vehículos."
-            tip="💡 Ajuste de bonos en la sección de Configuración General."
-            activo={borrador.supertokenActivo ?? true}
-            onToggle={() => toggleSwitch("supertokenActivo", borrador.supertokenActivo, true)}
-          />
-
-          {/* 8. Programa de Referidos Unificado */}
-          <CardInterruptor
-            numero="8"
-            titulo="Programa de Referidos Unificado"
-            desc="Módulo todo-en-uno que reúne dinámica de padrinos, generador de enlace en vivo y tabla de líderes mensual."
-            tip="💡 Modifica los montos de premios por referido en la sección 'Referidos'."
-            activo={borrador.referidosActivo ?? true}
-            onToggle={() => toggleSwitch("referidosActivo", borrador.referidosActivo, true)}
-          />
-
-          {/* 9. Descuentos en Comercios Afiliados */}
-          <CardInterruptor
-            numero="9"
-            titulo="Comercios Afiliados & Descuentos"
-            desc="Vitrina de beneficios exclusivos y descuentos de hasta 50% en comercios aliados para los participantes."
-            tip="💡 Administra comercios y cupones en la sección 'Comercios / Sponsors'."
-            activo={borrador.mostrarSeccionSponsors ?? false}
-            onToggle={() => toggleSwitch("mostrarSeccionSponsors", borrador.mostrarSeccionSponsors, false)}
-          />
-
-          {/* 10. Mini-Sorteos Semanales (Gasolina / Play 5) */}
-          <CardInterruptor
-            numero="10"
-            titulo="Mini-Sorteos Semanales"
-            desc="Dinámica de gasolina y PlayStation semanal. Se mantiene apagado por ahora para no competir con el mensaje de tokens."
-            tip="💡 Actívalo cuando tus clientes ya dominen la dinámica principal."
-            activo={borrador.miniSorteosActivo ?? false}
-            onToggle={() => toggleSwitch("miniSorteosActivo", borrador.miniSorteosActivo, false)}
-          />
-
-          {/* 11. Sección de Ganadores y Testimonios */}
-          <CardInterruptor
-            numero="11"
-            titulo="Ganadores y Testimonios"
-            desc="Galería de ganadores y testimonios. Oculto para la primera edición hasta tener las primeras entregas oficiales."
-            tip="💡 Se alimenta de testimonios cargados en el panel de Premios."
-            activo={borrador.mostrarSeccionGanadores ?? false}
-            onToggle={() => toggleSwitch("mostrarSeccionGanadores", borrador.mostrarSeccionGanadores, false)}
-          />
-
-          {/* 12. Preguntas Frecuentes (FAQs) */}
-          <CardInterruptor
-            numero="12"
-            titulo="Preguntas Frecuentes (FAQs)"
-            desc="Acordeón inferior que aclara dudas sobre legalidad notarial, SINPE Móvil y dinámicas de participación."
-            tip="💡 Resuelve objeciones y genera confianza antes del cierre."
-            activo={borrador.mostrarSeccionFaqs !== false}
-            onToggle={() => toggleSwitch("mostrarSeccionFaqs", borrador.mostrarSeccionFaqs, true)}
-          />
-
-          {/* 13. Tarjeta ¿Tenés Dudas? (WhatsApp en FAQs) */}
-          <CardInterruptor
-            numero="13"
-            titulo="Tarjeta '¿Tenés Dudas?' (WhatsApp en FAQs)"
-            desc="Caja verde con botón 'Chatear por WhatsApp' ubicada al pie del acordeón de preguntas frecuentes."
-            tip="💬 Activa o desactiva la tarjeta de contacto directo al pie de las FAQs."
-            activo={borrador.mostrarTarjetaDudas === true}
-            onToggle={() => toggleSwitch("mostrarTarjetaDudas", borrador.mostrarTarjetaDudas, false)}
-          />
-
-          {/* 14. Sala de Remates VIP */}
-          <CardInterruptor
-            numero="14"
-            titulo="Sala de Remates & Subastas VIP"
-            desc="Desactivada para no confundir a los participantes. Al estar apagada, se retira de la navegación pública y la ruta redirige a la compra de tokens."
-            tip="💡 El foco absoluto se mantiene en que el cliente comprenda cómo adquirir tokens."
-            activo={borrador.mostrarSalaRemates === true}
-            onToggle={() => toggleSwitch("mostrarSalaRemates", borrador.mostrarSalaRemates, false)}
-          />
-
-          {/* 15. Barra de Notificación Superior */}
-          <CardInterruptor
-            numero="15"
-            titulo="Barra de Notificación Superior"
-            desc="Cintillo dorado con anuncio de preventa o noticias en la cabecera principal."
-            tip="📢 Avisa noticias urgentes o promociones especiales."
-            activo={borrador.mostrarBarraNotificacion !== false}
-            onToggle={() => toggleSwitch("mostrarBarraNotificacion", borrador.mostrarBarraNotificacion, true)}
-          />
-
-          {/* 16. Botón Principal Hero (Quiero Participar) */}
-          <CardInterruptor
-            numero="16"
-            titulo="Botón Principal Hero (CTA)"
-            desc="Botón grande de acción inmediata en el banner superior de la página."
-            tip="⚡ Dirige inmediatamente a la compra de paquetes de tokens."
-            activo={borrador.mostrarCtaHero !== false}
-            onToggle={() => toggleSwitch("mostrarCtaHero", borrador.mostrarCtaHero, true)}
-          />
-
-          {/* 17. Tarjetas de Transparencia & Respaldo */}
-          <CardInterruptor
-            numero="17"
-            titulo="Tarjetas de Transparencia y Garantía"
-            desc="Las 2 tarjetas informativas ('Si llegamos al 100%' y 'Garantía de Cumplimiento') situadas bajo los paquetes de tokens."
-            tip="🛡️ Edita sus textos en Diseño Web > Paquetes de Tokens."
-            activo={borrador.mostrarTarjetasGarantia !== false}
-            onToggle={() => toggleSwitch("mostrarTarjetasGarantia", borrador.mostrarTarjetasGarantia, true)}
-          />
+          {/* GRUPO 5: MÓDULOS OPCIONALES & ESPECIALES */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-400 pb-1 border-b border-border/60">
+              <Crown className="size-3.5" /> 5. Módulos Opcionales & Especiales
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardInterruptor
+                numero="13"
+                titulo="Detalle Extendido de Premios"
+                desc="Bloque completo fuera del hero con selector de pestañas (Ducati, Subaru, Efectivo/PS5) y botones de compra propios."
+                tip="💡 Permite inspeccionar la ficha técnica sin salir de la página."
+                activo={borrador.mostrarSeccionDetallePremios === true}
+                onToggle={() => toggleSwitch("mostrarSeccionDetallePremios", borrador.mostrarSeccionDetallePremios, false)}
+              />
+              <CardInterruptor
+                numero="14"
+                titulo="Modalidad SuperToken (Bono Cash)"
+                desc="Muestra la opción opcional del multiplicador VIP en efectivo para el 1°, 2° y 3° lugar sumado a sus vehículos."
+                tip="💡 Ajuste de bonos en la sección de Configuración General."
+                activo={borrador.supertokenActivo ?? true}
+                onToggle={() => toggleSwitch("supertokenActivo", borrador.supertokenActivo, true)}
+              />
+              <CardInterruptor
+                numero="15"
+                titulo="Mini-Sorteos Semanales"
+                desc="Dinámica de gasolina y PlayStation semanal. Se mantiene apagado por ahora para no competir con el mensaje de tokens."
+                tip="💡 Actívalo cuando tus clientes ya dominen la dinámica principal."
+                activo={borrador.miniSorteosActivo ?? false}
+                onToggle={() => toggleSwitch("miniSorteosActivo", borrador.miniSorteosActivo, false)}
+              />
+              <CardInterruptor
+                numero="16"
+                titulo="Ganadores y Testimonios"
+                desc="Galería de ganadores y testimonios. Oculto para la primera edición hasta tener las primeras entregas oficiales."
+                tip="💡 Se alimenta de testimonios cargados en el panel de Premios."
+                activo={borrador.mostrarSeccionGanadores ?? false}
+                onToggle={() => toggleSwitch("mostrarSeccionGanadores", borrador.mostrarSeccionGanadores, false)}
+              />
+              <CardInterruptor
+                numero="17"
+                titulo="Sala de Remates & Subastas VIP"
+                desc="Desactivada para no confundir a los participantes. Al estar apagada, se retira de la navegación pública y la ruta redirige a la compra de tokens."
+                tip="💡 El foco absoluto se mantiene en que el cliente comprenda cómo adquirir tokens."
+                activo={borrador.mostrarSalaRemates === true}
+                onToggle={() => toggleSwitch("mostrarSalaRemates", borrador.mostrarSalaRemates, false)}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

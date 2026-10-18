@@ -41,7 +41,7 @@ export function DisenoWebSection({
   const [borrador, setBorrador] = useState<Config>(config);
   const [guardando, setGuardando] = useState(false);
   const [seccionActiva, setSeccionActiva] = useState<
-    "hero" | "vitrina" | "pasos" | "minisorteos" | "paquetes" | "footer"
+    "hero" | "paquetes" | "pasos" | "footer" | "opcionales"
   >("hero");
 
   const handleGuardar = async () => {
@@ -161,11 +161,10 @@ export function DisenoWebSection({
 
   const pestanas = [
     { id: "hero", label: "Apertura & Hero", icono: Sparkles },
-    { id: "vitrina", label: "Vitrina de Premio", icono: Award },
+    { id: "paquetes", label: "Paquetes & Transparencia", icono: Package },
     { id: "pasos", label: "3 Pasos (¿Cómo Funciona?)", icono: HelpCircle },
-    { id: "minisorteos", label: "Mini-Sorteos Semanales", icono: Fuel },
-    { id: "paquetes", label: "Paquetes & Compra", icono: Package },
     { id: "footer", label: "Pie de Página (Footer)", icono: Globe },
+    { id: "opcionales", label: "Mini-Sorteos (Opcional)", icono: Fuel },
   ] as const;
 
   return (
@@ -306,89 +305,19 @@ export function DisenoWebSection({
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
-            <div className="flex items-center gap-2 border-b border-border pb-3">
-              <Sparkles className="size-5 text-amber-400" />
-              <div>
-                <h3 className="text-base font-bold">Badges Superiores del Hero</h3>
-                <p className="text-xs text-muted-foreground">
-                  Estas son las píldoras destacadas que aparecen en la parte superior antes del título principal.
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-5 text-amber-400" />
+                <div>
+                  <h3 className="text-base font-bold">Badges Superiores del Hero</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Píldoras destacadas que aparecen sobre el titular principal.
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Switches de visibilidad de badges */}
-            <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Visibilidad de Elementos</p>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <span className="size-2 rounded-full bg-orange-400 inline-block" />
-                  Barra de Notificación Superior
-                </Label>
-                <Switch
-                  checked={borrador.mostrarBarraNotificacion !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBarraNotificacion: v })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <span className="size-2 rounded-full bg-blue-400 inline-block" />
-                  Menú de Navegación (links + botón Comprar)
-                </Label>
-                <Switch
-                  checked={borrador.mostrarNavegacion !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarNavegacion: v })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <span className="size-2 rounded-full bg-red-400 animate-pulse inline-block" />
-                  Badge Sorteo / Estado Oficial
-                </Label>
-                <Switch
-                  checked={borrador.mostrarBadgeSorteo !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBadgeSorteo: v })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <Flame className="size-3.5 text-amber-400" />
-                  Badge Paquete Más Popular
-                </Label>
-                <Switch
-                  checked={borrador.mostrarBadgePopular !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBadgePopular: v })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <CheckCircle2 className="size-3.5 text-emerald-400" />
-                  Badge Emisión Oficial JPS
-                </Label>
-                <Switch
-                  checked={borrador.mostrarBadgeJPS !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarBadgeJPS: v })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <span className="size-2 rounded-full bg-amber-400 inline-block" />
-                  Termómetro de Meta y Cuenta Regresiva
-                </Label>
-                <Switch
-                  checked={borrador.mostrarSeccionTermometro !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarSeccionTermometro: v })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm flex items-center gap-2 cursor-pointer">
-                  <span className="size-2 rounded-full bg-primary inline-block" />
-                  Botones de Compra (CTA) y Garantías del Hero
-                </Label>
-                <Switch
-                  checked={borrador.mostrarCtaHero !== false}
-                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarCtaHero: v })}
-                />
-              </div>
+              <span className="text-[11px] text-muted-foreground bg-secondary/50 px-3 py-1 rounded-full border border-border">
+                💡 Activa o apaga estos badges en <strong>Centro de Control</strong>
+              </span>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -413,43 +342,7 @@ export function DisenoWebSection({
                   placeholder="Dejar vacío para cálculo automático (ej. Más Popular: 6 Tokens por ₡8 000)"
                   onChange={(e) => setBorrador({ ...borrador, heroBadgePopular: e.target.value })}
                 />
-                <p className="text-[11px] text-muted-foreground">Si lo dejas vacío, calculará el precio automáticamente.</p>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold flex items-center gap-1.5 text-amber-400">
-                  <Crown className="size-3.5" /> Badge 3: Multiplicador SuperToken
-                </Label>
-                <Input
-                  value={borrador.heroBadgeSuperToken ?? ""}
-                  placeholder="Dejar vacío para cálculo automático con premio configurado"
-                  onChange={(e) => setBorrador({ ...borrador, heroBadgeSuperToken: e.target.value })}
-                />
-                <p className="text-[11px] text-muted-foreground">Ej: SuperToken: Hasta +₡4 000 000 CRC Cash Extra.</p>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold flex items-center gap-1.5 text-emerald-400">
-                  <Fuel className="size-3.5" /> Badge 4: Gasolina y PlayStation Semanal
-                </Label>
-                <Input
-                  value={borrador.heroBadgeGasolina ?? ""}
-                  placeholder="⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5"
-                  onChange={(e) => setBorrador({ ...borrador, heroBadgeGasolina: e.target.value })}
-                />
-                <p className="text-[11px] text-muted-foreground">Texto del banner promocional de los sorteos semanales.</p>
-              </div>
-
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label className="text-xs font-bold flex items-center gap-1.5 text-amber-300">
-                  <Store className="size-3.5" /> Badge 5: Comercios Aliados & Descuentos
-                </Label>
-                <Input
-                  value={borrador.heroBadgeComercios ?? ""}
-                  placeholder="Descuentos en Comercios ↗"
-                  onChange={(e) => setBorrador({ ...borrador, heroBadgeComercios: e.target.value })}
-                />
-                <p className="text-[11px] text-muted-foreground">Texto del botón que enlaza a /sponsors.</p>
+                <p className="text-[11px] text-muted-foreground">Si lo dejas vacío, calculará el precio automáticamente según tus paquetes.</p>
               </div>
             </div>
           </div>
@@ -534,72 +427,7 @@ export function DisenoWebSection({
         </div>
       )}
 
-      {/* ──────────────────────────────────────────────────────────── */}
-      {/* 2. VITRINA SHOWCASE Y BADGES FLOTANTES */}
-      {/* ──────────────────────────────────────────────────────────── */}
-      {seccionActiva === "vitrina" && (
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <Award className="size-5 text-amber-400" />
-            <div>
-              <h3 className="text-base font-bold">Badges Flotantes de la Vitrina del Premio</h3>
-              <p className="text-xs text-muted-foreground">
-                Etiquetas flotantes de alta gama que decoran la foto principal del vehículo en el Hero.
-              </p>
-            </div>
-          </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-bold flex items-center gap-1.5 text-primary">
-                <Key className="size-3.5" /> Badge Superior Izquierdo (Año y Kilometraje)
-              </Label>
-              <Input
-                value={borrador.vitrinaBadgeKm ?? ""}
-                placeholder="0 Kilómetros · Año 2026"
-                onChange={(e) => setBorrador({ ...borrador, vitrinaBadgeKm: e.target.value })}
-              />
-              <p className="text-[11px] text-muted-foreground">Aparece en la esquina superior izquierda con ícono de llave.</p>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-bold flex items-center gap-1.5 text-amber-400">
-                <Crown className="size-3.5" /> Badge Superior Derecho (Bono SuperToken)
-              </Label>
-              <Input
-                value={borrador.vitrinaBadgeSuperToken ?? ""}
-                placeholder="Dejar vacío para cálculo automático (Bono +₡4 000 000 CRC con SuperToken)"
-                onChange={(e) => setBorrador({ ...borrador, vitrinaBadgeSuperToken: e.target.value })}
-              />
-              <p className="text-[11px] text-muted-foreground">Aparece en la esquina superior derecha con corona dorada.</p>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-bold flex items-center gap-1.5 text-emerald-400">
-                <ShieldCheck className="size-3.5" /> Badge Inferior Derecho (Garantía Legal)
-              </Label>
-              <Input
-                value={borrador.vitrinaBadgeTraspaso ?? ""}
-                placeholder="Traspaso y Marchamo Incluidos"
-                onChange={(e) => setBorrador({ ...borrador, vitrinaBadgeTraspaso: e.target.value })}
-              />
-              <p className="text-[11px] text-muted-foreground">Aparece en la esquina inferior derecha con escudo verde.</p>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-bold flex items-center gap-1.5 text-zinc-300">
-                <ZoomIn className="size-3.5 text-amber-400" /> Botón Flotante para Ampliar Foto
-              </Label>
-              <Input
-                value={borrador.vitrinaBotonAmpliar ?? ""}
-                placeholder="Clic para ampliar en grande"
-                onChange={(e) => setBorrador({ ...borrador, vitrinaBotonAmpliar: e.target.value })}
-              />
-              <p className="text-[11px] text-muted-foreground">Indica que al hacer clic se abre el lightbox en pantalla completa.</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ──────────────────────────────────────────────────────────── */}
       {/* 3. SECCIÓN CÓMO FUNCIONA (3 PASOS) */}
@@ -733,9 +561,9 @@ export function DisenoWebSection({
       )}
 
       {/* ──────────────────────────────────────────────────────────── */}
-      {/* 4. MINI-SORTEOS SEMANALES (VIERNES & DOMINGOS) */}
+      {/* 4. MÓDULOS OPCIONALES: MINI-SORTEOS SEMANALES */}
       {/* ──────────────────────────────────────────────────────────── */}
-      {seccionActiva === "minisorteos" && (
+      {seccionActiva === "opcionales" && (
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
           <div className="flex items-center gap-2 border-b border-border pb-3">
             <Fuel className="size-5 text-emerald-400" />
