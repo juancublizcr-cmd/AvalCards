@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { Orden } from "@/lib/orders";
+import { fetchOrdenes, type Orden } from "@/lib/orders";
 import carro from "@/assets/premio-carro.jpg";
 import moto from "@/assets/premio-moto.jpg";
 import consola from "@/assets/premio-consola.jpg";
@@ -1726,3 +1726,168 @@ export function calcularReferidosStats(
     ranking,
   };
 }
+
+// ────────────────────────────────────────────────────────────
+// GESTIÓN DE CICLOS DE EDICIONES Y ARCHIVADO DE SORTEOS
+// ────────────────────────────────────────────────────────────
+
+export type EdicionArchivada = {
+  id: string;
+  nombre: string;
+  fechaSorteo: string;
+  horaSorteo?: string;
+  fechaArchivado: string;
+  totalOrdenes: number;
+  totalTokensVendidos: number;
+  recaudacionEstimada: number;
+  premios: { id: string; nombre: string; nivel: string }[];
+  nota?: string;
+};
+
+/**
+ * Consulta el historial de ediciones archivadas en Supabase sorteo_config._meta._historialEdiciones
+ */
+export async function fetchHistorialEdiciones(): Promise<EdicionArchivada[]> {
+  try {
+    const { data } = await supabase
+      .from("sorteo_config")
+      .select("raspa_config")
+      .eq("id", 1)
+      .single();
+    if (data?.raspa_config && typeof data.raspa_config === "object") {
+      const meta = (data.raspa_config as any)._meta;
+      if (meta && Array.isArray(meta._historialEdiciones)) {
+        return meta._historialEdiciones as EdicionArchivada[];
+      }
+    }
+  } catch (err) {
+    console.warn("fetchHistorialEdiciones exception:", err);
+  }
+  return [];
+}
+
+/**
+ * Purga todas las órdenes registradas en Supabase en lotes de 200 para arrancar en 0
+ */
+export async function purgarTodasLasOrdenes(): Promise<number> {
+  try {
+    let totalEliminadas = 0;
+    while (true) {
+      const { data, error } = await supabase.from("ordenes").select("id").limit(200);
+      if (error || !data || data.length === 0) break;
+      const ids = data.map((d: any) => d.id);
+      const { error: delError } = await supabase.from("ordenes").delete().in("id", ids);
+      if (delError) {
+        console.error("Error al purgar lote de ordenes en Supabase:", delError);
+        break;
+      }
+      totalEliminadas += ids.length;
+      if (data.length < 200) break;
+    }
+    return totalEliminadas;
+  } catch (err) {
+    console.error("Excepción en purgarTodasLasOrdenes:", err);
+    return 0;
+  }
+}
+
+/**
+ * Archiva el sorteo actual con sus métricas y configura una nueva edición limpia desde cero
+ */
+export async function archivarYCrearNuevaEdicion({
+  nombreNuevaEdicion,
+  nuevaFechaSorteo,
+  nuevaHoraSorteo = "19:30",
+  limpiarOrdenesPrueba = true,
+  nota = "Cierre y archivo de edición anterior",
+}: {
+  nombreNuevaEdicion: string;
+  nuevaFechaSorteo: string;
+  nuevaHoraSorteo?: string;
+  limpiarOrdenesPrueba?: boolean;
+  nota?: string;
+}): Promise<{ edicionArchivada: EdicionArchivada; ordenesBorradas: number }> {
+  // 1. Obtener estado actual
+  const [sorteoActual, premiosActuales, ordenesActuales] = await Promise.all([
+    fetchSorteo(),
+    fetchPremios(),
+    fetchOrdenes().catch(() => []),
+  ]);
+
+  const tokensAprobados = ordenesActuales
+    .filter((o) => o.estado === "aprobada")
+    .reduce((sum, o) => sum + (Number(o.cantidad) || 0), 0);
+
+  const recaudacionTotal = ordenesActuales
+    .filter((o) => o.estado === "aprobada")
+    .reduce((sum, o) => sum + (Number(o.precio) || 0), 0);
+
+  // 2. Snapshot de la edición a archivar
+  const edicionArchivada: EdicionArchivada = {
+    id: `edicion-${Date.now()}`,
+    nombre: sorteoActual.nombre || "Edición Anterior",
+    fechaSorteo: sorteoActual.fecha || "",
+    horaSorteo: sorteoActual.horaSorteo || "19:30",
+    fechaArchivado: new Date().toISOString(),
+    totalOrdenes: ordenesActuales.length,
+    totalTokensVendidos: tokensAprobados,
+    recaudacionEstimada: recaudacionTotal,
+    premios: premiosActuales.map((p) => ({ id: p.id, nombre: p.nombre, nivel: p.nivel })),
+    nota,
+  };
+
+  // 3. Agregar al historial previo en Supabase
+  const historialPrevio = await fetchHistorialEdiciones();
+  const nuevoHistorial = [edicionArchivada, ...historialPrevio];
+
+  // 4. Limpiar órdenes si fue seleccionado (recomendado para pasar de pruebas a producción)
+  let ordenesBorradas = 0;
+  if (limpiarOrdenesPrueba) {
+    ordenesBorradas = await purgarTodasLasOrdenes();
+    // Reiniciar inventario a 100 000 tokens disponibles y 0 vendidos
+    try {
+      await upsertInventario({
+        total: 100000,
+        disponibles: 100000,
+        fecha: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.warn("No se pudo reiniciar inventario:", e);
+    }
+  }
+
+  // 5. Configurar el nuevo sorteo en Supabase
+  const metaActual = ((sorteoActual.raspaConfig as any)?._meta || {});
+  const nuevoSorteo: Sorteo = {
+    ...sorteoActual,
+    nombre: nombreNuevaEdicion,
+    fecha: nuevaFechaSorteo,
+    horaSorteo: nuevaHoraSorteo,
+    raspaConfig: {
+      ...(sorteoActual.raspaConfig || {}),
+      _meta: {
+        ...metaActual,
+        _historialEdiciones: nuevoHistorial,
+        horaSorteo: nuevaHoraSorteo,
+      },
+    } as any,
+  };
+
+  await upsertSorteo(nuevoSorteo);
+
+  // 6. Resetear termómetro manual a 0 y asegurar tienda activa
+  try {
+    const configActual = await fetchConfig();
+    const configActualizada: Config = {
+      ...configActual,
+      termometroPorcentajeManual: 0,
+      ventasActivas: true,
+    };
+    await upsertConfig(configActualizada);
+  } catch (e) {
+    console.warn("No se pudo resetear termómetro manual:", e);
+  }
+
+  return { edicionArchivada, ordenesBorradas };
+}
+

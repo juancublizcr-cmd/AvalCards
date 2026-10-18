@@ -26,6 +26,7 @@ import {
   X,
   Globe,
   ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { ModalNuevaEdicion } from "./ModalNuevaEdicion";
+import type { Orden } from "@/lib/orders";
 import {
   Dialog,
   DialogContent,
@@ -134,6 +137,8 @@ export function PremiosSection({
   config,
   setConfig,
   onIrARaspa,
+  ordenes = [],
+  onRecargarDatos,
 }: {
   premios: Premio[];
   setPremios: (p: Premio[]) => void;
@@ -142,7 +147,10 @@ export function PremiosSection({
   config?: Config;
   setConfig?: (c: Config) => void;
   onIrARaspa?: () => void;
+  ordenes?: Orden[];
+  onRecargarDatos?: () => void;
 }) {
+  const [openModalNuevaEdicion, setOpenModalNuevaEdicion] = useState(false);
   const [borrador, setBorrador] = useState<Sorteo>({
     ...sorteo,
     modalidadVenta: sorteo.modalidadVenta || "escalonado",
@@ -705,8 +713,18 @@ export function PremiosSection({
     <div className="space-y-6">
       {/* 1. FECHA Y CONFIGURACIÓN DEL EVENTO */}
       <section className="rounded-xl border-2 border-primary/40 bg-card p-6 shadow-sm space-y-4">
-        <div className="flex items-center gap-2 font-bold text-lg text-primary border-b border-border pb-3">
-          <Calendar className="size-5" /> Fecha Oficial y Parámetros del Evento
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-bold text-lg text-primary border-b border-border pb-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="size-5" /> Fecha Oficial y Parámetros del Evento
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setOpenModalNuevaEdicion(true)}
+            className="text-xs font-black uppercase tracking-wide gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black hover:opacity-95 shadow-sm cursor-pointer"
+          >
+            <RefreshCw className="size-3.5" /> Archivar y Empezar de 0
+          </Button>
         </div>
         <p className="text-xs text-muted-foreground">
           La fecha que coloques aquí controla directamente el <strong>contador de días, horas y minutos</strong> de la página principal.
@@ -1964,6 +1982,16 @@ export function PremiosSection({
           </Button>
         )}
       </section>
+
+      <ModalNuevaEdicion
+        open={openModalNuevaEdicion}
+        onOpenChange={setOpenModalNuevaEdicion}
+        sorteoActual={borrador}
+        totalOrdenesActuales={ordenes.length}
+        onCompletado={() => {
+          void onRecargarDatos?.();
+        }}
+      />
     </div>
   );
 }

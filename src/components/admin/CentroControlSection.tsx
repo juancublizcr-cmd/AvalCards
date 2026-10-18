@@ -42,6 +42,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { upsertConfig, upsertSorteo, type Config, type Sorteo } from "@/lib/admin-store";
 import { Link } from "@tanstack/react-router";
+import { ModalNuevaEdicion } from "./ModalNuevaEdicion";
+import type { Orden } from "@/lib/orders";
 
 interface Props {
   config: Config;
@@ -49,12 +51,15 @@ interface Props {
   sorteo?: Sorteo;
   setSorteo?: (s: Sorteo) => void;
   onIrASeccion?: (seccion: string) => void;
+  ordenes?: Orden[];
+  onRecargarDatos?: () => void;
 }
 
-export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onIrASeccion }: Props) {
+export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onIrASeccion, ordenes = [], onRecargarDatos }: Props) {
   const [borrador, setBorrador] = useState<Config>(config);
   const [sorteoBorrador, setSorteoBorrador] = useState<Sorteo | undefined>(sorteo);
   const [guardando, setGuardando] = useState(false);
+  const [openModalNuevaEdicion, setOpenModalNuevaEdicion] = useState(false);
 
   const guardarCambios = async (nuevoConfig: Config, nuevoSorteo?: Sorteo) => {
     setGuardando(true);
@@ -203,6 +208,40 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
                 <div className="text-[11px] opacity-80">Captación vía WhatsApp</div>
               </div>
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* GESTOR DE CICLOS DE EDICIONES Y ARCHIVADO (PASO DE PRUEBAS A PRODUCCIÓN)  */}
+      {/* ========================================================================= */}
+      <div className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-br from-card via-card to-amber-500/10 p-6 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="space-y-1.5 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-500 border border-amber-500/40">
+              <RefreshCw className="size-3.5" /> Ciclo de Vida del Sorteo & Ediciones
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+              Edición Actual: <span className="text-amber-400">{sorteo?.nombre || "Sorteo Oficial"}</span>
+            </h2>
+            <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed space-y-1">
+              <p>
+                📅 Fecha Oficial: <strong>{sorteo?.fecha || "No definida"}</strong> · Hora: <strong>{sorteo?.horaSorteo || "19:30"}</strong> · 📦 Base de Datos: <strong className="text-foreground">{ordenes.length} órdenes registradas</strong>.
+              </p>
+              <p className="text-[11px] text-muted-foreground/90">
+                ¿Finalizaste un sorteo o terminaste la fase de pruebas? Puedes archivar la edición actual y arrancar una nueva desde 0 manteniendo los mismos vehículos y productos.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+            <Button
+              type="button"
+              onClick={() => setOpenModalNuevaEdicion(true)}
+              className="h-12 px-5 font-black uppercase tracking-wide gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black hover:opacity-95 shadow-lg shadow-amber-500/20 cursor-pointer"
+            >
+              <RefreshCw className="size-4" /> Archivar y Comenzar de 0
+            </Button>
           </div>
         </div>
       </div>
@@ -700,6 +739,18 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
           </div>
         </div>
       </div>
+
+      {sorteo && (
+        <ModalNuevaEdicion
+          open={openModalNuevaEdicion}
+          onOpenChange={setOpenModalNuevaEdicion}
+          sorteoActual={sorteo}
+          totalOrdenesActuales={ordenes.length}
+          onCompletado={() => {
+            void onRecargarDatos?.();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -89,33 +89,32 @@ function Admin() {
     setUserEmail(sesion.email ?? "Admin");
 
     // 2. Cargar datos
-    async function cargar() {
-      try {
-        const [ordenesData, premiosData, sorteoData, inventarioData, instantaneosData, configData] =
-          await Promise.all([
-            fetchOrdenes(),
-            fetchPremios(),
-            fetchSorteo(),
-            fetchInventario(),
-            fetchInstantaneos(),
-            fetchConfig(),
-          ]);
-
-        setOrdenes(ordenesData);
-        setPremios(premiosData);
-        setSorteo(sorteoData);
-        setInventario(inventarioData);
-        setInstantaneos(instantaneosData);
-        setConfig(configData);
-        setClientes(await fetchClientes(ordenesData));
-      } catch (err) {
-        console.warn("Carga administrativa completada con fallbacks:", err);
-      } finally {
-        setCargando(false);
-      }
-    }
-    void cargar();
+    void recargarDatos().finally(() => setCargando(false));
   }, [navigate]);
+
+  const recargarDatos = async () => {
+    try {
+      const [ordenesData, premiosData, sorteoData, inventarioData, instantaneosData, configData] =
+        await Promise.all([
+          fetchOrdenes(),
+          fetchPremios(),
+          fetchSorteo(),
+          fetchInventario(),
+          fetchInstantaneos(),
+          fetchConfig(),
+        ]);
+
+      setOrdenes(ordenesData);
+      setPremios(premiosData);
+      setSorteo(sorteoData);
+      setInventario(inventarioData);
+      setInstantaneos(instantaneosData);
+      setConfig(configData);
+      setClientes(await fetchClientes(ordenesData));
+    } catch (err) {
+      console.warn("Carga administrativa completada con fallbacks:", err);
+    }
+  };
 
   const cerrarSesion = async () => {
     clearAdminSession();
@@ -244,6 +243,8 @@ function Admin() {
                   sorteo={sorteo}
                   setSorteo={setSorteo}
                   onIrASeccion={setSeccion}
+                  ordenes={ordenes}
+                  onRecargarDatos={recargarDatos}
                 />
               ) : null}
               {seccion === "sinpeAuto" ? (
@@ -267,6 +268,8 @@ function Admin() {
                   config={config}
                   setConfig={setConfig}
                   onIrARaspa={() => setSeccion("raspa")}
+                  ordenes={ordenes}
+                  onRecargarDatos={recargarDatos}
                 />
               ) : null}
               {seccion === "raspa" ? (
