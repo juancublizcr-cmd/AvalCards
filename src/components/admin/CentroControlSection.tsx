@@ -358,11 +358,77 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
               <CardInterruptor
                 numero="6"
                 titulo="Tarjetas de Transparencia y Garantía"
-                desc="Las 2 tarjetas informativas ('Si llegamos al 100%' y 'Garantía de Cumplimiento') situadas bajo los paquetes de tokens."
-                tip="🛡️ Edita sus textos en 'Textos Web > Paquetes & Transparencia'."
+                desc="Las 2 tarjetas informativas ('Si llegamos al 80%' y 'Garantía de Cumplimiento') situadas bajo los paquetes de tokens."
+                tip="🛡️ Informa a los usuarios sobre las garantías oficiales y el traslado de fecha si no se cumple la meta."
                 activo={borrador.mostrarTarjetasGarantia !== false}
                 onToggle={() => toggleSwitch("mostrarTarjetasGarantia", borrador.mostrarTarjetasGarantia, true)}
               />
+
+              {/* Ajuste Maestro de Meta Mínima para Realizar el Sorteo */}
+              <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-card via-card to-amber-500/5 p-5 sm:col-span-2 space-y-4 shadow-md">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <ShieldAlert className="size-5 text-amber-500" />
+                      <h4 className="text-base font-bold text-foreground">
+                        Meta Mínima de Venta para Realizar el Sorteo (%)
+                      </h4>
+                      <span className="text-xs font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40">
+                        {borrador.porcentajeMinimoSorteo || 80}% Requerido
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Porcentaje mínimo de venta de tokens requerido para cerrar el sorteo en la fecha programada. Si al llegar la fecha oficial la venta es menor a este porcentaje (ej: 80%), la edición continúa abierta acumulando ventas hasta alcanzar la meta, los tokens conservan su total validez y se traslada la fecha de cierre.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <label className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Meta Mínima:</label>
+                    <div className="relative w-28">
+                      <input
+                        type="number"
+                        min="10"
+                        max="100"
+                        step="5"
+                        value={borrador.porcentajeMinimoSorteo ?? 80}
+                        onChange={(e) => {
+                          const val = Math.min(100, Math.max(10, Number(e.target.value) || 80));
+                          const actualizado = { ...borrador, porcentajeMinimoSorteo: val };
+                          setBorrador(actualizado);
+                          void guardarCambios(actualizado, sorteoBorrador);
+                        }}
+                        className="w-full rounded-xl border border-border bg-secondary/40 px-3 py-2 text-right font-mono font-bold text-base text-foreground focus:border-amber-500 focus:outline-none"
+                      />
+                      <span className="absolute right-7 top-1/2 -translate-y-1/2 font-bold text-xs text-muted-foreground pointer-events-none">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-3 text-xs">
+                  <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 space-y-1">
+                    <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                      <CheckCircle2 className="size-3.5" /> Si alcanza el {borrador.porcentajeMinimoSorteo || 80}%:
+                    </span>
+                    <p className="text-muted-foreground text-[11px]">
+                      El sorteo se cierra y se realiza oficialmente con la emisión de la JPS en la fecha prevista.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 space-y-1">
+                    <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                      <ShieldCheck className="size-3.5" /> Si NO alcanza el {borrador.porcentajeMinimoSorteo || 80}%:
+                    </span>
+                    <p className="text-muted-foreground text-[11px]">
+                      La edición continúa abierta para más ventas, todos los tokens siguen vigentes y se traslada la fecha.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 space-y-1">
+                    <span className="font-bold text-sky-400 flex items-center gap-1.5">
+                      <Info className="size-3.5" /> Popup Informativo Automático:
+                    </span>
+                    <p className="text-muted-foreground text-[11px]">
+                      Aparece una ventana explicativa a los participantes notificando el respaldo legal del sorteo.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

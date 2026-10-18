@@ -891,69 +891,133 @@ export function DisenoWebSection({
             </div>
 
             {borrador.mostrarTarjetasGarantia !== false && (
-              <div className="grid gap-6 md:grid-cols-2">
-                {/* Tarjeta 1: Verde (Cierre Inmediato) */}
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle2 className="size-4" /> Tarjeta 1 (Verde - Cierre Inmediato)
+              <div className="space-y-6">
+                {/* Meta Mínima de Porcentaje */}
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-amber-500 dark:text-amber-400 flex items-center gap-1.5">
+                      <ShieldCheck className="size-4" /> Meta Mínima de Ventas para Sorteo Oficial (%)
+                    </span>
+                    <p className="text-[11px] text-muted-foreground">
+                      Si la venta de tokens es menor a este porcentaje al llegar la fecha oficial, el sorteo sigue abierto y se traslada la fecha.
+                    </p>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Badge Superior</Label>
+                  <div className="flex items-center gap-2">
                     <Input
-                      value={borrador.garantia1Badge ?? ""}
-                      placeholder="Si llegamos al 100%"
-                      onChange={(e) => setBorrador({ ...borrador, garantia1Badge: e.target.value })}
+                      type="number"
+                      min={10}
+                      max={100}
+                      value={borrador.porcentajeMinimoSorteo ?? 80}
+                      onChange={(e) => setBorrador({ ...borrador, porcentajeMinimoSorteo: Number(e.target.value) || 80 })}
+                      className="w-24 font-bold text-center border-amber-500/40"
                     />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Título</Label>
-                    <Input
-                      value={borrador.garantia1Titulo ?? ""}
-                      placeholder="Cierre Inmediato del Sorteo"
-                      onChange={(e) => setBorrador({ ...borrador, garantia1Titulo: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Descripción</Label>
-                    <Textarea
-                      rows={3}
-                      value={borrador.garantia1Desc ?? ""}
-                      placeholder="La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana."
-                      onChange={(e) => setBorrador({ ...borrador, garantia1Desc: e.target.value })}
-                    />
+                    <span className="font-bold text-sm text-foreground">%</span>
                   </div>
                 </div>
 
-                {/* Tarjeta 2: Ámbar (Garantía de Cumplimiento) */}
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400">
-                    <ShieldCheck className="size-4" /> Tarjeta 2 (Ámbar - Garantía de Cumplimiento)
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Tarjeta 1: Verde (Cierre Inmediato) */}
+                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="size-4" /> Tarjeta 1 (Verde - Cierre Inmediato)
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Badge Superior</Label>
+                      <Input
+                        value={borrador.garantia1Badge ?? ""}
+                        placeholder={`Si llegamos al ${borrador.porcentajeMinimoSorteo || 80}%`}
+                        onChange={(e) => setBorrador({ ...borrador, garantia1Badge: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Título</Label>
+                      <Input
+                        value={borrador.garantia1Titulo ?? ""}
+                        placeholder="Cierre Inmediato del Sorteo"
+                        onChange={(e) => setBorrador({ ...borrador, garantia1Titulo: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Descripción</Label>
+                      <Textarea
+                        rows={3}
+                        value={borrador.garantia1Desc ?? ""}
+                        placeholder={`Al alcanzar el ${borrador.porcentajeMinimoSorteo || 80}% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana.`}
+                        onChange={(e) => setBorrador({ ...borrador, garantia1Desc: e.target.value })}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Badge Superior</Label>
-                    <Input
-                      value={borrador.garantia2Badge ?? ""}
-                      placeholder="Garantía de Cumplimiento"
-                      onChange={(e) => setBorrador({ ...borrador, garantia2Badge: e.target.value })}
+
+                  {/* Tarjeta 2: Ámbar (Garantía de Cumplimiento) */}
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400">
+                      <ShieldCheck className="size-4" /> Tarjeta 2 (Ámbar - Garantía de Cumplimiento)
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Badge Superior</Label>
+                      <Input
+                        value={borrador.garantia2Badge ?? ""}
+                        placeholder="Garantía de Cumplimiento"
+                        onChange={(e) => setBorrador({ ...borrador, garantia2Badge: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Título</Label>
+                      <Input
+                        value={borrador.garantia2Titulo ?? ""}
+                        placeholder="La Edición Continúa"
+                        onChange={(e) => setBorrador({ ...borrador, garantia2Titulo: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Descripción</Label>
+                      <Textarea
+                        rows={3}
+                        value={borrador.garantia2Desc ?? ""}
+                        placeholder={`Si al vencer el contador aún no se alcanza el ${borrador.porcentajeMinimoSorteo || 80}% mínimo, la edición continúa abierta acumulando ventas y se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.`}
+                        onChange={(e) => setBorrador({ ...borrador, garantia2Desc: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Popup Oficial: Garantía de Cumplimiento */}
+                <div className="rounded-xl border border-border bg-secondary/20 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <h5 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Sparkles className="size-3.5 text-amber-400" /> Popup Automático de Garantía de Cumplimiento
+                      </h5>
+                      <p className="text-[11px] text-muted-foreground">
+                        Ventana modal que informa a los usuarios cuando la fecha de sorteo se traslada por meta pendiente.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={borrador.garantiaModalActivo !== false}
+                      onCheckedChange={(v) => setBorrador({ ...borrador, garantiaModalActivo: v })}
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Título</Label>
-                    <Input
-                      value={borrador.garantia2Titulo ?? ""}
-                      placeholder="La Edición Continúa"
-                      onChange={(e) => setBorrador({ ...borrador, garantia2Titulo: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Descripción</Label>
-                    <Textarea
-                      rows={3}
-                      value={borrador.garantia2Desc ?? ""}
-                      placeholder="Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez."
-                      onChange={(e) => setBorrador({ ...borrador, garantia2Desc: e.target.value })}
-                    />
-                  </div>
+                  {borrador.garantiaModalActivo !== false && (
+                    <div className="grid gap-3 sm:grid-cols-2 pt-2">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold">Título del Popup</Label>
+                        <Input
+                          value={borrador.garantiaModalTitulo ?? ""}
+                          placeholder="La Edición Continúa Activa"
+                          onChange={(e) => setBorrador({ ...borrador, garantiaModalTitulo: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <Label className="text-xs font-semibold">Mensaje Explicativo</Label>
+                        <Textarea
+                          rows={3}
+                          value={borrador.garantiaModalTexto ?? ""}
+                          placeholder="Según nuestra normativa notarial de transparencia, si al vencer la fecha programada la colocación de tokens es menor al porcentaje mínimo requerido para garantizar la entrega de todos los premios, la edición continúa 100% activa hasta alcanzar la meta. Todos los tokens adquiridos conservan su total validez y respaldo legal."
+                          onChange={(e) => setBorrador({ ...borrador, garantiaModalTexto: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -285,10 +285,30 @@ function IndexPage() {
   const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
 
   const t = useCuentaRegresiva(fechaSorteo, sorteo.horaSorteo, config.horasCierrePrevio);
-  const ventasAbiertas = config.ventasActivas && t.estado === "VENTAS_ABIERTAS";
-  const cierrePrevio = t.estado === "CIERRE_PREVIO";
-  const sorteoFinalizado = t.estado === "FINALIZADO";
-  const enCurso = t.estado === "EN_CURSO";
+  const metaMinimaSorteo = config.porcentajeMinimoSorteo ?? 80;
+  const tiempoVencido = t.terminado || t.estado === "CIERRE_PREVIO" || t.estado === "EN_CURSO" || t.estado === "FINALIZADO";
+  const metaAlcanzada = progreso >= metaMinimaSorteo;
+  // Garantía de Cumplimiento: si venció la fecha pero la venta no llegó a la meta mínima (ej: 80%), la edición sigue abierta
+  const garantiaCumplimientoActiva = tiempoVencido && !metaAlcanzada;
+
+  const ventasAbiertas = config.ventasActivas && (garantiaCumplimientoActiva || t.estado === "VENTAS_ABIERTAS");
+  const cierrePrevio = !garantiaCumplimientoActiva && t.estado === "CIERRE_PREVIO";
+  const sorteoFinalizado = !garantiaCumplimientoActiva && t.estado === "FINALIZADO";
+  const enCurso = !garantiaCumplimientoActiva && t.estado === "EN_CURSO";
+
+  const [openGarantiaModal, setOpenGarantiaModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (garantiaCumplimientoActiva && config.garantiaModalActivo !== false && typeof window !== "undefined") {
+      try {
+        const yaVisto = sessionStorage.getItem("aval_garantia_modal_visto");
+        if (!yaVisto) {
+          setOpenGarantiaModal(true);
+          sessionStorage.setItem("aval_garantia_modal_visto", "true");
+        }
+      } catch {}
+    }
+  }, [garantiaCumplimientoActiva, config.garantiaModalActivo]);
 
   const featureIcons = [Gauge, Compass, Star, FileCheck];
 
@@ -454,14 +474,23 @@ function IndexPage() {
     <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Barra de Notificación Superior */}
       {config.mostrarBarraNotificacion !== false && (
-        <div className={`py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase ${
-          cierrePrevio
-            ? "bg-amber-600 animate-pulse text-black font-black"
-            : enCurso
-            ? "bg-red-600 font-black text-white"
-            : "bg-[image:var(--gradient-fire)]"
-        }`}>
-          {enCurso
+        <div
+          onClick={garantiaCumplimientoActiva ? () => setOpenGarantiaModal(true) : undefined}
+          className={`py-2 text-center text-xs font-semibold text-primary-foreground tracking-wider uppercase ${
+            garantiaCumplimientoActiva
+              ? "bg-amber-600 text-black font-black shadow-md cursor-pointer hover:bg-amber-500 transition-colors"
+              : cierrePrevio
+              ? "bg-amber-600 animate-pulse text-black font-black"
+              : enCurso
+              ? "bg-red-600 font-black text-white"
+              : "bg-[image:var(--gradient-fire)]"
+          }`}
+        >
+          {garantiaCumplimientoActiva ? (
+            <span className="flex items-center justify-center gap-2">
+              <ShieldCheck className="size-4" /> GARANTÍA DE CUMPLIMIENTO ACTIVA: LA EDICIÓN CONTINÚA HASTA COMPLETAR EL {metaMinimaSorteo}% DE VENTA · ¡TOKENS 100% VÁLIDOS! ↗
+            </span>
+          ) : enCurso
             ? "🎯 ¡SORTEO OFICIAL EN PROCESO! · TRANSMISIÓN Y AUDITORÍA EN CURSO"
             : cierrePrevio
             ? `🔒 VENTAS CERRADAS · PREPARANDO SORTEO OFICIAL DE LAS ${formatearHora12(sorteo.horaSorteo || "19:30")}`
@@ -1012,7 +1041,9 @@ function IndexPage() {
             {/* CONSOLA MAESTRA DE CONVERSIÓN Y RELOJ OFICIAL EN EL HERO */}
             {(config.mostrarSeccionTermometro !== false || config.mostrarCtaHero !== false) && (
               <div className={`mx-auto mt-6 md:mt-8 max-w-3xl rounded-3xl border-2 p-5 sm:p-7 backdrop-blur text-left shadow-2xl transition-all ${
-                enCurso
+                garantiaCumplimientoActiva
+                  ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95 shadow-[0_0_45px_rgba(245,158,11,0.25)]"
+                  : enCurso
                   ? "border-red-500/70 bg-gradient-to-b from-card/95 via-red-950/20 to-card/95 shadow-[0_0_50px_rgba(239,68,68,0.25)]"
                   : cierrePrevio
                   ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95 shadow-[0_0_45px_rgba(245,158,11,0.25)]"
@@ -1024,16 +1055,24 @@ function IndexPage() {
                       <div className="flex items-center gap-2">
                         <span className="relative flex h-2.5 w-2.5">
                           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                            enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
+                            garantiaCumplimientoActiva ? "bg-amber-400" : enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
                           }`}></span>
                           <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                            enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
+                            garantiaCumplimientoActiva ? "bg-amber-500" : enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
                           }`}></span>
                         </span>
                         <span className={`font-black uppercase tracking-wider text-xs ${
-                          enCurso ? "text-red-500 dark:text-red-400" : cierrePrevio ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
+                          garantiaCumplimientoActiva
+                            ? "text-amber-500 dark:text-amber-400"
+                            : enCurso
+                            ? "text-red-500 dark:text-red-400"
+                            : cierrePrevio
+                            ? "text-amber-600 dark:text-amber-400"
+                            : "text-emerald-600 dark:text-emerald-400"
                         }`}>
-                          {enCurso
+                          {garantiaCumplimientoActiva
+                            ? `🛡️ La Edición Continúa Activa (Meta mínima: ${metaMinimaSorteo}%)`
+                            : enCurso
                             ? "🎯 Sorteo Oficial en Curso"
                             : cierrePrevio
                             ? "🔒 Ventas Cerradas (Conteo Final)"
@@ -1063,7 +1102,9 @@ function IndexPage() {
                         Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
                       </span>
                       <span className="font-mono font-bold dark:text-amber-400 text-amber-600 text-xs sm:text-sm" suppressHydrationWarning>
-                        {enCurso
+                        {garantiaCumplimientoActiva
+                          ? `🛡️ Edición extendida por Garantía de Cumplimiento`
+                          : enCurso
                           ? "🎯 En transmisión oficial"
                           : cierrePrevio
                           ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
@@ -1082,14 +1123,21 @@ function IndexPage() {
                         size="xl"
                         onClick={irAPaquetes}
                         className={`w-full sm:flex-1 text-base sm:text-lg font-black py-7 group cursor-pointer ${
-                          cierrePrevio
+                          garantiaCumplimientoActiva
+                            ? "shadow-[var(--shadow-fire)]"
+                            : cierrePrevio
                             ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg"
                             : enCurso
                             ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
                             : "shadow-[var(--shadow-fire)]"
                         }`}
                       >
-                        {enCurso ? (
+                        {garantiaCumplimientoActiva ? (
+                          <>
+                            🔥 ¡APOYAR LA META Y ADQUIRIR TOKENS!{" "}
+                            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                          </>
+                        ) : enCurso ? (
                           <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
                         ) : cierrePrevio ? (
                           <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
@@ -1104,8 +1152,20 @@ function IndexPage() {
                           </>
                         )}
                       </Button>
-                      <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-sm sm:text-base px-6 py-7">
-                        <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
+                      <Button
+                        variant="outline"
+                        size="xl"
+                        onClick={garantiaCumplimientoActiva ? () => setOpenGarantiaModal(true) : undefined}
+                        asChild={!garantiaCumplimientoActiva}
+                        className="w-full sm:w-auto text-sm sm:text-base px-6 py-7 cursor-pointer"
+                      >
+                        {garantiaCumplimientoActiva ? (
+                          <span className="flex items-center gap-1.5 text-amber-500 font-bold">
+                            <ShieldCheck className="size-4" /> Ver Garantía ↗
+                          </span>
+                        ) : (
+                          <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
+                        )}
                       </Button>
                     </div>
 
@@ -1220,21 +1280,31 @@ function IndexPage() {
             <div className="grid sm:grid-cols-2 gap-4 text-left mt-10 max-w-3xl mx-auto">
               <div className="rounded-2xl border border-emerald-500/30 dark:bg-emerald-500/5 bg-emerald-500/10 p-4 space-y-1.5 shadow-sm">
                 <span className="text-[10px] font-black uppercase tracking-wider dark:text-emerald-400 text-emerald-700 flex items-center gap-1">
-                  <CheckCircle2 className="size-3 text-emerald-500 dark:text-emerald-400" /> {config.garantia1Badge || "Si llegamos al 100%"}
+                  <CheckCircle2 className="size-3 text-emerald-500 dark:text-emerald-400" /> {config.garantia1Badge || `Si llegamos al ${metaMinimaSorteo}%`}
                 </span>
                 <h4 className="font-bold text-sm text-foreground">{config.garantia1Titulo || "Cierre Inmediato del Sorteo"}</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {config.garantia1Desc || "La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana."}
+                  {config.garantia1Desc || `Al alcanzar el ${metaMinimaSorteo}% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana.`}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-amber-500/30 dark:bg-amber-500/5 bg-amber-500/10 p-4 space-y-1.5 shadow-sm">
-                <span className="text-[10px] font-black uppercase tracking-wider dark:text-amber-400 text-amber-700 flex items-center gap-1">
-                  <ShieldCheck className="size-3 text-amber-500 dark:text-amber-400" /> {config.garantia2Badge || "Garantía de Cumplimiento"}
-                </span>
+              <div
+                onClick={() => setOpenGarantiaModal(true)}
+                className="rounded-2xl border border-amber-500/30 dark:bg-amber-500/5 bg-amber-500/10 p-4 space-y-1.5 shadow-sm cursor-pointer hover:border-amber-500/60 hover:shadow-md transition-all group"
+                role="button"
+                tabIndex={0}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider dark:text-amber-400 text-amber-700 flex items-center gap-1">
+                    <ShieldCheck className="size-3 text-amber-500 dark:text-amber-400" /> {config.garantia2Badge || "Garantía de Cumplimiento"}
+                  </span>
+                  <span className="text-[11px] font-bold text-amber-500 underline opacity-85 group-hover:opacity-100 flex items-center gap-0.5">
+                    Ver respaldo →
+                  </span>
+                </div>
                 <h4 className="font-bold text-sm text-foreground">{config.garantia2Titulo || "La Edición Continúa"}</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {config.garantia2Desc || "Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez."}
+                  {config.garantia2Desc || `Si al vencer el contador aún no se alcanza el ${metaMinimaSorteo}%, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.`}
                 </p>
               </div>
             </div>
@@ -1928,6 +1998,111 @@ function IndexPage() {
             <span className="text-[11px] text-zinc-400 hidden sm:inline">
               Presiona ESC o haz clic afuera para cerrar
             </span>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL GARANTÍA DE CUMPLIMIENTO / EDICIÓN EN CURSO */}
+      <Dialog open={openGarantiaModal} onOpenChange={setOpenGarantiaModal}>
+        <DialogContent className="max-w-2xl w-[95vw] border dark:border-amber-500/40 border-amber-500/50 dark:bg-zinc-950/98 bg-white/98 p-5 sm:p-7 shadow-[0_0_80px_rgba(0,0,0,0.6)] backdrop-blur-2xl text-foreground max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="text-left space-y-2 pb-3 border-b border-border/50">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-wider dark:text-amber-400 text-amber-700 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1">
+                <ShieldCheck className="size-3 text-amber-500" />
+                Respaldo Legal y Notarial · Costa Rica
+              </span>
+              <span className="text-[10px] font-bold text-muted-foreground">
+                Reglamento Oficial de Aval Community CR
+              </span>
+            </div>
+            <DialogTitle className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+              {config.garantiaModalTitulo || "Garantía de Cumplimiento: La Edición Continúa"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {/* Banner de Estado */}
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-muted-foreground">Progreso de la meta oficial</span>
+                <span className="font-mono font-black text-amber-500">{progreso}% de {metaMinimaSorteo}% mín.</span>
+              </div>
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary/80">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.max(5, (progreso / metaMinimaSorteo) * 100))}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                {garantiaCumplimientoActiva
+                  ? `La fecha de referencia se ha cumplido pero el sorteo requiere un mínimo del ${metaMinimaSorteo}% de colocación para adjudicar el vehículo y los premios garantizados. Por esta razón, la edición se mantiene 100% activa hasta cubrir el porcentaje establecido.`
+                  : `Para resguardar el valor íntegro de los premios, el sorteo requiere alcanzar al menos el ${metaMinimaSorteo}% de la meta. Si al llegar la fecha oficial no se ha cubierto, la edición continúa activa sin interrupción.`}
+              </p>
+            </div>
+
+            {/* Texto explicativo configurable */}
+            <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed space-y-2">
+              <p>
+                {config.garantiaModalTexto ||
+                  `De acuerdo con las bases y condiciones notariales de Aval Community CR, ningún sorteo de vehículo o premio mayor se declara desierto. Si al vencer el contador aún resta porcentaje para la meta mínima (${metaMinimaSorteo}%), se amplía automáticamente el período de colocación para garantizar la adjudicación legal.`}
+              </p>
+            </div>
+
+            {/* 3 Pilares de Seguridad para el participante */}
+            <div className="grid sm:grid-cols-3 gap-2.5 pt-1">
+              <div className="rounded-xl border border-border/80 bg-secondary/30 p-3 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
+                  <span>Tokens 100% Válidos</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Todos tus números adquiridos conservan su vigencia absoluta hasta la realización del sorteo.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border/80 bg-secondary/30 p-3 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <Sparkles className="size-3.5 text-amber-500 shrink-0" />
+                  <span>Premios Garantizados</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  El vehículo y premios en efectivo se entregan auditados bajo emisión oficial de la JPS.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border/80 bg-secondary/30 p-3 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <FileCheck className="size-3.5 text-sky-500 shrink-0" />
+                  <span>Fe Pública Notarial</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Protocolo y reglas inscritas formalmente para la seguridad jurídica de cada comprador.
+                </p>
+              </div>
+            </div>
+
+            {/* Acciones */}
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-3 border-t border-border/50">
+              <Button
+                asChild
+                className="w-full sm:flex-1 h-11 bg-primary text-primary-foreground font-black tracking-wide uppercase hover:opacity-95"
+                onClick={() => setOpenGarantiaModal(false)}
+              >
+                <a href="#paquetes">
+                  {config.paquetesBotonComprar || "Adquirir Tokens y Apoyar"} →
+                </a>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="w-full sm:w-auto h-11 text-xs font-bold"
+                onClick={() => setOpenGarantiaModal(false)}
+              >
+                <Link to="/consultar">
+                  Consultar mis Tokens
+                </Link>
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

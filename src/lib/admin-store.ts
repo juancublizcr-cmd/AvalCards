@@ -306,6 +306,10 @@ export type Config = {
   paqueteTagBest?: string;
   // Tarjetas de Transparencia y Garantía (Bajo Paquetes de Tokens)
   mostrarTarjetasGarantia?: boolean;
+  porcentajeMinimoSorteo?: number;
+  garantiaModalActivo?: boolean;
+  garantiaModalTitulo?: string;
+  garantiaModalTexto?: string;
   garantia1Badge?: string;
   garantia1Titulo?: string;
   garantia1Desc?: string;
@@ -675,12 +679,16 @@ export const CONFIG_DEFAULT: Config = {
   paqueteTagBest: "EL MEJOR · MÁS VENDIDO",
   // Tarjetas de Transparencia y Garantía (Bajo Paquetes de Tokens)
   mostrarTarjetasGarantia: true,
-  garantia1Badge: "Si llegamos al 100%",
+  porcentajeMinimoSorteo: 80,
+  garantiaModalActivo: true,
+  garantiaModalTitulo: "La Edición Continúa Activa",
+  garantiaModalTexto: "Según nuestra normativa notarial de transparencia, si al vencer la fecha programada la colocación de tokens es menor al porcentaje mínimo requerido para garantizar la entrega de todos los premios, la edición continúa 100% activa hasta alcanzar la meta. Todos los tokens adquiridos conservan su total validez y respaldo legal.",
+  garantia1Badge: "Si llegamos al 80%",
   garantia1Titulo: "Cierre Inmediato del Sorteo",
-  garantia1Desc: "La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana.",
+  garantia1Desc: "Al alcanzar el 80% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana.",
   garantia2Badge: "Garantía de Cumplimiento",
   garantia2Titulo: "La Edición Continúa",
-  garantia2Desc: "Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.",
+  garantia2Desc: "Si al vencer el contador aún no se alcanza el 80% mínimo, la edición continúa abierta acumulando ventas y se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.",
   // 6. Control de Secciones de la Landing (Poner / Quitar / Modificar)
   mostrarSeccionAperturaPremios: true,
   mostrarSeccionTermometro: true,
@@ -1409,6 +1417,10 @@ export async function fetchConfig(): Promise<Config> {
       paqueteTagPopular: extra.paqueteTagPopular !== undefined ? extra.paqueteTagPopular : CONFIG_DEFAULT.paqueteTagPopular,
       paqueteTagBest: extra.paqueteTagBest !== undefined ? extra.paqueteTagBest : CONFIG_DEFAULT.paqueteTagBest,
       mostrarTarjetasGarantia: extra.mostrarTarjetasGarantia !== undefined ? extra.mostrarTarjetasGarantia : CONFIG_DEFAULT.mostrarTarjetasGarantia,
+      porcentajeMinimoSorteo: typeof extra.porcentajeMinimoSorteo === "number" ? extra.porcentajeMinimoSorteo : (CONFIG_DEFAULT.porcentajeMinimoSorteo ?? 80),
+      garantiaModalActivo: extra.garantiaModalActivo !== undefined ? extra.garantiaModalActivo : CONFIG_DEFAULT.garantiaModalActivo,
+      garantiaModalTitulo: extra.garantiaModalTitulo !== undefined ? extra.garantiaModalTitulo : CONFIG_DEFAULT.garantiaModalTitulo,
+      garantiaModalTexto: extra.garantiaModalTexto !== undefined ? extra.garantiaModalTexto : CONFIG_DEFAULT.garantiaModalTexto,
       garantia1Badge: extra.garantia1Badge !== undefined ? extra.garantia1Badge : CONFIG_DEFAULT.garantia1Badge,
       garantia1Titulo: extra.garantia1Titulo !== undefined ? extra.garantia1Titulo : CONFIG_DEFAULT.garantia1Titulo,
       garantia1Desc: extra.garantia1Desc !== undefined ? extra.garantia1Desc : CONFIG_DEFAULT.garantia1Desc,
