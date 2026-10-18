@@ -520,10 +520,15 @@ function IndexPage() {
                 </Button>
               )}
 
-              {/* 4. Comercios Aliados (Solo si la sección está encendida en el admin) */}
+              {/* 4. Comercios Aliados (Desplaza suavemente a la tarjeta de beneficios en comercios) */}
               {config.navMostrarComercios !== false && config.mostrarSeccionSponsors === true && (
-                <Button variant="ghost" size="sm" asChild className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground">
-                  <Link to="/sponsors">Comercios</Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => document.getElementById("comercios")?.scrollIntoView({ behavior: "smooth" })}
+                  className="hidden lg:inline-flex h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground/80 hover:text-foreground cursor-pointer"
+                >
+                  Comercios
                 </Button>
               )}
 
@@ -1719,7 +1724,10 @@ function IndexPage() {
               <div className={ambos ? "grid sm:grid-cols-2 gap-6" : "max-w-2xl mx-auto"}>
                 {/* Tarjeta Enlace: Programa de Referidos */}
                 {mostrarReferidos && (
-                  <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-b from-card via-card to-amber-500/5 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-amber-500 transition-all group">
+                  <div
+                    id="referidos"
+                    className="scroll-mt-24 rounded-3xl border border-amber-500/40 bg-gradient-to-b from-card via-card to-amber-500/5 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-amber-500 transition-all group"
+                  >
                     <div className="space-y-3">
                       <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-amber-600 dark:text-amber-400">
                         <Users className="size-3.5" /> GANA EN EFECTIVO
@@ -1743,7 +1751,10 @@ function IndexPage() {
 
                 {/* Tarjeta Enlace: Comercios Aliados */}
                 {mostrarSponsors && (
-                  <div className="rounded-3xl border border-border bg-gradient-to-b from-card via-card to-secondary/30 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-emerald-500/60 transition-all group">
+                  <div
+                    id="comercios"
+                    className="scroll-mt-24 rounded-3xl border border-border bg-gradient-to-b from-card via-card to-secondary/30 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-emerald-500/60 transition-all group"
+                  >
                     <div className="space-y-3">
                       <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-emerald-600 dark:text-emerald-400">
                         <Percent className="size-3.5" /> BENEFICIOS CON TU TOKEN

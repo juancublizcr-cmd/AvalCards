@@ -267,9 +267,9 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
               />
               <CardInterruptor
                 numero="N5"
-                titulo="Enlace 4: 'Comercios' (/sponsors)"
-                desc="Enlace directo al catálogo de comercios asociados y descuentos exclusivos para participantes."
-                tip="💡 Solo se muestra si la sección de Comercios también está encendida en el admin."
+                titulo="Enlace 4: 'Comercios' (#comercios)"
+                desc="Botón que traslada la vista directamente a la tarjeta de beneficios y descuentos en comercios aliados."
+                tip="💡 Desplaza a la tarjeta en la landing donde el usuario puede abrir el catálogo si lo desea."
                 activo={borrador.navMostrarComercios !== false}
                 onToggle={() => toggleSwitch("navMostrarComercios", borrador.navMostrarComercios, true)}
               />
