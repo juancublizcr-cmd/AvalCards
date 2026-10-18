@@ -133,6 +133,7 @@ export function PremiosSection({
   setSorteo,
   config,
   setConfig,
+  onIrARaspa,
 }: {
   premios: Premio[];
   setPremios: (p: Premio[]) => void;
@@ -140,6 +141,7 @@ export function PremiosSection({
   setSorteo: (s: Sorteo) => void;
   config?: Config;
   setConfig?: (c: Config) => void;
+  onIrARaspa?: () => void;
 }) {
   const [borrador, setBorrador] = useState<Sorteo>({
     ...sorteo,
@@ -1939,150 +1941,28 @@ export function PremiosSection({
         </div>
       </section>
 
-      {/* 6. RASPA Y GANA DIGITAL EXPRESS */}
-      <section className="rounded-xl border-2 border-amber-500/50 bg-card p-6 shadow-sm space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-          <div>
-            <div className="flex items-center gap-2 font-bold text-lg text-amber-500">
-              <Gift className="size-5" /> Raspa y Gana Digital Express (Juego Instantáneo)
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Juego táctil independiente de raspar con el dedo o mouse para ganar premios en SINPE Móvil al instante.
-            </p>
+      {/* 6. REDIRECCIÓN A RASPA Y GANA DIGITAL EXPRESS */}
+      <section className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 font-bold text-base text-amber-500">
+            <Gift className="size-5" /> Raspa y Gana Express y Ruleta de la Fortuna
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-border bg-secondary/50 px-3 py-1.5">
-              <Label htmlFor="switch-raspa" className="text-xs font-bold cursor-pointer">
-                {raspaActual.activo ? "🟢 ACTIVADO" : "🔴 DESACTIVADO"}
-              </Label>
-              <Switch
-                id="switch-raspa"
-                checked={raspaActual.activo}
-                onCheckedChange={(v) => actualizarRaspa("activo", v)}
-              />
-            </div>
-            <Button variant="outline" size="sm" onClick={agregarPremioRaspa} className="gap-1.5 border-amber-500/40 text-amber-400 hover:bg-amber-500/10">
-              <Plus className="size-4" /> Agregar Premio
-            </Button>
-          </div>
+          <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+            La configuración completa de los juegos instantáneos (precios de tarjeta, premios ponderados, mensajes y probabilidades) se administra de forma independiente en su sección dedicada.
+          </p>
         </div>
 
-        {/* Configuración General del Raspa */}
-        <div className="grid gap-4 sm:grid-cols-3 bg-secondary/30 p-4 rounded-xl border border-border">
-          <div className="space-y-1.5">
-            <Label className="text-xs font-bold">Precio por Tarjeta (CRC)</Label>
-            <Input
-              type="number"
-              value={raspaActual.precio}
-              onChange={(e) => actualizarRaspa("precio", Number(e.target.value))}
-              placeholder="1000"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-bold">Título del Juego</Label>
-            <Input
-              value={raspaActual.titulo}
-              onChange={(e) => actualizarRaspa("titulo", e.target.value)}
-              placeholder="Raspa y Gana Express"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-bold">Subtítulo / Instrucción</Label>
-            <Input
-              value={raspaActual.subtitulo}
-              onChange={(e) => actualizarRaspa("subtitulo", e.target.value)}
-              placeholder="¡Gana dinero en SINPE Móvil al instante!"
-            />
-          </div>
-        </div>
-
-        {/* Lista de Premios Configurables */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Premios y Probabilidades ({raspaActual.premios?.length || 0})
-            </Label>
-            <span className="text-[11px] text-muted-foreground">
-              Probabilidad total ponderada
-            </span>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            {(raspaActual.premios || []).map((p, idx) => (
-              <div
-                key={p.id || idx}
-                className="rounded-xl border border-border bg-secondary/40 p-4 space-y-3 relative"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-2xl">{p.icono}</span>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        p.esGanador ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-zinc-700 text-zinc-300"
-                      }`}
-                    >
-                      {p.esGanador ? "PREMIO GANADOR" : "CASI GANA / NINGUNO"}
-                    </span>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="h-7 px-2"
-                      onClick={() => eliminarPremioRaspa(idx)}
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-xs">Nombre del Premio / Mensaje</Label>
-                  <Input
-                    value={p.nombre}
-                    onChange={(e) => actualizarPremioRaspa(idx, "nombre", e.target.value)}
-                    placeholder="₡50,000 en SINPE Móvil"
-                    className="text-xs font-semibold"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Icono / Emoji</Label>
-                    <Input
-                      value={p.icono}
-                      onChange={(e) => actualizarPremioRaspa(idx, "icono", e.target.value)}
-                      placeholder="💵, 👑, 🎟️, 🎮"
-                      className="text-xs text-center"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Peso / Probabilidad (%)</Label>
-                    <Input
-                      type="number"
-                      value={p.probabilidad}
-                      onChange={(e) => actualizarPremioRaspa(idx, "probabilidad", Number(e.target.value))}
-                      placeholder="10"
-                      className="text-xs font-mono text-center"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-end border-t border-border pt-4">
+        {onIrARaspa && (
           <Button
-            variant="hero"
-            size="lg"
-            className="shadow-[var(--shadow-fire)]"
-            onClick={() => { void guardarRaspaConfig(); }}
-            disabled={guardandoRaspa}
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onIrARaspa}
+            className="gap-2 border-amber-500/50 text-amber-400 hover:bg-amber-500/10 font-bold shrink-0 cursor-pointer"
           >
-            {guardandoRaspa ? <Loader2 className="animate-spin size-4" /> : <Save className="size-4" />}{" "}
-            Guardar Configuración de Raspa y Gana
+            <Gift className="size-4" /> Ir a Raspa y Gana Express →
           </Button>
-        </div>
+        )}
       </section>
     </div>
   );

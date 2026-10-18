@@ -266,6 +266,7 @@ function Admin() {
                   setSorteo={setSorteo}
                   config={config}
                   setConfig={setConfig}
+                  onIrARaspa={() => setSeccion("raspa")}
                 />
               ) : null}
               {seccion === "raspa" ? (
