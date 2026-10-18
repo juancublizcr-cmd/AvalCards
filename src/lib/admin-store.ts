@@ -660,7 +660,7 @@ export const CONFIG_DEFAULT: Config = {
   // 6. Control de Secciones de la Landing (Poner / Quitar / Modificar)
   mostrarSeccionAperturaPremios: true,
   mostrarSeccionTermometro: true,
-  mostrarSeccionDetallePremios: true,
+  mostrarSeccionDetallePremios: false, // Fuera por defecto para evitar duplicidad de autos y mantener flujo limpio
   mostrarSeccionComoFunciona: true,
   mostrarSeccionReferidos: true,
   mostrarSeccionSponsors: true,

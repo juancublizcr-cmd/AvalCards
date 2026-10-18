@@ -177,17 +177,13 @@ function calcularPaquetes(sorteoActual: Sorteo): Paquete[] {
   }
 
   if (mod === "multiplos_3") {
-    // Si el admin puso un monto >= 2500, se usa ese como base para cada 3 tokens; sino el estándar ₡4.000
+    // 4 niveles premium balanceados en una sola fila
     const baseTrio = Number(sorteoActual.precioBase) >= 2500 ? Number(sorteoActual.precioBase) : 4000;
     return [
-      { cantidad: 3, precio: baseTrio, popular: false },
+      { cantidad: 3, precio: baseTrio, popular: false, tag: "INICIAL" },
       { cantidad: 6, precio: baseTrio * 2, popular: true, tag: "EL MEJOR · MÁS VENDIDO" },
-      { cantidad: 9, precio: baseTrio * 3, popular: false },
-      { cantidad: 12, precio: baseTrio * 4, popular: false },
-      { cantidad: 15, precio: baseTrio * 5, popular: false },
-      { cantidad: 18, precio: baseTrio * 6, popular: false },
-      { cantidad: 21, precio: baseTrio * 7, popular: false },
-      { cantidad: 24, precio: baseTrio * 8, popular: false },
+      { cantidad: 12, precio: baseTrio * 4, popular: false, tag: "MEJOR VALOR" },
+      { cantidad: 24, precio: baseTrio * 8, popular: false, tag: "CLUB VIP" },
     ];
   }
 
@@ -568,12 +564,20 @@ function IndexPage() {
               </div>
 
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              {sorteo.heroTitulo ? (
-                sorteo.heroTitulo.replace(/\besta\s+por\s+llegar\b/gi, "está por llegar")
+              {config.ventasActivas ? (
+                sorteo.heroTitulo && !sorteo.heroTitulo.toLowerCase().includes("está por llegar") && !sorteo.heroTitulo.toLowerCase().includes("esta por llegar") ? (
+                  sorteo.heroTitulo
+                ) : (
+                  <>
+                    ESTRENA TU <span className="text-fire">VEHÍCULO 0KM</span> HOY MISMO
+                  </>
+                )
               ) : (
-                <>
-                  ¿Te imaginas estrenar tu <span className="text-fire">{primerPremioVisible?.nombre || "Moto Alta Cilindrada"}</span>{` desde solo ₡${formatNumber(paquetes[0]?.precio || 4000)}?`}
-                </>
+                sorteo.heroTitulo ? (
+                  sorteo.heroTitulo.replace(/\besta\s+por\s+llegar\b/gi, "está por llegar")
+                ) : (
+                  <>UNA NUEVA FORMA DE PARTICIPAR ESTÁ POR LLEGAR</>
+                )
               )}
             </h1>
 
@@ -953,117 +957,121 @@ function IndexPage() {
               </div>
             )}
 
-            {/* Termómetro de Disponibilidad y Cuenta Regresiva Oficial en el Hero */}
-            {config.mostrarSeccionTermometro !== false && (
-              <div className={`mx-auto mt-10 max-w-2xl rounded-2xl border-2 p-5 backdrop-blur text-left ${
+            {/* CONSOLA MAESTRA DE CONVERSIÓN Y RELOJ OFICIAL EN EL HERO */}
+            {(config.mostrarSeccionTermometro !== false || config.mostrarCtaHero !== false) && (
+              <div className={`mx-auto mt-10 max-w-3xl rounded-3xl border-2 p-6 sm:p-8 backdrop-blur text-left shadow-2xl transition-all ${
                 enCurso
-                  ? "border-red-500/60 dark:bg-red-950/90 bg-red-50/90 shadow-[0_0_40px_rgba(239,68,68,0.25)]"
+                  ? "border-red-500/70 bg-gradient-to-b from-card/95 via-red-950/20 to-card/95 shadow-[0_0_50px_rgba(239,68,68,0.25)]"
                   : cierrePrevio
-                  ? "border-amber-500/70 dark:bg-amber-950/80 bg-amber-50/90 shadow-[0_0_35px_rgba(245,158,11,0.25)]"
-                  : "dark:border-amber-500/40 border-amber-500/50 dark:bg-zinc-950/90 bg-white/95 shadow-xl dark:shadow-[0_0_35px_rgba(245,158,11,0.15)]"
+                  ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95 shadow-[0_0_45px_rgba(245,158,11,0.25)]"
+                  : "border-primary/40 bg-gradient-to-b from-card/95 via-card/80 to-card/95 shadow-[0_0_40px_rgba(234,88,12,0.15)]"
               }`}>
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                        enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
-                      }`}></span>
-                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                        enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
-                      }`}></span>
-                    </span>
-                    <span className={`font-black uppercase tracking-wider text-xs ${
-                      enCurso ? "text-red-500 dark:text-red-400" : cierrePrevio ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
-                    }`}>
-                      {enCurso
-                        ? "🎯 Sorteo Oficial en Curso"
-                        : cierrePrevio
-                        ? "🔒 Ventas Cerradas (Conteo Final)"
-                        : config.ventasActivas
-                        ? "Ventas Abiertas en Vivo"
-                        : "Preventa Exclusiva"}
-                    </span>
+                {config.mostrarSeccionTermometro !== false && (
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/50 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                            enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
+                          }`}></span>
+                          <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                            enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
+                          }`}></span>
+                        </span>
+                        <span className={`font-black uppercase tracking-wider text-xs ${
+                          enCurso ? "text-red-500 dark:text-red-400" : cierrePrevio ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
+                        }`}>
+                          {enCurso
+                            ? "🎯 Sorteo Oficial en Curso"
+                            : cierrePrevio
+                            ? "🔒 Ventas Cerradas (Conteo Final)"
+                            : config.ventasActivas
+                            ? "Ventas Abiertas en Vivo"
+                            : "Preventa Exclusiva"}
+                        </span>
+                      </div>
+                      <span className="font-mono text-lg sm:text-xl font-black dark:text-amber-400 text-amber-600 flex items-center gap-1.5" suppressHydrationWarning>
+                        <Flame className="size-5 text-amber-500 fill-amber-500" />
+                        {`${progreso}% Vendido`}
+                      </span>
+                    </div>
+
+                    {/* Barra Brillante */}
+                    <div className="h-3.5 w-full overflow-hidden rounded-full dark:bg-secondary/80 bg-slate-100 p-0.5 border dark:border-amber-500/30 border-slate-300">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+                        style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
+                      />
+                    </div>
+
+                    {/* Fecha y Contador en vivo */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground pt-0.5">
+                      <span className="flex items-center gap-1.5" suppressHydrationWarning>
+                        <Calendar className="size-3.5 text-primary" />
+                        Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
+                      </span>
+                      <span className="font-mono font-bold dark:text-amber-400 text-amber-600 text-xs sm:text-sm" suppressHydrationWarning>
+                        {enCurso
+                          ? "🎯 En transmisión oficial"
+                          : cierrePrevio
+                          ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
+                          : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
+                      </span>
+                    </div>
                   </div>
-                  <span className="font-mono text-lg sm:text-xl font-black dark:text-amber-400 text-amber-600 flex items-center gap-1.5" suppressHydrationWarning>
-                    <Flame className="size-5 text-amber-500 fill-amber-500" />
-                    {`${progreso}% Vendido`}
-                  </span>
-                </div>
+                )}
 
-                {/* Barra Brillante */}
-                <div className="mt-3.5 h-4 w-full overflow-hidden rounded-full dark:bg-secondary/80 bg-slate-100 p-0.5 border dark:border-amber-500/30 border-slate-300">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
-                    style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
-                  />
-                </div>
+                {/* Botones de Conversión integrados */}
+                {config.mostrarCtaHero !== false && (
+                  <div className={`space-y-5 ${config.mostrarSeccionTermometro !== false ? "pt-5 border-t border-border/50" : ""}`}>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+                      <Button
+                        variant="hero"
+                        size="xl"
+                        onClick={irAPaquetes}
+                        className={`w-full sm:flex-1 text-base sm:text-lg font-black py-7 group cursor-pointer ${
+                          cierrePrevio
+                            ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg"
+                            : enCurso
+                            ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
+                            : "shadow-[var(--shadow-fire)]"
+                        }`}
+                      >
+                        {enCurso ? (
+                          <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
+                        ) : cierrePrevio ? (
+                          <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
+                        ) : config.ventasActivas ? (
+                          <>
+                            {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
+                            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                          </>
+                        ) : (
+                          <>
+                            {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
+                          </>
+                        )}
+                      </Button>
+                      <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-sm sm:text-base px-6 py-7">
+                        <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
+                      </Button>
+                    </div>
 
-                {/* Fecha y Contador en vivo */}
-                <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1.5" suppressHydrationWarning>
-                    <Calendar className="size-3.5 text-primary" />
-                    Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
-                  </span>
-                  <span className="font-mono font-bold dark:text-amber-400 text-amber-600 text-xs sm:text-sm" suppressHydrationWarning>
-                    {enCurso
-                      ? "🎯 En transmisión oficial"
-                      : cierrePrevio
-                      ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
-                      : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
-                  </span>
-                </div>
+                    {/* Micro-prueba social */}
+                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted-foreground pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos JPS
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-
-            {/* CTA Principal de Conversión */}
-            {config.mostrarCtaHero !== false && (
-              <>
-                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button
-                    variant="hero"
-                    size="xl"
-                    onClick={irAPaquetes}
-                    className={`w-full sm:w-auto text-base px-8 py-7 group cursor-pointer ${
-                      cierrePrevio
-                        ? "bg-amber-500 hover:bg-amber-400 text-black font-black shadow-lg"
-                        : enCurso
-                        ? "bg-red-600 hover:bg-red-500 text-white font-black animate-pulse"
-                        : "shadow-[var(--shadow-fire)]"
-                    }`}
-                  >
-                    {enCurso ? (
-                      <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
-                    ) : cierrePrevio ? (
-                      <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
-                    ) : config.ventasActivas ? (
-                      <>
-                        {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
-                        <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-                      </>
-                    ) : (
-                      <>
-                        {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
-                      </>
-                    )}
-                  </Button>
-                  <Button variant="outline" size="xl" asChild className="w-full sm:w-auto text-base px-8 py-7">
-                    <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
-                  </Button>
-                </div>
-
-                {/* Micro-prueba social */}
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
-                  </div>
-                </div>
-              </>
             )}
           </div>
         </section>
@@ -1651,59 +1659,66 @@ function IndexPage() {
         )}
 
         {/* ACCESOS SEPARADOS: REFERIDOS Y COMERCIOS ALIADOS (MODO LIMPIO Y LIGERO) */}
-        {(config.mostrarSeccionReferidos === true || config.mostrarSeccionSponsors === true) && (
-          <section className="py-12 mx-auto max-w-6xl px-5">
-            <div className="grid sm:grid-cols-2 gap-5">
-              {/* Tarjeta Enlace: Programa de Referidos */}
-              {config.mostrarSeccionReferidos === true && config.referidosActivo !== false && (
-                <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-b from-card via-card to-amber-500/5 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-amber-500 transition-all group">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-amber-600 dark:text-amber-400">
-                      <Users className="size-3.5" /> GANA EN EFECTIVO
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                      Programa de Referidos & Amigos Invitados
-                    </h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                      Gana hasta <strong>{config.referidosPremioPrimero || "₡4,000,000"} en efectivo</strong> si tu recomendado resulta favorecido. Obtén tu enlace personal de padrino y participa en la tabla de líderes mensual.
-                    </p>
-                  </div>
-                  <div className="pt-6">
-                    <Button asChild variant="outline" className="w-full border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-bold group-hover:bg-amber-500 group-hover:text-black transition-all cursor-pointer">
-                      <Link to="/referidos">
-                        Conocer Programa de Referidos →
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
+        {(config.mostrarSeccionReferidos === true || config.mostrarSeccionSponsors === true) && (() => {
+          const mostrarReferidos = config.mostrarSeccionReferidos === true && config.referidosActivo !== false;
+          const mostrarSponsors = config.mostrarSeccionSponsors === true;
+          if (!mostrarReferidos && !mostrarSponsors) return null;
+          const ambos = mostrarReferidos && mostrarSponsors;
 
-              {/* Tarjeta Enlace: Comercios Aliados */}
-              {config.mostrarSeccionSponsors === true && (
-                <div className="rounded-3xl border border-border bg-gradient-to-b from-card via-card to-secondary/30 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-emerald-500/60 transition-all group">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-emerald-600 dark:text-emerald-400">
-                      <Percent className="size-3.5" /> BENEFICIOS CON TU TOKEN
+          return (
+            <section className="py-12 mx-auto max-w-6xl px-5">
+              <div className={ambos ? "grid sm:grid-cols-2 gap-6" : "max-w-2xl mx-auto"}>
+                {/* Tarjeta Enlace: Programa de Referidos */}
+                {mostrarReferidos && (
+                  <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-b from-card via-card to-amber-500/5 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-amber-500 transition-all group">
+                    <div className="space-y-3">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-amber-600 dark:text-amber-400">
+                        <Users className="size-3.5" /> GANA EN EFECTIVO
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                        Programa de Referidos & Amigos Invitados
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                        Gana hasta <strong>{config.referidosPremioPrimero || "₡4,000,000"} en efectivo</strong> si tu recomendado resulta favorecido. Obtén tu enlace personal de padrino y participa en la tabla de líderes mensual.
+                      </p>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                      Descuentos en Comercios Aliados
-                    </h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                      Con tus mismos Tokens obtén <strong>descuentos de hasta 50%</strong> en talleres, autolavados, restaurantes, repuestos y tecnología en todo el país.
-                    </p>
+                    <div className="pt-6">
+                      <Button asChild variant="outline" className="w-full border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-bold group-hover:bg-amber-500 group-hover:text-black transition-all cursor-pointer">
+                        <Link to="/referidos">
+                          Conocer Programa de Referidos →
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
-                  <div className="pt-6">
-                    <Button asChild variant="outline" className="w-full border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 font-bold group-hover:bg-emerald-600 group-hover:text-white transition-all cursor-pointer">
-                      <Link to="/sponsors">
-                        Ver Catálogo de Comercios Aliados →
-                      </Link>
-                    </Button>
+                )}
+
+                {/* Tarjeta Enlace: Comercios Aliados */}
+                {mostrarSponsors && (
+                  <div className="rounded-3xl border border-border bg-gradient-to-b from-card via-card to-secondary/30 p-6 sm:p-8 flex flex-col justify-between shadow-lg hover:border-emerald-500/60 transition-all group">
+                    <div className="space-y-3">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black tracking-wide text-emerald-600 dark:text-emerald-400">
+                        <Percent className="size-3.5" /> BENEFICIOS CON TU TOKEN
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                        Descuentos en Comercios Aliados
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                        Con tus mismos Tokens obtén <strong>descuentos de hasta 50%</strong> en talleres, autolavados, restaurantes, repuestos y tecnología en todo el país.
+                      </p>
+                    </div>
+                    <div className="pt-6">
+                      <Button asChild variant="outline" className="w-full border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 font-bold group-hover:bg-emerald-600 group-hover:text-white transition-all cursor-pointer">
+                        <Link to="/sponsors">
+                          Ver Catálogo de Comercios Aliados →
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
+                )}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* MINI-SORTEOS SEMANALES (ACTIVABLE DESDE ADMIN) */}
         {config.mostrarSeccionMiniSorteos === true && (
