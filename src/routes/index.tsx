@@ -2098,7 +2098,7 @@ function IndexPage() {
                 className="w-full sm:w-auto h-11 text-xs font-bold"
                 onClick={() => setOpenGarantiaModal(false)}
               >
-                <Link to="/consultar">
+                <Link to="/validar">
                   Consultar mis Tokens
                 </Link>
               </Button>
