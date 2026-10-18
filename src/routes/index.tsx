@@ -1164,27 +1164,29 @@ function IndexPage() {
           </div>
 
           {/* Tarjetas de Transparencia y Respaldo Inmediatas */}
-          <div className="grid sm:grid-cols-2 gap-4 text-left mt-10 max-w-3xl mx-auto">
-            <div className="rounded-2xl border border-emerald-500/30 dark:bg-emerald-500/5 bg-emerald-500/10 p-4 space-y-1.5">
-              <span className="text-[10px] font-black uppercase tracking-wider dark:text-emerald-400 text-emerald-700 flex items-center gap-1">
-                <CheckCircle2 className="size-3 text-emerald-500 dark:text-emerald-400" /> Si llegamos al 100%
-              </span>
-              <h4 className="font-bold text-sm text-foreground">Cierre Inmediato del Sorteo</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana.
-              </p>
-            </div>
+          {config.mostrarTarjetasGarantia !== false && (
+            <div className="grid sm:grid-cols-2 gap-4 text-left mt-10 max-w-3xl mx-auto">
+              <div className="rounded-2xl border border-emerald-500/30 dark:bg-emerald-500/5 bg-emerald-500/10 p-4 space-y-1.5 shadow-sm">
+                <span className="text-[10px] font-black uppercase tracking-wider dark:text-emerald-400 text-emerald-700 flex items-center gap-1">
+                  <CheckCircle2 className="size-3 text-emerald-500 dark:text-emerald-400" /> {config.garantia1Badge || "Si llegamos al 100%"}
+                </span>
+                <h4 className="font-bold text-sm text-foreground">{config.garantia1Titulo || "Cierre Inmediato del Sorteo"}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {config.garantia1Desc || "La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana."}
+                </p>
+              </div>
 
-            <div className="rounded-2xl border border-amber-500/30 dark:bg-amber-500/5 bg-amber-500/10 p-4 space-y-1.5">
-              <span className="text-[10px] font-black uppercase tracking-wider dark:text-amber-400 text-amber-700 flex items-center gap-1">
-                <ShieldCheck className="size-3 text-amber-500 dark:text-amber-400" /> Garantía de Cumplimiento
-              </span>
-              <h4 className="font-bold text-sm text-foreground">La Edición Continúa</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.
-              </p>
+              <div className="rounded-2xl border border-amber-500/30 dark:bg-amber-500/5 bg-amber-500/10 p-4 space-y-1.5 shadow-sm">
+                <span className="text-[10px] font-black uppercase tracking-wider dark:text-amber-400 text-amber-700 flex items-center gap-1">
+                  <ShieldCheck className="size-3 text-amber-500 dark:text-amber-400" /> {config.garantia2Badge || "Garantía de Cumplimiento"}
+                </span>
+                <h4 className="font-bold text-sm text-foreground">{config.garantia2Titulo || "La Edición Continúa"}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {config.garantia2Desc || "Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez."}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </section>
       )}
 

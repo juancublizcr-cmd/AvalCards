@@ -304,6 +304,14 @@ export type Config = {
   paquetesBotonComprar?: string;
   paqueteTagPopular?: string;
   paqueteTagBest?: string;
+  // Tarjetas de Transparencia y Garantía (Bajo Paquetes de Tokens)
+  mostrarTarjetasGarantia?: boolean;
+  garantia1Badge?: string;
+  garantia1Titulo?: string;
+  garantia1Desc?: string;
+  garantia2Badge?: string;
+  garantia2Titulo?: string;
+  garantia2Desc?: string;
   // 6. Control de Secciones de la Landing (Poner / Quitar / Modificar)
   mostrarSeccionAperturaPremios?: boolean;
   mostrarSeccionTermometro?: boolean;
@@ -657,6 +665,14 @@ export const CONFIG_DEFAULT: Config = {
   paquetesBotonComprar: "Adquirir ahora →",
   paqueteTagPopular: "Más popular",
   paqueteTagBest: "EL MEJOR · MÁS VENDIDO",
+  // Tarjetas de Transparencia y Garantía (Bajo Paquetes de Tokens)
+  mostrarTarjetasGarantia: true,
+  garantia1Badge: "Si llegamos al 100%",
+  garantia1Titulo: "Cierre Inmediato del Sorteo",
+  garantia1Desc: "La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana.",
+  garantia2Badge: "Garantía de Cumplimiento",
+  garantia2Titulo: "La Edición Continúa",
+  garantia2Desc: "Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.",
   // 6. Control de Secciones de la Landing (Poner / Quitar / Modificar)
   mostrarSeccionAperturaPremios: true,
   mostrarSeccionTermometro: true,
@@ -1376,6 +1392,13 @@ export async function fetchConfig(): Promise<Config> {
       paquetesBotonComprar: extra.paquetesBotonComprar !== undefined ? extra.paquetesBotonComprar : CONFIG_DEFAULT.paquetesBotonComprar,
       paqueteTagPopular: extra.paqueteTagPopular !== undefined ? extra.paqueteTagPopular : CONFIG_DEFAULT.paqueteTagPopular,
       paqueteTagBest: extra.paqueteTagBest !== undefined ? extra.paqueteTagBest : CONFIG_DEFAULT.paqueteTagBest,
+      mostrarTarjetasGarantia: extra.mostrarTarjetasGarantia !== undefined ? extra.mostrarTarjetasGarantia : CONFIG_DEFAULT.mostrarTarjetasGarantia,
+      garantia1Badge: extra.garantia1Badge !== undefined ? extra.garantia1Badge : CONFIG_DEFAULT.garantia1Badge,
+      garantia1Titulo: extra.garantia1Titulo !== undefined ? extra.garantia1Titulo : CONFIG_DEFAULT.garantia1Titulo,
+      garantia1Desc: extra.garantia1Desc !== undefined ? extra.garantia1Desc : CONFIG_DEFAULT.garantia1Desc,
+      garantia2Badge: extra.garantia2Badge !== undefined ? extra.garantia2Badge : CONFIG_DEFAULT.garantia2Badge,
+      garantia2Titulo: extra.garantia2Titulo !== undefined ? extra.garantia2Titulo : CONFIG_DEFAULT.garantia2Titulo,
+      garantia2Desc: extra.garantia2Desc !== undefined ? extra.garantia2Desc : CONFIG_DEFAULT.garantia2Desc,
       footerMostrarColumnaPlataforma: extra.footerMostrarColumnaPlataforma !== undefined ? extra.footerMostrarColumnaPlataforma : CONFIG_DEFAULT.footerMostrarColumnaPlataforma,
       footerMostrarImpactoSocial: extra.footerMostrarImpactoSocial !== undefined ? extra.footerMostrarImpactoSocial : CONFIG_DEFAULT.footerMostrarImpactoSocial,
       footerMostrarReferidos: extra.footerMostrarReferidos !== undefined ? extra.footerMostrarReferidos : CONFIG_DEFAULT.footerMostrarReferidos,

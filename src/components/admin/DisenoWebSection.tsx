@@ -120,6 +120,13 @@ export function DisenoWebSection({
         paquetesBotonComprar: CONFIG_DEFAULT.paquetesBotonComprar,
         paqueteTagPopular: CONFIG_DEFAULT.paqueteTagPopular,
         paqueteTagBest: CONFIG_DEFAULT.paqueteTagBest,
+        mostrarTarjetasGarantia: CONFIG_DEFAULT.mostrarTarjetasGarantia,
+        garantia1Badge: CONFIG_DEFAULT.garantia1Badge,
+        garantia1Titulo: CONFIG_DEFAULT.garantia1Titulo,
+        garantia1Desc: CONFIG_DEFAULT.garantia1Desc,
+        garantia2Badge: CONFIG_DEFAULT.garantia2Badge,
+        garantia2Titulo: CONFIG_DEFAULT.garantia2Titulo,
+        garantia2Desc: CONFIG_DEFAULT.garantia2Desc,
         mostrarSeccionAperturaPremios: CONFIG_DEFAULT.mostrarSeccionAperturaPremios,
         mostrarSeccionTermometro: CONFIG_DEFAULT.mostrarSeccionTermometro,
         mostrarSeccionDetallePremios: CONFIG_DEFAULT.mostrarSeccionDetallePremios,
@@ -1031,6 +1038,97 @@ export function DisenoWebSection({
                 onChange={(e) => setBorrador({ ...borrador, paqueteTagBest: e.target.value })}
               />
             </div>
+          </div>
+
+          {/* Tarjetas de Transparencia y Respaldo (Bajo los Paquetes) */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+              <div>
+                <h4 className="text-base font-bold flex items-center gap-2">
+                  <ShieldCheck className="size-5 text-emerald-500" /> Tarjetas de Transparencia y Garantía (Bajo los Paquetes)
+                </h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Las 2 tarjetas informativas ubicadas directamente debajo de los paquetes de tokens.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground">
+                  {borrador.mostrarTarjetasGarantia !== false ? "Visibles" : "Ocultas"}
+                </span>
+                <Switch
+                  checked={borrador.mostrarTarjetasGarantia !== false}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarTarjetasGarantia: v })}
+                />
+              </div>
+            </div>
+
+            {borrador.mostrarTarjetasGarantia !== false && (
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Tarjeta 1: Verde (Cierre Inmediato) */}
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle2 className="size-4" /> Tarjeta 1 (Verde - Cierre Inmediato)
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Badge Superior</Label>
+                    <Input
+                      value={borrador.garantia1Badge ?? ""}
+                      placeholder="Si llegamos al 100%"
+                      onChange={(e) => setBorrador({ ...borrador, garantia1Badge: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Título</Label>
+                    <Input
+                      value={borrador.garantia1Titulo ?? ""}
+                      placeholder="Cierre Inmediato del Sorteo"
+                      onChange={(e) => setBorrador({ ...borrador, garantia1Titulo: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Descripción</Label>
+                    <Textarea
+                      rows={3}
+                      value={borrador.garantia1Desc ?? ""}
+                      placeholder="La edición se cierra y el ganador se define oficialmente con la Emisión Oficial de la JPS más cercana."
+                      onChange={(e) => setBorrador({ ...borrador, garantia1Desc: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                {/* Tarjeta 2: Ámbar (Garantía de Cumplimiento) */}
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400">
+                    <ShieldCheck className="size-4" /> Tarjeta 2 (Ámbar - Garantía de Cumplimiento)
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Badge Superior</Label>
+                    <Input
+                      value={borrador.garantia2Badge ?? ""}
+                      placeholder="Garantía de Cumplimiento"
+                      onChange={(e) => setBorrador({ ...borrador, garantia2Badge: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Título</Label>
+                    <Input
+                      value={borrador.garantia2Titulo ?? ""}
+                      placeholder="La Edición Continúa"
+                      onChange={(e) => setBorrador({ ...borrador, garantia2Titulo: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Descripción</Label>
+                    <Textarea
+                      rows={3}
+                      value={borrador.garantia2Desc ?? ""}
+                      placeholder="Si al vencer el contador aún falta meta para cubrir el vehículo, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez."
+                      onChange={(e) => setBorrador({ ...borrador, garantia2Desc: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

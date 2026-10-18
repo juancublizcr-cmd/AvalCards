@@ -382,6 +382,16 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             activo={borrador.mostrarCtaHero !== false}
             onToggle={() => toggleSwitch("mostrarCtaHero", borrador.mostrarCtaHero, true)}
           />
+
+          {/* 17. Tarjetas de Transparencia & Respaldo */}
+          <CardInterruptor
+            numero="17"
+            titulo="Tarjetas de Transparencia y Garantía"
+            desc="Las 2 tarjetas informativas ('Si llegamos al 100%' y 'Garantía de Cumplimiento') situadas bajo los paquetes de tokens."
+            tip="🛡️ Edita sus textos en Diseño Web > Paquetes de Tokens."
+            activo={borrador.mostrarTarjetasGarantia !== false}
+            onToggle={() => toggleSwitch("mostrarTarjetasGarantia", borrador.mostrarTarjetasGarantia, true)}
+          />
         </div>
       </div>
 
