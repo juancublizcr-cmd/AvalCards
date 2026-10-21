@@ -545,6 +545,14 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
                 activo={borrador.mostrarTarjetaDudas === true}
                 onToggle={() => toggleSwitch("mostrarTarjetaDudas", borrador.mostrarTarjetaDudas, false)}
               />
+              <CardInterruptor
+                numero="12B"
+                titulo="Banner CTA Final ('¿Listo para estrenar?')"
+                desc="Caja luminosa 'Edición Limitada Oficial' antes de Preguntas Frecuentes con botón para adquirir tokens."
+                tip="🎟️ Activa u oculta el banner llamativo ubicado justo antes de las Preguntas Frecuentes."
+                activo={borrador.mostrarBannerCtaFinal === true}
+                onToggle={() => toggleSwitch("mostrarBannerCtaFinal", borrador.mostrarBannerCtaFinal, false)}
+              />
             </div>
           </div>
 

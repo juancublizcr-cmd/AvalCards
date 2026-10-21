@@ -256,6 +256,7 @@ export type Config = {
   mostrarSeccionGanadores?: boolean;
   mostrarSeccionFaqs?: boolean;
   mostrarTarjetaDudas?: boolean;
+  mostrarBannerCtaFinal?: boolean;
   mostrarSalaRemates?: boolean;
   fomoActivo?: boolean;
   aiActivo?: boolean;
@@ -632,6 +633,7 @@ export const CONFIG_DEFAULT: Config = {
   mostrarSeccionGanadores: false,
   mostrarSeccionFaqs: true,
   mostrarTarjetaDudas: false,
+  mostrarBannerCtaFinal: false,
   mostrarSalaRemates: false,
   fomoActivo: false,
   aiActivo: false,
@@ -1376,6 +1378,7 @@ export async function fetchConfig(): Promise<Config> {
       mostrarSeccionGanadores: extra.mostrarSeccionGanadores !== undefined ? extra.mostrarSeccionGanadores : CONFIG_DEFAULT.mostrarSeccionGanadores,
       mostrarSeccionFaqs: extra.mostrarSeccionFaqs !== undefined ? extra.mostrarSeccionFaqs : CONFIG_DEFAULT.mostrarSeccionFaqs,
       mostrarTarjetaDudas: extra.mostrarTarjetaDudas !== undefined ? Boolean(extra.mostrarTarjetaDudas) : CONFIG_DEFAULT.mostrarTarjetaDudas,
+      mostrarBannerCtaFinal: extra.mostrarBannerCtaFinal !== undefined ? Boolean(extra.mostrarBannerCtaFinal) : CONFIG_DEFAULT.mostrarBannerCtaFinal,
       mostrarSalaRemates: extra.mostrarSalaRemates !== undefined ? extra.mostrarSalaRemates : CONFIG_DEFAULT.mostrarSalaRemates,
       heroSubtitulo:
         extra.heroSubtitulo !== undefined &&

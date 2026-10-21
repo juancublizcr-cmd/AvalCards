@@ -1931,7 +1931,7 @@ function IndexPage() {
         )}
 
         {/* BANNER CTA FINAL ENFOCADO 100% EN TOKENS */}
-        {config.mostrarSeccionPaquetes !== false && (
+        {config.mostrarBannerCtaFinal === true && config.mostrarSeccionPaquetes !== false && (
           <section className="py-16 mx-auto max-w-5xl px-5 text-center">
             <div className="rounded-3xl border-2 border-primary/50 bg-gradient-to-b from-card via-card to-primary/10 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
               <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-primary/15 blur-[100px]" />

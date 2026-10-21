@@ -139,6 +139,7 @@ export function DisenoWebSection({
         mostrarSeccionGanadores: CONFIG_DEFAULT.mostrarSeccionGanadores,
         mostrarSeccionFaqs: CONFIG_DEFAULT.mostrarSeccionFaqs,
         mostrarTarjetaDudas: CONFIG_DEFAULT.mostrarTarjetaDudas,
+        mostrarBannerCtaFinal: CONFIG_DEFAULT.mostrarBannerCtaFinal,
         mostrarSalaRemates: CONFIG_DEFAULT.mostrarSalaRemates,
         heroTituloApertura: CONFIG_DEFAULT.heroTituloApertura,
         heroSubtituloApertura: CONFIG_DEFAULT.heroSubtituloApertura,

@@ -809,6 +809,21 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 2. **Sincronización en el Modal y Encabezados:**
    - En `PremioModal.tsx` y en el podio de 3° Lugar de `index.tsx`, se retiraron todas las menciones a consola (`"Premio en Efectivo / Consola"` &rarr; `"Premio en Efectivo Líquido"`, `"Monto Oficial: ₡4,000,000 CRC Netos"`, *"con acta notarial de entrega formal"*).
 
+---
+
+## 🚀 Hito 43: Switch Administrativo para Ocultar / Mostrar el Banner CTA Final ("¿Listo para estrenar tu vehículo soñado?")
+
+1. **Nuevo Parámetro y Ocultación Inmediata por Defecto:**
+   - Se creó el parámetro `mostrarBannerCtaFinal?: boolean` en `src/lib/admin-store.ts`.
+   - Se configuró con valor por defecto `false`, ocultando de inmediato el banner de la landing page pública como solicitó el usuario.
+   - En `src/routes/index.tsx`, la sección `¿Listo para estrenar tu vehículo soñado?` queda condicionada a `{config.mostrarBannerCtaFinal === true && ...}`.
+
+2. **Interruptor Administrativo en Centro de Control (`/admin`):**
+   - Se agregó en **⚡ Centro de Control** (dentro del grupo *5. Información, Proceso & Soporte*):
+     - **Interruptor 12B:** *"Banner CTA Final ('¿Listo para estrenar?') - Caja luminosa 'Edición Limitada Oficial' antes de Preguntas Frecuentes con botón para adquirir tokens."*
+   - Permite al administrador encenderlo o apagarlo en tiempo real con 1 solo clic.
+
+
 
 
 
