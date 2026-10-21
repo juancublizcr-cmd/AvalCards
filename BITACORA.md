@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 18 de Octubre de 2026 - 02:15 PM (Hito 33: Meta Mínima Configurable, Garantía de Cumplimiento Notarial y Gestor de Ciclos de Ediciones para Arrancar desde Cero con los Mismos Productos)  
+**Última actualización:** 21 de Octubre de 2026 - 04:20 PM (Hito 43: Switch Administrativo para Ocultar / Mostrar el Banner CTA Final "¿Listo para estrenar tu vehículo soñado?", Desacoplamiento de Botones y Purificación de Efectivo Líquido)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
