@@ -672,3 +672,21 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Controles añadidos en:
      - **Centro de Control** (`CentroControlSection.tsx` &rarr; Grupo 2: *Cabecera & Hero Principal* &rarr; Card 5).
      - **Diseño Web** (`DisenoWebSection.tsx` &rarr; Bloque *Quiénes Somos, Subtítulo y Botones*).
+
+---
+
+## 🚀 Hito 34: Paquetes de Tokens Interactivos para Compra Inmediata dentro del Modal de Ficha Técnica del Vehículo (`PremioModal.tsx`)
+
+1. **Reemplazo del Cuadro Informativo Estático y Botón Deshabilitado:**
+   - Se removió el contenedor descriptivo *"COMPRÁ Y GANÁ"* y el botón bloqueado *"⏳ ¡MUY PRONTO! — Tokens próximamente disponibles"*.
+   - Se integró directamente la cuadrícula interactiva de compra de paquetes de tokens (3, 6, 12, 24 tokens) optimizada y compacta para visualización móvil y escritorio (`grid-cols-2 sm:grid-cols-4`).
+
+2. **Conversión de Compra Directa e Instantánea:**
+   - Cada tarjeta de paquete es interactiva: muestra la cantidad destacada, etiqueta *"Tokens Digitales"*, precio en colones y el CTA *"Adquirir ahora →"*.
+   - El paquete más popular cuenta con badge de flama dorada *"MÁS VENDIDO"* y resaltado perimetral ámbar.
+   - Al hacer clic en cualquier paquete dentro de la ficha del vehículo, el modal de especificaciones se cierra automáticamente y abre en milisegundos el modal de compra (`StickersModal`) con el paquete seleccionado pre-cargado para seleccionar números y pagar de inmediato.
+
+3. **Garantías y Soporte Integrados:**
+   - Se incorporó un cintillo compacto de 3 garantías verificables (*Asignación 100% digital*, *Resultados con la JPS*, *Traspaso y marchamo 100% pagos*).
+   - Botón directo de consulta rápida vía WhatsApp (*"¿Dudas con este vehículo? Consultar por WhatsApp"*).
+

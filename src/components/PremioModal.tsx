@@ -200,94 +200,98 @@ export function PremioModal({
             ))}
           </div>
 
-          {/* BLOQUE DESTACADO: "COMPRÁ Y GANÁ" */}
-          <div className="rounded-2xl border-2 border-amber-500/60 bg-gradient-to-br from-amber-500/15 via-zinc-900 to-amber-950/20 p-5 shadow-inner space-y-3">
-            <div className="flex items-center gap-2 text-amber-400 font-display text-lg uppercase tracking-wide">
-              <Sparkles className="size-5 text-amber-400 fill-amber-400" />
-              <span>Comprá y Ganá</span>
+          {/* PAQUETES DE TOKENS DIRECTOS PARA COMPRAR AL INSTANTE */}
+          <div className="pt-2 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-1.5 pb-2 border-b border-border/60">
+              <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-500">
+                <Ticket className="size-4" /> Elige tu Paquete y Participa Ahora
+              </div>
+              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                Entrega Inmediata
+              </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed break-words">
-              Al adquirir tu paquete de Tokens digitales oficiales participas directamente por este premio y todas las entregas de la edición:
-            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {(paquetes.length > 0 ? paquetes : [
+                { cantidad: 3, precio: 4000, popular: false },
+                { cantidad: 6, precio: 8000, popular: true, tag: "MÁS VENDIDO" },
+                { cantidad: 12, precio: 16000, popular: false },
+                { cantidad: 24, precio: 32000, popular: false },
+              ]).map((p) => {
+                const esPopular = p.popular || (sorteo.modalidadVenta === "multiplos_3" ? p.cantidad === 6 : p.cantidad === 8);
+                const tagTexto = p.tag || (esPopular ? "MÁS VENDIDO" : null);
 
-            <ul className="space-y-2 text-xs text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                <span className="break-words">
-                  <strong className="text-foreground">Asignación 100% Digital:</strong> Tus números quedan registrados de inmediato en tu dispositivo y validados en Supabase.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                <span className="break-words">
-                  <strong className="text-foreground">Resultados Transparentes JPS:</strong> El ganador se define con la emisión oficial pública de la Junta de Protección Social.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                <span className="break-words">
-                  <strong className="text-foreground">Cero Gastos Ocultos:</strong> Traspaso notarial, placas, marchamo 2026 y entrega garantizada con tanque lleno por Aval Community CR.
-                </span>
-              </li>
-              {config.supertokenActivo !== false && (
-                <li className="flex items-start gap-2 text-amber-300 font-semibold">
-                  <Crown className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                  <span className="break-words">
-                    Bono SuperToken: ¡Suma hasta +{superSimbolo}{formatNumber(bonoSupertoken)} {superCodigo} en efectivo directo si tu token resulta favorecido!
-                  </span>
-                </li>
-              )}
-            </ul>
-          </div>
-
-          {/* Resumen de Paquetes Disponibles — solo informativo, deshabilitado */}
-          {paquetes.length > 0 && (
-            <div className="pt-1">
-              <div className="text-[11px] font-bold text-muted-foreground uppercase mb-2 flex flex-wrap items-center justify-between gap-1">
-                <span>Paquetes de Tokens Disponibles:</span>
-                <span className="text-amber-400 font-semibold">Desde solo ₡4 000</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 opacity-50 pointer-events-none select-none">
-                {paquetes.slice(0, 4).map((p, idx) => (
-                  <div
-                    key={idx}
-                    className="p-2.5 rounded-xl border border-border bg-card text-center"
+                return (
+                  <button
+                    key={p.cantidad}
+                    type="button"
+                    onClick={() => {
+                      onOpenChange(false);
+                      onSelectTokens(p);
+                    }}
+                    className={`group relative text-left p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-lg flex flex-col justify-between ${
+                      esPopular
+                        ? "border-amber-500/80 bg-gradient-to-b from-amber-500/20 via-zinc-900 to-zinc-900 ring-1 ring-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+                        : "border-border/80 bg-secondary/30 hover:border-primary/60"
+                    }`}
                   >
-                    <div className="text-xs font-bold text-foreground">
-                      {p.cantidad} Tokens
+                    {tagTexto && (
+                      <span className="absolute -top-2.5 right-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-[9px] font-black text-black shadow-sm flex items-center gap-0.5">
+                        <Flame className="size-2.5 fill-black text-black" /> {tagTexto}
+                      </span>
+                    )}
+
+                    <div>
+                      <div className={`font-display text-3xl sm:text-4xl ${esPopular ? "text-amber-400" : "text-primary"}`}>
+                        {p.cantidad}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5 font-bold">
+                        Tokens Digitales
+                      </div>
                     </div>
-                    <div className="text-[11px] text-muted-foreground font-mono">
-                      ₡{formatNumber(p.precio)}
+
+                    <div className="mt-3 pt-2 border-t border-border/50">
+                      <div className="text-base sm:text-lg font-black text-foreground">
+                        ₡{formatNumber(p.precio)}
+                      </div>
+                      <div className="mt-1 text-[11px] font-bold text-amber-500 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                        Adquirir ahora →
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Garantías compactas */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-1.5 bg-secondary/20 rounded-lg p-2 border border-border/40">
+                <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+                <span>Asignación 100% digital</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-secondary/20 rounded-lg p-2 border border-border/40">
+                <CheckCircle2 className="size-3.5 text-amber-400 shrink-0" />
+                <span>Resultados con la JPS</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-secondary/20 rounded-lg p-2 border border-border/40">
+                <CheckCircle2 className="size-3.5 text-sky-400 shrink-0" />
+                <span>Traspaso y marchamo 100% pagos</span>
               </div>
             </div>
-          )}
 
-          {/* CTA — MUY PRONTO (deshabilitado) */}
-          <div className="pt-2 flex flex-col gap-3">
-            <Button
-              variant="outline"
-              size="lg"
-              disabled
-              className="w-full py-5 text-sm font-bold cursor-not-allowed opacity-55 border-zinc-600 text-zinc-400 bg-zinc-900/60 flex items-center justify-center gap-2"
-            >
-              <Ticket className="size-4 shrink-0" />
-              ⏳ ¡MUY PRONTO! — Tokens próximamente disponibles
-            </Button>
-
-            <Button
-              variant="outline"
-              size="lg"
-              asChild
-              className="w-full py-5 text-sm border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 flex items-center justify-center gap-2"
-            >
-              <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="size-4 shrink-0" /> Consultar por WhatsApp
-              </a>
-            </Button>
+            {/* Botón WhatsApp secundario por si tienen dudas */}
+            <div className="pt-1">
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="w-full py-4 text-xs border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 flex items-center justify-center gap-2"
+              >
+                <a href={waUrl} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="size-3.5 shrink-0" /> ¿Dudas con este vehículo? Consultar por WhatsApp
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
