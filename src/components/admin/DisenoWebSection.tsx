@@ -359,6 +359,19 @@ export function DisenoWebSection({
             </div>
 
             <div className="space-y-4">
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-secondary/30">
+                <div className="space-y-0.5">
+                  <div className="text-xs font-bold text-foreground">Mostrar Titular y Párrafo Explicativo en la Cabecera</div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Controla si se muestra el titular principal ("ESTRENA TU VEHÍCULO 0KM...") y el texto descriptivo en la landing page.
+                  </p>
+                </div>
+                <Switch
+                  checked={borrador.mostrarHeroTitular === true}
+                  onCheckedChange={(v) => setBorrador({ ...borrador, mostrarHeroTitular: v })}
+                />
+              </div>
+
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-amber-400">
                   Quiénes Somos / Presentación Oficial de la Empresa

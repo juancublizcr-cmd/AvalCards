@@ -665,3 +665,10 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Importaciones corregidas en `CentroControlSection.tsx` (`RefreshCw`, `ShieldCheck`).
    - Corrección de enlaces de navegación interna a `/validar`.
    - Verificación de compilación exitosa con `npm run build` y pre-renderizado de todas las rutas estáticas.
+
+7. **Interruptor para Ocultar Titular y Texto Explicativo del Hero (`mostrarHeroTitular`):**
+   - Incorporación del interruptor `mostrarHeroTitular` (desactivado por defecto) para remover el gran titular *"ESTRENA TU VEHÍCULO 0KM HOY MISMO"* y el párrafo descriptivo de la empresa.
+   - La landing page queda más directa y enfocada en los vehículos, el reloj de cuenta regresiva y la adquisición de tokens.
+   - Controles añadidos en:
+     - **Centro de Control** (`CentroControlSection.tsx` &rarr; Grupo 2: *Cabecera & Hero Principal* &rarr; Card 5).
+     - **Diseño Web** (`DisenoWebSection.tsx` &rarr; Bloque *Quiénes Somos, Subtítulo y Botones*).

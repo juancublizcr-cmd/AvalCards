@@ -644,33 +644,37 @@ function IndexPage() {
                 )}
               </div>
 
-            <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
-              {config.ventasActivas ? (
-                sorteo.heroTitulo && !sorteo.heroTitulo.toLowerCase().includes("está por llegar") && !sorteo.heroTitulo.toLowerCase().includes("esta por llegar") ? (
-                  sorteo.heroTitulo
-                ) : (
-                  <>
-                    ESTRENA TU <span className="text-fire">VEHÍCULO 0KM</span> HOY MISMO
-                  </>
-                )
-              ) : (
-                sorteo.heroTitulo ? (
-                  sorteo.heroTitulo.replace(/\besta\s+por\s+llegar\b/gi, "está por llegar")
-                ) : (
-                  <>UNA NUEVA FORMA DE PARTICIPAR ESTÁ POR LLEGAR</>
-                )
-              )}
-            </h1>
+            {config.mostrarHeroTitular && (
+              <>
+                <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight uppercase">
+                  {config.ventasActivas ? (
+                    sorteo.heroTitulo && !sorteo.heroTitulo.toLowerCase().includes("está por llegar") && !sorteo.heroTitulo.toLowerCase().includes("esta por llegar") ? (
+                      sorteo.heroTitulo
+                    ) : (
+                      <>
+                        ESTRENA TU <span className="text-fire">VEHÍCULO 0KM</span> HOY MISMO
+                      </>
+                    )
+                  ) : (
+                    sorteo.heroTitulo ? (
+                      sorteo.heroTitulo.replace(/\besta\s+por\s+llegar\b/gi, "está por llegar")
+                    ) : (
+                      <>UNA NUEVA FORMA DE PARTICIPAR ESTÁ POR LLEGAR</>
+                    )
+                  )}
+                </h1>
 
-            <p className="mx-auto mt-6 max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-              {cierrePrevio
-                ? `Las ventas para esta edición han finalizado formalmente 2 horas antes para auditoría. El sorteo oficial inicia a las ${formatearHora12(sorteo.horaSorteo || "19:30")}.`
-                : enCurso
-                ? "El sorteo oficial se encuentra en transmisión y verificación de números favorecidos. Consulta tus tokens en el validador."
-                : (config.heroSubtitulo && !config.heroSubtitulo.includes("transparente de Costa Rica. Auditados")
-                    ? config.heroSubtitulo
-                    : "Plataforma costarricense de eventos promocionales digitales y sorteos de vehículos de alta gama, diseñada para brindar una experiencia 100% digital, transparente y con total respaldo legal.")}
-            </p>
+                <p className="mx-auto mt-6 max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+                  {cierrePrevio
+                    ? `Las ventas para esta edición han finalizado formalmente 2 horas antes para auditoría. El sorteo oficial inicia a las ${formatearHora12(sorteo.horaSorteo || "19:30")}.`
+                    : enCurso
+                    ? "El sorteo oficial se encuentra en transmisión y verificación de números favorecidos. Consulta tus tokens en el validador."
+                    : (config.heroSubtitulo && !config.heroSubtitulo.includes("transparente de Costa Rica. Auditados")
+                        ? config.heroSubtitulo
+                        : "Plataforma costarricense de eventos promocionales digitales y sorteos de vehículos de alta gama, diseñada para brindar una experiencia 100% digital, transparente y con total respaldo legal.")}
+                </p>
+              </>
+            )}
 
             {/* Logo Aval Community CR */}
             <div className="mt-8 mb-4 flex justify-center">

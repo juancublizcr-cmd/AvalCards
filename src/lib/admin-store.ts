@@ -226,6 +226,7 @@ export type Config = {
   // Visibilidad de elementos del header/hero
   mostrarBarraNotificacion?: boolean;
   mostrarNavegacion?: boolean;
+  mostrarHeroTitular?: boolean;
   mostrarBadgeSorteo?: boolean;
   mostrarBadgePopular?: boolean;
   mostrarBadgeJPS?: boolean;
@@ -602,6 +603,7 @@ export const CONFIG_DEFAULT: Config = {
   mostrarBadgeJPS: true,
   mostrarBarraNotificacion: true,
   mostrarNavegacion: true,
+  mostrarHeroTitular: false,
   mostrarSeccionTermometro: true,
   mostrarSeccionPaquetes: true,
   mostrarCtaHero: true,
@@ -1343,6 +1345,7 @@ export async function fetchConfig(): Promise<Config> {
       mostrarBadgeJPS: extra.mostrarBadgeJPS !== undefined ? extra.mostrarBadgeJPS : CONFIG_DEFAULT.mostrarBadgeJPS,
       mostrarBarraNotificacion: extra.mostrarBarraNotificacion !== undefined ? extra.mostrarBarraNotificacion : CONFIG_DEFAULT.mostrarBarraNotificacion,
       mostrarNavegacion: extra.mostrarNavegacion !== undefined ? extra.mostrarNavegacion : CONFIG_DEFAULT.mostrarNavegacion,
+      mostrarHeroTitular: extra.mostrarHeroTitular !== undefined ? extra.mostrarHeroTitular : CONFIG_DEFAULT.mostrarHeroTitular,
       mostrarSeccionTermometro: extra.mostrarSeccionTermometro !== undefined ? extra.mostrarSeccionTermometro : CONFIG_DEFAULT.mostrarSeccionTermometro,
       mostrarSeccionPaquetes: extra.mostrarSeccionPaquetes !== undefined ? extra.mostrarSeccionPaquetes : CONFIG_DEFAULT.mostrarSeccionPaquetes,
       mostrarCtaHero: extra.mostrarCtaHero !== undefined ? extra.mostrarCtaHero : CONFIG_DEFAULT.mostrarCtaHero,

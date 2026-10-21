@@ -379,6 +379,14 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
                 activo={borrador.mostrarBarraNotificacion !== false}
                 onToggle={() => toggleSwitch("mostrarBarraNotificacion", borrador.mostrarBarraNotificacion, true)}
               />
+              <CardInterruptor
+                numero="5"
+                titulo="Titular y Texto del Hero ('ESTRENA TU VEHÍCULO...')"
+                desc="Muestra u oculta el gran titular 'ESTRENA TU VEHÍCULO 0KM HOY MISMO' y el párrafo explicativo de la empresa."
+                tip="💡 Apágalo para una cabecera más directa, limpia y sin textos largos."
+                activo={borrador.mostrarHeroTitular === true}
+                onToggle={() => toggleSwitch("mostrarHeroTitular", borrador.mostrarHeroTitular, false)}
+              />
             </div>
           </div>
 
@@ -389,7 +397,7 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <CardInterruptor
-                numero="5"
+                numero="6"
                 titulo="Zona de Paquetes de Tokens"
                 desc="Zona de compra de tokens. Al estar apagada, la sección completa desaparece de la landing page para periodos de prelanzamiento o suspenso."
                 tip="💡 Edita precios y etiquetas en 'Textos Web > Paquetes & Transparencia'."
@@ -397,7 +405,7 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
                 onToggle={() => toggleSwitch("mostrarSeccionPaquetes", borrador.mostrarSeccionPaquetes, true)}
               />
               <CardInterruptor
-                numero="6"
+                numero="7"
                 titulo="Tarjetas de Transparencia y Garantía"
                 desc="Las 2 tarjetas informativas ('Si llegamos al 80%' y 'Garantía de Cumplimiento') situadas bajo los paquetes de tokens."
                 tip="🛡️ Informa a los usuarios sobre las garantías oficiales y el traslado de fecha si no se cumple la meta."
