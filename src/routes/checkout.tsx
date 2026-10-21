@@ -54,6 +54,11 @@ type MetodoPago = "sinpe" | "tarjeta" | "paypal" | "applepay" | "googlepay" | "c
 
 const TIPO_CAMBIO_USD = 515; // 1 USD = ₡515 CRC
 
+function formatNumber(val: number | string): string {
+  const num = Math.round(Number(val) || 0);
+  return num.toLocaleString("es-CR");
+}
+
 const esquema = z.object({
   nombre: z.string().trim().min(3, "Ingresa tu nombre completo (mínimo 3 caracteres)").max(100),
   telefono: z

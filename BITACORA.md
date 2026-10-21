@@ -768,6 +768,18 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
      - Reducción de padding en botones de acción y en la sección de ficha técnica.
    - **Resultado:** La sección principal de selección y compra de paquetes de tokens (`#paquetes-compra`) ahora sube notablemente en la pantalla, quedando accesible de inmediato para el visitante tras visualizar los premios principales.
 
+---
+
+## 🚀 Hito 40: Corrección de Runtime en Checkout (`ReferenceError: formatNumber is not defined`)
+
+1. **Diagnóstico del Error en `/checkout`:**
+   - En la consola del navegador se disparó el error: `ReferenceError: formatNumber is not defined at Checkout (checkout.tsx:995:25)`.
+   - Ocurría en la tarjeta de SINPE Móvil manual al formatear el monto exacto a transferir: `₡{formatNumber(seleccion?.precio ?? 4000)}`.
+2. **Solución Implementada:**
+   - Se definió la función utilitaria `formatNumber(val)` directamente en `src/routes/checkout.tsx` usando `(val).toLocaleString("es-CR")`, formateando los montos de paquetes de forma robusta e idéntica al resto de la aplicación.
+   - Build de producción y pre-renderizado estático comprobados al 100%.
+
+
 
 
 
