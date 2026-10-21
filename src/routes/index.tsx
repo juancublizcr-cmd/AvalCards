@@ -706,17 +706,107 @@ function IndexPage() {
                   </p>
                 </div>
 
-                {/* Banner Dinámico de Dinámica / Regla de Premiación */}
-                {sorteo.mostrarDinamica !== false && Boolean(textoDinamicaFinal) && (
-                  <div className="mt-4 mb-8 mx-auto max-w-3xl rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/10 p-5 text-center shadow-lg">
-                    <div className="flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wider dark:text-amber-400 text-amber-700">
-                      <Award className="size-4 text-amber-500 dark:text-amber-400" /> Dinámica Oficial de Premiación
+                {/* GRID DÚO: DINÁMICA OFICIAL + TERMÓMETRO / CONTADOR EN VIVO (LADO A LADO) */}
+                <div className="mt-4 mb-6 mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-3.5 items-stretch text-left">
+                  {/* LADO IZQUIERDO: DINÁMICA OFICIAL DE PREMIACIÓN */}
+                  {sorteo.mostrarDinamica !== false && Boolean(textoDinamicaFinal) && (
+                    <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-card to-amber-500/5 p-4 sm:p-4.5 flex flex-col justify-between shadow-md">
+                      <div>
+                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider dark:text-amber-400 text-amber-700">
+                          <Award className="size-4 text-amber-500 dark:text-amber-400" /> Dinámica Oficial de Premiación
+                        </div>
+                        <p className="mt-2 text-xs sm:text-sm font-semibold text-foreground leading-relaxed">
+                          {textoDinamicaFinal}
+                        </p>
+                      </div>
+                      <div className="mt-3 pt-2 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <CheckCircle2 className="size-3 text-emerald-400" /> Emisión Oficial JPS
+                        </span>
+                        <span className="font-bold text-amber-500">100% Auditado</span>
+                      </div>
                     </div>
-                    <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-relaxed">
-                      {textoDinamicaFinal}
-                    </p>
-                  </div>
-                )}
+                  )}
+
+                  {/* LADO DERECHO: TERMÓMETRO Y CONTADOR EN VIVO */}
+                  {config.mostrarSeccionTermometro !== false && (
+                    <div
+                      onClick={garantiaCumplimientoActiva ? () => setOpenGarantiaModal(true) : undefined}
+                      className={`rounded-2xl border-2 p-4 sm:p-4.5 flex flex-col justify-between shadow-md transition-all ${
+                        garantiaCumplimientoActiva
+                          ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95 shadow-[0_0_25px_rgba(245,158,11,0.2)] cursor-pointer hover:border-amber-400"
+                          : enCurso
+                          ? "border-red-500/70 bg-gradient-to-b from-card/95 via-red-950/20 to-card/95 shadow-[0_0_25px_rgba(239,68,68,0.2)]"
+                          : cierrePrevio
+                          ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95"
+                          : "border-primary/40 bg-gradient-to-b from-card/95 via-card/80 to-card/95"
+                      }`}
+                    >
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-border/50 text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <span className="relative flex h-2 w-2">
+                              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                                garantiaCumplimientoActiva ? "bg-amber-400" : enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
+                              }`}></span>
+                              <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                                garantiaCumplimientoActiva ? "bg-amber-500" : enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
+                              }`}></span>
+                            </span>
+                            <span className={`font-black uppercase tracking-wider text-[11px] ${
+                              garantiaCumplimientoActiva
+                                ? "text-amber-500 dark:text-amber-400"
+                                : enCurso
+                                ? "text-red-500 dark:text-red-400"
+                                : cierrePrevio
+                                ? "text-amber-600 dark:text-amber-400"
+                                : "text-emerald-600 dark:text-emerald-400"
+                            }`}>
+                              {garantiaCumplimientoActiva
+                                ? `🛡️ Garantía Activa (${metaMinimaSorteo}%)`
+                                : enCurso
+                                ? "🎯 Sorteo en Curso"
+                                : cierrePrevio
+                                ? "🔒 Ventas Cerradas"
+                                : config.ventasActivas
+                                ? "Ventas Abiertas en Vivo"
+                                : "Preventa Exclusiva"}
+                            </span>
+                          </div>
+                          <span className="font-mono text-base font-black dark:text-amber-400 text-amber-600 flex items-center gap-1" suppressHydrationWarning>
+                            <Flame className="size-4 text-amber-500 fill-amber-500" />
+                            {`${progreso}% Vendido`}
+                          </span>
+                        </div>
+
+                        {/* Barra Brillante */}
+                        <div className="h-2.5 w-full overflow-hidden rounded-full dark:bg-secondary/80 bg-slate-100 p-0.5 border dark:border-amber-500/30 border-slate-300">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                            style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Fecha y Contador en vivo */}
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px] text-muted-foreground pt-2 border-t border-border/40 mt-2">
+                        <span className="flex items-center gap-1 truncate" suppressHydrationWarning>
+                          <Calendar className="size-3 text-primary shrink-0" />
+                          <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)}</strong>
+                        </span>
+                        <span className="font-mono font-bold dark:text-amber-400 text-amber-600 text-[11px] shrink-0" suppressHydrationWarning>
+                          {garantiaCumplimientoActiva
+                            ? `🛡️ En venta continua`
+                            : enCurso
+                            ? "🎯 En vivo"
+                            : cierrePrevio
+                            ? `⏳ ${t.h}h ${t.m}m ${t.s}s`
+                            : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {(() => {
                   const renderPremioCard = (p: Premio, idx: number, forzarNivelBadge?: string) => {
@@ -805,7 +895,7 @@ function IndexPage() {
 
                         {/* Foto — clic para ver en grande (lightbox) */}
                         <div
-                          className="relative w-full h-56 sm:h-64 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
+                          className="relative w-full h-36 sm:h-44 md:h-48 overflow-hidden bg-neutral-900 cursor-zoom-in group/img"
                           onClick={() => setFotoZoom({ url: p.imagen || defaultImg, titulo: p.nombre, nivel: tagLugar })}
                         >
                           <img
@@ -814,17 +904,17 @@ function IndexPage() {
                             className="w-full h-full object-contain object-center transition-transform duration-500 group-hover/img:scale-105 brightness-[1.02]"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/10 to-transparent pointer-events-none" />
-                          <div className="absolute bottom-2.5 right-3 bg-black/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1.5 backdrop-blur shadow-md group-hover/img:bg-white/90 group-hover/img:text-black transition-colors">
-                            <Sparkles className="size-3" /> Ver foto en grande
+                          <div className="absolute bottom-2 right-2.5 bg-black/80 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-white/20 flex items-center gap-1 backdrop-blur shadow group-hover/img:bg-white/90 group-hover/img:text-black transition-colors">
+                            <Sparkles className="size-2.5" /> Ver foto
                           </div>
                         </div>
 
-                        <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
                           <div>
-                            <h3 className="font-bold text-xl leading-snug group-hover:text-primary transition-colors cursor-pointer" onClick={() => setPremioModal(p)}>
+                            <h3 className="font-bold text-base sm:text-lg leading-snug group-hover:text-primary transition-colors cursor-pointer line-clamp-1" onClick={() => setPremioModal(p)}>
                               {p.nombre}
                             </h3>
-                            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                            <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">
                               {isEleccion1
                                 ? "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos."
                                 : isEleccion2
@@ -838,19 +928,19 @@ function IndexPage() {
                                 : "Consola de última generación o dinero en efectivo con entrega formal."}
                             </p>
                           </div>
-                          <div className="mt-4 pt-3 border-t border-border/60">
+                          <div className="mt-3 pt-2.5 border-t border-border/60">
                             {config.supertokenActivo !== false && (
                               isMayor || isEleccion1 ? (
-                                <p className="text-xs font-semibold text-amber-400 mb-2.5 flex items-center gap-1.5">
-                                  <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash extra!`}
+                                <p className="text-[11px] font-semibold text-amber-400 mb-2 flex items-center gap-1 truncate">
+                                  <Crown className="size-3 text-amber-400 shrink-0" /> {`SuperToken: +${superSimbolo}${formatNumber(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 4500000)} ${superCodigo} Cash`}
                                 </p>
                               ) : isSegundo || isEleccion2 ? (
-                                <p className="text-xs font-semibold text-sky-400 mb-2.5 flex items-center gap-1.5">
-                                  <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo} Cash extra!`}
+                                <p className="text-[11px] font-semibold text-sky-400 mb-2 flex items-center gap-1 truncate">
+                                  <Crown className="size-3 text-sky-400 shrink-0" /> {`SuperToken: +${superSimbolo}${formatNumber(config.supertokenPremioSegundoUsd || 250000)} ${superCodigo} Cash`}
                                 </p>
                               ) : isEfectivo3 ? (
-                                <p className="text-xs font-semibold text-yellow-400 mb-2.5 flex items-center gap-1.5">
-                                  <Crown className="size-3.5" /> {`Opción SuperToken: ¡+${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo} Cash extra!`}
+                                <p className="text-[11px] font-semibold text-yellow-400 mb-2 flex items-center gap-1 truncate">
+                                  <Crown className="size-3 text-yellow-400 shrink-0" /> {`SuperToken: +${superSimbolo}${formatNumber(config.supertokenPremioTerceroUsd || 1500000)} ${superCodigo} Cash`}
                                 </p>
                               ) : null
                             )}
@@ -859,9 +949,9 @@ function IndexPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => setPremioModal(p)}
-                              className="w-full text-xs font-bold border-amber-500/50 hover:bg-amber-500/15 hover:border-amber-500 dark:text-amber-300 text-amber-700 flex items-center justify-center gap-1.5 py-4 rounded-xl cursor-pointer"
+                              className="w-full text-xs font-bold border-amber-500/50 hover:bg-amber-500/15 hover:border-amber-500 dark:text-amber-300 text-amber-700 flex items-center justify-center gap-1.5 py-2.5 sm:py-3 rounded-xl cursor-pointer"
                             >
-                              <Sparkles className="size-3.5 text-amber-500 dark:text-amber-400" />
+                              <Sparkles className="size-3 text-amber-500 dark:text-amber-400" />
                               Ver Ficha & "Comprá y ganá" →
                             </Button>
                           </div>
@@ -905,25 +995,25 @@ function IndexPage() {
                   );
 
                   return (
-                    <div className="space-y-10 max-w-6xl mx-auto">
+                    <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto">
                       {/* BLOQUE 1° LUGAR */}
                       {p1List.length > 0 && (
-                        <div className="rounded-3xl border-2 border-amber-500/40 bg-gradient-to-b from-amber-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
-                            <div className="flex items-center gap-3.5">
-                              <div className="relative size-12 shrink-0 flex items-center justify-center rounded-2xl bg-white border-2 border-amber-500 shadow-[0_0_18px_rgba(245,158,11,0.4)] p-1.5">
+                        <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-b from-amber-500/10 via-card/70 to-card p-3.5 sm:p-5 shadow-lg space-y-3.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-amber-500/20 pb-2.5">
+                            <div className="flex items-center gap-3">
+                              <div className="relative size-10 shrink-0 flex items-center justify-center rounded-xl bg-white border-2 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)] p-1">
                                 <img src="/icons/icon-192.png" alt="Aval" className="size-full object-contain" />
-                                <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black text-xs font-black shadow-md border-2 border-background">
+                                <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black text-[10px] font-black shadow-md border border-background">
                                   👑
                                 </span>
                               </div>
                               <div>
-                                <span className="text-[11px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-400">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-400">
                                   {p1List.length > 1
                                     ? (config?.podio1Ceja || "1° Lugar Oficial · Tu comunidad te respalda")
                                     : "1° Lugar Oficial"}
                                 </span>
-                                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                <h3 className="font-display text-xl sm:text-2xl uppercase tracking-tight text-foreground">
                                   {p1List.length > 1
                                     ? (config?.podio1Titulo || "Con tu aval: Vos tenés el mando del premio")
                                     : p1List[0].nombre}
@@ -931,15 +1021,15 @@ function IndexPage() {
                               </div>
                             </div>
                             {p1List.length > 1 && (
-                              <span className="self-start sm:self-auto rounded-full bg-amber-500/20 border border-amber-500/40 px-3.5 py-1 text-xs font-black text-amber-600 dark:text-amber-300">
+                              <span className="self-start sm:self-auto rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-0.5 text-[11px] font-black text-amber-600 dark:text-amber-300">
                                 {config?.podio1Badge || "Elegí con total libertad entre las 2 opciones"}
                               </span>
                             )}
                           </div>
 
-                          <div className={`grid gap-6 relative items-stretch ${p1List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                          <div className={`grid gap-3.5 sm:gap-4 relative items-stretch ${p1List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
                             {p1List.length === 2 && (
-                              <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-11 items-center justify-center rounded-full bg-amber-500 text-black font-black text-sm shadow-[0_0_25px_rgba(245,158,11,0.6)] border-2 border-black">
+                              <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-9 items-center justify-center rounded-full bg-amber-500 text-black font-black text-xs shadow-[0_0_20px_rgba(245,158,11,0.6)] border-2 border-black">
                                 O
                               </div>
                             )}
@@ -950,22 +1040,22 @@ function IndexPage() {
 
                       {/* BLOQUE 2° LUGAR */}
                       {p2List.length > 0 && (
-                        <div className="rounded-3xl border-2 border-sky-500/40 bg-gradient-to-b from-sky-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sky-500/20 pb-4">
-                            <div className="flex items-center gap-3.5">
-                              <div className="relative size-12 shrink-0 flex items-center justify-center rounded-2xl bg-white border-2 border-sky-400 shadow-[0_0_18px_rgba(14,165,233,0.4)] p-1.5">
+                        <div className="rounded-2xl border-2 border-sky-500/40 bg-gradient-to-b from-sky-500/10 via-card/70 to-card p-3.5 sm:p-5 shadow-lg space-y-3.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sky-500/20 pb-2.5">
+                            <div className="flex items-center gap-3">
+                              <div className="relative size-10 shrink-0 flex items-center justify-center rounded-xl bg-white border-2 border-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.4)] p-1">
                                 <img src="/icons/icon-192.png" alt="Aval" className="size-full object-contain" />
-                                <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-gradient-to-tr from-slate-200 to-slate-400 text-black text-xs font-black shadow-md border-2 border-background">
+                                <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-gradient-to-tr from-slate-200 to-slate-400 text-black text-[10px] font-black shadow-md border border-background">
                                   🥈
                                 </span>
                               </div>
                               <div>
-                                <span className="text-[11px] font-black uppercase tracking-wider text-sky-500 dark:text-sky-400">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-sky-500 dark:text-sky-400">
                                   {p2List.length > 1
                                     ? (config?.podio2Ceja || "2° Lugar Oficial · Tu comunidad te respalda")
                                     : "2° Lugar Oficial"}
                                 </span>
-                                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                <h3 className="font-display text-xl sm:text-2xl uppercase tracking-tight text-foreground">
                                   {p2List.length > 1
                                     ? (config?.podio2Titulo || "Con tu aval: Vos tenés el mando del premio")
                                     : p2List[0].nombre}
@@ -973,15 +1063,15 @@ function IndexPage() {
                               </div>
                             </div>
                             {p2List.length > 1 && (
-                              <span className="self-start sm:self-auto rounded-full bg-sky-500/20 border border-sky-500/40 px-3.5 py-1 text-xs font-black text-sky-600 dark:text-sky-300">
+                              <span className="self-start sm:self-auto rounded-full bg-sky-500/20 border border-sky-500/40 px-3 py-0.5 text-[11px] font-black text-sky-600 dark:text-sky-300">
                                 {config?.podio2Badge || "Elegí con total libertad entre las 2 opciones"}
                               </span>
                             )}
                           </div>
 
-                          <div className={`grid gap-6 relative items-stretch ${p2List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                          <div className={`grid gap-3.5 sm:gap-4 relative items-stretch ${p2List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
                             {p2List.length === 2 && (
-                              <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-11 items-center justify-center rounded-full bg-sky-500 text-white font-black text-sm shadow-[0_0_25px_rgba(14,165,233,0.5)] border-2 border-black">
+                              <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-9 items-center justify-center rounded-full bg-sky-500 text-white font-black text-xs shadow-[0_0_20px_rgba(14,165,233,0.5)] border-2 border-black">
                                 O
                               </div>
                             )}
@@ -992,27 +1082,27 @@ function IndexPage() {
 
                       {/* BLOQUE 3° LUGAR */}
                       {p3List.length > 0 && (
-                        <div className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-card/70 to-card p-5 sm:p-8 shadow-xl space-y-6">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
-                            <div className="flex items-center gap-3.5">
-                              <div className="relative size-12 shrink-0 flex items-center justify-center rounded-2xl bg-white border-2 border-amber-600 shadow-[0_0_18px_rgba(217,119,6,0.4)] p-1.5">
+                        <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-card/70 to-card p-3.5 sm:p-5 shadow-lg space-y-3.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-emerald-500/20 pb-2.5">
+                            <div className="flex items-center gap-3">
+                              <div className="relative size-10 shrink-0 flex items-center justify-center rounded-xl bg-white border-2 border-amber-600 shadow-[0_0_15px_rgba(217,119,6,0.4)] p-1">
                                 <img src="/icons/icon-192.png" alt="Aval" className="size-full object-contain" />
-                                <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-orange-400 text-white text-xs font-black shadow-md border-2 border-background">
+                                <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-orange-400 text-white text-[10px] font-black shadow-md border border-background">
                                   🥉
                                 </span>
                               </div>
                               <div>
-                                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-500 dark:text-emerald-400">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-500 dark:text-emerald-400">
                                   3° Lugar Oficial · Premio Garantizado
                                 </span>
-                                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-foreground">
+                                <h3 className="font-display text-xl sm:text-2xl uppercase tracking-tight text-foreground">
                                   {p3List.length === 1 ? p3List[0].nombre : "Premio en Efectivo / Consola"}
                                 </h3>
                               </div>
                             </div>
                           </div>
 
-                          <div className={`grid gap-6 ${p3List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"}`}>
+                          <div className={`grid gap-3.5 sm:gap-4 ${p3List.length === 1 ? "max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"}`}>
                             {p3List.map((p, idx) => renderPremioCard(p, idx, "3° Lugar"))}
                           </div>
                         </div>
@@ -1045,151 +1135,73 @@ function IndexPage() {
               </div>
             )}
 
-            {/* CONSOLA MAESTRA DE CONVERSIÓN Y RELOJ OFICIAL EN EL HERO */}
-            {(config.mostrarSeccionTermometro !== false || config.mostrarCtaHero !== false) && (
-              <div className={`mx-auto mt-6 md:mt-8 max-w-3xl rounded-3xl border-2 p-5 sm:p-7 backdrop-blur text-left shadow-2xl transition-all ${
-                garantiaCumplimientoActiva
-                  ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95 shadow-[0_0_45px_rgba(245,158,11,0.25)]"
-                  : enCurso
-                  ? "border-red-500/70 bg-gradient-to-b from-card/95 via-red-950/20 to-card/95 shadow-[0_0_50px_rgba(239,68,68,0.25)]"
-                  : cierrePrevio
-                  ? "border-amber-500/70 bg-gradient-to-b from-card/95 via-amber-950/20 to-card/95 shadow-[0_0_45px_rgba(245,158,11,0.25)]"
-                  : "border-primary/40 bg-gradient-to-b from-card/95 via-card/80 to-card/95 shadow-[0_0_40px_rgba(234,88,12,0.15)]"
-              }`}>
-                {config.mostrarSeccionTermometro !== false && (
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/50 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="relative flex h-2.5 w-2.5">
-                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                            garantiaCumplimientoActiva ? "bg-amber-400" : enCurso ? "bg-red-400" : cierrePrevio ? "bg-amber-400" : "bg-emerald-400"
-                          }`}></span>
-                          <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                            garantiaCumplimientoActiva ? "bg-amber-500" : enCurso ? "bg-red-500" : cierrePrevio ? "bg-amber-500" : "bg-emerald-500"
-                          }`}></span>
-                        </span>
-                        <span className={`font-black uppercase tracking-wider text-xs ${
-                          garantiaCumplimientoActiva
-                            ? "text-amber-500 dark:text-amber-400"
-                            : enCurso
-                            ? "text-red-500 dark:text-red-400"
-                            : cierrePrevio
-                            ? "text-amber-600 dark:text-amber-400"
-                            : "text-emerald-600 dark:text-emerald-400"
-                        }`}>
-                          {garantiaCumplimientoActiva
-                            ? `🛡️ La Edición Continúa Activa (Meta mínima: ${metaMinimaSorteo}%)`
-                            : enCurso
-                            ? "🎯 Sorteo Oficial en Curso"
-                            : cierrePrevio
-                            ? "🔒 Ventas Cerradas (Conteo Final)"
-                            : config.ventasActivas
-                            ? "Ventas Abiertas en Vivo"
-                            : "Preventa Exclusiva"}
-                        </span>
-                      </div>
-                      <span className="font-mono text-lg sm:text-xl font-black dark:text-amber-400 text-amber-600 flex items-center gap-1.5" suppressHydrationWarning>
-                        <Flame className="size-5 text-amber-500 fill-amber-500" />
-                        {`${progreso}% Vendido`}
+            {/* BOTONES DE CONVERSIÓN HERO -> DIRECTO A PAQUETES */}
+            {config.mostrarCtaHero !== false && (
+              <div className="mx-auto mt-6 max-w-2xl text-center space-y-3.5">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Button
+                    variant="hero"
+                    size="xl"
+                    onClick={irAPaquetes}
+                    className={`w-full sm:flex-1 text-base sm:text-lg font-black py-6 group cursor-pointer ${
+                      garantiaCumplimientoActiva
+                        ? "shadow-[var(--shadow-fire)]"
+                        : cierrePrevio
+                        ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg"
+                        : enCurso
+                        ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
+                        : "shadow-[var(--shadow-fire)]"
+                    }`}
+                  >
+                    {garantiaCumplimientoActiva ? (
+                      <>
+                        🔥 ¡APOYAR LA META Y ADQUIRIR TOKENS!{" "}
+                        <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                      </>
+                    ) : enCurso ? (
+                      <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
+                    ) : cierrePrevio ? (
+                      <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
+                    ) : config.ventasActivas ? (
+                      <>
+                        {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
+                        <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                      </>
+                    ) : (
+                      <>
+                        {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    onClick={garantiaCumplimientoActiva ? () => setOpenGarantiaModal(true) : undefined}
+                    asChild={!garantiaCumplimientoActiva}
+                    className="w-full sm:w-auto text-sm sm:text-base px-6 py-6 cursor-pointer"
+                  >
+                    {garantiaCumplimientoActiva ? (
+                      <span className="flex items-center gap-1.5 text-amber-500 font-bold">
+                        <ShieldCheck className="size-4" /> Ver Garantía ↗
                       </span>
-                    </div>
+                    ) : (
+                      <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
+                    )}
+                  </Button>
+                </div>
 
-                    {/* Barra Brillante */}
-                    <div className="h-3.5 w-full overflow-hidden rounded-full dark:bg-secondary/80 bg-slate-100 p-0.5 border dark:border-amber-500/30 border-slate-300">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-primary transition-all duration-700 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
-                        style={{ width: `${Math.min(100, Math.max(progreso, 2))}%` }}
-                      />
-                    </div>
-
-                    {/* Fecha y Contador en vivo */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground pt-0.5">
-                      <span className="flex items-center gap-1.5" suppressHydrationWarning>
-                        <Calendar className="size-3.5 text-primary" />
-                        Sorteo Oficial: <strong className="text-foreground">{formatearFechaLarga(fechaSorteo)} · {formatearHora12(sorteo.horaSorteo || "19:30")}</strong>
-                      </span>
-                      <span className="font-mono font-bold dark:text-amber-400 text-amber-600 text-xs sm:text-sm" suppressHydrationWarning>
-                        {garantiaCumplimientoActiva
-                          ? `🛡️ Edición extendida por Garantía de Cumplimiento`
-                          : enCurso
-                          ? "🎯 En transmisión oficial"
-                          : cierrePrevio
-                          ? `⏳ Sorteo en: ${t.h}h ${t.m}m ${t.s}s`
-                          : `⏳ Faltan: ${t.d}d ${t.h}h ${t.m}m ${t.s}s`}
-                      </span>
-                    </div>
+                {/* Micro-prueba social */}
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted-foreground pt-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
                   </div>
-                )}
-
-                {/* Botones de Conversión integrados */}
-                {config.mostrarCtaHero !== false && (
-                  <div className={`space-y-5 ${config.mostrarSeccionTermometro !== false ? "pt-5 border-t border-border/50" : ""}`}>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
-                      <Button
-                        variant="hero"
-                        size="xl"
-                        onClick={irAPaquetes}
-                        className={`w-full sm:flex-1 text-base sm:text-lg font-black py-7 group cursor-pointer ${
-                          garantiaCumplimientoActiva
-                            ? "shadow-[var(--shadow-fire)]"
-                            : cierrePrevio
-                            ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg"
-                            : enCurso
-                            ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
-                            : "shadow-[var(--shadow-fire)]"
-                        }`}
-                      >
-                        {garantiaCumplimientoActiva ? (
-                          <>
-                            🔥 ¡APOYAR LA META Y ADQUIRIR TOKENS!{" "}
-                            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-                          </>
-                        ) : enCurso ? (
-                          <>🎯 ¡SORTEO EN TRANSMISIÓN OFICIAL! (VALIDAR TOKENS) →</>
-                        ) : cierrePrevio ? (
-                          <>🔒 VENTAS CERRADAS · CONSULTAR MIS TOKENS →</>
-                        ) : config.ventasActivas ? (
-                          <>
-                            {config.heroBotonCta || "🔥 ¡QUIERO PARTICIPAR AHORA!"}{" "}
-                            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-                          </>
-                        ) : (
-                          <>
-                            {config.promoBotonTexto || "📲 ¡NOTIFICARME POR WHATSAPP (PREVENTA)!"}
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="xl"
-                        onClick={garantiaCumplimientoActiva ? () => setOpenGarantiaModal(true) : undefined}
-                        asChild={!garantiaCumplimientoActiva}
-                        className="w-full sm:w-auto text-sm sm:text-base px-6 py-7 cursor-pointer"
-                      >
-                        {garantiaCumplimientoActiva ? (
-                          <span className="flex items-center gap-1.5 text-amber-500 font-bold">
-                            <ShieldCheck className="size-4" /> Ver Garantía ↗
-                          </span>
-                        ) : (
-                          <a href="#como-funciona">{config.heroBotonSecundario || "¿Cómo funciona? ↓"}</a>
-                        )}
-                      </Button>
-                    </div>
-
-                    {/* Micro-prueba social */}
-                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted-foreground pt-1">
-                      <div className="flex items-center gap-1.5">
-                        <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba1 || "Pago Seguro SINPE y Tarjeta"}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos JPS
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4 text-success" /> Resultados Oficiales Públicos JPS
                   </div>
-                )}
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4 text-success" /> {config.heroMicroPrueba2 || "Entrega Formal ante Notario"}
+                  </div>
+                </div>
               </div>
             )}
           </div>

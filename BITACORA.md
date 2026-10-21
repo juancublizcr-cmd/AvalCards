@@ -747,6 +747,28 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
      `"🔥 Edición Especial 2026 · Ventas Abiertas Oficiales"`.
    - Se aplicó filtro y saneamiento proactivo de cache para suprimir la frase incluso si persistía en almacenamiento local anterior.
 
+---
+
+## 🚀 Hito 39: Integración Lado a Lado de Dinámica Oficial y Termómetro en Vivo (Dúo Grid) y Reducción de Altura en Tarjetas de Premios
+
+1. **Ubicación Lado a Lado (Dúo Grid Superior):**
+   - Se unificó el bloque de **Dinámica Oficial de Premiación** y el bloque de **Termómetro / Contador Oficial en Vivo** en un grid responsivo de dos columnas (`grid-cols-1 md:grid-cols-2 max-w-5xl`):
+     - **Columna Izquierda:** Banner con la dinámica oficial (`sorteo.descripcionDinamica` o default auditado JPS), badge institucional y sello de auditoría.
+     - **Columna Derecha:** Termómetro en vivo con indicador de ventas abiertas/preventa/garantía de cumplimiento, porcentaje de colocación (`% Vendido`), barra neón de progreso, fecha del sorteo oficial y cuenta regresiva en vivo (`d`, `h`, `m`, `s`).
+   - Se eliminó el segundo termómetro redundante que antes se duplicaba al pie de los premios, ahorrando más de 160px de desplazamiento vertical.
+
+2. **Compactación y Optimización de Altura en Tarjetas de Premios:**
+   - **Contenedores de Podio (1°, 2° y 3° Lugar):**
+     - Reducción de espaciado entre bloques de `space-y-10` a `space-y-4 sm:space-y-5`.
+     - Reducción de padding interior de `p-5 sm:p-8` a `p-3.5 sm:p-5`.
+     - Títulos y badges optimizados con escala tipográfica proporcional.
+   - **Tarjetas Individuales de Vehículos y Efectivo:**
+     - Altura de las fotografías reducida de `h-56 sm:h-64` a `h-36 sm:h-44 md:h-48`, eliminando cientos de píxeles muertos sin sacrificar calidad ni visibilidad del vehículo.
+     - Padding de tarjeta reducido a `p-3.5 sm:p-4`.
+     - Reducción de padding en botones de acción y en la sección de ficha técnica.
+   - **Resultado:** La sección principal de selección y compra de paquetes de tokens (`#paquetes-compra`) ahora sube notablemente en la pantalla, quedando accesible de inmediato para el visitante tras visualizar los premios principales.
+
+
 
 
 
