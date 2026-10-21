@@ -690,3 +690,18 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se incorporó un cintillo compacto de 3 garantías verificables (*Asignación 100% digital*, *Resultados con la JPS*, *Traspaso y marchamo 100% pagos*).
    - Botón directo de consulta rápida vía WhatsApp (*"¿Dudas con este vehículo? Consultar por WhatsApp"*).
 
+---
+
+## 🚀 Hito 35: Optimización del Logotipo Oficial (Hero y Global), Transparencia Alpha Pura y Ajuste de Proporción Elegante
+
+1. **Eliminación del Cuadro / Borde Rectangular Oscuro:**
+   - **Causa raíz**: El asset `public/logo-hero.png` y `public/logo.png` contenía un fondo opaco oscuro en lugar de canal alfa transparente. Al ocultarse el titular del Hero, el logo subió directamente sobre el resplandor ambiental ámbar del hero (`bg-primary/20 blur-[150px]`), haciendo visible el recorte rectangular oscuro.
+   - **Solución implementada**:
+     - Se procesó el archivo con canal alfa transparente puro de alta precisión (`alpha = 0` en el fondo), conservando la nitidez de las letras blancas, el octágono dorado y la leyenda "COMMUNITY CR".
+     - Se aplicó `mix-blend-mode: screen` en `src/routes/index.tsx` para garantizar integración lumínica perfecta y 0 bordes duros sobre cualquier fondo o resplandor.
+
+2. **Ajuste de Escala Visual más Pequeño y Proporcional:**
+   - Se redujo el ancho display del logotipo de `w-[300px] sm:w-[420px] md:w-[500px]` a una escala más elegante y compacta: `w-[200px] sm:w-[260px] md:w-[320px]`.
+   - Se optimizó el espaciado vertical (`mt-5 mb-3`) para que se integre con armonía entre los badges superiores y las tarjetas de premios.
+
+

@@ -677,11 +677,12 @@ function IndexPage() {
             )}
 
             {/* Logo Aval Community CR */}
-            <div className="mt-8 mb-4 flex justify-center">
+            <div className="mt-5 mb-3 flex justify-center">
               <img
                 src="/logo-hero.png"
                 alt="Aval Community CR"
-                className="w-[300px] sm:w-[420px] md:w-[500px] max-w-full h-auto object-contain"
+                style={{ mixBlendMode: "screen" }}
+                className="w-[200px] sm:w-[260px] md:w-[320px] max-w-full h-auto object-contain transition-transform hover:scale-105"
               />
             </div>
 
