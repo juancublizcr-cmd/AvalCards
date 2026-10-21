@@ -717,5 +717,26 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Nuevo control editorial en `/admin` &rarr; *"🎨 Diseño Web"* &rarr; *"Cabecera & Badges"* para que el administrador pueda redactar cualquier anuncio oficial o noticia relevante cuando las ventas están abiertas.
    - Posibilidad de apagar o encender el cintillo completo en cualquier momento desde el **Centro de Control** (Interruptor 4: *Barra de Notificación Superior*).
 
+---
+
+## 🚀 Hito 37: Desactivación / Activación Controlada de Comprobación Automática de SINPE Móvil (Modo Tradicional Directo con Comprobante vs Modo Robot)
+
+1. **Modo Tradicional Directo sin Esperas (Desactivado por Defecto):**
+   - Cuando la comprobación automática está desactivada, el Checkout ya no muestra el widget complejo con cuenta regresiva de 5 minutos ni el mensaje *"Verificando notificación del banco..."*.
+   - Presenta una tarjeta visual institucional clara:
+     - 📱 Número SINPE Móvil oficial con botón de copiado rápido (`config.telefonoSinpe`).
+     - 👤 Razón social / titular oficial (`config.razonSocial`).
+     - 💰 Monto exacto a transferir en colones.
+     - 🏷️ Código sugerido para el motivo / detalle con botón de copiado.
+     - 📎 Subida de captura de pantalla / comprobante bancario.
+   - Permite al comprador confirmar la orden de inmediato sin bloquearse ni esperar la confirmación de correos bancarios.
+
+2. **Interruptores Administrativos en Múltiples Pistas (`/admin`):**
+   - Incorporación del parámetro persistente `sinpeAutoVerificacion` en `src/lib/admin-store.ts`.
+   - **⚡ Centro de Control**: Nueva tarjeta de switch dedicada: *"🤖 Comprobación Auto (Robot SINPE)"* para alternar entre el modo automático y el modo manual directo con 1 solo clic.
+   - **⚙️ General**: Control dentro del bloque *"1. SINPE Móvil (Costa Rica)"*.
+   - **📱 SINPE Auto (Tiempo Real)**: Checkbox de control en la subpestaña *"Ajustes"*.
+
+
 
 

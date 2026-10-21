@@ -690,7 +690,22 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
               </span>
               <Switch checked={borrador.sinpeActivo !== false} onCheckedChange={() => toggleSwitch("sinpeActivo", borrador.sinpeActivo, true)} />
             </div>
-            <p className="text-[11px] text-muted-foreground">Conciliación automática con 8634-4772.</p>
+            <p className="text-[11px] text-muted-foreground">Recepción oficial por SINPE Móvil.</p>
+          </div>
+
+          {/* Comprobación Automática SINPE */}
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <CheckCircle2 className="size-4 text-amber-400" /> Comprobación Auto (Robot SINPE)
+              </span>
+              <Switch checked={borrador.sinpeAutoVerificacion === true} onCheckedChange={() => toggleSwitch("sinpeAutoVerificacion", borrador.sinpeAutoVerificacion, false)} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {borrador.sinpeAutoVerificacion
+                ? "🟢 Activada (Widget con reloj de espera bancaria en checkout)."
+                : "⚪ Desactivada (Modo directo con transferencia y comprobante)."}
+            </p>
           </div>
 
           {/* Tarjetas TiloPay */}

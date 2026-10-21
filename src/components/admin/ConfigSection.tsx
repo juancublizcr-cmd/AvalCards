@@ -483,6 +483,26 @@ export function ConfigSection({
             />
           </div>
 
+          <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-secondary/30 sm:col-span-2">
+            <div>
+              <Label className="text-xs font-bold text-foreground block">
+                🤖 Comprobación Automática en Vivo (Widget Robot / Banco)
+              </Label>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Si está desactivado, el checkout no muestra el reloj de espera bancaria ni obliga a la verificación del robot; muestra el número oficial y permite adjuntar el comprobante directamente.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-bold text-muted-foreground">
+                {borrador.sinpeAutoVerificacion ? "Activa" : "Desactivada"}
+              </span>
+              <Switch
+                checked={borrador.sinpeAutoVerificacion === true}
+                onCheckedChange={(v) => setBorrador({ ...borrador, sinpeAutoVerificacion: v })}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2 sm:col-span-2 pt-2 border-t border-border/40">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
               <Label className="text-xs font-bold text-foreground">

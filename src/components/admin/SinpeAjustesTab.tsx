@@ -36,6 +36,7 @@ interface SinpeAjustesTabProps {
 
 export function SinpeAjustesTab({ config, setConfig }: SinpeAjustesTabProps) {
   const [activo, setActivo] = useState(config.sinpeActivo ?? true);
+  const [autoVerificacion, setAutoVerificacion] = useState(config.sinpeAutoVerificacion === true);
   const [titulo, setTitulo] = useState(config.sinpeTitulo || "SINPE Móvil");
   const [descripcion, setDescripcion] = useState(
     config.sinpeDescripcion || "Paga por SINPE Móvil e ingresa el código generado en el motivo."
@@ -62,6 +63,7 @@ export function SinpeAjustesTab({ config, setConfig }: SinpeAjustesTabProps) {
     const nuevo: Config = {
       ...config,
       sinpeActivo: activo,
+      sinpeAutoVerificacion: autoVerificacion,
       sinpeTitulo: titulo,
       sinpeDescripcion: descripcion,
       telefonoSinpe: numeroSinpe,
@@ -188,6 +190,27 @@ export function SinpeAjustesTab({ config, setConfig }: SinpeAjustesTabProps) {
             type="checkbox"
             checked={activo}
             onChange={(e) => setActivo(e.target.checked)}
+            className="size-5 accent-emerald-600 rounded cursor-pointer"
+          />
+        </div>
+
+        {/* 1.1 Comprobación Automática (Robot/Banco) */}
+        <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-secondary/30">
+          <div>
+            <Label htmlFor="autoverif-sinpe" className="font-bold text-sm text-foreground block cursor-pointer">
+              Comprobación Automática en Vivo (Widget Robot / Banco)
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              {autoVerificacion
+                ? "🟢 Activada: Muestra el widget con reloj de 5 minutos y verificación automática contra el banco."
+                : "⚪ Desactivada: Muestra los datos de la cuenta SINPE para que el cliente adjunte el comprobante directamente sin esperas."}
+            </p>
+          </div>
+          <input
+            id="autoverif-sinpe"
+            type="checkbox"
+            checked={autoVerificacion}
+            onChange={(e) => setAutoVerificacion(e.target.checked)}
             className="size-5 accent-emerald-600 rounded cursor-pointer"
           />
         </div>

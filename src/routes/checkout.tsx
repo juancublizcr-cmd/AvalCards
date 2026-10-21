@@ -245,8 +245,16 @@ function Checkout() {
       for (const i of res.error.issues) nuevos[i.path[0] as keyof Errores] = i.message;
     }
 
-    if (metodo === "sinpe" && !archivo && !sinpeAutoAprobado) {
-      nuevos["archivo"] = "Presiona 'Ya hice el SINPE Móvil' para verificar automáticamente o adjunta tu comprobante";
+    if (metodo === "sinpe") {
+      if (config.sinpeAutoVerificacion === true) {
+        if (!archivo && !sinpeAutoAprobado) {
+          nuevos["archivo"] = "Presiona 'Ya hice el SINPE Móvil' para verificar automáticamente o adjunta tu comprobante";
+        }
+      } else {
+        if (!archivo) {
+          nuevos["archivo"] = "Por favor adjunta la captura o foto de tu comprobante SINPE";
+        }
+      }
     }
 
     if (metodo === "tarjeta") {
@@ -918,27 +926,116 @@ function Checkout() {
               )}
             </div>
 
-            {/* A. BLOQUE SINPE MÓVIL AUTOMÁTICO (IDÉNTICO A PLUGIN DOMINIOSAI) */}
+            {/* A. BLOQUE SINPE MÓVIL (AUTOMÁTICO O MANUAL SEGÚN ADMIN) */}
             {metodo === "sinpe" && (
               <div className="mt-4 space-y-4 animate-in fade-in-50">
-                <SinpeWidget
-                  telefono={config.telefonoSinpe || "88658279"}
-                  monto={seleccion?.precio ?? 4000}
-                  codigo={codigoSinpe}
-                  onPagoVerificado={({ referencia, monto }) => {
-                    setSinpeAutoAprobado(true);
-                    setSinpeRefVerificada(referencia);
-                    toast.success("¡Pago verificado con éxito!", {
-                      description: `Comprobante bancario #${referencia} confirmado.`,
-                    });
-                  }}
-                />
+                {config.sinpeAutoVerificacion === true ? (
+                  <SinpeWidget
+                    telefono={config.telefonoSinpe || "8634-4772"}
+                    monto={seleccion?.precio ?? 4000}
+                    codigo={codigoSinpe}
+                    onPagoVerificado={({ referencia, monto }) => {
+                      setSinpeAutoAprobado(true);
+                      setSinpeRefVerificada(referencia);
+                      toast.success("¡Pago verificado con éxito!", {
+                        description: `Comprobante bancario #${referencia} confirmado.`,
+                      });
+                    }}
+                  />
+                ) : (
+                  <div className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-card via-card to-emerald-950/20 p-5 shadow-lg space-y-4 text-left">
+                    <div className="flex items-center justify-between pb-3 border-b border-border/60">
+                      <div className="flex items-center gap-2.5">
+                        <div className="size-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
+                          <Smartphone className="size-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-foreground">Pago por SINPE Móvil</h4>
+                          <span className="text-[11px] text-muted-foreground">Transfiere y adjunta tu comprobante</span>
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-black text-emerald-400">
+                        SINPE OFICIAL
+                      </span>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="p-3 rounded-xl bg-secondary/40 border border-border/60 space-y-1">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                          Número SINPE Móvil
+                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xl font-black text-emerald-500 font-mono">
+                            {config.telefonoSinpe || "8634-4772"}
+                          </span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText(config.telefonoSinpe || "8634-4772");
+                              toast.success("Número SINPE copiado");
+                            }}
+                            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            <Copy className="size-3.5 mr-1" /> Copiar
+                          </Button>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground block">
+                          A nombre de: <strong className="text-foreground">{config.razonSocial || "LUXX CR CAR WASH"}</strong>
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-secondary/40 border border-border/60 space-y-1">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                          Monto Exacto a Transferir
+                        </span>
+                        <div className="text-xl font-black text-foreground font-mono">
+                          ₡{formatNumber(seleccion?.precio ?? 4000)}
+                        </div>
+                        <span className="text-[11px] text-emerald-400 block font-semibold">
+                          ✓ Sin comisiones adicionales
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+                      <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1.5">
+                        <Sparkles className="size-3.5" /> Detalle / Motivo recomendado para tu SINPE:
+                      </span>
+                      <div className="flex items-center justify-between bg-card/80 p-2 rounded-lg border border-border">
+                        <code className="font-mono font-bold text-sm text-foreground">
+                          {codigoSinpe}
+                        </code>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            navigator.clipboard.writeText(codigoSinpe);
+                            toast.success("Código copiado al portapapeles");
+                          }}
+                          className="h-7 px-2 text-xs text-amber-500 hover:text-amber-400"
+                        >
+                          <Copy className="size-3.5 mr-1" /> Copiar
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">
+                        Pega este código en el detalle de tu transferencia para agilizar la asignación de tus tokens.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="rounded-xl border border-border/80 bg-secondary/20 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="archivo-input" className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
                       <Receipt className="size-3.5" />
-                      <span>Comprobante adicional / respaldo (Opcional):</span>
+                      <span>
+                        {config.sinpeAutoVerificacion === true
+                          ? "Comprobante adicional / respaldo (Opcional):"
+                          : "Comprobante de tu transferencia SINPE (Captura de pantalla):"}
+                      </span>
                     </Label>
                     <button
                       type="button"

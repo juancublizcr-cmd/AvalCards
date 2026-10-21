@@ -142,6 +142,7 @@ export type Config = {
   referidosMensajeShare?: string;
   // Pasarelas de Pago
   sinpeActivo?: boolean;
+  sinpeAutoVerificacion?: boolean;
   sinpeTitulo?: string;
   sinpeDescripcion?: string;
   sinpeImapHost?: string;
@@ -525,6 +526,7 @@ export const CONFIG_DEFAULT: Config = {
   referidosComisionPct: 10,
   referidosMensajeShare: "¡Participa en el evento más grande de Costa Rica y estrena vehículo de lujo!",
   sinpeActivo: true,
+  sinpeAutoVerificacion: false,
   sinpeTitulo: "SINPE Móvil",
   sinpeDescripcion: "Paga por SINPE Móvil e ingresa el código generado en el motivo.",
   sinpeImapHost: "imap.gmail.com",
@@ -1280,6 +1282,7 @@ export async function fetchConfig(): Promise<Config> {
       referidosComisionPct: extra.referidosComisionPct ?? CONFIG_DEFAULT.referidosComisionPct,
       referidosMensajeShare: extra.referidosMensajeShare || CONFIG_DEFAULT.referidosMensajeShare,
       sinpeActivo: data.sinpe_activo ?? CONFIG_DEFAULT.sinpeActivo,
+      sinpeAutoVerificacion: extra.sinpeAutoVerificacion ?? data.sinpe_auto_verificacion ?? CONFIG_DEFAULT.sinpeAutoVerificacion,
       tilopayActivo: data.tilopay_activo ?? CONFIG_DEFAULT.tilopayActivo,
       tilopayMerchantId: data.tilopay_merchant_id ?? CONFIG_DEFAULT.tilopayMerchantId,
       tilopayApiKey: data.tilopay_api_key ?? CONFIG_DEFAULT.tilopayApiKey,
