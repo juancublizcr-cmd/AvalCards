@@ -22,6 +22,7 @@ import {
   EyeOff,
   LayoutGrid,
   Globe,
+  Megaphone,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,7 @@ export function DisenoWebSection({
       const restaurado: Config = {
         ...borrador,
         mostrarBarraNotificacion: CONFIG_DEFAULT.mostrarBarraNotificacion,
+        barraNotificacionTexto: CONFIG_DEFAULT.barraNotificacionTexto,
         mostrarNavegacion: CONFIG_DEFAULT.mostrarNavegacion,
         mostrarBadgeSorteo: CONFIG_DEFAULT.mostrarBadgeSorteo,
         mostrarBadgePopular: CONFIG_DEFAULT.mostrarBadgePopular,
@@ -321,6 +323,20 @@ export function DisenoWebSection({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2 pb-2 border-b border-border/50">
+                <Label className="text-xs font-bold flex items-center gap-1.5 text-amber-500">
+                  <Megaphone className="size-3.5" /> Barra de Notificación Superior (Cintillo Dorado)
+                </Label>
+                <Input
+                  value={borrador.barraNotificacionTexto ?? ""}
+                  placeholder="🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!"
+                  onChange={(e) => setBorrador({ ...borrador, barraNotificacionTexto: e.target.value })}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Texto del cintillo superior cuando las ventas están activas. Puedes ocultar o mostrar esta barra completa en <strong>Centro de Control</strong>.
+                </p>
+              </div>
+
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold flex items-center gap-1.5 text-amber-400">
                   <Sparkles className="size-3.5" /> Badge 1: Evento Promocional Oficial

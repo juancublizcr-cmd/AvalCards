@@ -495,7 +495,7 @@ function IndexPage() {
             : cierrePrevio
             ? `🔒 VENTAS CERRADAS · PREPARANDO SORTEO OFICIAL DE LAS ${formatearHora12(sorteo.horaSorteo || "19:30")}`
             : config.ventasActivas
-            ? "🔥 Edición Especial 2026 · Más del 85% de Tokens colocados · ¡Quedan pocos cupos!"
+            ? (config.barraNotificacionTexto || "🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!")
             : config.promoTitulo || "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"}
         </div>
       )}

@@ -704,4 +704,18 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se redujo el ancho display del logotipo de `w-[300px] sm:w-[420px] md:w-[500px]` a una escala más elegante y compacta: `w-[200px] sm:w-[260px] md:w-[320px]`.
    - Se optimizó el espaciado vertical (`mt-5 mb-3`) para que se integre con armonía entre los badges superiores y las tarjetas de premios.
 
+---
+
+## 🚀 Hito 36: Erradicación de Mensajes Falsos en Barra Superior (Eliminación de "Más del 85% de Tokens Colocados") y Control Editorial Dinámico en Admin
+
+1. **Eliminación del Porcentaje Estático Inconsistente:**
+   - Se removió el texto fijo que afirmaba `"Más del 85% de Tokens colocados · ¡Quedan pocos cupos!"` en la barra superior de notificación, ya que contradecía el avance real de ventas en vivo registrado en el termómetro (ej. 2% vendido).
+   - Se reemplazó por un mensaje real y oficial: `"🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!"`.
+
+2. **Parametrización y Control Administrativo Completo:**
+   - Incorporación del campo tipado `barraNotificacionTexto` en `src/lib/admin-store.ts`.
+   - Nuevo control editorial en `/admin` &rarr; *"🎨 Diseño Web"* &rarr; *"Cabecera & Badges"* para que el administrador pueda redactar cualquier anuncio oficial o noticia relevante cuando las ventas están abiertas.
+   - Posibilidad de apagar o encender el cintillo completo en cualquier momento desde el **Centro de Control** (Interruptor 4: *Barra de Notificación Superior*).
+
+
 

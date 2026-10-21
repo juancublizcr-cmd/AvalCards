@@ -223,6 +223,7 @@ export type Config = {
   heroBadgeSuperToken?: string;
   heroBadgeGasolina?: string;
   heroBadgeComercios?: string;
+  barraNotificacionTexto?: string;
   // Visibilidad de elementos del header/hero
   mostrarBarraNotificacion?: boolean;
   mostrarNavegacion?: boolean;
@@ -598,6 +599,7 @@ export const CONFIG_DEFAULT: Config = {
   heroBadgeSuperToken: "",
   heroBadgeGasolina: "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5",
   heroBadgeComercios: "Descuentos en Comercios ↗",
+  barraNotificacionTexto: "🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!",
   mostrarBadgeSorteo: true,
   mostrarBadgePopular: true,
   mostrarBadgeJPS: true,
@@ -1340,6 +1342,7 @@ export async function fetchConfig(): Promise<Config> {
       heroBadgeSuperToken: extra.heroBadgeSuperToken !== undefined ? extra.heroBadgeSuperToken : CONFIG_DEFAULT.heroBadgeSuperToken,
       heroBadgeGasolina: extra.heroBadgeGasolina !== undefined ? extra.heroBadgeGasolina : CONFIG_DEFAULT.heroBadgeGasolina,
       heroBadgeComercios: extra.heroBadgeComercios !== undefined ? extra.heroBadgeComercios : CONFIG_DEFAULT.heroBadgeComercios,
+      barraNotificacionTexto: extra.barraNotificacionTexto || CONFIG_DEFAULT.barraNotificacionTexto,
       mostrarBadgeSorteo: extra.mostrarBadgeSorteo !== undefined ? extra.mostrarBadgeSorteo : CONFIG_DEFAULT.mostrarBadgeSorteo,
       mostrarBadgePopular: extra.mostrarBadgePopular !== undefined ? extra.mostrarBadgePopular : CONFIG_DEFAULT.mostrarBadgePopular,
       mostrarBadgeJPS: extra.mostrarBadgeJPS !== undefined ? extra.mostrarBadgeJPS : CONFIG_DEFAULT.mostrarBadgeJPS,
