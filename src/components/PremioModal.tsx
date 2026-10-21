@@ -106,7 +106,7 @@ export function PremioModal({
     : esSubaru
     ? "Leyenda viva de la deportividad y el campeonato mundial de rally. Tracción integral permanente Symmetrical All-Wheel Drive (AWD), motor Boxer Turbo 2.5L con caja manual de 6 velocidades, diferencial central ajustable (DCCD) y frenos Brembo de alto rendimiento."
     : esEfectivo
-    ? "Premio oficial líquido en colones costarricenses entregado formalmente mediante transferencia bancaria directa o SINPE Móvil oficial, o consola PlayStation 5 Slim con controles y juegos. Dinero libre de gravámenes para utilizar en lo que tú decidas."
+    ? "Premio oficial líquido en colones costarricenses entregado formalmente mediante transferencia bancaria directa o SINPE Móvil oficial, con acta notarial de entrega formal. Dinero libre de gravámenes para utilizar en lo que tú decidas."
     : "Vehículo o premio oficial certificado sacado de agencia con garantía total de fábrica y entrega formal ante Notario Público con marchamo y traspaso 100% cubiertos.";
 
   const especificaciones = esDucati
@@ -124,8 +124,8 @@ export function PremioModal({
         { label: "Legal", val: "Listo para rodar · Traspaso notarial" },
       ]
     : [
-        { label: "Modalidad", val: "Efectivo líquido o Consola PS5" },
-        { label: "Monto Oficial", val: "₡4,000,000 CRC / ₡350,000 CRC" },
+        { label: "Modalidad", val: "Efectivo Líquido Inmediato" },
+        { label: "Monto Oficial", val: "₡4,000,000 CRC Netos" },
         { label: "Entrega", val: "Transferencia bancaria inmediata" },
         { label: "Legalidad", val: "Respaldo notarial y contrato formal" },
       ];

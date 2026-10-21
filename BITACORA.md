@@ -792,6 +792,24 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se eliminó el bloque voluminoso de compra directa que duplicaba la tabla de paquetes (3, 6, 12 y 24 tokens) dentro de la ficha técnica.
    - El modal queda limpio, enfocado exclusivamente en la galería visual, ficha técnica (motor, potencia, tracción, garantía), sello legal, botón directo de compra hacia paquetes y consulta por WhatsApp.
 
+---
+
+## 🚀 Hito 42: Eliminación de la Opción de Consola PS5 en el 3° Lugar de ₡4,000,000 en Efectivo
+
+1. **Purificación de la Ficha del 3° Lugar:**
+   - Se eliminó la tarjeta secundaria `"Opción Consola PS5 Slim Sellada"` que aparecía en la cuadrícula de características del premio de ₡4,000,000 en efectivo en la landing page.
+   - Se reemplazó por la garantía financiera:
+     - **"Transferencia Directa SINPE / IBAN":** *Depósito inmediato a tu cuenta bancaria preferida de cualquier entidad financiera en Costa Rica sin comisiones.*
+   - La cuadrícula de 4 pilares queda 100% enfocada en dinero líquido:
+     1. `₡4,000,000 CRC en Efectivo Líquido`
+     2. `Libre Disposición Inmediata`
+     3. `Transferencia Directa SINPE / IBAN`
+     4. `Acta Notarial y Comprobante Formal`
+
+2. **Sincronización en el Modal y Encabezados:**
+   - En `PremioModal.tsx` y en el podio de 3° Lugar de `index.tsx`, se retiraron todas las menciones a consola (`"Premio en Efectivo / Consola"` &rarr; `"Premio en Efectivo Líquido"`, `"Monto Oficial: ₡4,000,000 CRC Netos"`, *"con acta notarial de entrega formal"*).
+
+
 
 
 

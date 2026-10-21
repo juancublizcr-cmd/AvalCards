@@ -925,7 +925,7 @@ function IndexPage() {
                                 ? "Vehículo 0 KM con traspaso y marchamo incluidos."
                                 : isSegundo
                                 ? "Deportiva para dominar la calle y la pista con estilo."
-                                : "Consola de última generación o dinero en efectivo con entrega formal."}
+                                : "Premio oficial en efectivo entregado formalmente ante Notario."}
                             </p>
                           </div>
                           <div className="mt-3 pt-2.5 border-t border-border/60">
@@ -1108,7 +1108,7 @@ function IndexPage() {
                                   3° Lugar Oficial · Premio Garantizado
                                 </span>
                                 <h3 className="font-display text-xl sm:text-2xl uppercase tracking-tight text-foreground">
-                                  {p3List.length === 1 ? p3List[0].nombre : "Premio en Efectivo / Consola"}
+                                  {p3List.length === 1 ? p3List[0].nombre : "Premio en Efectivo"}
                                 </h3>
                               </div>
                             </div>
@@ -1636,7 +1636,7 @@ function IndexPage() {
                 features: [
                   { icono: Sparkles, titulo: "₡4,000,000 CRC en Efectivo Líquido", desc: "Transferencia bancaria directa o por SINPE Móvil oficial a tu cuenta sin comisiones ni retenciones." },
                   { icono: Star, titulo: "Libre Disposición Inmediata", desc: "Dinero en mano para invertir, pagar deudas, viajar, emprender tu proyecto o ahorrar." },
-                  { icono: Flame, titulo: "Opción Consola PS5 Slim Sellada", desc: "Consola PlayStation 5 Slim 0KM sellada de fábrica con controles DualSense y videojuegos." },
+                  { icono: Zap, titulo: "Transferencia Directa SINPE / IBAN", desc: "Depósito inmediato a tu cuenta bancaria preferida de cualquier entidad financiera en Costa Rica sin comisiones." },
                   { icono: ShieldCheck, titulo: "Acta Notarial y Comprobante Formal", desc: "Entrega legal con comprobante de depósito bancario formal avalado por Notario Público." },
                 ],
                 garantia: "El 3° Lugar cuenta con entrega formal garantizada. Transferimos los ₡4,000,000 de inmediato con respaldo legal y notarial para tu total tranquilidad.",
