@@ -945,15 +945,27 @@ function IndexPage() {
                               ) : null
                             )}
 
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setPremioModal(p)}
-                              className="w-full text-xs font-bold border-amber-500/50 hover:bg-amber-500/15 hover:border-amber-500 dark:text-amber-300 text-amber-700 flex items-center justify-center gap-1.5 py-2.5 sm:py-3 rounded-xl cursor-pointer"
-                            >
-                              <Sparkles className="size-3 text-amber-500 dark:text-amber-400" />
-                              Ver Ficha & "Comprá y ganá" →
-                            </Button>
+                            {/* DOS BOTONES: VER FICHA (MODAL) Y COMPRÁ Y GANA (SCROLL A PAQUETES) */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPremioModal(p)}
+                                className="w-full text-xs font-bold border-amber-500/50 hover:bg-amber-500/15 hover:border-amber-500 dark:text-amber-300 text-amber-700 flex items-center justify-center gap-1.5 py-2.5 rounded-xl cursor-pointer truncate"
+                              >
+                                <Sparkles className="size-3 text-amber-500 dark:text-amber-400 shrink-0" />
+                                Ver Ficha
+                              </Button>
+                              <Button
+                                variant="hero"
+                                size="sm"
+                                onClick={irAPaquetes}
+                                className="w-full text-xs font-black shadow-md flex items-center justify-center gap-1.5 py-2.5 rounded-xl cursor-pointer truncate"
+                              >
+                                <Flame className="size-3 text-black shrink-0" />
+                                Comprá y Gana →
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -779,6 +779,20 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se definió la función utilitaria `formatNumber(val)` directamente en `src/routes/checkout.tsx` usando `(val).toLocaleString("es-CR")`, formateando los montos de paquetes de forma robusta e idéntica al resto de la aplicación.
    - Build de producción y pre-renderizado estático comprobados al 100%.
 
+---
+
+## 🚀 Hito 41: Desacoplamiento de Botones ("Ver Ficha" vs "Comprá y Gana") y Retiro de Paquetes dentro del Modal
+
+1. **Dos Botones Distintos en las Tarjetas de Premios:**
+   - Se reemplazó el botón combinado anterior (`Ver Ficha & "Comprá y ganá" →`) por dos botones independientes en grid de 2 columnas:
+     - 🔍 **"Ver Ficha":** Abre el modal técnico del vehículo/premio (`setPremioModal(p)`).
+     - 🔥 **"Comprá y Gana →":** Dirige y hace scroll suave inmediato a la sección oficial de selección y compra de paquetes de tokens (`#paquetes-compra` vía `irAPaquetes()`).
+
+2. **Retiro del Selector de Paquetes en el Modal (`PremioModal.tsx`):**
+   - Se eliminó el bloque voluminoso de compra directa que duplicaba la tabla de paquetes (3, 6, 12 y 24 tokens) dentro de la ficha técnica.
+   - El modal queda limpio, enfocado exclusivamente en la galería visual, ficha técnica (motor, potencia, tracción, garantía), sello legal, botón directo de compra hacia paquetes y consulta por WhatsApp.
+
+
 
 
 

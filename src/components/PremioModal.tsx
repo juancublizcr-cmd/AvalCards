@@ -200,68 +200,25 @@ export function PremioModal({
             ))}
           </div>
 
-          {/* PAQUETES DE TOKENS DIRECTOS PARA COMPRAR AL INSTANTE */}
+          {/* ACCIÓN DIRECTA DE COMPRA Y GARANTÍAS OFICIALES */}
           <div className="pt-2 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-1.5 pb-2 border-b border-border/60">
-              <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-500">
-                <Ticket className="size-4" /> Elige tu Paquete y Participa Ahora
-              </div>
-              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-                Entrega Inmediata
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {(paquetes.length > 0 ? paquetes : [
-                { cantidad: 3, precio: 4000, popular: false },
-                { cantidad: 6, precio: 8000, popular: true, tag: "MÁS VENDIDO" },
-                { cantidad: 12, precio: 16000, popular: false },
-                { cantidad: 24, precio: 32000, popular: false },
-              ]).map((p) => {
-                const esPopular = p.popular || (sorteo.modalidadVenta === "multiplos_3" ? p.cantidad === 6 : p.cantidad === 8);
-                const tagTexto = p.tag || (esPopular ? "MÁS VENDIDO" : null);
-
-                return (
-                  <button
-                    key={p.cantidad}
-                    type="button"
-                    onClick={() => {
-                      onOpenChange(false);
-                      onSelectTokens(p);
-                    }}
-                    className={`group relative text-left p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-lg flex flex-col justify-between ${
-                      esPopular
-                        ? "border-amber-500/80 bg-gradient-to-b from-amber-500/20 via-zinc-900 to-zinc-900 ring-1 ring-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
-                        : "border-border/80 bg-secondary/30 hover:border-primary/60"
-                    }`}
-                  >
-                    {tagTexto && (
-                      <span className="absolute -top-2.5 right-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-[9px] font-black text-black shadow-sm flex items-center gap-0.5">
-                        <Flame className="size-2.5 fill-black text-black" /> {tagTexto}
-                      </span>
-                    )}
-
-                    <div>
-                      <div className={`font-display text-3xl sm:text-4xl ${esPopular ? "text-amber-400" : "text-primary"}`}>
-                        {p.cantidad}
-                      </div>
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5 font-bold">
-                        Tokens Digitales
-                      </div>
-                    </div>
-
-                    <div className="mt-3 pt-2 border-t border-border/50">
-                      <div className="text-base sm:text-lg font-black text-foreground">
-                        ₡{formatNumber(p.precio)}
-                      </div>
-                      <div className="mt-1 text-[11px] font-bold text-amber-500 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
-                        Adquirir ahora →
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+            <Button
+              variant="hero"
+              size="lg"
+              onClick={() => {
+                onOpenChange(false);
+                const el = document.getElementById("tickets-seleccion") || document.getElementById("paquetes-compra");
+                if (el) {
+                  const rect = el.getBoundingClientRect();
+                  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                  window.scrollTo({ top: Math.max(0, rect.top + scrollTop - 85), behavior: "smooth" });
+                }
+              }}
+              className="w-full py-6 text-sm sm:text-base font-black shadow-[var(--shadow-fire)] flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Flame className="size-4 text-black shrink-0" />
+              ¡Comprá y Gana! · Elegir Paquete de Tokens →
+            </Button>
 
             {/* Garantías compactas */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-muted-foreground">
