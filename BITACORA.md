@@ -737,6 +737,17 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - **⚙️ General**: Control dentro del bloque *"1. SINPE Móvil (Costa Rica)"*.
    - **📱 SINPE Auto (Tiempo Real)**: Checkbox de control en la subpestaña *"Ajustes"*.
 
+---
+
+## 🚀 Hito 38: Depuración de Copy en Cintillo Superior (Remoción de "¡Participa por tus Vehículos 0KM y Premios!")
+
+1. **Simplificación del Texto de la Barra Superior:**
+   - Se removió la frase redundante `"· ¡Participa por tus Vehículos 0KM y Premios!"` señalada por el usuario en la captura de la barra dorada.
+   - La barra superior queda concisa, directa e institucional:
+     `"🔥 Edición Especial 2026 · Ventas Abiertas Oficiales"`.
+   - Se aplicó filtro y saneamiento proactivo de cache para suprimir la frase incluso si persistía en almacenamiento local anterior.
+
+
 
 
 

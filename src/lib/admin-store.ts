@@ -601,7 +601,7 @@ export const CONFIG_DEFAULT: Config = {
   heroBadgeSuperToken: "",
   heroBadgeGasolina: "⛽ Viernes de Tanque Lleno (₡50k Gasolina) + 🎮 Domingos de Play 5",
   heroBadgeComercios: "Descuentos en Comercios ↗",
-  barraNotificacionTexto: "🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!",
+  barraNotificacionTexto: "🔥 Edición Especial 2026 · Ventas Abiertas Oficiales",
   mostrarBadgeSorteo: true,
   mostrarBadgePopular: true,
   mostrarBadgeJPS: true,

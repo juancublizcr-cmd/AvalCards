@@ -495,7 +495,9 @@ function IndexPage() {
             : cierrePrevio
             ? `🔒 VENTAS CERRADAS · PREPARANDO SORTEO OFICIAL DE LAS ${formatearHora12(sorteo.horaSorteo || "19:30")}`
             : config.ventasActivas
-            ? (config.barraNotificacionTexto || "🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!")
+            ? (config.barraNotificacionTexto
+                ? config.barraNotificacionTexto.replace(/\s*·\s*¡?participa por tus vehículos 0km y premios!?/i, "").trim()
+                : "🔥 Edición Especial 2026 · Ventas Abiertas Oficiales")
             : config.promoTitulo || "🔥 GRAN EVENTO PROMOCIONAL 2026 · ¡PRÓXIMAMENTE!"}
         </div>
       )}

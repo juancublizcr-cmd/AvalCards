@@ -329,7 +329,7 @@ export function DisenoWebSection({
                 </Label>
                 <Input
                   value={borrador.barraNotificacionTexto ?? ""}
-                  placeholder="🔥 Edición Especial 2026 · Ventas Abiertas Oficiales · ¡Participa por tus Vehículos 0KM y Premios!"
+                  placeholder="🔥 Edición Especial 2026 · Ventas Abiertas Oficiales"
                   onChange={(e) => setBorrador({ ...borrador, barraNotificacionTexto: e.target.value })}
                 />
                 <p className="text-[11px] text-muted-foreground">
