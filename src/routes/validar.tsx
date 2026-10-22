@@ -680,7 +680,7 @@ function Validar() {
                         <div className="mt-2.5 inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/35 px-3 py-1.5 text-xs text-emerald-300 font-semibold shadow-xs">
                           <Gift className="size-4 text-emerald-400 shrink-0" />
                           <span>
-                            🎁 Referido por tu Padre Oficial: <strong className="text-white">{padresMap[o.referido_por]?.nombre || "Carlos Gomez"}</strong> ({padresMap[o.referido_por]?.telefono || o.referido_por}) · <span className="text-emerald-400 font-bold">+1 Token Extra de Regalo</span>
+                            🎁 Referido por tu Amigo: <strong className="text-white">{padresMap[o.referido_por]?.nombre || "Carlos Gomez"}</strong> ({padresMap[o.referido_por]?.telefono || o.referido_por}) · <span className="text-emerald-400 font-bold">¡Tu amigo recibe premio si ganas!</span>
                           </span>
                         </div>
                       )}

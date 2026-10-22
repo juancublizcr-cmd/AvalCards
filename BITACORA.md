@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 21 de Octubre de 2026 - 11:36 PM (Hito 45: Actualización del Titular de Cuenta SINPE Móvil y Razón Social a "Kevin Durán Rojas")  
+**Última actualización:** 21 de Octubre de 2026 - 11:48 PM (Hito 46: Ajuste Responsivo Móvil del Botón de Estados de WhatsApp y Modelo de Premio Monetario en Efectivo para Referidos con Campos Editables en Admin)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -848,6 +848,29 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - En [`src/routes/checkout.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/checkout.tsx#L990), la tarjeta de pago por SINPE Móvil ahora indica formalmente:
      `A nombre de: Kevin Durán Rojas`.
    - Se actualizaron las referencias de respaldo en `CONFIG_DEFAULT` (`admin-store.ts`), `ai-service.ts`, `terminos.tsx`, `privacidad.tsx` y `reembolso.tsx`.
+
+---
+
+## 🚀 Hito 46: Ajuste Responsivo Móvil del Botón de Estados de WhatsApp y Modelo de Premio Monetario en Efectivo para Referidos con Campos Editables en Admin
+
+1. **Ajuste Responsivo del Botón Naranja en Pantalla Móvil (`/checkout`):**
+   - Se corrigió el desbordamiento horizontal (`overflow`) del texto `"📸 Crear Imagen para mi Estado de WhatsApp"` en pantallas de celulares de 360px a 390px.
+   - Se removió la restricción rígida `size="lg"` (`h-11` con `whitespace-nowrap`) y se configuró:
+     👉 `whitespace-normal h-auto py-3 px-3 text-xs sm:text-sm text-center leading-tight`.
+   - Se ajustó el acolchado del modal/tarjeta de éxito a `p-5 sm:p-8` para garantizar que todos los botones tengan el ancho necesario y el texto fluya de manera fluida y legible en cualquier dispositivo móvil.
+
+2. **Reconfiguración del Programa de Referidos a Premio Monetario en Efectivo:**
+   - Siguiendo los requerimientos oficiales, se eliminó la entrega de tokens gratuitos ("no se van a dar tokens a nadie").
+   - El sistema ahora opera bajo el modelo de incentivo en dinero en efectivo: **únicamente quien refiere recibe el premio monetario (por defecto `₡1,000,000`) si la persona referida resulta ganadora con su número oficial**.
+   - Los mensajes de WhatsApp (`checkout.tsx`, `validar.tsx`, `StoryShareModal.tsx`) y los banners informativos fueron actualizados para reflejar este modelo de premio en efectivo.
+
+3. **Nuevos Campos Editables en el Panel Administrativo (`/admin` -> Referidos):**
+   - Se agregó una sección dedicada: **"2. TARJETA POST-COMPRA (PANTALLA DE PAGO / CHECKOUT): PREMIO Y TEXTOS VERDES"**:
+     - **Monto del Premio por Referir:** `referidosPremioSiGana` (por defecto `₡1,000,000`).
+     - **Título de la Tarjeta Verde:** `referidosCardTitulo` (por defecto `¡Gana ₡1,000,000 en Efectivo por referir!`).
+     - **Textos Verdes / Explicación del Premio:** `referidosCardDesc` (por defecto `Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ₡1,000,000 en efectivo directo a tu cuenta!`).
+   - Se integró un componente de **Vista Previa en Vivo** dentro del administrador para verificar en tiempo real la apariencia exacta de la tarjeta verde antes de guardar.
+
 
 
 

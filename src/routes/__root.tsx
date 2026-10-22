@@ -183,7 +183,7 @@ function RootComponent() {
         if (cleaned && cleaned !== prevRef) {
           localStorage.setItem("aval_ref", cleaned);
           toast.success(
-            "🎁 ¡Enlace de amigo activado! Recibirás +1 Token Extra de Regalo en tu compra.",
+            "🤝 ¡Enlace de recomendación activado! Si resultas ganador, tu amigo también recibe un premio en efectivo.",
             { duration: 6000 }
           );
         }

@@ -49,7 +49,7 @@ const EVENTOS_FALLBACK: FomoEvent[] = [
     id: "f5",
     tipo: "compra",
     titulo: "🎁 ¡Referido con Bono de Regalo!",
-    detalle: "David Q. de Puntarenas activó +1 Token Extra de su Referente",
+    detalle: "David Q. de Puntarenas activó su Enlace de Referente Oficial",
     tiempo: "Hace 18 minutos",
     icono: "flame",
   },

@@ -51,9 +51,15 @@ export function ReferidosSection({
   const [premioSegundo, setPremioSegundo] = useState(config.rankingPremioSegundo || "₡100,000 SINPE");
   const [premioTercero, setPremioTercero] = useState(config.rankingPremioTercero || "₡50,000 SINPE");
   const [fechaCierre, setFechaCierre] = useState(config.rankingFechaCierre || "Último día del mes · 11:59 PM");
-  const [padrinoPremio1, setPadrinoPremio1] = useState(config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000");
-  const [padrinoPremio2, setPadrinoPremio2] = useState(config.referidosPremioSegundo || "₡2,000,000");
-  const [padrinoPremio3, setPadrinoPremio3] = useState(config.referidosPremioTercero || "₡1,000,000");
+  const [padrinoPremio1, setPadrinoPremio1] = useState(config.referidosPremioPrimero || config.referidosPremioSiGana || "₡1,000,000");
+  const [padrinoPremio2, setPadrinoPremio2] = useState(config.referidosPremioSegundo || "₡500,000");
+  const [padrinoPremio3, setPadrinoPremio3] = useState(config.referidosPremioTercero || "₡250,000");
+  const [premioSiGana, setPremioSiGana] = useState(config.referidosPremioSiGana || "₡1,000,000");
+  const [cardTitulo, setCardTitulo] = useState(config.referidosCardTitulo || "¡Gana ₡1,000,000 en Efectivo por referir!");
+  const [cardDesc, setCardDesc] = useState(
+    config.referidosCardDesc ||
+      "Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ₡1,000,000 en efectivo directo a tu cuenta!"
+  );
   const [darTokensBono, setDarTokensBono] = useState(config.referidosDarTokensBono ?? false);
   const [promoLandingActivo, setPromoLandingActivo] = useState(config.referidosPromoLandingActivo ?? true);
   const [bonoTokens, setBonoTokens] = useState<number>(config.referidosBonoTokens ?? 1);
@@ -70,9 +76,15 @@ export function ReferidosSection({
     setPremioSegundo(config.rankingPremioSegundo || "₡100,000 SINPE");
     setPremioTercero(config.rankingPremioTercero || "₡50,000 SINPE");
     setFechaCierre(config.rankingFechaCierre || "Último día del mes · 11:59 PM");
-    setPadrinoPremio1(config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000");
-    setPadrinoPremio2(config.referidosPremioSegundo || "₡2,000,000");
-    setPadrinoPremio3(config.referidosPremioTercero || "₡1,000,000");
+    setPadrinoPremio1(config.referidosPremioPrimero || config.referidosPremioSiGana || "₡1,000,000");
+    setPadrinoPremio2(config.referidosPremioSegundo || "₡500,000");
+    setPadrinoPremio3(config.referidosPremioTercero || "₡250,000");
+    setPremioSiGana(config.referidosPremioSiGana || "₡1,000,000");
+    setCardTitulo(config.referidosCardTitulo || "¡Gana ₡1,000,000 en Efectivo por referir!");
+    setCardDesc(
+      config.referidosCardDesc ||
+        "Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ₡1,000,000 en efectivo directo a tu cuenta!"
+    );
     setDarTokensBono(config.referidosDarTokensBono ?? false);
     setPromoLandingActivo(config.referidosPromoLandingActivo ?? true);
     setBonoTokens(config.referidosBonoTokens ?? 1);
@@ -110,10 +122,12 @@ export function ReferidosSection({
         rankingPremioSegundo: premioSegundo,
         rankingPremioTercero: premioTercero,
         rankingFechaCierre: fechaCierre,
-        referidosPremioSiGana: padrinoPremio1,
-        referidosPremioPrimero: padrinoPremio1,
+        referidosPremioSiGana: premioSiGana,
+        referidosPremioPrimero: padrinoPremio1 || premioSiGana,
         referidosPremioSegundo: padrinoPremio2,
         referidosPremioTercero: padrinoPremio3,
+        referidosCardTitulo: cardTitulo,
+        referidosCardDesc: cardDesc,
         referidosDarTokensBono: darTokensBono,
         referidosPromoLandingActivo: promoLandingActivo,
         referidosBonoTokens: Number(bonoTokens) || 1,
@@ -222,7 +236,112 @@ export function ReferidosSection({
         </div>
       </div>
 
-      {/* 2. PROGRAMA DE PADRINOS Y PREMIO SI TU REFERIDO GANA */}
+      {/* 2. TARJETA POST-COMPRA (PANTALLA DE PAGO / CHECKOUT): PREMIO Y TEXTOS VERDES */}
+      <section className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-emerald-500/10 via-card to-card p-6 shadow-md space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px] px-2.5 py-0.5 border border-emerald-500/40">
+              <Gift className="size-3" /> TARJETA POST-COMPRA (PANTALLA DE PAGO / CHECKOUT)
+            </div>
+            <h3 className="font-bold text-xl text-foreground mt-1 flex items-center gap-2">
+              <Coins className="size-5 text-emerald-500" /> Premio y Textos Verdes por Referir
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Aquí configuras el premio monetario en colones y los textos verdes que el cliente ve en su pantalla tras realizar el pago.
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="hero"
+            size="sm"
+            onClick={handleGuardarPremios}
+            disabled={guardandoConfig}
+            className="font-bold gap-2 shadow-md w-full sm:w-auto"
+          >
+            <Save className="size-4" />
+            {guardandoConfig ? "Guardando..." : "Guardar Cambios"}
+          </Button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Monto del Premio en Efectivo */}
+          <div className="space-y-2 rounded-xl border-2 border-emerald-500/60 bg-emerald-500/10 p-4 shadow-sm">
+            <Label className="text-xs font-black text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+              💵 Monto del Premio por Referir (si el amigo gana el número)
+            </Label>
+            <Input
+              value={premioSiGana}
+              onChange={(e) => {
+                const val = e.target.value;
+                setPremioSiGana(val);
+                setPadrinoPremio1(val);
+              }}
+              placeholder="Ej: ₡1,000,000"
+              className="border-emerald-500/60 font-mono font-bold text-base text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Monto en efectivo que recibe quien refiere si su amigo resulta ganador con el boleto oficial (sin regalar tokens a nadie).
+            </p>
+          </div>
+
+          {/* Título de la Tarjeta */}
+          <div className="space-y-2 rounded-xl border border-border bg-card p-4 shadow-sm">
+            <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              🏷️ Título de la Tarjeta en Pantalla de Pago
+            </Label>
+            <Input
+              value={cardTitulo}
+              onChange={(e) => setCardTitulo(e.target.value)}
+              placeholder="Ej: ¡Gana ₡1,000,000 en Efectivo por referir!"
+              className="border-border font-bold text-sm text-foreground bg-background"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Encabezado llamativo de la tarjeta verde tras completar el pago.
+            </p>
+          </div>
+        </div>
+
+        {/* Textos Verdes / Descripción */}
+        <div className="space-y-2 rounded-xl border border-border bg-card p-4 shadow-sm">
+          <Label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+            📝 Textos Verdes (Explicación del Premio)
+          </Label>
+          <Input
+            value={cardDesc}
+            onChange={(e) => setCardDesc(e.target.value)}
+            placeholder="Ej: Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ₡1,000,000 en efectivo directo a tu cuenta!"
+            className="border-border text-sm text-foreground bg-background"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Texto explicativo en verde donde se aclara que el premio es monetario directo a la cuenta si el referido pega el número.
+          </p>
+        </div>
+
+        {/* Vista Previa en Vivo de la Tarjeta */}
+        <div className="rounded-xl border border-emerald-500/30 bg-zinc-950/70 p-4 space-y-2">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
+            👁️ Vista Previa en Vivo (Cómo lo ve el cliente en pantalla de compra)
+          </span>
+          <div className="rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/30 p-4 text-left space-y-2">
+            <div className="flex items-start gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg shrink-0">
+                💰
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-sm text-foreground leading-snug">
+                  {cardTitulo || `¡Gana ${premioSiGana || "₡1,000,000"} en Efectivo por referir!`}
+                </h4>
+                <p className="text-xs text-emerald-400/90 leading-relaxed mt-0.5">
+                  {cardDesc || `Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ${premioSiGana || "₡1,000,000"} en efectivo directo a tu cuenta!`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. PROGRAMA DE PADRINOS Y PREMIO SI TU REFERIDO GANA */}
       <section className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 shadow-md space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
           <div>

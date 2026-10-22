@@ -444,8 +444,9 @@ function Checkout() {
   const compartirWhatsApp = () => {
     const telLimpio = form.telefono.replace(/\D/g, "") || ordenCreadaId || "";
     const urlReferido = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${telLimpio}`;
+    const premioTxt = config.referidosPremioSiGana || "₡1,000,000";
     const texto = encodeURIComponent(
-      `¡Mae, estoy participando por el Mercedes Benz 2026 en Aval Community CR! 🚗💨\n\nEntra con mi enlace exclusivo y recibe +1 Token Extra GRATIS en tu compra:\n${urlReferido}`
+      `¡Mae, estoy participando por el Mercedes Benz 2026 en Aval Community CR! 🚗💨\n\nEntra con mi enlace exclusivo y asegura tus números oficiales:\n${urlReferido}\n\n¡Si pegas el premio mayor, yo también gano ${premioTxt} en efectivo por haberte recomendado!`
     );
     window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
   };
@@ -460,8 +461,8 @@ function Checkout() {
 
   if (exito) {
     return (
-      <main className="min-h-screen bg-background px-5 py-16 text-foreground flex items-center justify-center">
-        <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-8 text-center shadow-xl">
+      <main className="min-h-screen bg-background px-4 sm:px-5 py-12 sm:py-16 text-foreground flex items-center justify-center">
+        <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-5 sm:p-8 text-center shadow-xl">
           <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success/20 text-success">
             <CheckCircle2 className="size-10" />
           </div>
@@ -587,15 +588,17 @@ function Checkout() {
           )}
 
           {/* Tarjeta de Referidos con Enlace Directo */}
-          <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/20 p-5 text-left space-y-3">
+          <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/20 p-4 sm:p-5 text-left space-y-3">
             <div className="flex items-start gap-3">
               <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg shrink-0">
-                🎁
+                💰
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-bold text-sm text-foreground">¡Gana Tokens GRATIS con tu enlace!</h4>
-                <p className="text-xs text-emerald-400/90 leading-tight mt-0.5">
-                  Tus amigos reciben <strong>+1 Token Extra</strong> y tú ganas <strong>1 Token de Regalo</strong> por cada compra.
+                <h4 className="font-bold text-sm text-foreground leading-snug">
+                  {config.referidosCardTitulo || `¡Gana ${config.referidosPremioSiGana || "₡1,000,000"} en Efectivo por referir!`}
+                </h4>
+                <p className="text-xs text-emerald-400/90 leading-relaxed mt-1">
+                  {config.referidosCardDesc || `Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ${config.referidosPremioSiGana || "₡1,000,000"} en efectivo directo a tu cuenta!`}
                 </p>
               </div>
             </div>
@@ -622,33 +625,32 @@ function Checkout() {
               type="button"
               size="sm"
               onClick={compartirWhatsApp}
-              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs h-auto py-2.5 px-3 whitespace-normal text-center"
             >
-              <MessageCircle className="size-4" /> ¡Compartir mi Enlace en WhatsApp!
+              <MessageCircle className="size-4 shrink-0" /> ¡Compartir mi Enlace en WhatsApp!
             </Button>
           </div>
 
           <div className="mt-6 flex flex-col gap-3">
             <Button
               type="button"
-              size="lg"
               onClick={() => setModalHistoria(true)}
-              className="w-full gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold hover:from-amber-400 hover:to-amber-500 text-sm shadow-md"
+              className="w-full gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold hover:from-amber-400 hover:to-amber-500 text-xs sm:text-sm shadow-md h-auto py-3 px-3 whitespace-normal text-center leading-tight cursor-pointer"
             >
-              <Camera className="size-4" /> 📸 Crear Imagen para mi Estado de WhatsApp
+              <Camera className="size-4 shrink-0" />
+              <span>📸 Crear Imagen para mi Estado de WhatsApp</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="w-full gap-2 text-emerald-500 hover:text-emerald-400"
+              className="w-full gap-2 text-emerald-500 hover:text-emerald-400 h-auto py-2.5 px-3 whitespace-normal text-center text-xs sm:text-sm cursor-pointer"
               onClick={compartirWhatsApp}
             >
-              <Share2 className="size-4" /> Compartir Enlace en WhatsApp
+              <Share2 className="size-4 shrink-0" /> Compartir Enlace en WhatsApp
             </Button>
             <Button
               variant="hero"
-              size="xl"
-              className="w-full"
+              className="w-full h-auto py-3.5 px-4 whitespace-normal text-center text-sm sm:text-base font-bold cursor-pointer"
               onClick={() => {
                 void navigate({ to: "/validar" });
               }}
@@ -658,7 +660,7 @@ function Checkout() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full text-xs text-muted-foreground"
+              className="w-full text-xs text-muted-foreground cursor-pointer"
               onClick={() => void navigate({ to: "/" })}
             >
               Volver al inicio

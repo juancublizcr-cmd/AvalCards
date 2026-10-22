@@ -67,7 +67,7 @@ export function StoryShareModal({
         await navigator.share({
           files: [file],
           title: "¡Estoy participando por el Carro 0KM en Aval Community CR!",
-          text: `¡Mae, entra con mi enlace para recibir +1 Token Extra de Regalo en tu compra! https://www.avalcommunity.com/?ref=${datos.telefono.replace(/\D/g, "")}`,
+          text: `¡Mae, entra con mi enlace y participa por los premios oficiales de Aval Community CR! https://www.avalcommunity.com/?ref=${datos.telefono.replace(/\D/g, "")}`,
         });
       } else {
         descargar();

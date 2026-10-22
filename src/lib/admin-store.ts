@@ -136,6 +136,8 @@ export type Config = {
   referidosPremioPrimero?: string;
   referidosPremioSegundo?: string;
   referidosPremioTercero?: string;
+  referidosCardTitulo?: string;
+  referidosCardDesc?: string;
   referidosPromoLandingActivo?: boolean;
   referidosBonoTokens?: number;
   referidosComisionPct?: number;
@@ -518,10 +520,12 @@ export const CONFIG_DEFAULT: Config = {
   promoWhatsapp: "50686344772",
   referidosActivo: true,
   referidosDarTokensBono: false, // Por defecto nadie se gana tokens ya, configurable por switch en admin
-  referidosPremioSiGana: "₡4,000,000",
-  referidosPremioPrimero: "₡4,000,000",
-  referidosPremioSegundo: "₡2,000,000",
-  referidosPremioTercero: "₡1,000,000",
+  referidosPremioSiGana: "₡1,000,000",
+  referidosPremioPrimero: "₡1,000,000",
+  referidosPremioSegundo: "₡500,000",
+  referidosPremioTercero: "₡250,000",
+  referidosCardTitulo: "¡Gana ₡1,000,000 en Efectivo por referir!",
+  referidosCardDesc: "Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ₡1,000,000 en efectivo directo a tu cuenta!",
   referidosPromoLandingActivo: true,
   referidosBonoTokens: 1,
   referidosComisionPct: 10,
@@ -1285,6 +1289,8 @@ export async function fetchConfig(): Promise<Config> {
       referidosPremioPrimero: extra.referidosPremioPrimero || extra.referidosPremioSiGana || CONFIG_DEFAULT.referidosPremioPrimero,
       referidosPremioSegundo: extra.referidosPremioSegundo || CONFIG_DEFAULT.referidosPremioSegundo,
       referidosPremioTercero: extra.referidosPremioTercero || CONFIG_DEFAULT.referidosPremioTercero,
+      referidosCardTitulo: extra.referidosCardTitulo || CONFIG_DEFAULT.referidosCardTitulo,
+      referidosCardDesc: extra.referidosCardDesc || CONFIG_DEFAULT.referidosCardDesc,
       referidosPromoLandingActivo: extra.referidosPromoLandingActivo ?? CONFIG_DEFAULT.referidosPromoLandingActivo,
       referidosBonoTokens: extra.referidosBonoTokens ?? CONFIG_DEFAULT.referidosBonoTokens,
       referidosComisionPct: extra.referidosComisionPct ?? CONFIG_DEFAULT.referidosComisionPct,
