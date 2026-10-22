@@ -851,8 +851,14 @@ export async function fetchPremios(): Promise<Premio[]> {
         ? (p as any).activo
         : true;
 
+      const nombreLimpio = (p.nombre || "")
+        .replace(/Ducati,\s*Panigale/gi, "Ducati Panigale")
+        .replace(/,\s*2025/gi, " 2025")
+        .trim();
+
       return {
         ...p,
+        nombre: nombreLimpio,
         nivel: nivelReal,
         activo: estaActivo,
         orden: NIVEL_ORDEN[nivelReal] ?? idx + 1,

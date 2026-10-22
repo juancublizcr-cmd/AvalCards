@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 21 de Octubre de 2026 - 04:20 PM (Hito 43: Switch Administrativo para Ocultar / Mostrar el Banner CTA Final "¿Listo para estrenar tu vehículo soñado?", Desacoplamiento de Botones y Purificación de Efectivo Líquido)  
+**Última actualización:** 21 de Octubre de 2026 - 11:32 PM (Hito 44: Corrección de Puntuación en Nombre de Ducati Panigale V4 S 2025 en Base de Datos y Dinámica Oficial)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -822,6 +822,20 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se agregó en **⚡ Centro de Control** (dentro del grupo *5. Información, Proceso & Soporte*):
      - **Interruptor 12B:** *"Banner CTA Final ('¿Listo para estrenar?') - Caja luminosa 'Edición Limitada Oficial' antes de Preguntas Frecuentes con botón para adquirir tokens."*
    - Permite al administrador encenderlo o apagarlo en tiempo real con 1 solo clic.
+
+---
+
+## 🚀 Hito 44: Corrección de Puntuación en Nombre de Ducati Panigale V4 S 2025 (Remoción de Comas Innecesarias)
+
+1. **Corrección en Base de Datos Supabase:**
+   - Se actualizó el registro `p1790097714084` en la tabla `premios`.
+   - Se eliminaron las comas erróneas (`"Ducati, Panigale V4 S , 2025"` &rarr; `"Ducati Panigale V4 S 2025"`).
+
+2. **Sanitización Dinámica en Frontend y Dinámica Oficial:**
+   - En `fetchPremios` (`admin-store.ts`) y en el generador de la Dinámica Oficial de Premiación (`src/routes/index.tsx`), se agregó un filtro de limpieza que remueve cualquier coma residual o espacio previo antes del año.
+   - El texto oficial en la tarjeta dorada de la Dinámica queda perfecto:
+     `"1° Lugar: Ducati Multistrada V4 RS o Ducati Panigale V4 S 2025. 2° Lugar: Subaru IMPREZA* 2017 wrx STI o Mercedes-Benz Clase GLE 2016. 3° Lugar: ₡4,000,000 en Efectivo."`
+
 
 
 

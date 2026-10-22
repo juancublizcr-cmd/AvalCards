@@ -360,9 +360,15 @@ function IndexPage() {
       return reglaCustom;
     }
 
-    const p1 = activos.filter((p) => p.nivel === "1° Lugar" || p.nivel === "Premio Mayor").map((p) => p.nombre);
-    const p2 = activos.filter((p) => p.nivel === "2° Lugar" || p.nivel === "Segundo Premio").map((p) => p.nombre);
-    const p3 = activos.filter((p) => p.nivel === "3° Lugar" || p.nivel === "Tercer Premio").map((p) => p.nombre);
+    const sanitizarNombre = (n: string) =>
+      (n || "")
+        .replace(/Ducati,\s*Panigale/gi, "Ducati Panigale")
+        .replace(/,\s*2025/gi, " 2025")
+        .trim();
+
+    const p1 = activos.filter((p) => p.nivel === "1° Lugar" || p.nivel === "Premio Mayor").map((p) => sanitizarNombre(p.nombre));
+    const p2 = activos.filter((p) => p.nivel === "2° Lugar" || p.nivel === "Segundo Premio").map((p) => sanitizarNombre(p.nombre));
+    const p3 = activos.filter((p) => p.nivel === "3° Lugar" || p.nivel === "Tercer Premio").map((p) => sanitizarNombre(p.nombre));
 
     const partes: string[] = [];
     if (p1.length > 0) partes.push(`1° Lugar: ${p1.join(" o ")}`);
