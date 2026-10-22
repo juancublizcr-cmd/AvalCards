@@ -696,7 +696,7 @@ export const CONFIG_DEFAULT: Config = {
   garantiaModalTitulo: "La Edición Continúa Activa",
   garantiaModalTexto: "Según nuestra normativa notarial de transparencia, si al vencer la fecha programada la colocación de tokens es menor al porcentaje mínimo requerido para garantizar la entrega de todos los premios, la edición continúa 100% activa hasta alcanzar la meta. Todos los tokens adquiridos conservan su total validez y respaldo legal.",
   garantia1Badge: "Si llegamos al 80%",
-  garantia1Titulo: "Cierre Inmediato del Sorteo",
+  garantia1Titulo: "Cierre Inmediato del Evento",
   garantia1Desc: "Al alcanzar el 80% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana.",
   garantia2Badge: "Garantía de Cumplimiento",
   garantia2Titulo: "La Edición Continúa",

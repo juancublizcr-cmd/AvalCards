@@ -1319,7 +1319,7 @@ function IndexPage() {
                 <span className="text-[10px] font-black uppercase tracking-wider dark:text-emerald-400 text-emerald-700 flex items-center gap-1">
                   <CheckCircle2 className="size-3 text-emerald-500 dark:text-emerald-400" /> {config.garantia1Badge || `Si llegamos al ${metaMinimaSorteo}%`}
                 </span>
-                <h4 className="font-bold text-sm text-foreground">{config.garantia1Titulo || "Cierre Inmediato del Sorteo"}</h4>
+                <h4 className="font-bold text-sm text-foreground">{config.garantia1Titulo || "Cierre Inmediato del Evento"}</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {config.garantia1Desc || `Al alcanzar el ${metaMinimaSorteo}% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana.`}
                 </p>

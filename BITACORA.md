@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 21 de Octubre de 2026 - 11:52 PM (Hito 47: Actualización de Encabezado a "DINÁMICA OFICIAL PARA NUESTRA COMUNIDAD")  
+**Última actualización:** 21 de Octubre de 2026 - 11:56 PM (Hito 48: Actualización de Tarjeta de Garantía a "Cierre Inmediato del Evento")  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -880,6 +880,16 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
      👉 `"Dinámica Oficial de Premiación"` &rarr; `"Dinámica Oficial para Nuestra Comunidad"`.
    - Con la clase `uppercase tracking-wider`, se renderiza impecablemente como:
      `DINÁMICA OFICIAL PARA NUESTRA COMUNIDAD`.
+
+---
+
+## 🚀 Hito 48: Actualización de Tarjeta de Garantía a "Cierre Inmediato del Evento"
+
+1. **Actualización en Tarjetas de Transparencia (`src/routes/index.tsx` y `src/lib/admin-store.ts`):**
+   - Se actualizó el título de la tarjeta verde de cumplimiento bajo los paquetes de tokens de:
+     👉 `"Cierre Inmediato del Sorteo"` &rarr; `"Cierre Inmediato del Evento"`.
+   - Sincronizado en el fallback de [`src/routes/index.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/index.tsx#L1322) y en la configuración por defecto de [`src/lib/admin-store.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/admin-store.ts#L699) (`garantia1Titulo`).
+
 
 
 
