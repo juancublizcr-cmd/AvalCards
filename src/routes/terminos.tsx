@@ -122,7 +122,7 @@ function TerminosPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">Titular Oficial de la Cuenta:</span>
-                  <p className="font-semibold text-foreground">{config.razonSocial || "LUXX CR CAR WASH"}</p>
+                  <p className="font-semibold text-foreground">{config.razonSocial || "Kevin Durán Rojas"}</p>
                 </div>
               </div>
 

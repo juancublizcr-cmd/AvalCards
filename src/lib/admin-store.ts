@@ -507,7 +507,7 @@ export const SORTEO_DEFAULT: Sorteo = {
 export const CONFIG_DEFAULT: Config = {
   intentosMax: 5,
   telefonoSinpe: "8634-4772",
-  razonSocial: "LUXX CR CAR WASH",
+  razonSocial: "Kevin Durán Rojas",
   ventasActivas: true, // Tienda y secciones activas por defecto
   horaSorteoMartesViernes: "19:30", // 7:30 PM
   horaSorteoDomingos: "19:30", // 7:30 PM

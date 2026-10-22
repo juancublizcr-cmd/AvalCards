@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 21 de Octubre de 2026 - 11:32 PM (Hito 44: Corrección de Puntuación en Nombre de Ducati Panigale V4 S 2025 en Base de Datos y Dinámica Oficial)  
+**Última actualización:** 21 de Octubre de 2026 - 11:36 PM (Hito 45: Actualización del Titular de Cuenta SINPE Móvil y Razón Social a "Kevin Durán Rojas")  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -835,6 +835,20 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - En `fetchPremios` (`admin-store.ts`) y en el generador de la Dinámica Oficial de Premiación (`src/routes/index.tsx`), se agregó un filtro de limpieza que remueve cualquier coma residual o espacio previo antes del año.
    - El texto oficial en la tarjeta dorada de la Dinámica queda perfecto:
      `"1° Lugar: Ducati Multistrada V4 RS o Ducati Panigale V4 S 2025. 2° Lugar: Subaru IMPREZA* 2017 wrx STI o Mercedes-Benz Clase GLE 2016. 3° Lugar: ₡4,000,000 en Efectivo."`
+
+---
+
+## 🚀 Hito 45: Actualización del Titular de Cuenta SINPE Móvil y Razón Social a "Kevin Durán Rojas"
+
+1. **Actualización en Base de Datos Supabase (`site_config`):**
+   - Se actualizó el campo `razon_social` en la tabla `site_config` (ID 1) a:
+     👉 `"Kevin Durán Rojas"`.
+
+2. **Sincronización en Checkout y Términos Legales:**
+   - En [`src/routes/checkout.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/checkout.tsx#L990), la tarjeta de pago por SINPE Móvil ahora indica formalmente:
+     `A nombre de: Kevin Durán Rojas`.
+   - Se actualizaron las referencias de respaldo en `CONFIG_DEFAULT` (`admin-store.ts`), `ai-service.ts`, `terminos.tsx`, `privacidad.tsx` y `reembolso.tsx`.
+
 
 
 

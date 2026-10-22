@@ -987,7 +987,7 @@ function Checkout() {
                           </Button>
                         </div>
                         <span className="text-[11px] text-muted-foreground block">
-                          A nombre de: <strong className="text-foreground">{config.razonSocial || "LUXX CR CAR WASH"}</strong>
+                          A nombre de: <strong className="text-foreground">{config.razonSocial || "Kevin Durán Rojas"}</strong>
                         </span>
                       </div>
 

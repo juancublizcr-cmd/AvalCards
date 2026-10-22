@@ -63,7 +63,7 @@ function ReembolsoPage() {
             Política de Reembolsos y Devoluciones
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responsable: {config.razonSocial || "LUXX CR CAR WASH"} · Compromiso de transparencia y protección al consumidor
+            Responsable: {config.razonSocial || "Kevin Durán Rojas"} · Compromiso de transparencia y protección al consumidor
           </p>
         </div>
 
@@ -76,7 +76,7 @@ function ReembolsoPage() {
                 <ShieldCheck className="size-5 text-primary" /> 1. Casos en que Aplica Reembolso
               </h2>
               <p className="mt-2">
-                En <strong>Aval Community CR</strong> ({config.razonSocial || "LUXX CR CAR WASH"}) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
+                En <strong>Aval Community CR</strong> ({config.razonSocial || "Kevin Durán Rojas"}) procesamos devoluciones y reembolsos de dinero en los siguientes escenarios:
               </p>
               <ul className="list-disc pl-5 mt-2 space-y-1.5 text-xs">
                 <li>
