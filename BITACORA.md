@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 22 de Octubre de 2026 - 12:08 AM (Hito 50: Mejora de Contraste, Tipografía y Formato de Tarjeta de Referidos en Admin y Checkout)  
+**Última actualización:** 22 de Octubre de 2026 - 12:19 AM (Hito 51: Actualización de garantia1Titulo en Base de Datos Supabase a "Cierre Inmediato del Evento")  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -913,6 +913,17 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 2. **Sincronización en Pantalla de Pago (`/checkout`):**
    - Se aplicó la misma paleta de alto contraste a la tarjeta de referidos post-pago, asegurando perfecta legibilidad tanto en modo claro como en modo oscuro.
+
+---
+
+## 🚀 Hito 51: Actualización de garantia1Titulo en Base de Datos Supabase a "Cierre Inmediato del Evento"
+
+1. **Persistencia en Base de Datos Supabase (`sorteo_config`):**
+   - En el código frontend ya se había modificado el valor por defecto, pero el valor `"Cierre Inmediato del Sorteo"` se encontraba guardado previamente en la columna `raspa_config._meta._siteConfig.garantia1Titulo` de la base de datos de Supabase, lo que sobrescribía el valor del código al cargar la web.
+   - Se ejecutó la actualización directa sobre Supabase (`sorteo_config`), asignando:
+     👉 `garantia1Titulo = "Cierre Inmediato del Evento"`.
+   - Se regeneró el build de producción y el pre-renderizado HTML con el nuevo valor de base de datos.
+
 
 
 
