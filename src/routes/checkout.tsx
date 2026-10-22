@@ -588,34 +588,34 @@ function Checkout() {
           )}
 
           {/* Tarjeta de Referidos con Enlace Directo */}
-          <div className="mt-6 rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/20 p-4 sm:p-5 text-left space-y-3">
+          <div className="mt-6 rounded-2xl border-2 border-emerald-500/60 bg-emerald-500/10 dark:bg-emerald-950/40 p-4 sm:p-5 text-left space-y-3 shadow-md">
             <div className="flex items-start gap-3">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg shrink-0">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xl shrink-0 shadow-xs">
                 💰
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-bold text-sm text-foreground leading-snug">
+                <h4 className="font-extrabold text-sm sm:text-base text-foreground dark:text-white leading-snug">
                   {config.referidosCardTitulo || `¡Gana ${config.referidosPremioSiGana || "₡1,000,000"} en Efectivo por referir!`}
                 </h4>
-                <p className="text-xs text-emerald-400/90 leading-relaxed mt-1">
+                <p className="text-xs sm:text-sm font-semibold text-emerald-700 dark:text-emerald-300 leading-relaxed mt-1">
                   {config.referidosCardDesc || `Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ${config.referidosPremioSiGana || "₡1,000,000"} en efectivo directo a tu cuenta!`}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 rounded-xl bg-zinc-950/80 p-2 border border-emerald-500/30">
+            <div className="flex items-center gap-2 rounded-xl bg-background dark:bg-zinc-950/90 p-2 border border-emerald-500/40">
               <input
                 type="text"
                 readOnly
                 value={enlaceReferido}
-                className="w-full bg-transparent px-2 text-xs font-mono text-muted-foreground outline-none select-all"
+                className="w-full bg-transparent px-2 text-xs font-mono text-foreground dark:text-zinc-200 outline-none select-all"
               />
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
                 onClick={copiarEnlaceReferido}
-                className="h-8 text-xs font-bold border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 shrink-0"
+                className="h-8 text-xs font-bold border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 shrink-0 cursor-pointer"
               >
                 {copiadoRef ? "¡Copiado!" : "Copiar"}
               </Button>
@@ -625,7 +625,7 @@ function Checkout() {
               type="button"
               size="sm"
               onClick={compartirWhatsApp}
-              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs h-auto py-2.5 px-3 whitespace-normal text-center"
+              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm h-auto py-2.5 px-3 whitespace-normal text-center shadow-sm cursor-pointer"
             >
               <MessageCircle className="size-4 shrink-0" /> ¡Compartir mi Enlace en WhatsApp!
             </Button>

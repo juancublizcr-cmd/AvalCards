@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 22 de Octubre de 2026 - 12:05 AM (Hito 49: Corrección de Import de Ícono Zap en Ficha Técnica del 3° Lugar en Efectivo)  
+**Última actualización:** 22 de Octubre de 2026 - 12:08 AM (Hito 50: Mejora de Contraste, Tipografía y Formato de Tarjeta de Referidos en Admin y Checkout)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -888,6 +888,8 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 1. **Actualización en Tarjetas de Transparencia (`src/routes/index.tsx` y `src/lib/admin-store.ts`):**
    - Se actualizó el título de la tarjeta verde de cumplimiento bajo los paquetes de tokens de:
      👉 `"Cierre Inmediato del Sorteo"` &rarr; `"Cierre Inmediato del Evento"`.
+   - Sincronizado en el fallback de [`src/routes/index.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/index.tsx#L1322) y en la configuración por defecto de [`src/lib/admin-store.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/admin-store.ts#L699) (`garantia1Titulo`).
+
 ---
 
 ## 🚀 Hito 49: Corrección de Import de Ícono Zap en Ficha Técnica del 3° Lugar en Efectivo
@@ -896,6 +898,22 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Al hacer clic sobre el botón o tarjeta del **3° Lugar** (`₡4,000,000 en Efectivo`), la ficha técnica renderizaba las características de la transferencia SINPE utilizando el ícono `Zap` de `lucide-react`.
    - Sin embargo, `Zap` no había sido incluido en la declaración `import { ... } from "lucide-react"` en [`src/routes/index.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/index.tsx), lo que disparaba un error fatal de React en tiempo de ejecución ("Algo salió mal").
    - Se añadió `Zap` formalmente a las importaciones de `lucide-react` en `src/routes/index.tsx`, restaurando la apertura y renderizado perfecto de la ficha técnica y detalles del 3° lugar.
+
+---
+
+## 🚀 Hito 50: Mejora de Contraste, Tipografía y Formato de Tarjeta de Referidos en Admin y Checkout
+
+1. **Optimización de Legibilidad y Contraste Visual en Panel Admin (`/admin`):**
+   - La caja de vista previa previa se estiraba horizontalmente a lo ancho de la pantalla sobre un fondo oscuro rígido, volviendo las letras verdes y el título muy difíciles de leer.
+   - Se rediseñó el contenedor de vista previa:
+     - Centrado y acotado a ancho natural de tarjeta móvil (`max-w-md mx-auto`).
+     - Título con alto contraste universal (`text-foreground dark:text-white font-extrabold text-sm sm:text-base`).
+     - Textos verdes con contraste reforzado y peso seminegrita (`text-emerald-700 dark:text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed`).
+     - Integración de los botones de ejemplo ("Copiar" y "¡Compartir mi Enlace en WhatsApp!") para una previsualización 100% fidedigna.
+
+2. **Sincronización en Pantalla de Pago (`/checkout`):**
+   - Se aplicó la misma paleta de alto contraste a la tarjeta de referidos post-pago, asegurando perfecta legibilidad tanto en modo claro como en modo oscuro.
+
 
 
 

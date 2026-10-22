@@ -319,24 +319,55 @@ export function ReferidosSection({
         </div>
 
         {/* Vista Previa en Vivo de la Tarjeta */}
-        <div className="rounded-xl border border-emerald-500/30 bg-zinc-950/70 p-4 space-y-2">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
-            👁️ Vista Previa en Vivo (Cómo lo ve el cliente en pantalla de compra)
-          </span>
-          <div className="rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/30 p-4 text-left space-y-2">
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-3 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              👁️ Vista Previa en Vivo (Cómo se ve en la Pantalla de Pago)
+            </span>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              Formato real de visualización para el cliente
+            </span>
+          </div>
+
+          <div className="max-w-md mx-auto rounded-2xl border-2 border-emerald-500/60 bg-emerald-500/10 dark:bg-emerald-950/40 p-4 sm:p-5 text-left space-y-3 shadow-md">
             <div className="flex items-start gap-3">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 text-lg shrink-0">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xl shrink-0 shadow-xs">
                 💰
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-bold text-sm text-foreground leading-snug">
+                <h4 className="font-extrabold text-sm sm:text-base text-foreground dark:text-white leading-snug">
                   {cardTitulo || `¡Gana ${premioSiGana || "₡1,000,000"} en Efectivo por referir!`}
                 </h4>
-                <p className="text-xs text-emerald-400/90 leading-relaxed mt-0.5">
+                <p className="text-xs sm:text-sm font-semibold text-emerald-700 dark:text-emerald-300 leading-relaxed mt-1">
                   {cardDesc || `Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ${premioSiGana || "₡1,000,000"} en efectivo directo a tu cuenta!`}
                 </p>
               </div>
             </div>
+
+            <div className="flex items-center gap-2 rounded-xl bg-background dark:bg-zinc-950/90 p-2 border border-emerald-500/40">
+              <input
+                type="text"
+                readOnly
+                value="https://avalcommunity.com/?ref=88888888"
+                className="w-full bg-transparent px-2 text-xs font-mono text-foreground dark:text-zinc-200 outline-none select-all"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-8 text-xs font-bold border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 shrink-0 pointer-events-none"
+              >
+                Copiar
+              </Button>
+            </div>
+
+            <Button
+              type="button"
+              size="sm"
+              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm h-auto py-2.5 px-3 whitespace-normal text-center shadow-sm pointer-events-none"
+            >
+              <MessageCircle className="size-4 shrink-0" /> ¡Compartir mi Enlace en WhatsApp!
+            </Button>
           </div>
         </div>
       </section>
