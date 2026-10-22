@@ -714,12 +714,12 @@ function IndexPage() {
 
                 {/* GRID DÚO: DINÁMICA OFICIAL + TERMÓMETRO / CONTADOR EN VIVO (LADO A LADO) */}
                 <div className="mt-4 mb-6 mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-3.5 items-stretch text-left">
-                  {/* LADO IZQUIERDO: DINÁMICA OFICIAL DE PREMIACIÓN */}
+                  {/* LADO IZQUIERDO: DINÁMICA OFICIAL PARA NUESTRA COMUNIDAD */}
                   {sorteo.mostrarDinamica !== false && Boolean(textoDinamicaFinal) && (
                     <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-card to-amber-500/5 p-4 sm:p-4.5 flex flex-col justify-between shadow-md">
                       <div>
                         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider dark:text-amber-400 text-amber-700">
-                          <Award className="size-4 text-amber-500 dark:text-amber-400" /> Dinámica Oficial de Premiación
+                          <Award className="size-4 text-amber-500 dark:text-amber-400" /> Dinámica Oficial para Nuestra Comunidad
                         </div>
                         <p className="mt-2 text-xs sm:text-sm font-semibold text-foreground leading-relaxed">
                           {textoDinamicaFinal}

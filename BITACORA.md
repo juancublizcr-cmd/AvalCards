@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 21 de Octubre de 2026 - 11:48 PM (Hito 46: Ajuste Responsivo Móvil del Botón de Estados de WhatsApp y Modelo de Premio Monetario en Efectivo para Referidos con Campos Editables en Admin)  
+**Última actualización:** 21 de Octubre de 2026 - 11:52 PM (Hito 47: Actualización de Encabezado a "DINÁMICA OFICIAL PARA NUESTRA COMUNIDAD")  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -870,6 +870,17 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
      - **Título de la Tarjeta Verde:** `referidosCardTitulo` (por defecto `¡Gana ₡1,000,000 en Efectivo por referir!`).
      - **Textos Verdes / Explicación del Premio:** `referidosCardDesc` (por defecto `Comparte tu enlace. Si un amigo que invitaste resulta ganador con su número oficial, ¡tú recibes ₡1,000,000 en efectivo directo a tu cuenta!`).
    - Se integró un componente de **Vista Previa en Vivo** dentro del administrador para verificar en tiempo real la apariencia exacta de la tarjeta verde antes de guardar.
+
+---
+
+## 🚀 Hito 47: Actualización de Encabezado a "DINÁMICA OFICIAL PARA NUESTRA COMUNIDAD"
+
+1. **Actualización en Tarjeta Dorada de Premiación (`src/routes/index.tsx`):**
+   - Se actualizó el encabezado de la tarjeta dorada oficial de premiación (junto al ícono de medalla/trofeo) de:
+     👉 `"Dinámica Oficial de Premiación"` &rarr; `"Dinámica Oficial para Nuestra Comunidad"`.
+   - Con la clase `uppercase tracking-wider`, se renderiza impecablemente como:
+     `DINÁMICA OFICIAL PARA NUESTRA COMUNIDAD`.
+
 
 
 
