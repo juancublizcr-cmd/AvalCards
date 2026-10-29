@@ -936,6 +936,11 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se actualizó [`src/routes/checkout.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/checkout.tsx) para leer dinámicamente la configuración de [`src/lib/facturaos.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/facturaos.ts) y alertar al usuario en caso de fallos de red en lugar de silenciar errores.
    - Se integró la tarjeta de monitoreo [`FacturaOSConfigCard`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/FacturaOSConfigCard.tsx) en la sección de Configuración del Panel Admin ([`src/components/admin/ConfigSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/ConfigSection.tsx)) para verificar la conexión y vigencia de certificados en tiempo real.
 
+5. **Próximo Paso / Tarea en Hoja de Ruta (Despacho de Correo Automático):**
+   - **Diagnóstico actual:** Al realizar la compra, el cliente recibe y descarga de forma inmediata su comprobante en pantalla (PDF oficial con QR, XML firmado v4.4 y Acuse de Hacienda) y el registro queda archivado en FacturaOS. FacturaOS no cuenta todavía con un motor de despacho de correo transaccional activo en segundo plano (como Resend, SMTP o Gmail API).
+   - **Objetivo pendiente:** Implementar un servicio de envío de correos transaccionales automáticos para que, al emitirse un tiquete o factura electrónica, se remita de forma transparente una copia con los archivos PDF y XML adjuntos al buzón del cliente (`client.email`) con respaldo al correo de la empresa (`facturas@grupoluxxcr.com`).
+
+
 
 
 
