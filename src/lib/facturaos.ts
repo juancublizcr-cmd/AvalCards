@@ -3,15 +3,29 @@
  * Conectado a FacturaOS Hub v4.4
  */
 
-export const DEFAULT_FACTURAOS_API_URL = "http://localhost:3000/api/v1/invoices";
+export const DEFAULT_FACTURAOS_API_URL =
+  typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"
+    ? "https://go.facturaos.online/api/v1/invoices"
+    : "http://localhost:3000/api/v1/invoices";
 export const DEFAULT_AVALCAR_API_KEY = "fct_live_avalcarcr_7c9a1e3f5b2d8a4c6e";
-export const AVALCAR_EST_CODE = "avalcar_cr";
+export const AVALCAR_EST_CODE = "luxx_car_wash";
 
 export const FACTURAOS_API_URL = DEFAULT_FACTURAOS_API_URL;
 export const AVALCAR_API_KEY = DEFAULT_AVALCAR_API_KEY;
 
 export function getFacturaOSConfig() {
-  const apiUrl = localStorage.getItem("facturaos_api_url") || DEFAULT_FACTURAOS_API_URL;
+  const savedUrl = localStorage.getItem("facturaos_api_url");
+  const isProdHost =
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1";
+
+  // Si está en producción (avalcommunity.com) y la URL guardada es localhost, migrar automáticamente a go.facturaos.online
+  const apiUrl =
+    isProdHost && (!savedUrl || savedUrl.includes("localhost"))
+      ? "https://go.facturaos.online/api/v1/invoices"
+      : (savedUrl || DEFAULT_FACTURAOS_API_URL);
+
   const apiKey = localStorage.getItem("facturaos_api_key") || DEFAULT_AVALCAR_API_KEY;
   return { apiUrl, apiKey };
 }
