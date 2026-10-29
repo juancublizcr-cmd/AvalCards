@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 22 de Octubre de 2026 - 12:19 AM (Hito 51: Actualización de garantia1Titulo en Base de Datos Supabase a "Cierre Inmediato del Evento")  
+**Última actualización:** 29 de Octubre de 2026 - 12:35 AM (Hito 52: Integración Operativa de Facturación Electrónica con FacturaOS Hub v4.4 - Hacienda Costa Rica)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -916,13 +916,26 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 ---
 
-## 🚀 Hito 51: Actualización de garantia1Titulo en Base de Datos Supabase a "Cierre Inmediato del Evento"
+---
 
-1. **Persistencia en Base de Datos Supabase (`sorteo_config`):**
-   - En el código frontend ya se había modificado el valor por defecto, pero el valor `"Cierre Inmediato del Sorteo"` se encontraba guardado previamente en la columna `raspa_config._meta._siteConfig.garantia1Titulo` de la base de datos de Supabase, lo que sobrescribía el valor del código al cargar la web.
-   - Se ejecutó la actualización directa sobre Supabase (`sorteo_config`), asignando:
-     👉 `garantia1Titulo = "Cierre Inmediato del Evento"`.
-   - Se regeneró el build de producción y el pre-renderizado HTML con el nuevo valor de base de datos.
+## 🚀 Hito 52: Integración Operativa de Facturación Electrónica con FacturaOS Hub v4.4 (Hacienda Costa Rica)
+
+1. **Vinculación con Hub de Facturación Electrónica Oficial:**
+   - Se conectó la plataforma con **FacturaOS Hub** (puerto `3000`) bajo la sociedad **Barberías BOSS Limitada** (Cédula Jurídica: `3-102-832920`) con API Key de producción activa.
+
+2. **Aislamiento Multi-Caja e Independencia de Terminales:**
+   - Se asignó de manera exclusiva a AvalCar la **Sucursal `001`**, **Terminal `00002` (Caja 2 - AvalCar)** y el código de **Actividad Económica `829900`** (Servicios y Avalúos), manteniéndola 100% independiente de la Caja 1 (`00001` - Luxx Car Wash).
+   - Tanto las Facturas Electrónicas como los Tiquetes Electrónicos inician su numeración oficial a partir de **`#1`** (`...0000000001`).
+
+3. **Flujos Tributarios Validados en Producción:**
+   - **Tiquete Electrónico (Tipo `04`):** Para ventas al consumidor final cuando no se marca la casilla de factura; emitió satisfactoriamente el primer tiquete oficial (`00100002040000000001`).
+   - **Factura Electrónica (Tipo `01`):** Para compras donde el cliente solicita crédito fiscal, capturando tipo de cédula, número y nombre/razón social; emitió satisfactoriamente la primera factura oficial (`00100002010000000001`).
+   - Ambos comprobantes generan en pantalla la Clave Numérica de 50 dígitos, botón de descarga de **PDF con QR**, **XML firmado v4.4** y **Acuse de Aprobación de Hacienda** (`MensajeHacienda.xml`).
+
+4. **Mejoras en Frontend y Diagnóstico Administrativo:**
+   - Se actualizó [`src/routes/checkout.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/checkout.tsx) para leer dinámicamente la configuración de [`src/lib/facturaos.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/facturaos.ts) y alertar al usuario en caso de fallos de red en lugar de silenciar errores.
+   - Se integró la tarjeta de monitoreo [`FacturaOSConfigCard`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/FacturaOSConfigCard.tsx) en la sección de Configuración del Panel Admin ([`src/components/admin/ConfigSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/ConfigSection.tsx)) para verificar la conexión y vigencia de certificados en tiempo real.
+
 
 
 

@@ -98,6 +98,9 @@ export async function emitirFacturaAvalCar(params: EmitFacturaAvalCarParams): Pr
 
   const payload = {
     docType,
+    branchCode: "001",
+    terminalCode: "00002",
+    economicActivity: "829900",
     paymentMethod,
     saleCondition: "01",
     currency: "CRC",

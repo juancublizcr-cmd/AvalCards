@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { crearOrden, fetchOrdenesPorTelefono, leerSeleccion, limpiarSeleccion, type Seleccion } from "@/lib/orders";
+import { getFacturaOSConfig } from "@/lib/facturaos";
 import { fetchConfig, fetchSorteo, type Config, type Sorteo, CONFIG_DEFAULT, SORTEO_DEFAULT } from "@/lib/admin-store";
 import { obtenerEstadoSorteo, formatearHora12 } from "@/lib/fecha-utils";
 import { Footer } from "@/components/Footer";
@@ -371,9 +372,15 @@ function Checkout() {
 
       // Emisión electrónica automática en FacturaOS (Tiquete 04 o Factura 01)
       try {
+        const { apiUrl, apiKey } = getFacturaOSConfig();
+        const emitUrl = apiUrl.endsWith("/emit") ? apiUrl : `${apiUrl.replace(/\/$/, "")}/emit`;
+
         const precioSinIva = Math.round((precioFinal / 1.13) * 100) / 100;
         const payloadFactura = {
           docType: requiereFactura ? "01" : "04",
+          branchCode: "001",
+          terminalCode: "00002", // Caja 2 - AvalCar (inicia en 1)
+          economicActivity: "829900", // Actividad económica AvalCar
           paymentMethod: metodo === "tarjeta" ? "02" : "01",
           saleCondition: "01",
           currency: "CRC",
@@ -399,10 +406,10 @@ function Checkout() {
           ],
         };
 
-        const resFct = await fetch("http://localhost:3000/api/v1/invoices/emit", {
+        const resFct = await fetch(emitUrl, {
           method: "POST",
           headers: {
-            "Authorization": "Bearer fct_live_avalcarcr_7c9a1e3f5b2d8a4c6e",
+            "Authorization": `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payloadFactura),
@@ -411,9 +418,18 @@ function Checkout() {
         if (resFct.ok) {
           const fctData = await resFct.json();
           setFacturaData(fctData);
+        } else {
+          const errBody = await resFct.json().catch(() => ({}));
+          console.warn("[FacturaOS] Error de respuesta:", errBody);
+          toast.warning("La orden se procesó pero la factura electrónica no se emitió.", {
+            description: errBody.error || "El hub de facturación rechazó la solicitud.",
+          });
         }
-      } catch (fctErr) {
-        console.warn("[FacturaOS] Aviso en emisión automática:", fctErr);
+      } catch (fctErr: any) {
+        console.warn("[FacturaOS] Error al comunicar con el hub de facturas:", fctErr);
+        toast.warning("La orden se guardó con éxito pero el servidor de facturas (FacturaOS) no respondió.", {
+          description: "Verifica que el servicio en el puerto 3000 esté activo.",
+        });
       }
 
       setExito(true);
