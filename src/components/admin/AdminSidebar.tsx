@@ -209,7 +209,13 @@ export function AdminSidebarContent({
 
                   {s.id === "pagos" && isSuper && (
                     <a
-                      href="http://localhost:3000/app/invoices"
+                      href={
+                        typeof window !== "undefined" &&
+                        window.location.hostname !== "localhost" &&
+                        window.location.hostname !== "127.0.0.1"
+                          ? "https://go.facturaos.online/app/invoices"
+                          : "http://localhost:3000/app/invoices"
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all group my-1"
