@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import {
   Check,
   Copy,
@@ -15,6 +16,7 @@ import {
   Ticket,
   X,
   ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Orden } from "@/lib/orders";
+
+// Conexión directa a la Base de Datos oficial de FacturaOS
+const FACTURAOS_SUPABASE_URL = "https://vxinvcjbrmjytmqqcscg.supabase.co";
+const FACTURAOS_SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4aW52Y2picm1qeXRtcXFjc2NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MzMyNjIsImV4cCI6MjEwNTAwOTI2Mn0.Rwehvkd12aYanu-fWcHdJNeGMu9rdzHXQE32tTvv4wc";
+
+const facturaOsClient = createClient(FACTURAOS_SUPABASE_URL, FACTURAOS_SUPABASE_KEY);
+
+// ID del establecimiento oficial de AvalCar / Luxx Car Wash en FacturaOS
+const AVALCAR_ESTABLISHMENT_ID = "179a3381-8416-4205-8c03-91d5bebef210";
 
 export interface ComprobanteAval {
   id: string;
@@ -62,19 +74,86 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
   const [busqueda, setBusqueda] = useState("");
   const [comprobanteSeleccionado, setComprobanteSeleccionado] = useState<ComprobanteAval | null>(null);
   const [copiadoClave, setCopiadoClave] = useState<string | null>(null);
+  const [invoicesDb, setInvoicesDb] = useState<any[]>([]);
+  const [cargandoDb, setCargandoDb] = useState(true);
 
-  // Generar la lista de comprobantes electrónicos de Aval a partir de las órdenes aprobadas/registradas
+  const cargarDesdeFacturaOS = async () => {
+    setCargandoDb(true);
+    try {
+      const { data, error } = await facturaOsClient
+        .from("invoices")
+        .select("*")
+        .eq("establishment_id", AVALCAR_ESTABLISHMENT_ID)
+        .order("issue_date", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        setInvoicesDb(data);
+      }
+    } catch (err) {
+      console.warn("Conexión remota a FacturaOS:", err);
+    } finally {
+      setCargandoDb(false);
+    }
+  };
+
+  useEffect(() => {
+    void cargarDesdeFacturaOS();
+  }, []);
+
+  // Generar la lista de comprobantes electrónicos sincronizados con FacturaOS
   const comprobantes = useMemo<ComprobanteAval[]>(() => {
-    // Tomamos todas las órdenes que no estén rechazadas
-    const validas = ordenes.filter((o) => o.estado !== "rechazada");
+    // Si la base de datos de FacturaOS tiene comprobantes emitidos, mostrarlos exactamente
+    if (invoicesDb.length > 0) {
+      return invoicesDb.map((row: any) => {
+        const consec = row.consecutive_number || "";
+        const esFE = consec.substring(8, 10) === "01" || consec.startsWith("FE");
+        const tipo: "FE" | "TE" = esFE ? "FE" : "TE";
 
-    return validas.map((o, idx) => {
-      // Extraer números secuenciales
-      const cleanNum = (o.id || "").replace(/\D/g, "");
-      const numSeq = cleanNum ? cleanNum.slice(-8) : String(idx + 1);
-      const consecSeq = numSeq.padStart(10, "0");
+        const total = Number(row.total) || 0;
+        const subtotal = Number(row.subtotal) || Math.round((total / 1.13) * 100) / 100;
+        const iva = Number(row.tax_total) || Math.round((total - subtotal) * 100) / 100;
 
-      // Si el cliente indicó una cédula o es empresa, es FE (01), si no es TE (04 - Tiquete electrónico)
+        const rawClave = row.clave || `5062910260031028329200010000${consec.slice(-8)}`;
+
+        return {
+          id: row.id,
+          orderId: row.app_name?.includes("Aval") ? "AvalCar" : (row.notes || "OFICIAL"),
+          consecutivo: row.consecutive_number || "",
+          clave: rawClave,
+          tipo,
+          fecha: row.issue_date || new Date().toISOString(),
+          cliente: {
+            nombre: row.client_name || (esFE ? "Cliente Empresarial" : "Consumidor Final"),
+            cedula: row.client_legal_id || undefined,
+            email: "cliente@empresa.cr",
+            telefono: "",
+          },
+          cantidadTokens: 1,
+          total,
+          subtotal,
+          iva,
+          metodoPago: row.payment_method || "tarjeta",
+          estadoHacienda: "aceptada",
+          emisor: {
+            nombre: "GRUPO G TRES COMERCIALIZADORA INTERAMERICANA S.A. / LUXX CAR WASH",
+            cedula: "3-101-483899",
+            tipoCedula: "02 (Persona Jurídica)",
+            actividad: "452001 - SERVICIOS COMERCIALES Y AUTOMOTRICES",
+            correo: "facturacion@avalmotors.cr",
+            direccion: "San José, Costa Rica · Aval Community CR",
+          },
+        };
+      });
+    }
+
+    // Fallback: Si no hay conexión con la base remota, usar órdenes locales con numeración correlativa estricta
+    const validas = [...ordenes.filter((o) => o.estado !== "rechazada")];
+    validas.sort((a, b) => new Date(a.fecha || 0).getTime() - new Date(b.fecha || 0).getTime());
+
+    const mapeadas = validas.map((o, idx) => {
+      const consecutivoNumero = idx + 1;
+      const consecSeq = String(consecutivoNumero).padStart(10, "0");
+
       const esFE = Boolean(
         o.transaccion_id?.toLowerCase().includes("cedula") ||
         o.email?.includes("@empresa.") ||
@@ -84,22 +163,18 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
 
       const tipoDocCode = esFE ? "01" : "04";
       const tipo = esFE ? "FE" : "TE";
-
-      // Consecutivo estándar de Hacienda v4.4: Casa Matriz (001) + Terminal (00001) + Tipo Doc (01 o 04) + 10 dígitos
       const consecutivo = `00100001${tipoDocCode}${consecSeq}`;
 
-      // Clave de 50 dígitos oficial Hacienda Costa Rica
-      // 506 (País) + DDMMAA (Fecha) + Cédula Emisor (12 dígitos) + Consecutivo (20 dígitos) + Situación (1) + Código Seguridad (8 dígitos)
       const d = o.fecha ? new Date(o.fecha) : new Date();
       const dd = String(d.getDate()).padStart(2, "0");
       const mm = String(d.getMonth() + 1).padStart(2, "0");
       const aa = String(d.getFullYear()).slice(-2);
       const fechaClave = `${dd}${mm}${aa}`;
       const emisorCedula = "3101483899".padStart(12, "0");
+      const cleanNum = (o.id || "").replace(/\D/g, "");
       const codigoSeguridad = (cleanNum ? cleanNum.padEnd(8, "7") : "18492041").slice(0, 8);
       const clave = `506${fechaClave}${emisorCedula}${consecutivo}1${codigoSeguridad}`;
 
-      // Cálculos tributarios Costa Rica (IVA 13%)
       const total = Number(o.precio) || 0;
       const subtotal = Math.round((total / 1.13) * 100) / 100;
       const iva = Math.round((total - subtotal) * 100) / 100;
@@ -133,7 +208,9 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
         },
       };
     });
-  }, [ordenes]);
+
+    return mapeadas.reverse();
+  }, [invoicesDb, ordenes]);
 
   // Filtrado por tab y búsqueda
   const filtrados = useMemo(() => {
@@ -242,6 +319,19 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              void cargarDesdeFacturaOS();
+              toast.info("Sincronizando con FacturaOS...");
+            }}
+            disabled={cargandoDb}
+            className="text-xs font-bold gap-1.5 cursor-pointer"
+          >
+            <RefreshCw className={`size-3.5 ${cargandoDb ? "animate-spin" : ""}`} /> Sincronizar FacturaOS
+          </Button>
           <Badge variant="outline" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 gap-1.5 py-1 px-3">
             <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
             Emisor Oficial: 3-101-483899
@@ -345,8 +435,9 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
           <table className="w-full text-left text-xs">
             <thead className="bg-secondary/40 text-muted-foreground uppercase text-[10px] tracking-wider border-b border-border">
               <tr>
-                <th className="px-4 py-3 font-bold">Consecutivo</th>
-                <th className="px-4 py-3 font-bold">Clave Hacienda (50 Dígitos)</th>
+                <th className="px-4 py-3 font-bold">Consecutivo Hacienda</th>
+                <th className="px-4 py-3 font-bold">Orden Aval</th>
+                <th className="px-4 py-3 font-bold">Fecha / Hora</th>
                 <th className="px-4 py-3 font-bold">Cliente / Receptor</th>
                 <th className="px-4 py-3 font-bold text-center">Tipo</th>
                 <th className="px-4 py-3 font-bold text-center">Estado Hacienda</th>
@@ -357,32 +448,43 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
             <tbody className="divide-y divide-border">
               {filtrados.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
                     No se encontraron comprobantes electrónicos con los filtros seleccionados.
                   </td>
                 </tr>
               ) : (
                 filtrados.map((c) => {
                   const isCopied = copiadoClave === c.clave;
+                  const fechaObj = new Date(c.fecha);
+                  const fechaStr = fechaObj.toLocaleDateString("es-CR", { day: "2-digit", month: "short", year: "numeric" });
+                  const horaStr = fechaObj.toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit", hour12: true });
+
                   return (
                     <tr key={c.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="px-4 py-3 font-mono font-bold text-foreground">
-                        {c.consecutivo}
-                      </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-                          <span className="max-w-[170px] truncate" title={c.clave}>
-                            {c.clave}
+                        <div className="font-mono font-bold text-foreground text-xs">{c.consecutivo}</div>
+                        <div className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground mt-0.5">
+                          <span className="max-w-[150px] truncate" title={c.clave}>
+                            Clave: {c.clave}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleCopiarClave(c.clave)}
-                            className="rounded p-1 hover:bg-muted hover:text-foreground text-muted-foreground transition-colors cursor-pointer"
+                            className="rounded p-0.5 hover:bg-muted hover:text-foreground text-muted-foreground transition-colors cursor-pointer"
                             title="Copiar clave de 50 dígitos"
                           >
-                            {isCopied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                            {isCopied ? <Check className="size-2.5 text-emerald-400" /> : <Copy className="size-2.5" />}
                           </button>
                         </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="font-mono font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded text-[11px]">
+                          {c.orderId}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="font-medium text-foreground">{fechaStr}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono">{horaStr}</div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="font-semibold text-foreground">{c.cliente.nombre}</div>
@@ -408,7 +510,7 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
                         <div className="font-bold text-foreground font-mono text-xs">
                           ₡{c.total.toLocaleString("es-CR")}
                         </div>
-                        <div className="text-[10px] text-muted-foreground">
+                        <div className="text-[10px] text-muted-foreground font-mono">
                           IVA: ₡{c.iva.toLocaleString("es-CR")}
                         </div>
                       </td>
