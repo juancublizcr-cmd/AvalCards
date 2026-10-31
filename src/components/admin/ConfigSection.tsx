@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Save,
   ShieldAlert,
+  ShieldCheck,
   SlidersHorizontal,
   Smartphone,
   Sparkles,
@@ -178,6 +179,37 @@ export function ConfigSection({
             className="shrink-0 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow hover:bg-primary/90 transition-colors"
           >
             Ir a Textos y Botones Web →
+          </a>
+        )}
+      </div>
+
+      {/* BANNER CONTROL DE ACCESOS Y USUARIOS */}
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-blue-500/40 bg-gradient-to-r from-blue-500/10 via-card to-blue-500/10 p-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400">
+            <ShieldCheck className="size-5" />
+          </span>
+          <div>
+            <div className="text-sm font-bold text-foreground">Control de Accesos, Contraseñas y Roles</div>
+            <p className="text-xs text-muted-foreground">
+              Crea usuarios con enlaces restringidos (ej: solo 3 links del menú) y cambia la contraseña de Super Administrador.
+            </p>
+          </div>
+        </div>
+        {onCambiarSeccion ? (
+          <button
+            type="button"
+            onClick={() => onCambiarSeccion("usuarios")}
+            className="shrink-0 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow transition-colors cursor-pointer"
+          >
+            Gestionar Usuarios & Permisos →
+          </button>
+        ) : (
+          <a
+            href="/admin?seccion=usuarios"
+            className="shrink-0 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow transition-colors"
+          >
+            Gestionar Usuarios & Permisos →
           </a>
         )}
       </div>

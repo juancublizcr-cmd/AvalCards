@@ -37,10 +37,12 @@ import { ImpactoSocialSection } from "@/components/admin/ImpactoSocialSection";
 import { SponsorsSection } from "@/components/admin/SponsorsSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
 import { DisenoWebSection } from "@/components/admin/DisenoWebSection";
+import { UsuariosPermisosSection } from "@/components/admin/UsuariosPermisosSection";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { getAdminSession, clearAdminSession } from "@/routes/login";
+import type { AdminSessionUser } from "@/lib/admin-roles";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -78,6 +80,7 @@ function Admin() {
   const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
   const [cargando, setCargando] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [sessionUser, setSessionUser] = useState<AdminSessionUser | null>(null);
 
   useEffect(() => {
     // 1. Validar autenticación
@@ -86,7 +89,23 @@ function Admin() {
       void navigate({ to: "/login" });
       return;
     }
+    setSessionUser(sesion);
     setUserEmail(sesion.email ?? "Admin");
+
+    // Validar si la sección solicitada por URL está permitida para este usuario
+    const sUrl = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+    const esSuper = sesion.esSuperadmin !== false;
+    const permisosUsuario = sesion.permisos || [];
+
+    if (!esSuper) {
+      if (sUrl && !permisosUsuario.includes(sUrl)) {
+        const primeraPermitida = permisosUsuario[0] || "pagos";
+        setSeccion(primeraPermitida);
+      } else if (!sUrl && !permisosUsuario.includes("resumen")) {
+        const primeraPermitida = permisosUsuario[0] || "pagos";
+        setSeccion(primeraPermitida);
+      }
+    }
 
     // 2. Cargar datos
     void recargarDatos().finally(() => setCargando(false));
@@ -136,6 +155,12 @@ function Admin() {
   };
 
   const handleCambiarSeccion = (s: AdminSeccion) => {
+    const esSuper = sessionUser?.esSuperadmin !== false;
+    const permisos = sessionUser?.permisos || [];
+    if (!esSuper && !permisos.includes(s)) {
+      toast.error("No tienes permiso para acceder a esta sección");
+      return;
+    }
     setSeccion(s);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -157,6 +182,8 @@ function Admin() {
         onChange={handleCambiarSeccion}
         pendientes={pendientes.length}
         userEmail={userEmail}
+        permisos={sessionUser?.permisos}
+        esSuperadmin={sessionUser?.esSuperadmin !== false}
         onLogout={cerrarSesion}
         mobileOpen={mobileMenuOpen}
         setMobileOpen={setMobileMenuOpen}
@@ -306,6 +333,7 @@ function Admin() {
               {seccion === "config" ? (
                 <ConfigSection config={config} setConfig={setConfig} onCambiarSeccion={handleCambiarSeccion} />
               ) : null}
+              {seccion === "usuarios" ? <UsuariosPermisosSection /> : null}
             </>
           )}
         </main>

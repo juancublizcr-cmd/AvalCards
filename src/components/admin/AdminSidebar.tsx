@@ -19,6 +19,7 @@ import {
   Search,
   Settings,
   Share2,
+  ShieldCheck,
   ShoppingCart,
   SlidersHorizontal,
   Smartphone,
@@ -54,7 +55,8 @@ export type AdminSeccion =
   | "social"
   | "sponsors"
   | "disenoWeb"
-  | "config";
+  | "config"
+  | "usuarios";
 
 export interface ItemSeccion {
   id: AdminSeccion;
@@ -103,6 +105,7 @@ export const GRUPOS_SECCIONES: GrupoSecciones[] = [
     items: [
       { id: "disenoWeb", label: "Textos y Botones Web", icono: Layout },
       { id: "config", label: "Configuración y Pasarelas", icono: Settings },
+      { id: "usuarios", label: "Usuarios y Permisos", icono: ShieldCheck, badge: "SUPERADMIN" },
     ],
   },
 ];
@@ -114,6 +117,8 @@ export function AdminSidebarContent({
   onChange,
   pendientes,
   userEmail,
+  permisos,
+  esSuperadmin = true,
   onLogout,
   onItemClick,
 }: {
@@ -121,9 +126,31 @@ export function AdminSidebarContent({
   onChange: (s: AdminSeccion) => void;
   pendientes: number;
   userEmail?: string | null;
+  permisos?: AdminSeccion[];
+  esSuperadmin?: boolean;
   onLogout?: () => void;
   onItemClick?: () => void;
 }) {
+  const gruposFiltrados = GRUPOS_SECCIONES.map((grupo) => {
+    const itemsFiltrados = grupo.items.filter((item) => {
+      // La sección usuarios es exclusiva del Superadmin
+      if (item.id === "usuarios") {
+        return esSuperadmin !== false;
+      }
+      // Si es Superadmin, ve todos los links
+      if (esSuperadmin !== false) {
+        return true;
+      }
+      // Si es sub-administrador, únicamente ve los links que tenga en su lista de permisos
+      return permisos?.includes(item.id);
+    });
+
+    return {
+      ...grupo,
+      items: itemsFiltrados,
+    };
+  }).filter((grupo) => grupo.items.length > 0);
+
   return (
     <div className="flex h-full w-full flex-col bg-card">
       <div className="border-b border-border px-5 py-5">
@@ -137,7 +164,7 @@ export function AdminSidebarContent({
       </div>
 
       <nav className="flex-1 space-y-5 overflow-y-auto p-3">
-        {GRUPOS_SECCIONES.map((grupo, gIdx) => (
+        {gruposFiltrados.map((grupo, gIdx) => (
           <div key={gIdx} className="space-y-1">
             <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground/80">
               {grupo.titulo}
@@ -313,6 +340,8 @@ export function AdminSidebar({
   onChange,
   pendientes,
   userEmail,
+  permisos,
+  esSuperadmin = true,
   onLogout,
   mobileOpen,
   setMobileOpen,
@@ -321,6 +350,8 @@ export function AdminSidebar({
   onChange: (s: AdminSeccion) => void;
   pendientes: number;
   userEmail?: string | null;
+  permisos?: AdminSeccion[];
+  esSuperadmin?: boolean;
   onLogout?: () => void;
   mobileOpen?: boolean;
   setMobileOpen?: (open: boolean) => void;
@@ -334,6 +365,8 @@ export function AdminSidebar({
           onChange={onChange}
           pendientes={pendientes}
           userEmail={userEmail}
+          permisos={permisos}
+          esSuperadmin={esSuperadmin}
           onLogout={onLogout}
         />
       </aside>
@@ -348,6 +381,8 @@ export function AdminSidebar({
             onChange={onChange}
             pendientes={pendientes}
             userEmail={userEmail}
+            permisos={permisos}
+            esSuperadmin={esSuperadmin}
             onLogout={onLogout}
             onItemClick={() => setMobileOpen?.(false)}
           />

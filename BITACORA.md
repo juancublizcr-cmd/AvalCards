@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 29 de Octubre de 2026 - 12:35 AM (Hito 52: Integración Operativa de Facturación Electrónica con FacturaOS Hub v4.4 - Hacienda Costa Rica)  
+**Última actualización:** 30 de Octubre de 2026 - 11:50 PM (Hito 53: Módulo de Gestión de Roles, Contraseñas y Control Granular de Enlaces del Sidebar)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -936,9 +936,29 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - Se actualizó [`src/routes/checkout.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/checkout.tsx) para leer dinámicamente la configuración de [`src/lib/facturaos.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/facturaos.ts) y alertar al usuario en caso de fallos de red en lugar de silenciar errores.
    - Se integró la tarjeta de monitoreo [`FacturaOSConfigCard`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/FacturaOSConfigCard.tsx) en la sección de Configuración del Panel Admin ([`src/components/admin/ConfigSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/ConfigSection.tsx)) para verificar la conexión y vigencia de certificados en tiempo real.
 
-5. **Próximo Paso / Tarea en Hoja de Ruta (Despacho de Correo Automático):**
-   - **Diagnóstico actual:** Al realizar la compra, el cliente recibe y descarga de forma inmediata su comprobante en pantalla (PDF oficial con QR, XML firmado v4.4 y Acuse de Hacienda) y el registro queda archivado en FacturaOS. FacturaOS no cuenta todavía con un motor de despacho de correo transaccional activo en segundo plano (como Resend, SMTP o Gmail API).
-   - **Objetivo pendiente:** Implementar un servicio de envío de correos transaccionales automáticos para que, al emitirse un tiquete o factura electrónica, se remita de forma transparente una copia con los archivos PDF y XML adjuntos al buzón del cliente (`client.email`) con respaldo al correo de la empresa (`facturas@grupoluxxcr.com`).
+---
+
+## 🚀 Hito 53: Módulo de Gestión de Roles, Contraseñas y Control Granular de Enlaces del Sidebar
+
+1. **Arquitectura de Roles y Restricción de Menú Lateral:**
+   - Se implementó la librería [`src/lib/admin-roles.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/admin-roles.ts) con soporte para:
+     - **Super Administrador:** Cuenta raíz (`admin@avalmotors.cr`) con acceso total a los 16 módulos de la plataforma y posibilidad de actualizar su contraseña de forma segura (hashing SHA-256 + salt criptográfico).
+     - **Sub-Administradores / Operadores:** Cuentas secundarias con credenciales independientes y lista blanca de enlaces permitidos en el Sidebar.
+   - Sincronización inmutable en Supabase (`sorteo_config.raspa_config._meta._admin_roles`) y caché local para acceso offline/resiliente.
+
+2. **Panel de Gestión de Usuarios y Permisos (`UsuariosPermisosSection.tsx`):**
+   - Nueva sección administrativa exclusiva para el Super Administrador (`/admin?seccion=usuarios`) accesible desde el Sidebar ("Usuarios y Permisos") y con botón de acceso directo en "Configuración y Pasarelas".
+   - **Funcionalidades:**
+     - Cambio de contraseña de Super Administrador con confirmación y validación de seguridad.
+     - Creación y edición de Sub-administradores con nombre, correo, clave y switch de estado activo/inactivo.
+     - **Matriz Interactiva de Enlaces:** El Super Admin puede activar o desactivar individualmente con un switch cualquiera de los 16 links del sidebar, además de atajos rápidos ("⭐ Solo 3 Links: Pagos, Clientes, Inventario", "Marcar Todos", "Desmarcar Todos").
+     - Eliminación de accesos con confirmación.
+
+3. **Filtrado Dinámico en el Sidebar y Protección de Rutas:**
+   - [`src/components/admin/AdminSidebar.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/AdminSidebar.tsx) oculta automáticamente del menú lateral todos los links que el Superadmin no haya marcado para ese usuario, y omite títulos de grupos vacíos.
+   - [`src/routes/admin.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/admin.tsx) valida la sesión: si un sub-administrador intenta acceder por URL o atajo a un módulo no autorizado, el sistema lo bloquea y lo redirige automáticamente a su primera sección permitida.
+   - [`src/routes/login.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/login.tsx) integra la autenticación de credenciales de roles antes del fallback a RPC, inyectando los permisos exactos en la sesión del navegador.
+
 
 
 

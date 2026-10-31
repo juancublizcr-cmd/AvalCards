@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
+import {
+  verificarCredenciales,
+  TODAS_LAS_SECCIONES,
+  type AdminSessionUser,
+} from "@/lib/admin-roles";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -19,7 +24,7 @@ export const Route = createFileRoute("/login")({
 
 const AUTH_KEY = "aval_admin_session";
 
-export function getAdminSession() {
+export function getAdminSession(): AdminSessionUser | null {
   try {
     const raw = sessionStorage.getItem(AUTH_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -28,7 +33,7 @@ export function getAdminSession() {
   }
 }
 
-export function setAdminSession(user: { id: string; email: string; nombre: string }) {
+export function setAdminSession(user: AdminSessionUser) {
   sessionStorage.setItem(AUTH_KEY, JSON.stringify(user));
 }
 
@@ -38,7 +43,7 @@ export function clearAdminSession() {
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@avalcommunity.cr");
+  const [email, setEmail] = useState("admin@avalmotors.cr");
   const [password, setPassword] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [cargando, setCargando] = useState(false);
@@ -62,20 +67,42 @@ function Login() {
 
     setCargando(true);
     try {
-      // 1. Intentar con RPC en base de datos
+      // 1. Verificar credenciales con el motor de roles y sub-administradores
+      const rolCheck = await verificarCredenciales(email, password);
+      if (rolCheck.success && rolCheck.user) {
+        setAdminSession(rolCheck.user);
+        toast.success(`¡Bienvenido, ${rolCheck.user.nombre}!`);
+        void navigate({ to: "/admin" });
+        return;
+      }
+
+      if (rolCheck.error) {
+        toast.error("Acceso restringido", {
+          description: rolCheck.error,
+        });
+        return;
+      }
+
+      // 2. Intentar con RPC en base de datos Supabase
       const { data, error } = await supabase.rpc("login_admin", {
         p_email: email.trim(),
         p_password: password.trim(),
       });
 
       if (!error && data?.success) {
-        setAdminSession(data.user);
+        setAdminSession({
+          id: data.user.id || "superadmin",
+          email: data.user.email || email.trim(),
+          nombre: data.user.nombre || "Super Administrador",
+          esSuperadmin: true,
+          permisos: TODAS_LAS_SECCIONES,
+        });
         toast.success("¡Bienvenido al panel administrativo!");
         void navigate({ to: "/admin" });
         return;
       }
 
-      // 2. Si falla RPC, intentar fallback con Supabase Auth directo
+      // 3. Fallback con Supabase Auth directo
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
@@ -85,7 +112,9 @@ function Login() {
         setAdminSession({
           id: authData.user.id,
           email: authData.user.email ?? email,
-          nombre: "Administrador",
+          nombre: "Super Administrador",
+          esSuperadmin: true,
+          permisos: TODAS_LAS_SECCIONES,
         });
         toast.success("¡Bienvenido al panel administrativo!");
         void navigate({ to: "/admin" });
