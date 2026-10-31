@@ -693,7 +693,7 @@ export function FacturacionSection({ ordenes }: { ordenes: Orden[] }) {
                     <div className="font-bold text-foreground flex items-center gap-1">
                       <ShieldCheck className="size-3.5 text-emerald-400" /> Sello de Hacienda
                     </div>
-                    <div>Autorizada mediante resolución No. DGT-R-033-2019 de la Dirección General de Tributación.</div>
+                    <div>Autorizada mediante resoluciones DGT-R-033-2019 y MH-DGT-RES-0027-2024 de la DGT. Versión 4.4 (v2).</div>
                     <div className="text-[10px] font-mono text-emerald-400 font-bold">Estado: Aceptado por Hacienda</div>
                   </div>
                 </div>
