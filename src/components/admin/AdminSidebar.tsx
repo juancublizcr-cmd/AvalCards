@@ -207,7 +207,7 @@ export function AdminSidebarContent({
                     ) : null}
                   </button>
 
-                  {s.id === "pagos" && (
+                  {s.id === "pagos" && isSuper && (
                     <a
                       href="http://localhost:3000/app/invoices"
                       target="_blank"
@@ -226,93 +226,95 @@ export function AdminSidebarContent({
           </div>
         ))}
 
-        <div className="pt-5">
-          <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Acceso a Páginas Públicas
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm bg-primary/10 border border-primary/25 text-primary font-bold">
-              <Link
-                to="/promo"
-                onClick={onItemClick}
-                className="flex items-center gap-2.5 flex-1 min-w-0 hover:underline"
-              >
-                <Megaphone className="size-4 shrink-0 text-primary" />
-                <span className="flex-1 truncate">Landing RRSS (/promo)</span>
-                <ExternalLink className="size-3 text-primary/70 shrink-0" />
-              </Link>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const url = `${window.location.origin}/promo`;
-                  void navigator.clipboard.writeText(url);
-                  toast.success("¡Enlace de campaña copiado!", {
-                    description: url,
-                  });
-                }}
-                className="rounded-md p-1 hover:bg-primary/20 text-primary transition-colors cursor-pointer shrink-0"
-                title="Copiar enlace para redes sociales"
-              >
-                <Copy className="size-3.5" />
-              </button>
+        {isSuper && (
+          <div className="pt-5">
+            <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Acceso a Páginas Públicas
             </div>
-            <Link
-              to="/"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              <Flame className="size-4 shrink-0 text-primary" />
-              <span className="flex-1">Página Principal</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
-            <Link
-              to="/validar"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              <Search className="size-4 shrink-0 text-primary" />
-              <span className="flex-1">Validar Tokens</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
-            <Link
-              to="/checkout"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              <ShoppingCart className="size-4 shrink-0 text-primary" />
-              <span className="flex-1">Página de Checkout</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
-            <Link
-              to="/impacto-social"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-emerald-400 font-medium transition-colors hover:bg-emerald-500/10 hover:text-emerald-300"
-            >
-              <HeartHandshake className="size-4 shrink-0 text-emerald-400" />
-              <span className="flex-1">Bien Social Solidario</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
-            <Link
-              to="/sponsors"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-400 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-300"
-            >
-              <Store className="size-4 shrink-0 text-amber-400" />
-              <span className="flex-1">Comercios & Descuentos</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
-            <Link
-              to="/comercio"
-              onClick={onItemClick}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-400 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-300"
-            >
-              <QrCode className="size-4 shrink-0 text-amber-400" />
-              <span className="flex-1">Portal Comercios (App)</span>
-              <ExternalLink className="size-3 text-muted-foreground" />
-            </Link>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm bg-primary/10 border border-primary/25 text-primary font-bold">
+                <Link
+                  to="/promo"
+                  onClick={onItemClick}
+                  className="flex items-center gap-2.5 flex-1 min-w-0 hover:underline"
+                >
+                  <Megaphone className="size-4 shrink-0 text-primary" />
+                  <span className="flex-1 truncate">Landing RRSS (/promo)</span>
+                  <ExternalLink className="size-3 text-primary/70 shrink-0" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const url = `${window.location.origin}/promo`;
+                    void navigator.clipboard.writeText(url);
+                    toast.success("¡Enlace de campaña copiado!", {
+                      description: url,
+                    });
+                  }}
+                  className="rounded-md p-1 hover:bg-primary/20 text-primary transition-colors cursor-pointer shrink-0"
+                  title="Copiar enlace para redes sociales"
+                >
+                  <Copy className="size-3.5" />
+                </button>
+              </div>
+              <Link
+                to="/"
+                onClick={onItemClick}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <Flame className="size-4 shrink-0 text-primary" />
+                <span className="flex-1">Página Principal</span>
+                <ExternalLink className="size-3 text-muted-foreground" />
+              </Link>
+              <Link
+                to="/validar"
+                onClick={onItemClick}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <Search className="size-4 shrink-0 text-primary" />
+                <span className="flex-1">Validar Tokens</span>
+                <ExternalLink className="size-3 text-muted-foreground" />
+              </Link>
+              <Link
+                to="/checkout"
+                onClick={onItemClick}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <ShoppingCart className="size-4 shrink-0 text-primary" />
+                <span className="flex-1">Página de Checkout</span>
+                <ExternalLink className="size-3 text-muted-foreground" />
+              </Link>
+              <Link
+                to="/impacto-social"
+                onClick={onItemClick}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-emerald-400 font-medium transition-colors hover:bg-emerald-500/10 hover:text-emerald-300"
+              >
+                <HeartHandshake className="size-4 shrink-0 text-emerald-400" />
+                <span className="flex-1">Bien Social Solidario</span>
+                <ExternalLink className="size-3 text-muted-foreground" />
+              </Link>
+              <Link
+                to="/sponsors"
+                onClick={onItemClick}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-400 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-300"
+              >
+                <Store className="size-4 shrink-0 text-amber-400" />
+                <span className="flex-1">Comercios & Descuentos</span>
+                <ExternalLink className="size-3 text-muted-foreground" />
+              </Link>
+              <Link
+                to="/comercio"
+                onClick={onItemClick}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-amber-400 font-medium transition-colors hover:bg-amber-500/10 hover:text-amber-300"
+              >
+                <QrCode className="size-4 shrink-0 text-amber-400" />
+                <span className="flex-1">Portal Comercios (App)</span>
+                <ExternalLink className="size-3 text-muted-foreground" />
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </nav>
 
       <div className="flex items-center justify-between border-t border-border px-4 py-3 text-xs text-muted-foreground">

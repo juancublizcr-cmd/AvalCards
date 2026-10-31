@@ -50,10 +50,14 @@ export function ResumenSection({
   ordenes,
   onIrAPagos,
   onIrACentroControl,
+  esSuperadmin = false,
+  tienePermisoCentroControl = false,
 }: {
   ordenes: Orden[];
   onIrAPagos?: () => void;
   onIrACentroControl?: () => void;
+  esSuperadmin?: boolean;
+  tienePermisoCentroControl?: boolean;
 }) {
   const aprobadas = useMemo(() => ordenes.filter((o) => o.estado === "aprobada"), [ordenes]);
   const pendientes = useMemo(() => ordenes.filter((o) => o.estado === "pendiente"), [ordenes]);
@@ -141,8 +145,8 @@ export function ResumenSection({
         </Button>
       </div>
 
-      {/* Banner de Acceso Rápido: Centro de Control e Interruptores */}
-      {onIrACentroControl && (
+      {/* Banner de Acceso Rápido: Centro de Control e Interruptores (Solo Superadmin o con permiso explícito) */}
+      {onIrACentroControl && (esSuperadmin || tienePermisoCentroControl) && (
         <div className="rounded-xl border-2 border-primary/40 bg-gradient-to-r from-card via-card to-primary/10 p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -169,8 +173,9 @@ export function ResumenSection({
         </div>
       )}
 
-      {/* Banner de Campaña Publicitaria / Landing RRSS */}
-      <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/15 via-card to-background p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* Banner de Campaña Publicitaria / Landing RRSS (Solo visible para Superadmin) */}
+      {esSuperadmin && (
+        <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/15 via-card to-background p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="flex size-2 rounded-full bg-primary animate-ping" />
@@ -214,6 +219,7 @@ export function ResumenSection({
           </Button>
         </div>
       </div>
+      )}
 
       <div className="grid gap-4 xl:grid-cols-4 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm">

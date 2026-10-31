@@ -61,11 +61,28 @@ export const Route = createFileRoute("/admin")({
 
 function Admin() {
   const navigate = useNavigate();
-  const [seccion, setSeccion] = useState<AdminSeccion>("resumen");
+  const [seccion, setSeccion] = useState<AdminSeccion>(() => {
+    if (typeof window !== "undefined") {
+      const s = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+      const sesion = getAdminSession();
+      if (sesion && !sesion.esSuperadmin && sesion.permisos && sesion.permisos.length > 0) {
+        if (s && sesion.permisos.includes(s)) return s;
+        return sesion.permisos[0];
+      }
+      if (s && SECCIONES.some((sec) => sec.id === s)) return s;
+    }
+    return "resumen";
+  });
 
   useEffect(() => {
-    // Sincronizar sección desde URL de forma segura tras montar en el cliente (evita hydration mismatch)
     const s = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+    const sesion = getAdminSession();
+    if (sesion && !sesion.esSuperadmin && sesion.permisos && sesion.permisos.length > 0) {
+      if (!s || !sesion.permisos.includes(s)) {
+        setSeccion(sesion.permisos[0]);
+        return;
+      }
+    }
     if (s && SECCIONES.some((sec) => sec.id === s)) {
       setSeccion(s);
     }
@@ -299,7 +316,13 @@ function Admin() {
           ) : (
             <>
               {seccion === "resumen" ? (
-                <ResumenSection ordenes={ordenes} onIrAPagos={() => setSeccion("pagos")} onIrACentroControl={() => setSeccion("centroControl")} />
+                <ResumenSection
+                  ordenes={ordenes}
+                  onIrAPagos={() => setSeccion("pagos")}
+                  onIrACentroControl={() => setSeccion("centroControl")}
+                  esSuperadmin={sessionUser?.esSuperadmin}
+                  tienePermisoCentroControl={sessionUser?.permisos.includes("centroControl")}
+                />
               ) : null}
               {seccion === "centroControl" ? (
                 <CentroControlSection
