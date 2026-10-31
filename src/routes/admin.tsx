@@ -80,7 +80,12 @@ function Admin() {
   const [config, setConfig] = useState<Config>(CONFIG_DEFAULT);
   const [cargando, setCargando] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [sessionUser, setSessionUser] = useState<AdminSessionUser | null>(null);
+  const [sessionUser, setSessionUser] = useState<AdminSessionUser | null>(() => {
+    if (typeof window !== "undefined") {
+      return getAdminSession();
+    }
+    return null;
+  });
 
   useEffect(() => {
     // 1. Validar autenticación
@@ -89,23 +94,56 @@ function Admin() {
       void navigate({ to: "/login" });
       return;
     }
-    setSessionUser(sesion);
+
+    const cleanEmail = (sesion.email || "").toLowerCase().trim();
+    const esSuper = cleanEmail === "admin@avalmotors.cr";
     setUserEmail(sesion.email ?? "Admin");
 
-    // Validar si la sección solicitada por URL está permitida para este usuario
-    const sUrl = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
-    const esSuper = sesion.esSuperadmin !== false;
-    const permisosUsuario = sesion.permisos || [];
+    // Sincronizar permisos en tiempo real desde Supabase para este usuario
+    void (async () => {
+      try {
+        const { fetchAdminRolesConfig, TODAS_LAS_SECCIONES } = await import("@/lib/admin-roles");
+        const cfg = await fetchAdminRolesConfig();
 
-    if (!esSuper) {
-      if (sUrl && !permisosUsuario.includes(sUrl)) {
-        const primeraPermitida = permisosUsuario[0] || "pagos";
-        setSeccion(primeraPermitida);
-      } else if (!sUrl && !permisosUsuario.includes("resumen")) {
-        const primeraPermitida = permisosUsuario[0] || "pagos";
-        setSeccion(primeraPermitida);
+        let permisosActuales: AdminSeccion[] = TODAS_LAS_SECCIONES;
+        if (!esSuper) {
+          const sub = cfg.subadmins.find(
+            (s) =>
+              s.email.toLowerCase() === cleanEmail ||
+              s.aliasEmail?.toLowerCase() === cleanEmail ||
+              (cleanEmail === "avalcommunity.cr" && s.email.includes("avalcommunity.cr")),
+          );
+          permisosActuales =
+            sub?.permisos && sub.permisos.length > 0
+              ? sub.permisos
+              : ["pagos", "inventario", "clientes"];
+        }
+
+        const userActualizado: AdminSessionUser = {
+          ...sesion,
+          email: sesion.email,
+          nombre: sesion.nombre,
+          esSuperadmin: esSuper,
+          permisos: permisosActuales,
+        };
+        setSessionUser(userActualizado);
+        setAdminSession(userActualizado);
+
+        // Si la sección actual no está permitida, cambiar de inmediato a la primera permitida
+        const sUrl = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+        if (!esSuper) {
+          if (!sUrl || !permisosActuales.includes(sUrl)) {
+            const primera = permisosActuales[0] || "pagos";
+            setSeccion(primera);
+            const url = new URL(window.location.href);
+            url.searchParams.set("seccion", primera);
+            window.history.replaceState({}, "", url.toString());
+          }
+        }
+      } catch (err) {
+        console.warn("Error sincronizando roles en tiempo real:", err);
       }
-    }
+    })();
 
     // 2. Cargar datos
     void recargarDatos().finally(() => setCargando(false));

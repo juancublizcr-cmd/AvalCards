@@ -118,7 +118,7 @@ export function AdminSidebarContent({
   pendientes,
   userEmail,
   permisos,
-  esSuperadmin = true,
+  esSuperadmin = false,
   onLogout,
   onItemClick,
 }: {
@@ -131,18 +131,20 @@ export function AdminSidebarContent({
   onLogout?: () => void;
   onItemClick?: () => void;
 }) {
+  const isSuper = Boolean(esSuperadmin && userEmail?.toLowerCase() === "admin@avalmotors.cr");
+
   const gruposFiltrados = GRUPOS_SECCIONES.map((grupo) => {
     const itemsFiltrados = grupo.items.filter((item) => {
       // La sección usuarios es exclusiva del Superadmin
       if (item.id === "usuarios") {
-        return esSuperadmin !== false;
+        return isSuper;
       }
-      // Si es Superadmin, ve todos los links
-      if (esSuperadmin !== false) {
+      // Si es Superadmin autenticado, ve todos los links
+      if (isSuper) {
         return true;
       }
       // Si es sub-administrador, únicamente ve los links que tenga en su lista de permisos
-      return permisos?.includes(item.id);
+      return permisos ? permisos.includes(item.id) : false;
     });
 
     return {
@@ -341,7 +343,7 @@ export function AdminSidebar({
   pendientes,
   userEmail,
   permisos,
-  esSuperadmin = true,
+  esSuperadmin = false,
   onLogout,
   mobileOpen,
   setMobileOpen,

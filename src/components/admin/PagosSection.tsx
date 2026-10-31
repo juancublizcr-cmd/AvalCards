@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import {
+  Calendar,
   Check,
+  Clock,
   Coins,
   CreditCard,
   Crown,
@@ -39,6 +41,27 @@ const ESTADO_CLASE: Record<Orden["estado"], string> = {
   aprobada: "bg-success/15 text-success",
   rechazada: "bg-destructive/10 text-destructive",
 };
+
+function formatearFechaHora(fechaStr?: string) {
+  if (!fechaStr) return { fecha: "Sin fecha", hora: "-" };
+  try {
+    const d = new Date(fechaStr);
+    if (isNaN(d.getTime())) return { fecha: fechaStr, hora: "-" };
+    const fecha = d.toLocaleDateString("es-CR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    const hora = d.toLocaleTimeString("es-CR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return { fecha, hora };
+  } catch {
+    return { fecha: fechaStr, hora: "-" };
+  }
+}
 
 export function PagosSection({
   ordenes,
@@ -285,6 +308,7 @@ export function PagosSection({
           <thead className="bg-secondary text-left text-muted-foreground">
             <tr>
               <th className="px-5 py-3 font-medium">Orden</th>
+              <th className="px-5 py-3 font-medium">Fecha y Hora</th>
               <th className="px-5 py-3 font-medium">Cliente</th>
               <th className="px-5 py-3 font-medium">Método de Pago</th>
               <th className="px-5 py-3 font-medium">Teléfono</th>
@@ -294,7 +318,9 @@ export function PagosSection({
             </tr>
           </thead>
           <tbody>
-            {visibles.map((o) => (
+            {visibles.map((o) => {
+              const fh = formatearFechaHora(o.fecha);
+              return (
               <tr key={o.id} className="border-t border-border">
                 <td className="px-5 py-4 font-mono text-xs font-bold">
                   <div>{o.id}</div>
@@ -303,6 +329,16 @@ export function PagosSection({
                       <Crown className="size-2.5" /> SuperToken VIP
                     </span>
                   )}
+                </td>
+                <td className="px-5 py-4 whitespace-nowrap">
+                  <div className="font-medium text-xs text-foreground flex items-center gap-1.5">
+                    <Calendar className="size-3.5 text-primary" />
+                    <span>{fh.fecha}</span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                    <Clock className="size-3 text-muted-foreground/70" />
+                    <span className="font-mono">{fh.hora}</span>
+                  </div>
                 </td>
                 <td className="px-5 py-4">
                   <div className="font-medium">{o.nombre}</div>
@@ -345,10 +381,11 @@ export function PagosSection({
                   </div>
                 </td>
               </tr>
-            ))}
+            );
+            })}
             {visibles.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-5 py-10 text-center text-muted-foreground">
+                <td colSpan={8} className="px-5 py-10 text-center text-muted-foreground">
                   Sin resultados para los filtros aplicados.
                 </td>
               </tr>
@@ -392,6 +429,10 @@ export function PagosSection({
             <div className="space-y-4 px-4 pb-6">
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <Dato label="Cliente" valor={detalle.nombre} />
+                <Dato
+                  label="Fecha y Hora de Pago"
+                  valor={`${formatearFechaHora(detalle.fecha).fecha} · ${formatearFechaHora(detalle.fecha).hora}`}
+                />
                 <Dato label="Teléfono" valor={detalle.telefono} />
                 <Dato label="Correo" valor={detalle.email} />
                 <Dato
