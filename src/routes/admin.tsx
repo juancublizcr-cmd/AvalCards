@@ -41,7 +41,7 @@ import { UsuariosPermisosSection } from "@/components/admin/UsuariosPermisosSect
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { getAdminSession, clearAdminSession } from "@/routes/login";
+import { getAdminSession, setAdminSession, clearAdminSession } from "@/routes/login";
 import type { AdminSessionUser } from "@/lib/admin-roles";
 
 export const Route = createFileRoute("/admin")({
