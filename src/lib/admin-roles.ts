@@ -23,6 +23,7 @@ export const TODAS_LAS_SECCIONES: AdminSeccion[] = [
 export interface SubadminUser {
   id: string;
   email: string;
+  aliasEmail?: string;
   nombre: string;
   passwordHash: string;
   salt: string;
@@ -160,32 +161,12 @@ export async function verificarCredenciales(
   const pass = passwordIngresada.trim();
   const cfg = await fetchAdminRolesConfig();
 
-  // 1. Verificar si es Superadmin con contraseña personalizada
-  if (
-    cleanEmail === cfg.superadminEmail.toLowerCase() ||
-    cleanEmail === "admin@avalmotors.cr" ||
-    cleanEmail === "admin@avalcommunity.cr"
-  ) {
-    if (cfg.superadminPasswordHash && cfg.superadminSalt) {
-      const calcHash = await hashPassword(pass, cfg.superadminSalt);
-      if (calcHash === cfg.superadminPasswordHash) {
-        return {
-          success: true,
-          user: {
-            id: "superadmin",
-            email: cfg.superadminEmail,
-            nombre: "Super Administrador",
-            esSuperadmin: true,
-            permisos: TODAS_LAS_SECCIONES,
-          },
-        };
-      }
-    }
-  }
-
-  // 2. Verificar si coincide con algún sub-administrador
+  // 1. Verificar si coincide con algún sub-administrador (por correo o alias)
   const subadmin = cfg.subadmins.find(
-    (s) => s.email.trim().toLowerCase() === cleanEmail,
+    (s) =>
+      s.email.trim().toLowerCase() === cleanEmail ||
+      s.aliasEmail?.trim().toLowerCase() === cleanEmail ||
+      (cleanEmail === "avalcommunity.cr" && s.email.toLowerCase().includes("avalcommunity.cr")),
   );
 
   if (subadmin) {
@@ -205,9 +186,31 @@ export async function verificarCredenciales(
           email: subadmin.email,
           nombre: subadmin.nombre,
           esSuperadmin: false,
-          permisos: subadmin.permisos && subadmin.permisos.length > 0 ? subadmin.permisos : ["resumen"],
+          permisos: subadmin.permisos && subadmin.permisos.length > 0 ? subadmin.permisos : ["pagos"],
         },
       };
+    }
+  }
+
+  // 2. Verificar si es Superadmin con contraseña personalizada
+  if (
+    cleanEmail === cfg.superadminEmail.toLowerCase() ||
+    cleanEmail === "admin@avalmotors.cr"
+  ) {
+    if (cfg.superadminPasswordHash && cfg.superadminSalt) {
+      const calcHash = await hashPassword(pass, cfg.superadminSalt);
+      if (calcHash === cfg.superadminPasswordHash) {
+        return {
+          success: true,
+          user: {
+            id: "superadmin",
+            email: cfg.superadminEmail,
+            nombre: "Super Administrador",
+            esSuperadmin: true,
+            permisos: TODAS_LAS_SECCIONES,
+          },
+        };
+      }
     }
   }
 
