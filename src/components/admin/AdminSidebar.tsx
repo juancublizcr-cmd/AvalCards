@@ -45,6 +45,7 @@ export type AdminSeccion =
   | "sinpeAuto"
   | "remates"
   | "pagos"
+  | "facturacion"
   | "sorteos"
   | "raspa"
   | "inventario"
@@ -78,6 +79,7 @@ export const GRUPOS_SECCIONES: GrupoSecciones[] = [
       { id: "centroControl", label: "Centro de Control", icono: SlidersHorizontal, badge: "INTERRUPTORES" },
       { id: "sinpeAuto", label: "SINPE Auto (Tiempo Real)", icono: Smartphone },
       { id: "pagos", label: "Pagos y Transacciones", icono: CreditCard },
+      { id: "facturacion", label: "Facturas y Tiquetes", icono: Receipt, badge: "HACIENDA" },
       { id: "inventario", label: "Inventario de Tokens", icono: Dices },
       { id: "clientes", label: "Clientes (CRM)", icono: Users },
     ],
@@ -206,26 +208,6 @@ export function AdminSidebarContent({
                       </span>
                     ) : null}
                   </button>
-
-                  {s.id === "pagos" && isSuper && (
-                    <a
-                      href={
-                        typeof window !== "undefined" &&
-                        window.location.hostname !== "localhost" &&
-                        window.location.hostname !== "127.0.0.1"
-                          ? "https://go.facturaos.online/app/invoices"
-                          : "http://localhost:3000/app/invoices"
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all group my-1"
-                      title="Abrir panel de FacturaOS para AvalCar"
-                    >
-                      <Receipt className="size-3.5 shrink-0 text-blue-400" />
-                      <span className="flex-1 text-blue-300 text-[11px]">Facturación Electrónica</span>
-                      <ExternalLink className="size-3 text-blue-400/70 group-hover:translate-x-0.5 transition-transform" />
-                    </a>
-                  )}
                 </div>
               );
             })}

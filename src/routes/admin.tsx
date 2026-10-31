@@ -26,6 +26,7 @@ import { ResumenSection } from "@/components/admin/ResumenSection";
 import { SinpeAutoSection } from "@/components/admin/SinpeAutoSection";
 import { RematesSection } from "@/components/admin/RematesSection";
 import { PagosSection } from "@/components/admin/PagosSection";
+import { FacturacionSection } from "@/components/admin/FacturacionSection";
 import { PremiosSection } from "@/components/admin/PremiosSection";
 import { RaspaSection } from "@/components/admin/RaspaSection";
 import { InventarioSection } from "@/components/admin/InventarioSection";
@@ -346,6 +347,9 @@ function Admin() {
               {seccion === "remates" ? <RematesSection /> : null}
               {seccion === "pagos" ? (
                 <PagosSection ordenes={ordenes} onEstado={cambiarEstado} />
+              ) : null}
+              {seccion === "facturacion" ? (
+                <FacturacionSection ordenes={ordenes} />
               ) : null}
               {seccion === "sorteos" ? (
                 <PremiosSection

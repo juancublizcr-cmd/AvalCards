@@ -6,6 +6,7 @@ export const TODAS_LAS_SECCIONES: AdminSeccion[] = [
   "centroControl",
   "sinpeAuto",
   "pagos",
+  "facturacion",
   "inventario",
   "clientes",
   "sorteos",
