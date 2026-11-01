@@ -47,6 +47,7 @@ import { SponsorsLandingSection } from "@/components/SponsorsLandingSection";
 import { SuperTokenSection } from "@/components/SuperTokenSection";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { PremioModal } from "@/components/PremioModal";
+import { ComunidadDirectaLanding } from "@/components/ComunidadDirectaLanding";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import carroImg from "@/assets/premio-carro.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
@@ -281,6 +282,16 @@ function IndexPage() {
   const [premioModal, setPremioModal] = useState<Premio | null>(null);
   const [premioDetalleIdx, setPremioDetalleIdx] = useState<number>(0);
 
+  // Estilo de portada: "directo" (1 pantalla estilo Street Cars / comunidad) o "clasico" (showcase completo)
+  const [estiloLocal, setEstiloLocal] = useState<"directo" | "clasico">(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search);
+      const est = p.get("estilo");
+      if (est === "directo" || est === "clasico") return est;
+    }
+    return config.estiloPortada || "directo";
+  });
+
   const superMoneda = config.supertokenMoneda || (Number(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "CRC");
   const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
   const superCodigo = superMoneda === "CRC" ? "CRC" : "USD";
@@ -478,7 +489,30 @@ function IndexPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
+    <>
+      {estiloLocal === "directo" ? (
+        <ComunidadDirectaLanding
+          premios={premiosVisibles}
+          paquetes={paquetes}
+          sorteo={sorteo}
+          config={config}
+          progreso={{
+            porcentajeReal: progreso,
+            tokensVendidos: loaderData?.inventario ? loaderData.inventario.length - loaderData.inventario.filter((i) => i.disponible).length : 24,
+            totalMetaTokens: loaderData?.inventario?.length || 100,
+          }}
+          cuentaRegresiva={t}
+          onSeleccionarPaquete={(paq) => {
+            setPaquete(paq);
+            setOpen(true);
+          }}
+          onVerFicha={(premio) => {
+            setPremioModal(premio);
+          }}
+          onCambiarAClasico={() => setEstiloLocal("clasico")}
+        />
+      ) : (
+        <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Barra de Notificación Superior */}
       {config.mostrarBarraNotificacion !== false && (
         <div
@@ -601,6 +635,17 @@ function IndexPage() {
                 }`}
               >
                 {enCurso ? "🎯 Sorteo en Vivo" : cierrePrevio ? "🔒 Sorteo en Breve" : config.ventasActivas ? "Comprar Tokens" : "🔥 Preventa"}
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEstiloLocal("directo")}
+                className="hidden lg:inline-flex h-8 px-2.5 text-xs text-amber-400 border-amber-500/40 hover:bg-amber-500/15 font-black cursor-pointer gap-1"
+                title="Cambiar a portada directa de 1 sola pantalla estilo Street Cars"
+              >
+                <Zap className="size-3.5 fill-amber-400 text-amber-400" />
+                Modo Directo
               </Button>
             </div>
           )}
@@ -1973,6 +2018,8 @@ function IndexPage() {
       </main>
 
       <Footer config={config} />
+        </div>
+      )}
 
       {/* NOTIFICACIONES FOMO Y BANNER PWA */}
       <FomoNotifications config={config} />
@@ -2144,6 +2191,6 @@ function IndexPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

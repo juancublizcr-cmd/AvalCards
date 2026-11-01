@@ -122,6 +122,7 @@ export type Config = {
   telefonoSinpe: string;
   razonSocial: string;
   ventasActivas: boolean;
+  estiloPortada?: "directo" | "clasico"; // "directo" = 1 pantalla sin scroll estilo Street Cars / "clasico" = Showcase completo con scroll
   // Horarios de sorteos y cierre previo
   horaSorteoMartesViernes?: string; // Default: "19:30"
   horaSorteoDomingos?: string; // Default: "19:30"
@@ -511,6 +512,7 @@ export const CONFIG_DEFAULT: Config = {
   telefonoSinpe: "8634-4772",
   razonSocial: "Kevin Durán Rojas",
   ventasActivas: true, // Tienda y secciones activas por defecto
+  estiloPortada: "directo", // Por defecto: Modo Directo 1 pantalla sin scroll
   horaSorteoMartesViernes: "19:30", // 7:30 PM
   horaSorteoDomingos: "19:30", // 7:30 PM
   horasCierrePrevio: 2, // Cierre de ventas 2 horas antes (5:30 PM)

@@ -214,7 +214,96 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
         </div>
       </div>
 
+            {/* ========================================================================= */}
+      {/* 2. ESTILO VISUAL DE LA PORTADA PÚBLICA (MODO DIRECTO VS MODO CLÁSICO)     */}
       {/* ========================================================================= */}
+      <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-card via-card to-amber-500/5 p-6 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="space-y-1.5 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+              <Zap className="size-3.5" /> Diseño y Conversión de Portada
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+              Estilo Activo:{" "}
+              <span className={borrador.estiloPortada !== "clasico" ? "text-amber-400 font-black" : "text-blue-400 font-black"}>
+                {borrador.estiloPortada !== "clasico"
+                  ? "⚡ Modo Comunidad Directo (Todo en 1 pantalla · Estilo Street Cars)"
+                  : "📖 Modo Clásico Showcase (Showcase Completo con Scroll)"}
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              {borrador.estiloPortada !== "clasico"
+                ? "Diseño enfocado a máxima conversión: sin scroll innecesario. Los miembros de la comunidad ven los 3 premios por podio con 1 toque, la barra de progreso de la comunidad y los paquetes de tokens a mano para adquirir de inmediato."
+                : "Diseño institucional extenso: incluye la galería vertical completa de vehículos, apertura de premios, mini-sorteos, preguntas frecuentes (FAQ) y testimonios."}
+            </p>
+            <div className="flex items-center gap-3 pt-1 text-xs">
+              <a
+                href="/?estilo=directo"
+                target="_blank"
+                rel="noreferrer"
+                className="text-amber-400 hover:underline flex items-center gap-1 font-semibold"
+              >
+                Probar Modo Directo ↗
+              </a>
+              <span className="text-muted-foreground">·</span>
+              <a
+                href="/?estilo=clasico"
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-400 hover:underline flex items-center gap-1 font-semibold"
+              >
+                Probar Modo Clásico ↗
+              </a>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setBorrador((b) => ({ ...b, estiloPortada: "directo" }));
+                setConfig((c) => ({ ...c, estiloPortada: "directo" }));
+                void saveConfig({ estiloPortada: "directo" });
+                toast.success("Portada cambiada a: Modo Comunidad Directo (1 Pantalla)");
+              }}
+              className={`cursor-pointer px-5 py-4 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-3 text-sm shadow-md ${
+                borrador.estiloPortada !== "clasico"
+                  ? "bg-amber-500/20 border-amber-500 text-amber-300 hover:bg-amber-500/30 ring-2 ring-amber-500/30"
+                  : "bg-zinc-800/80 border-border text-zinc-400 hover:bg-zinc-800"
+              }`}
+            >
+              <Zap className="size-5 text-amber-400" />
+              <div className="text-left">
+                <div className="font-black">⚡ Modo Directo (0 Scroll)</div>
+                <div className="text-[11px] opacity-80">Premios en visor + Tokens a mano</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setBorrador((b) => ({ ...b, estiloPortada: "clasico" }));
+                setConfig((c) => ({ ...c, estiloPortada: "clasico" }));
+                void saveConfig({ estiloPortada: "clasico" });
+                toast.success("Portada cambiada a: Modo Clásico Showcase");
+              }}
+              className={`cursor-pointer px-5 py-4 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-3 text-sm shadow-md ${
+                borrador.estiloPortada === "clasico"
+                  ? "bg-blue-500/20 border-blue-500 text-blue-300 hover:bg-blue-500/30 ring-2 ring-blue-500/30"
+                  : "bg-zinc-800/80 border-border text-zinc-400 hover:bg-zinc-800"
+              }`}
+            >
+              <FileCheck className="size-5 text-blue-400" />
+              <div className="text-left">
+                <div className="font-black">📖 Modo Clásico</div>
+                <div className="text-[11px] opacity-80">Edición completa con scroll</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+{/* ========================================================================= */}
       {/* GESTOR DE CICLOS DE EDICIONES Y ARCHIVADO (PASO DE PRUEBAS A PRODUCCIÓN)  */}
       {/* ========================================================================= */}
       <div className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-br from-card via-card to-amber-500/10 p-6 shadow-xl relative overflow-hidden">
