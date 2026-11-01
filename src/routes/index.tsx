@@ -283,14 +283,21 @@ function IndexPage() {
   const [premioModal, setPremioModal] = useState<Premio | null>(null);
   const [premioDetalleIdx, setPremioDetalleIdx] = useState<number>(0);
 
-  // Estilo de portada: "directo" (1 pantalla estilo Street Cars / comunidad) o "clasico" (showcase completo)
+  // Estilo de portada: "directo" (comunidad / modo directo) o "clasico" (showcase completo)
   const [estiloLocal, setEstiloLocal] = useState<"directo" | "clasico">(() => {
     if (typeof window !== "undefined") {
       const p = new URLSearchParams(window.location.search);
       const est = p.get("estilo");
-      if (est === "directo" || est === "clasico") return est;
+      if (est === "directo" || est === "clasico") {
+        try { localStorage.setItem("aval_estilo_portada", est); } catch {}
+        return est;
+      }
+      try {
+        const guardado = localStorage.getItem("aval_estilo_portada");
+        if (guardado === "directo" || guardado === "clasico") return guardado;
+      } catch {}
     }
-    return config.estiloPortada || "directo";
+    return config.estiloPortada || "clasico";
   });
 
   const superMoneda = config.supertokenMoneda || (Number(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "CRC");
