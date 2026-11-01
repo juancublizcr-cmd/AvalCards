@@ -2,8 +2,10 @@ import { supabase } from "@/lib/supabase";
 import { fetchOrdenes, type Orden } from "@/lib/orders";
 import carro from "@/assets/premio-carro.jpg";
 import moto from "@/assets/premio-moto.jpg";
+import multistrada from "@/assets/premio-multistrada.jpg";
 import consola from "@/assets/premio-consola.jpg";
 import subaru from "@/assets/premio-subaru.jpg";
+import efectivo from "@/assets/premio-efectivo.jpg";
 
 // ────────────────────────────────────────────────────────────
 // Tipos
@@ -393,10 +395,11 @@ export type Cliente = {
 // ────────────────────────────────────────────────────────────
 
 export const PREMIOS_DEFAULT: Premio[] = [
-  { id: "p1", nombre: "Moto de Alta Cilindrada", nivel: "1° Lugar", imagen: moto, orden: 1, activo: true },
-  { id: "p2", nombre: "Mercedes-Benz Clase GLE", nivel: "1° Lugar", imagen: carro, orden: 2, activo: true },
-  { id: "p3", nombre: "Subaru Impreza WRX", nivel: "1° Lugar", imagen: subaru, orden: 3, activo: true },
-  { id: "p4", nombre: "Premio en Efectivo / PS5", nivel: "3° Lugar", imagen: consola, orden: 4, activo: true },
+  { id: "p1", nombre: "Ducati Multistrada V4 RS", nivel: "1° Lugar", imagen: multistrada, orden: 1, activo: true },
+  { id: "p2", nombre: "Ducati Panigale V4 S 2025", nivel: "1° Lugar", imagen: moto, orden: 2, activo: true },
+  { id: "p3", nombre: "Subaru IMPREZA* 2017 wrx STI", nivel: "2° Lugar", imagen: subaru, orden: 3, activo: true },
+  { id: "p4", nombre: "Mercedes-Benz Clase GLE 2016", nivel: "2° Lugar", imagen: carro, orden: 4, activo: true },
+  { id: "p5", nombre: "₡4,000,000 en Efectivo", nivel: "3° Lugar", imagen: efectivo, orden: 5, activo: true },
 ];
 
 export const FEATURES_DEFAULT: FeatureDetalle[] = [

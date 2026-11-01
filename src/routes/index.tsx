@@ -51,8 +51,9 @@ import { ComunidadDirectaLanding } from "@/components/ComunidadDirectaLanding";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import carroImg from "@/assets/premio-carro.jpg";
 import motoImg from "@/assets/premio-moto.jpg";
-import consolaImg from "@/assets/premio-consola.jpg";
+import multistradaImg from "@/assets/premio-multistrada.jpg";
 import subaruImg from "@/assets/premio-subaru.jpg";
+import efectivoImg from "@/assets/premio-efectivo.jpg";
 import { fetchOrdenes, type Orden } from "@/lib/orders";
 import {
   fetchPremios,
@@ -886,15 +887,19 @@ function IndexPage() {
                     const defaultImg =
                       nombreLower.includes("subaru") || nombreLower.includes("impreza")
                         ? subaruImg
-                        : nombreLower.includes("moto") || nombreLower.includes("ducati")
+                        : nombreLower.includes("multistrada")
+                        ? multistradaImg
+                        : nombreLower.includes("panigale") || nombreLower.includes("moto") || nombreLower.includes("ducati")
                         ? motoImg
-                        : nombreLower.includes("playstation") || nombreLower.includes("consola") || nombreLower.includes("efectivo") || nombreLower.includes("colones")
-                        ? consolaImg
-                        : isMayor
+                        : nombreLower.includes("mercedes") || nombreLower.includes("gle") || nombreLower.includes("carro")
                         ? carroImg
-                        : isSegundo
+                        : nombreLower.includes("efectivo") || nombreLower.includes("colones") || isEfectivo3
+                        ? efectivoImg
+                        : isMayor
                         ? motoImg
-                        : consolaImg;
+                        : isSegundo
+                        ? subaruImg
+                        : efectivoImg;
 
                     const tagBadgeClass =
                       isMayor || isEleccion1
@@ -1611,17 +1616,19 @@ function IndexPage() {
           const defaultImg =
             esSubaru
               ? subaruImg
-              : esMultistrada || esPanigale
+              : esMultistrada
+              ? multistradaImg
+              : esPanigale
               ? motoImg
               : esMercedes
               ? carroImg
               : esEfectivoReal
-              ? consolaImg
+              ? efectivoImg
               : isMayor
-              ? motoImg
+              ? multistradaImg
               : isSegundo
-              ? carroImg
-              : consolaImg;
+              ? subaruImg
+              : efectivoImg;
 
           const imagenFinal = premioActivo?.imagen || defaultImg;
 
