@@ -11,6 +11,7 @@ import {
   TODAS_LAS_SECCIONES,
   type AdminSessionUser,
 } from "@/lib/admin-roles";
+import { registrarAuditoria } from "@/lib/audit-logger";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -71,12 +72,32 @@ function Login() {
       const rolCheck = await verificarCredenciales(email, password);
       if (rolCheck.success && rolCheck.user) {
         setAdminSession(rolCheck.user);
+        void registrarAuditoria({
+          accion: "LOGIN",
+          titulo: "Inicio de sesión exitoso",
+          detalles: `El usuario ${rolCheck.user.nombre} (${rolCheck.user.email}) inició sesión como ${
+            rolCheck.user.esSuperadmin ? "Superadministrador" : "Subadministrador"
+          }.`,
+          seccion: "seguridad",
+          usuarioOverride: {
+            email: rolCheck.user.email,
+            nombre: rolCheck.user.nombre,
+            esSuperadmin: rolCheck.user.esSuperadmin,
+          },
+        });
         toast.success(`¡Bienvenido, ${rolCheck.user.nombre}!`);
         void navigate({ to: "/admin" });
         return;
       }
 
       if (rolCheck.error) {
+        void registrarAuditoria({
+          accion: "LOGIN_FALLIDO",
+          titulo: "Acceso bloqueado / Cuenta inactiva",
+          detalles: `Intento de acceso para cuenta desactivada: "${email}".`,
+          seccion: "seguridad",
+          usuarioOverride: { email, nombre: "Cuenta Desactivada", esSuperadmin: false },
+        });
         toast.error("Acceso restringido", {
           description: rolCheck.error,
         });
@@ -90,12 +111,20 @@ function Login() {
       });
 
       if (!error && data?.success) {
-        setAdminSession({
+        const u = {
           id: data.user.id || "superadmin",
           email: data.user.email || email.trim(),
           nombre: data.user.nombre || "Super Administrador",
           esSuperadmin: true,
           permisos: TODAS_LAS_SECCIONES,
+        };
+        setAdminSession(u);
+        void registrarAuditoria({
+          accion: "LOGIN",
+          titulo: "Inicio de sesión Superadmin",
+          detalles: `Inicio de sesión exitoso vía RPC para ${u.email}.`,
+          seccion: "seguridad",
+          usuarioOverride: u,
         });
         toast.success("¡Bienvenido al panel administrativo!");
         void navigate({ to: "/admin" });
@@ -109,17 +138,33 @@ function Login() {
       });
 
       if (!authError && authData.session) {
-        setAdminSession({
+        const u = {
           id: authData.user.id,
           email: authData.user.email ?? email,
           nombre: "Super Administrador",
           esSuperadmin: true,
           permisos: TODAS_LAS_SECCIONES,
+        };
+        setAdminSession(u);
+        void registrarAuditoria({
+          accion: "LOGIN",
+          titulo: "Inicio de sesión Superadmin",
+          detalles: `Inicio de sesión exitoso vía Supabase Auth para ${u.email}.`,
+          seccion: "seguridad",
+          usuarioOverride: u,
         });
         toast.success("¡Bienvenido al panel administrativo!");
         void navigate({ to: "/admin" });
         return;
       }
+
+      void registrarAuditoria({
+        accion: "LOGIN_FALLIDO",
+        titulo: "Intento fallido de inicio de sesión",
+        detalles: `Credenciales incorrectas para el correo "${email.trim()}".`,
+        seccion: "seguridad",
+        usuarioOverride: { email: email.trim(), nombre: "Intento No Autorizado", esSuperadmin: false },
+      });
 
       toast.error("Credenciales inválidas", {
         description: "Verifica tu correo y contraseña.",

@@ -1,6 +1,6 @@
 # Bitácora del Proyecto: Aval Community CR (PWA Digital)
 
-**Última actualización:** 30 de Octubre de 2026 - 11:50 PM (Hito 53: Módulo de Gestión de Roles, Contraseñas y Control Granular de Enlaces del Sidebar)  
+**Última actualización:** 1 de Noviembre de 2026 - 5:25 PM (Hito 54: Módulo de Auditoría de Seguridad en Vivo, Eliminación de Precios Públicos y Corrección del Termómetro)  
 **Dominio Oficial:** [https://www.avalcommunity.com](https://www.avalcommunity.com)  
 **Dominio Vercel:** [https://aval-cards.vercel.app](https://aval-cards.vercel.app)  
 **Repositorio GitHub:** [https://github.com/juancublizcr-cmd/AvalCards](https://github.com/juancublizcr-cmd/AvalCards)
@@ -958,6 +958,36 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
    - [`src/components/admin/AdminSidebar.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/AdminSidebar.tsx) oculta automáticamente del menú lateral todos los links que el Superadmin no haya marcado para ese usuario, y omite títulos de grupos vacíos.
    - [`src/routes/admin.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/admin.tsx) valida la sesión: si un sub-administrador intenta acceder por URL o atajo a un módulo no autorizado, el sistema lo bloquea y lo redirige automáticamente a su primera sección permitida.
    - [`src/routes/login.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/login.tsx) integra la autenticación de credenciales de roles antes del fallback a RPC, inyectando los permisos exactos en la sesión del navegador.
+
+---
+
+## 🚀 Hito 54: Auditoría de Seguridad & Rastreo en Vivo, Supresión de Precios Públicos y Estabilidad de Termómetro
+
+1. **Eliminación Total de Precios en Tarjetas de Vehículos Públicas:**
+   - En [`src/components/ComunidadDirectaLanding.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/ComunidadDirectaLanding.tsx), se removieron por completo los textos de valoración comercial (`Valor: ₡...`) visibles al público para las opciones de 1.er Lugar y 2.º Lugar (Ducati Multistrada/Panigale y Subaru WRX/Mercedes GLE).
+   - Se reemplazaron por distintivos de categoría técnica (*AWD TURBO*, *SUV DE LUJO*, *MAXI-TRAIL RS*) y garantía legal de **`Traspaso y marchamo`**.
+
+2. **Resolución de Conflicto en Termómetro de Venta (12% vs 9%):**
+   - Corrección en [`src/lib/admin-store.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/admin-store.ts) (`fetchConfig`): se eliminó la lectura prioritaria de `localStorage` que sobreescribía los valores en caliente del servidor con cachés locales viejos al hidratar React. Supabase se estableció como fuente de verdad única remota.
+   - En [`src/components/admin/CentroControlSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/CentroControlSection.tsx), se desacopló el guardado del termómetro manual para evitar sobreescrituras en paralelo de `sorteo_config`.
+
+3. **Módulo de Auditoría de Actividad y Seguridad (Superadmin Exclusivo):**
+   - Implementación de [`src/lib/audit-logger.ts`](file:///d:/AntigravitDev/AvalCarCr-main/src/lib/audit-logger.ts) con almacenamiento en Supabase (`sorteo_config._meta._audit_logs`) y caché local para registro no bloqueante de eventos.
+   - Registro en tiempo real de:
+     - **Inicios y cierres de sesión** (Superadmin y Subadmin).
+     - **Navegación entre secciones:** Captura automática de cada sección visitada por cualquier usuario en la consola administrativa (*Pagos*, *Clientes*, *Inventario*, etc.).
+     - **Pagos evaluados:** Aprobaciones y rechazos con `#ID`, cantidad de tokens y monto.
+     - **Configuraciones y Termómetro:** Cambios en Centro de Control, interruptores y pasarelas.
+     - **Gestión de Cuentas:** Creación, edición, eliminación de sub-administradores y cambios de clave.
+   - Nueva interfaz completa [`src/components/admin/AuditoriaSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/AuditoriaSection.tsx):
+     - Tarjetas KPI adaptativas (Total acciones, logins, navegación a secciones, pagos evaluados).
+     - Buscador por usuario, correo o palabra clave y filtros por tipo de evento y por usuario.
+     - Exportación del registro completo a formato CSV / Excel.
+     - Botón de limpieza de historial protegido.
+   - **Blindaje Estricto de Acceso:**
+     - El enlace en [`AdminSidebar.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/AdminSidebar.tsx) y en [`UsuariosPermisosSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/UsuariosPermisosSection.tsx) es 100% exclusivo del Super Administrador (`admin@avalmotors.cr`).
+     - Sub-administradores como `admin@avalcommunity.cr` tienen invisible el enlace y cuentan con bloqueo a nivel de router y barrera interna en el componente.
+
 
 
 

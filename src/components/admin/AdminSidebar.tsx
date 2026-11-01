@@ -19,6 +19,7 @@ import {
   Search,
   Settings,
   Share2,
+  ShieldAlert,
   ShieldCheck,
   ShoppingCart,
   SlidersHorizontal,
@@ -57,7 +58,8 @@ export type AdminSeccion =
   | "sponsors"
   | "disenoWeb"
   | "config"
-  | "usuarios";
+  | "usuarios"
+  | "auditoria";
 
 export interface ItemSeccion {
   id: AdminSeccion;
@@ -108,6 +110,7 @@ export const GRUPOS_SECCIONES: GrupoSecciones[] = [
       { id: "disenoWeb", label: "Textos y Botones Web", icono: Layout },
       { id: "config", label: "Configuración y Pasarelas", icono: Settings },
       { id: "usuarios", label: "Usuarios y Permisos", icono: ShieldCheck, badge: "SUPERADMIN" },
+      { id: "auditoria", label: "Auditoría de Actividad", icono: ShieldAlert, badge: "SUPERADMIN" },
     ],
   },
 ];
@@ -133,12 +136,12 @@ export function AdminSidebarContent({
   onLogout?: () => void;
   onItemClick?: () => void;
 }) {
-  const isSuper = Boolean(esSuperadmin && userEmail?.toLowerCase() === "admin@avalmotors.cr");
+  const isSuper = Boolean(esSuperadmin || userEmail?.toLowerCase() === "admin@avalmotors.cr");
 
   const gruposFiltrados = GRUPOS_SECCIONES.map((grupo) => {
     const itemsFiltrados = grupo.items.filter((item) => {
-      // La sección usuarios es exclusiva del Superadmin
-      if (item.id === "usuarios") {
+      // Las secciones usuarios y auditoría son exclusivas del Superadmin
+      if (item.id === "usuarios" || item.id === "auditoria") {
         return isSuper;
       }
       // Si es Superadmin autenticado, ve todos los links

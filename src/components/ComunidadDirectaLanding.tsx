@@ -107,7 +107,6 @@ export function ComunidadDirectaLanding({
         nombre: pMulti?.nombre || "Ducati Multistrada V4 RS",
         subtitulo: "Touring con ADN de MotoGP · Motor Stradale",
         descripcion: "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos.",
-        valor: "₡35.500.000",
         imagen: limpiarImg(pMulti?.imagen, multistradaImg),
         origen: "ducati.com",
         tag: "Maxi-Trail RS",
@@ -118,7 +117,6 @@ export function ComunidadDirectaLanding({
         nombre: pPani?.nombre || "Ducati Panigale V4 S 2025",
         subtitulo: "Superbike Desmosedici Stradale · 215.5 HP",
         descripcion: "Vehículo a escoger por el favorecido del 1° Lugar con traspaso notarial y marchamo incluidos.",
-        valor: "₡34.000.000",
         imagen: limpiarImg(pPani?.imagen, motoImg),
         origen: "ducati.com",
         tag: "Deportiva Pura",
@@ -136,7 +134,6 @@ export function ComunidadDirectaLanding({
         nombre: pSubaru?.nombre || "Subaru IMPREZA* 2017 wrx STI",
         subtitulo: "Boxer Turbo AWD · Edición Japonesa de Colección",
         descripcion: "Vehículo a escoger por el favorecido del 2° Lugar con traspaso notarial y marchamo incluidos.",
-        valor: "₡26.000.000",
         imagen: limpiarImg(pSubaru?.imagen, subaruImg),
         origen: "subaru.cr",
         tag: "AWD TURBO",
@@ -147,7 +144,6 @@ export function ComunidadDirectaLanding({
         nombre: pMercedes?.nombre || "Mercedes-Benz Clase GLE 2016",
         subtitulo: "SUV Premium Full Extras · Elegancia y Confort",
         descripcion: "Vehículo a escoger por el favorecido del 2° Lugar con traspaso notarial y marchamo incluidos.",
-        valor: "₡28.000.000",
         imagen: limpiarImg(pMercedes?.imagen, carroImg),
         origen: "mercedes-benz.com",
         tag: "SUV DE LUJO",
@@ -164,7 +160,6 @@ export function ComunidadDirectaLanding({
         nombre: pEfectivo?.nombre || "₡4,000,000 en Efectivo",
         subtitulo: "Transferencia Bancaria Inmediata Libre de Impuestos",
         descripcion: "Premio oficial entregado formalmente ante Notario Público sin retenciones ni comisiones.",
-        valor: "₡4.000.000",
         imagen: limpiarImg(pEfectivo?.imagen, efectivoImg),
         origen: "avalcommunity.cr",
         tag: "EFECTIVO DIRECTO",
@@ -326,9 +321,9 @@ export function ComunidadDirectaLanding({
                       </div>
                     </div>
 
-                    <div className="mt-1.5 pt-1 border-t border-white/5 text-[10px] font-mono font-bold text-amber-400 flex items-center justify-between">
-                      <span>Valor: {opc.valor}</span>
-                      <span className="text-[9px] uppercase tracking-wider text-zinc-500">{opc.tag}</span>
+                    <div className="mt-1.5 pt-1 border-t border-white/5 flex items-center justify-between text-[10px]">
+                      <span className="text-[9px] uppercase tracking-wider font-bold text-amber-400">{opc.tag}</span>
+                      <span className="text-[9px] text-zinc-500">Traspaso y marchamo</span>
                     </div>
                   </button>
                 );

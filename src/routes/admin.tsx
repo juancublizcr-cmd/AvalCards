@@ -39,6 +39,8 @@ import { SponsorsSection } from "@/components/admin/SponsorsSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
 import { DisenoWebSection } from "@/components/admin/DisenoWebSection";
 import { UsuariosPermisosSection } from "@/components/admin/UsuariosPermisosSection";
+import { AuditoriaSection } from "@/components/admin/AuditoriaSection";
+import { registrarAuditoria } from "@/lib/audit-logger";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -151,15 +153,31 @@ function Admin() {
 
         // Si la sección actual no está permitida, cambiar de inmediato a la primera permitida
         const sUrl = new URLSearchParams(window.location.search).get("seccion") as AdminSeccion;
+        let seccionInicial = sUrl || "resumen";
         if (!esSuper) {
-          if (!sUrl || !permisosActuales.includes(sUrl)) {
+          permisosActuales = permisosActuales.filter((p) => p !== "auditoria" && p !== "usuarios");
+          if (!sUrl || !permisosActuales.includes(sUrl) || sUrl === "auditoria" || sUrl === "usuarios") {
             const primera = permisosActuales[0] || "pagos";
+            seccionInicial = primera;
             setSeccion(primera);
             const url = new URL(window.location.href);
             url.searchParams.set("seccion", primera);
             window.history.replaceState({}, "", url.toString());
           }
         }
+
+        const labelInicio = SECCIONES.find((sec) => sec.id === seccionInicial)?.label || seccionInicial;
+        void registrarAuditoria({
+          accion: "ACCESO_SECCION",
+          titulo: `Entró a "${labelInicio}"`,
+          detalles: `${sesion.nombre || sesion.email} ingresó al panel y abrió la sección ${labelInicio}.`,
+          seccion: seccionInicial,
+          usuarioOverride: {
+            email: sesion.email,
+            nombre: sesion.nombre || sesion.email,
+            esSuperadmin: esSuper,
+          },
+        });
       } catch (err) {
         console.warn("Error sincronizando roles en tiempo real:", err);
       }
@@ -194,6 +212,12 @@ function Admin() {
   };
 
   const cerrarSesion = async () => {
+    void registrarAuditoria({
+      accion: "LOGOUT",
+      titulo: "Cierre de sesión",
+      detalles: `El usuario ${sessionUser?.nombre || sessionUser?.email || "Administrador"} cerró su sesión en el panel.`,
+      seccion: "seguridad",
+    });
     clearAdminSession();
     try {
       await supabase.auth.signOut();
@@ -206,6 +230,21 @@ function Admin() {
     try {
       await actualizarEstadoOrden(id, estado);
       setOrdenes((prev) => prev.map((o) => (o.id === id ? { ...o, estado } : o)));
+
+      const ordenObj = ordenes.find((o) => o.id === id);
+      const accion = estado === "aprobada" ? "APROBAR_ORDEN" : "RECHAZAR_ORDEN";
+      const titulo = estado === "aprobada" ? "Aprobó transacción de pago" : "Rechazó transacción de pago";
+      const detalles = `${sessionUser?.nombre || "Administrador"} marcó la orden #${id} como ${estado.toUpperCase()}${
+        ordenObj ? ` (${ordenObj.cantidad} tokens · ₡${Number(ordenObj.monto || 0).toLocaleString("es-CR")})` : ""
+      }.`;
+
+      void registrarAuditoria({
+        accion,
+        titulo,
+        detalles,
+        seccion: "pagos",
+        metadata: { ordenId: id, estado, cantidad: ordenObj?.cantidad, monto: ordenObj?.monto },
+      });
     } catch (err) {
       console.error(err);
       toast.error("Error al actualizar estado en Supabase");
@@ -213,17 +252,41 @@ function Admin() {
   };
 
   const handleCambiarSeccion = (s: AdminSeccion) => {
-    const esSuper = sessionUser?.esSuperadmin !== false;
+    const email = sessionUser?.email?.toLowerCase();
+    const esSuper = Boolean(
+      sessionUser?.esSuperadmin === true &&
+      email === "admin@avalmotors.cr"
+    );
+
+    if (s === "auditoria" || s === "usuarios") {
+      if (!esSuper) {
+        toast.error("Acceso restringido: Esta sección es exclusiva del Super Administrador");
+        return;
+      }
+    }
+
     const permisos = sessionUser?.permisos || [];
     if (!esSuper && !permisos.includes(s)) {
       toast.error("No tienes permiso para acceder a esta sección");
       return;
     }
+
+    const anterior = seccion;
     setSeccion(s);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
       url.searchParams.set("seccion", s);
       window.history.replaceState({}, "", url.toString());
+    }
+
+    if (anterior !== s) {
+      const labelSeccion = SECCIONES.find((sec) => sec.id === s)?.label || s;
+      void registrarAuditoria({
+        accion: "ACCESO_SECCION",
+        titulo: `Entró a "${labelSeccion}"`,
+        detalles: `${sessionUser?.nombre || sessionUser?.email || "Usuario"} abrió y navegó a la sección ${labelSeccion}.`,
+        seccion: s,
+      });
     }
   };
 
@@ -401,6 +464,7 @@ function Admin() {
                 <ConfigSection config={config} setConfig={setConfig} onCambiarSeccion={handleCambiarSeccion} />
               ) : null}
               {seccion === "usuarios" ? <UsuariosPermisosSection /> : null}
+              {seccion === "auditoria" ? <AuditoriaSection /> : null}
             </>
           )}
         </main>

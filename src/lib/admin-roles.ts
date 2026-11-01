@@ -1,6 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import type { AdminSeccion } from "@/components/admin/AdminSidebar";
 
+export const SECCIONES_SUPERADMIN_EXCLUSIVAS: AdminSeccion[] = ["usuarios", "auditoria"];
+
 export const TODAS_LAS_SECCIONES: AdminSeccion[] = [
   "resumen",
   "centroControl",
@@ -19,7 +21,13 @@ export const TODAS_LAS_SECCIONES: AdminSeccion[] = [
   "social",
   "disenoWeb",
   "config",
+  "usuarios",
+  "auditoria",
 ];
+
+export const SECCIONES_ASIGNABLES_SUBADMIN: AdminSeccion[] = TODAS_LAS_SECCIONES.filter(
+  (s) => !SECCIONES_SUPERADMIN_EXCLUSIVAS.includes(s)
+);
 
 export interface SubadminUser {
   id: string;

@@ -17,7 +17,9 @@ import {
   AlertCircle,
   Sparkles,
   SlidersHorizontal,
+  ShieldAlert,
 } from "lucide-react";
+import { AuditoriaSection } from "@/components/admin/AuditoriaSection";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,9 +38,12 @@ import {
   hashPassword,
   generarSalt,
   TODAS_LAS_SECCIONES,
+  SECCIONES_ASIGNABLES_SUBADMIN,
+  SECCIONES_SUPERADMIN_EXCLUSIVAS,
   type AdminRolesConfig,
   type SubadminUser,
 } from "@/lib/admin-roles";
+import { registrarAuditoria } from "@/lib/audit-logger";
 
 export function UsuariosPermisosSection() {
   const [loading, setLoading] = useState(true);
@@ -47,6 +52,8 @@ export function UsuariosPermisosSection() {
     superadminEmail: "admin@avalmotors.cr",
     subadmins: [],
   });
+
+  const [pestana, setPestana] = useState<"usuarios" | "auditoria">("usuarios");
 
   // Estado para cambio de clave del Superadmin
   const [nuevaClaveSuper, setNuevaClaveSuper] = useState("");
@@ -113,6 +120,12 @@ export function UsuariosPermisosSection() {
       setConfig(nuevaConfig);
       setNuevaClaveSuper("");
       setConfirmarClaveSuper("");
+      void registrarAuditoria({
+        accion: "CAMBIO_CLAVE",
+        titulo: "Cambio de contraseña Superadmin",
+        detalles: "El Superadministrador actualizó la contraseña de acceso principal del sistema.",
+        seccion: "usuarios",
+      });
       toast.success("¡Contraseña de Super Administrador actualizada con éxito!");
     } catch (err: any) {
       toast.error(err.message || "Error al actualizar contraseña");
@@ -155,7 +168,7 @@ export function UsuariosPermisosSection() {
   };
 
   const seleccionarTodos = () => {
-    setFormPermisos([...TODAS_LAS_SECCIONES]);
+    setFormPermisos([...SECCIONES_ASIGNABLES_SUBADMIN]);
   };
 
   const deseleccionarTodos = () => {
@@ -246,6 +259,29 @@ export function UsuariosPermisosSection() {
       await saveAdminRolesConfig(nuevaCfg);
       setConfig(nuevaCfg);
       setModoEdicion(false);
+
+      if (usuarioEditandoId) {
+        void registrarAuditoria({
+          accion: "EDITAR_USUARIO",
+          titulo: "Modificó sub-administrador",
+          detalles: `Actualizó permisos y datos para "${formNombre}" (${formEmail}). Estado: ${
+            formActivo ? "Activo" : "Inactivo"
+          }. Permisos asignados: ${formPermisos.join(", ")}.`,
+          seccion: "usuarios",
+          metadata: { id: usuarioEditandoId, nombre: formNombre, email: formEmail, activo: formActivo, permisos: formPermisos },
+        });
+      } else {
+        void registrarAuditoria({
+          accion: "CREAR_USUARIO",
+          titulo: "Creó nuevo sub-administrador",
+          detalles: `Creó la cuenta de sub-administrador para "${formNombre}" (${formEmail}) con permisos en: ${formPermisos.join(
+            ", "
+          )}.`,
+          seccion: "usuarios",
+          metadata: { nombre: formNombre, email: formEmail, permisos: formPermisos },
+        });
+      }
+
       toast.success(
         usuarioEditandoId
           ? "¡Permisos del usuario actualizados con éxito!"
@@ -264,10 +300,18 @@ export function UsuariosPermisosSection() {
     }
 
     try {
+      const userEliminado = config.subadmins.find((u) => u.id === userId);
       const nuevaLista = config.subadmins.filter((u) => u.id !== userId);
       const nuevaCfg = { ...config, subadmins: nuevaLista };
       await saveAdminRolesConfig(nuevaCfg);
       setConfig(nuevaCfg);
+      void registrarAuditoria({
+        accion: "ELIMINAR_USUARIO",
+        titulo: "Eliminó sub-administrador",
+        detalles: `Eliminó permanentemente el acceso del sub-administrador "${nombre}" (${userEliminado?.email || "sin correo"}).`,
+        seccion: "usuarios",
+        metadata: { id: userId, nombre, email: userEliminado?.email },
+      });
       toast.success(`Acceso de "${nombre}" eliminado.`);
     } catch {
       toast.error("Error al eliminar usuario.");
@@ -284,17 +328,47 @@ export function UsuariosPermisosSection() {
 
   return (
     <div className="max-w-5xl space-y-8 pb-12">
-      {/* Cabecera */}
-      <div>
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary mb-2">
-          <ShieldCheck className="size-3.5" /> Control de Acceso y Roles
+      {/* Cabecera con selector de Pestañas: Usuarios vs Auditoría */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary mb-2">
+            <ShieldCheck className="size-3.5" /> Control de Acceso, Roles & Auditoría
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">Gestión de Usuarios y Seguridad</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Administra sub-cuentas de operadores y consulta el registro de auditoría de quién ingresó y qué hizo.
+          </p>
         </div>
-        <h2 className="text-2xl font-bold tracking-tight">Gestión de Usuarios y Permisos del Sidebar</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Define quién puede entrar a tu plataforma y restringe con casillas exactamente cuáles enlaces del menú lateral puede ver y operar cada persona.
-        </p>
+
+        <div className="flex items-center gap-1.5 bg-secondary/50 p-1 rounded-xl border border-border">
+          <Button
+            type="button"
+            variant={pestana === "usuarios" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setPestana("usuarios")}
+            className="text-xs font-bold gap-1.5"
+          >
+            <Users className="size-3.5" />
+            Usuarios y Permisos
+          </Button>
+
+          <Button
+            type="button"
+            variant={pestana === "auditoria" ? "hero" : "ghost"}
+            size="sm"
+            onClick={() => setPestana("auditoria")}
+            className="text-xs font-bold gap-1.5"
+          >
+            <ShieldAlert className="size-3.5 text-amber-400" />
+            Auditoría en Vivo
+          </Button>
+        </div>
       </div>
 
+      {pestana === "auditoria" ? (
+        <AuditoriaSection />
+      ) : (
+        <>
       {/* 1. CUENTA SUPERADMINISTRADOR */}
       <Card className="border-border bg-card shadow-sm">
         <CardHeader>
@@ -680,6 +754,8 @@ export function UsuariosPermisosSection() {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { upsertConfig, type Config } from "@/lib/admin-store";
+import { registrarAuditoria } from "@/lib/audit-logger";
 import { probarConexionIA } from "@/lib/ai-service";
 import { formatearHora12 } from "@/lib/fecha-utils";
 import { FacturaOSConfigCard } from "@/components/FacturaOSConfigCard";
@@ -135,6 +136,12 @@ export function ConfigSection({
     try {
       await upsertConfig(borrador);
       setConfig(borrador);
+      void registrarAuditoria({
+        accion: "EDITAR_CONFIG",
+        titulo: "Guardó configuración general",
+        detalles: "Actualizó pasarelas de pago, parámetros y configuración del sitio.",
+        seccion: "config",
+      });
       toast.success("Configuración y pasarelas de pago guardadas");
     } catch (err) {
       console.error(err);

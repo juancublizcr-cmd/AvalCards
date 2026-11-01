@@ -1140,7 +1140,10 @@ export async function upsertSorteo(s: Sorteo): Promise<void> {
     ...metaExistente,
     ...((s.raspaConfig as any)?._meta || {}),
     _premios_meta: metaExistente._premios_meta || ((s.raspaConfig as any)?._meta?._premios_meta),
-    _siteConfig: metaExistente._siteConfig || ((s.raspaConfig as any)?._meta?._siteConfig),
+    _siteConfig: {
+      ...((s.raspaConfig as any)?._meta?._siteConfig || {}),
+      ...(metaExistente._siteConfig || {}),
+    },
     horaSorteo: s.horaSorteo || "19:30",
     heroTitulo: s.heroTitulo ?? "",
     reglaPremios: s.reglaPremios ?? "",
@@ -1241,22 +1244,34 @@ export async function fetchConfig(): Promise<Config> {
       .single();
     if (error || !data) return CONFIG_DEFAULT;
     let extra: any = {};
-    try {
-      const raw = localStorage.getItem("aval_site_config_extra");
-      if (raw) extra = JSON.parse(raw);
-    } catch {}
 
-    if (!extra || Object.keys(extra).length === 0) {
-      try {
-        const { data: sorteoRow } = await supabase
-          .from("sorteo_config")
-          .select("raspa_config")
-          .eq("id", 1)
-          .single();
-        if (sorteoRow?.raspa_config?._meta?._siteConfig) {
-          extra = sorteoRow.raspa_config._meta._siteConfig;
+    // 1. Prioridad: Consultar siempre la fuente de verdad remota en Supabase
+    try {
+      const { data: sorteoRow } = await supabase
+        .from("sorteo_config")
+        .select("raspa_config")
+        .eq("id", 1)
+        .single();
+      if (sorteoRow?.raspa_config?._meta?._siteConfig) {
+        extra = sorteoRow.raspa_config._meta._siteConfig;
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("aval_site_config_extra", JSON.stringify(extra));
+          } catch {}
         }
-      } catch {}
+      }
+    } catch (e) {
+      console.warn("No se pudo obtener _siteConfig remoto desde Supabase:", e);
+    }
+
+    // 2. Respaldo local solo si Supabase no devolvió configuración extra
+    if (!extra || Object.keys(extra).length === 0) {
+      if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("aval_site_config_extra");
+          if (raw) extra = JSON.parse(raw);
+        } catch {}
+      }
     }
 
     if (extra && (extra.termometroMetaTokens === 5000 || !extra.termometroMetaTokens || extra.termometroMetaTokens < 10000)) {

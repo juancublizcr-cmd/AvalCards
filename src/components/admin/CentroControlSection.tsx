@@ -49,6 +49,7 @@ import { upsertConfig, upsertSorteo, type Config, type Sorteo } from "@/lib/admi
 import { Link } from "@tanstack/react-router";
 import { ModalNuevaEdicion } from "./ModalNuevaEdicion";
 import type { Orden } from "@/lib/orders";
+import { registrarAuditoria } from "@/lib/audit-logger";
 
 interface Props {
   config: Config;
@@ -74,9 +75,40 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
       setBorrador(nuevoConfig);
 
       if (nuevoSorteo && setSorteo) {
-        await upsertSorteo(nuevoSorteo);
-        setSorteo(nuevoSorteo);
-        setSorteoBorrador(nuevoSorteo);
+        const sorteoSincronizado: Sorteo = {
+          ...nuevoSorteo,
+          raspaConfig: {
+            ...(nuevoSorteo.raspaConfig || {}),
+            _meta: {
+              ...((nuevoSorteo.raspaConfig as any)?._meta || {}),
+              _siteConfig: nuevoConfig,
+            },
+          } as any,
+        };
+        await upsertSorteo(sorteoSincronizado);
+        setSorteo(sorteoSincronizado);
+        setSorteoBorrador(sorteoSincronizado);
+      }
+
+      if (nuevoConfig.termometroPorcentajeManual !== config.termometroPorcentajeManual) {
+        void registrarAuditoria({
+          accion: "EDITAR_TERMOMETRO",
+          titulo: "Ajuste del termómetro de venta",
+          detalles: `Modificó el termómetro a ${
+            (nuevoConfig.termometroPorcentajeManual ?? 0) > 0
+              ? `${nuevoConfig.termometroPorcentajeManual}% (Manual)`
+              : "Modo Real Automático (0%)"
+          }.`,
+          seccion: "centroControl",
+          metadata: { porcentaje: nuevoConfig.termometroPorcentajeManual },
+        });
+      } else {
+        void registrarAuditoria({
+          accion: "EDITAR_CONFIG",
+          titulo: "Ajuste en Centro de Control",
+          detalles: "Actualizó interruptores operativos de la plataforma.",
+          seccion: "centroControl",
+        });
       }
 
       toast.success("✅ Cambios guardados correctamente", {
@@ -384,7 +416,7 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
                   onClick={() => {
                     const actualizado = { ...borrador, termometroPorcentajeManual: p.valor };
                     setBorrador(actualizado);
-                    void guardarCambios(actualizado, sorteoBorrador);
+                    void guardarCambios(actualizado);
                   }}
                   className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
                     isSelected
@@ -443,7 +475,7 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
               <Button
                 type="button"
                 size="sm"
-                onClick={() => void guardarCambios(borrador, sorteoBorrador)}
+                onClick={() => void guardarCambios(borrador)}
                 disabled={guardando}
                 className="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shrink-0 cursor-pointer"
               >
