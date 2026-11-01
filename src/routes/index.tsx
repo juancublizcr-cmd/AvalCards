@@ -99,16 +99,16 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Aval Community CR | Eventos Promocionales Oficiales" },
+      { title: "Aval Community CR | Premios para Nuestra Comunidad" },
       {
         name: "description",
         content:
-          "Adquiere tus Tokens digitales oficiales y participa por vehículos de alta gama y premios en efectivo desde solo ₡4,000. 100% auditado con la Emisión Oficial de la JPS.",
+          "Premios exclusivos y beneficios de alta gama para nuestra comunidad Aval en Costa Rica. Adquiere tus Tokens digitales oficiales desde ₡4,000.",
       },
-      { property: "og:title", content: "Aval Community CR | Eventos Promocionales Oficiales" },
+      { property: "og:title", content: "Aval Community CR | Premios para Nuestra Comunidad" },
       {
         property: "og:description",
-        content: "La plataforma de eventos promocionales y tokens digitales más transparente de Costa Rica.",
+        content: "Premios exclusivos y eventos de alta gama para los miembros oficiales de nuestra comunidad Aval en Costa Rica.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -288,16 +288,9 @@ function IndexPage() {
     if (typeof window !== "undefined") {
       const p = new URLSearchParams(window.location.search);
       const est = p.get("estilo");
-      if (est === "directo" || est === "clasico") {
-        try { localStorage.setItem("aval_estilo_portada", est); } catch {}
-        return est;
-      }
-      try {
-        const guardado = localStorage.getItem("aval_estilo_portada");
-        if (guardado === "directo" || guardado === "clasico") return guardado;
-      } catch {}
+      if (est === "directo" || est === "clasico") return est;
     }
-    return config.estiloPortada || "clasico";
+    return "directo";
   });
 
   const superMoneda = config.supertokenMoneda || (Number(config.supertokenPremioPrimeroUsd || config.supertokenPremioUsd || 0) > 50000 ? "CRC" : "CRC");
@@ -519,6 +512,7 @@ function IndexPage() {
           onVerFicha={(premio) => {
             setPremioModal(premio);
           }}
+          onFotoZoom={(foto) => setFotoZoom(foto)}
           onCambiarAClasico={() => setEstiloLocal("clasico")}
         />
       ) : (

@@ -66,8 +66,8 @@ export function StoryShareModal({
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: "¡Estoy participando por el Carro 0KM en Aval Community CR!",
-          text: `¡Mae, entra con mi enlace y participa por los premios oficiales de Aval Community CR! https://www.avalcommunity.com/?ref=${datos.telefono.replace(/\D/g, "")}`,
+          title: "¡Estoy participando por los premios oficiales en Aval Community CR!",
+          text: `¡Entra con mi enlace y participa por los premios para nuestra comunidad Aval CR! https://www.avalcommunity.com/?ref=${datos.telefono.replace(/\D/g, "")}`,
         });
       } else {
         descargar();

@@ -515,7 +515,7 @@ export const CONFIG_DEFAULT: Config = {
   telefonoSinpe: "8634-4772",
   razonSocial: "Kevin Durán Rojas",
   ventasActivas: true, // Tienda y secciones activas por defecto
-  estiloPortada: "clasico", // Por defecto: Modo Clásico original
+  estiloPortada: "directo", // Por defecto: Modo Directo (la página de la foto)
   horaSorteoMartesViernes: "19:30", // 7:30 PM
   horaSorteoDomingos: "19:30", // 7:30 PM
   horasCierrePrevio: 2, // Cierre de ventas 2 horas antes (5:30 PM)

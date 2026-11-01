@@ -265,17 +265,19 @@ export function StickersModal({
         {paquete && config.supertokenActivo !== false && (
           <div
             onClick={() => setSupertoken(!supertoken)}
-            className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 transition-all duration-300 select-none overflow-hidden ${
+            className={`cursor-pointer rounded-xl border p-3 sm:p-4 transition-all duration-300 select-none overflow-hidden ${
               supertoken
-                ? "border-amber-400 bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-                : "border-border bg-secondary/40 hover:border-amber-500/40"
+                ? "border-amber-500/60 bg-gradient-to-b from-amber-500/10 to-transparent shadow-sm"
+                : "border-border bg-secondary/30 hover:border-zinc-700"
             }`}
           >
             <div className="flex items-start justify-between gap-2.5">
               <div className="flex items-start gap-2.5 min-w-0 flex-1">
                 <div
                   className={`rounded-lg p-2 shrink-0 transition-colors ${
-                    supertoken ? "bg-amber-500 text-black shadow-sm" : "bg-secondary text-muted-foreground border border-border"
+                    supertoken
+                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                      : "bg-secondary text-muted-foreground border border-border"
                   }`}
                 >
                   <Crown className="size-4 sm:size-5" />
@@ -285,12 +287,12 @@ export function StickersModal({
                     <span className="font-bold text-xs sm:text-sm text-foreground">
                       Activar SuperToken
                     </span>
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide text-amber-400 border border-amber-500/40 shrink-0">
+                    <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide text-amber-300 border border-amber-500/30 shrink-0">
                       Hasta +{superSimbolo}{premioBono1.toLocaleString()} {superCodigo} CASH
                     </span>
                   </div>
                   <p className="mt-1 text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
-                    Activa bonos en {superNombreMoneda}: <strong className="text-amber-400">+{superSimbolo}{premioBono1.toLocaleString()}</strong> (1° Lugar), <strong className="text-sky-400">+{superSimbolo}{premioBono2.toLocaleString()}</strong> (2° Lugar) y <strong className="text-yellow-400">+{superSimbolo}{premioBono3.toLocaleString()}</strong> (3° Lugar).
+                    Activa bonos en {superNombreMoneda}: <strong className="text-amber-300">+{superSimbolo}{premioBono1.toLocaleString()}</strong> (1° Lugar), <strong className="text-sky-300">+{superSimbolo}{premioBono2.toLocaleString()}</strong> (2° Lugar) y <strong className="text-yellow-300">+{superSimbolo}{premioBono3.toLocaleString()}</strong> (3° Lugar).
                   </p>
                 </div>
               </div>
@@ -314,38 +316,38 @@ export function StickersModal({
             </div>
 
             {/* Desglose de Precios */}
-            <div className="mt-3 pt-2 border-t border-border/60 flex flex-wrap items-center justify-between gap-1.5 text-xs">
+            <div className="mt-3 pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-1.5 text-xs">
               <span className="text-[11px] text-muted-foreground">
                 {supertoken
                   ? `₡${precioBase.toLocaleString("es-CR")} (Paquete) + ₡${extraSupertoken.toLocaleString("es-CR")} (SuperToken)`
                   : `Opción extra (Bonos en efectivo para los 3 primeros lugares)`}
               </span>
               <span className="font-bold text-foreground text-xs">
-                Total: <strong className={supertoken ? "text-amber-400 text-sm font-mono" : "text-primary text-sm font-mono"}>₡{precioFinal.toLocaleString("es-CR")}</strong>
+                Total: <strong className={supertoken ? "text-amber-400 text-sm font-mono" : "text-white text-sm font-mono"}>₡{precioFinal.toLocaleString("es-CR")}</strong>
               </span>
             </div>
           </div>
         )}
 
         {/* Selector de Modo */}
-        <div className="grid grid-cols-2 gap-2 rounded-xl bg-secondary/70 p-1 text-sm font-medium">
+        <div className="grid grid-cols-2 gap-2 rounded-xl bg-zinc-900/80 p-1 text-sm font-medium border border-border/50">
           <button
             type="button"
             onClick={() => setModo("azar")}
-            className={`flex items-center justify-center gap-2 rounded-lg py-2 transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-lg py-2 transition-all text-xs sm:text-sm ${
               modo === "azar"
-                ? "bg-primary text-primary-foreground shadow-sm font-semibold"
+                ? "bg-zinc-800 text-white shadow-sm font-semibold border border-zinc-700/80"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Dices className="size-4" /> Al Azar
+            <Dices className="size-4 text-amber-400" /> Al Azar
           </button>
           <button
             type="button"
             onClick={() => setModo("manual")}
-            className={`flex items-center justify-center gap-2 rounded-lg py-2 transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-lg py-2 transition-all text-xs sm:text-sm ${
               modo === "manual"
-                ? "bg-primary text-primary-foreground shadow-sm font-semibold"
+                ? "bg-zinc-800 text-white shadow-sm font-semibold border border-zinc-700/80"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -365,9 +367,9 @@ export function StickersModal({
                 variant="outline"
                 size="sm"
                 onClick={completarVaciosAlAzar}
-                className="h-7 text-[11px] gap-1 text-primary border-primary/40"
+                className="h-7 text-[11px] gap-1 text-zinc-300 border-zinc-700 hover:text-white"
               >
-                <Wand2 className="size-3" /> Completar vacíos al azar
+                <Wand2 className="size-3 text-amber-400" /> Completar vacíos al azar
               </Button>
               <Button
                 type="button"
@@ -390,18 +392,12 @@ export function StickersModal({
 
             return (
               <div key={i} className="group relative">
-                {supertoken && (
-                  <span className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded bg-amber-500 px-1 py-0.2 text-[8px] font-black text-black shadow-xs pointer-events-none">
-                    <Crown className="size-2.5" /> $6K
-                  </span>
-                )}
-
                 {/* Botón mini para re-roll individual */}
                 <button
                   type="button"
                   title="Cambiar solo este número"
                   onClick={() => regenerarTokenIndividual(i)}
-                  className="absolute bottom-1 right-1 z-10 flex size-5 items-center justify-center rounded bg-background/80 text-muted-foreground hover:text-primary hover:bg-primary/20 transition-all opacity-70 group-hover:opacity-100"
+                  className="absolute bottom-1 right-1 z-10 flex size-5 items-center justify-center rounded bg-background/80 text-muted-foreground hover:text-amber-400 hover:bg-zinc-800 transition-all opacity-60 group-hover:opacity-100"
                 >
                   <Dices className="size-3" />
                 </button>
@@ -409,11 +405,11 @@ export function StickersModal({
                 {modo === "azar" ? (
                   <div
                     className={`rounded-lg border py-2.5 text-center font-mono text-sm sm:text-base font-bold tracking-widest transition-all ${
-                      supertoken
-                        ? "border-amber-400/80 bg-amber-500/10 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.15)]"
-                        : instantaneo?.numero === n
-                          ? "border-success bg-success/15 text-success"
-                          : "border-primary/30 bg-[image:var(--gradient-surface)] text-primary"
+                      instantaneo?.numero === n
+                        ? "border-emerald-500 bg-emerald-500/15 text-emerald-400"
+                        : supertoken
+                          ? "border-zinc-700/80 bg-zinc-900/90 text-zinc-100 hover:border-amber-500/40"
+                          : "border-zinc-800 bg-zinc-900/80 text-zinc-200 hover:border-zinc-700"
                     } ${buscando ? "animate-pulse opacity-50" : "opacity-100"}`}
                   >
                     {n || "—"}
@@ -426,14 +422,10 @@ export function StickersModal({
                       inputMode="numeric"
                       placeholder="00000"
                       onChange={(e) => actualizarNumeroManual(i, e.target.value)}
-                      className={`text-center font-mono text-xs sm:text-sm font-bold tracking-wider pr-6 ${
+                      className={`text-center font-mono text-xs sm:text-sm font-bold tracking-wider pr-6 bg-zinc-900/90 text-zinc-100 ${
                         estaOcupado || esDuplicado
                           ? "border-destructive bg-destructive/10 text-destructive"
-                          : supertoken
-                            ? "border-amber-400/80 text-amber-400 bg-amber-500/5"
-                            : n.length === 5
-                              ? "border-primary/60 text-primary"
-                              : "border-border text-foreground"
+                          : "border-zinc-800 focus:border-amber-500/60"
                       }`}
                     />
                     {estaOcupado && (

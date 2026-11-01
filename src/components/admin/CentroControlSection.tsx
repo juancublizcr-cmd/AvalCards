@@ -11,6 +11,7 @@ import {
   Crown,
   Dices,
   ExternalLink,
+  FileCheck,
   Flame,
   Fuel,
   Gavel,
@@ -42,6 +43,8 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { upsertConfig, upsertSorteo, type Config, type Sorteo } from "@/lib/admin-store";
 import { Link } from "@tanstack/react-router";
 import { ModalNuevaEdicion } from "./ModalNuevaEdicion";
@@ -261,9 +264,9 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             <button
               type="button"
               onClick={() => {
-                setBorrador((b) => ({ ...b, estiloPortada: "directo" }));
-                setConfig((c) => ({ ...c, estiloPortada: "directo" }));
-                void saveConfig({ estiloPortada: "directo" });
+                const act = { ...borrador, estiloPortada: "directo" as const };
+                setBorrador(act);
+                void guardarCambios(act, sorteoBorrador);
                 toast.success("Portada cambiada a: Modo Comunidad Directo (1 Pantalla)");
               }}
               className={`cursor-pointer px-5 py-4 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-3 text-sm shadow-md ${
@@ -282,9 +285,9 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
             <button
               type="button"
               onClick={() => {
-                setBorrador((b) => ({ ...b, estiloPortada: "clasico" }));
-                setConfig((c) => ({ ...c, estiloPortada: "clasico" }));
-                void saveConfig({ estiloPortada: "clasico" });
+                const act = { ...borrador, estiloPortada: "clasico" as const };
+                setBorrador(act);
+                void guardarCambios(act, sorteoBorrador);
                 toast.success("Portada cambiada a: Modo Clásico Showcase");
               }}
               className={`cursor-pointer px-5 py-4 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-3 text-sm shadow-md ${
@@ -299,6 +302,154 @@ export function CentroControlSection({ config, setConfig, sorteo, setSorteo, onI
                 <div className="text-[11px] opacity-80">Edición completa con scroll</div>
               </div>
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── CONTROL DEL TERMÓMETRO & AMBIENTE DE COMPRA (URGENCIA COMERCIAL) ── */}
+      <div className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-br from-card via-card to-amber-500/10 p-5 sm:p-6 shadow-xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/60">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
+                <Flame className="size-5" />
+              </span>
+              <div>
+                <h3 className="text-lg sm:text-xl font-black text-foreground flex items-center gap-2">
+                  Termómetro de Venta & Ambiente de Compra
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Controla la barra de avance que ven los participantes en la landing page: <span className="text-amber-400 font-mono font-bold">Progreso de la dinámica: X% cubierto</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className={`text-xs font-black px-3 py-1 rounded-full border ${
+              (borrador.termometroPorcentajeManual ?? 0) > 0
+                ? "bg-amber-500 text-black border-amber-400 shadow-sm"
+                : "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
+            }`}>
+              {(borrador.termometroPorcentajeManual ?? 0) > 0
+                ? `🔥 AMBIENTE ACTIVO: ${borrador.termometroPorcentajeManual}%`
+                : "⚙️ MODO REAL AUTOMÁTICO"}
+            </span>
+          </div>
+        </div>
+
+        {/* Previsualización en Vivo de la Barra de la Landing */}
+        <div className="rounded-xl border border-white/10 bg-zinc-950 p-4 space-y-2">
+          <div className="flex items-center justify-between text-xs text-zinc-400">
+            <span className="font-semibold">Previsualización de la barra en la Landing Page</span>
+            <span className="font-mono text-amber-400 font-black">
+              {(borrador.termometroPorcentajeManual ?? 0) > 0
+                ? `${borrador.termometroPorcentajeManual}% cubierto (Manual)`
+                : "Calculado dinámico según ventas"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs pt-1">
+            <span className="text-zinc-300 font-medium">Participaciones de la comunidad</span>
+            <span className="font-mono font-black text-amber-400 text-sm">
+              {Math.max(1, borrador.termometroPorcentajeManual ?? 2)}% cubierto
+            </span>
+          </div>
+          <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-amber-500 rounded-full transition-all duration-500 shadow-[0_0_12px_rgba(245,158,11,0.6)]"
+              style={{ width: `${Math.min(100, Math.max(2, borrador.termometroPorcentajeManual ?? 2))}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Presets Rápidos de 1 Clic */}
+        <div className="space-y-2">
+          <Label className="text-xs font-bold text-foreground block">
+            Elegir ambiente de compra con 1 clic:
+          </Label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+            {[
+              { label: "Modo Real (Auto)", valor: 0, sub: "Cálculo real", icon: "⚙️" },
+              { label: "Arranque", valor: 38, sub: "38% Inicial", icon: "🚀" },
+              { label: "En Marcha", valor: 54, sub: "54% Medio", icon: "📈" },
+              { label: "Alta Demanda", valor: 72, sub: "72% Fuerte", icon: "🔥" },
+              { label: "Últimos Cupos", valor: 86, sub: "86% Urgencia", icon: "⚡" },
+              { label: "Fase Final", valor: 94, sub: "94% Crítico", icon: "🚨" },
+            ].map((p) => {
+              const isSelected = (borrador.termometroPorcentajeManual ?? 0) === p.valor;
+              return (
+                <button
+                  key={p.valor}
+                  type="button"
+                  onClick={() => {
+                    const actualizado = { ...borrador, termometroPorcentajeManual: p.valor };
+                    setBorrador(actualizado);
+                    void guardarCambios(actualizado, sorteoBorrador);
+                  }}
+                  className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                    isSelected
+                      ? "bg-amber-500 text-black border-amber-400 font-black shadow-md ring-2 ring-amber-500/30 scale-[1.02]"
+                      : "bg-secondary/40 border-border text-foreground hover:bg-secondary hover:border-amber-500/40"
+                  }`}
+                >
+                  <span className="text-base">{p.icon}</span>
+                  <span className="text-xs font-bold leading-tight">{p.label}</span>
+                  <span className={`text-[10px] ${isSelected ? "text-black/80 font-bold" : "text-muted-foreground"}`}>
+                    {p.sub}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Slider libre & Ajuste Preciso */}
+        <div className="rounded-xl border border-border/80 bg-secondary/30 p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <Label className="text-xs font-bold text-foreground">
+                O ajustar porcentaje personalizado libremente:
+              </Label>
+              <p className="text-[11px] text-muted-foreground">
+                Mueve el deslizador o escribe el número exacto (0 = modo automático real).
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={99}
+                value={borrador.termometroPorcentajeManual ?? 0}
+                onChange={(e) => {
+                  setBorrador({ ...borrador, termometroPorcentajeManual: Number(e.target.value) });
+                }}
+                className="w-40 sm:w-56 accent-amber-500 cursor-pointer"
+              />
+              <div className="relative w-24">
+                <input
+                  type="number"
+                  min={0}
+                  max={99}
+                  value={borrador.termometroPorcentajeManual ?? 0}
+                  onChange={(e) => {
+                    const val = Math.min(99, Math.max(0, Number(e.target.value) || 0));
+                    setBorrador({ ...borrador, termometroPorcentajeManual: val });
+                  }}
+                  className="w-full rounded-xl border border-border bg-card px-3 py-1.5 text-right font-mono font-bold text-base text-foreground focus:border-amber-500 focus:outline-none"
+                />
+                <span className="absolute right-7 top-1/2 -translate-y-1/2 font-bold text-xs text-muted-foreground pointer-events-none">%</span>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => void guardarCambios(borrador, sorteoBorrador)}
+                disabled={guardando}
+                className="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shrink-0 cursor-pointer"
+              >
+                {guardando ? "Guardando..." : "Aplicar"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

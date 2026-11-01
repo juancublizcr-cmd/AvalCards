@@ -571,8 +571,8 @@ function Validar() {
                     const url = `${window.location.origin}/?ref=${tel}`;
                     const texto = encodeURIComponent(
                       config.referidosDarTokensBono
-                        ? `¡Mae, estoy participando en Aval Community CR! 🚗💨\n\nEntra con mi enlace y recibe +${config.referidosBonoTokens ?? 1} Token Extra GRATIS en tu compra:\n${url}`
-                        : `¡Mae, mirá este chuzo de sorteo en Aval Community CR! 🚗💨\n\nEntrá con mi enlace personal y asegurá tus números oficiales:\n${url}`
+                        ? `¡Estoy participando en Aval Community CR! 🚗🏍️✨\n\nEntra con mi enlace y recibe +${config.referidosBonoTokens ?? 1} Token Extra GRATIS en tu compra:\n${url}`
+                        : `¡Mira los premios oficiales para nuestra comunidad en Aval Community CR! 🚗🏍️✨\n\nEntra con mi enlace personal y asegura tus números oficiales:\n${url}`
                     );
                     window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
                   }}

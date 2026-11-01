@@ -97,7 +97,7 @@ export function FlyerPromocional({
 
         <p className="mt-4 max-w-lg text-sm sm:text-base text-zinc-300 leading-relaxed font-normal">
           {config.promoSubtitulo ||
-            "Estamos afinando los últimos detalles de la plataforma de rifas y tokens digitales más transparente de Costa Rica. ¡Únete a la preventa por WhatsApp y sé el primero en asegurar tus números!"}
+            "Estamos afinando los últimos detalles de la plataforma de eventos promocionales y tokens digitales más transparente de Costa Rica. ¡Únete a la preventa por WhatsApp y sé el primero en asegurar tus números!"}
         </p>
 
         {/* Flyer Card del Vehículo */}

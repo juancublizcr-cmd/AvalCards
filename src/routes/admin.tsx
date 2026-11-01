@@ -48,12 +48,14 @@ import type { AdminSessionUser } from "@/lib/admin-roles";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Dashboard CRM | Aval Community CR" },
+      { title: "Consola Administrativa | Aval Community CR" },
       {
         name: "description",
         content:
-          "Consola administrativa de Aval Community CR: métricas, pagos SINPE, sorteos, inventario, escrutinio y CRM de clientes.",
+          "Consola administrativa de Aval Community CR: métricas, pagos SINPE, dinámica de premios, inventario, escrutinio y CRM de clientes.",
       },
+      { property: "og:title", content: "Consola Administrativa | Aval Community CR" },
+      { property: "og:description", content: "Panel de administración y gestión oficial de Aval Community CR." },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

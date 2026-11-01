@@ -96,7 +96,7 @@ export default defineConfig({
       manifest: {
         name: "Aval Community CR",
         short_name: "AvalCommunity",
-        description: "Rifas digitales de premios premium en Costa Rica.",
+        description: "Premios exclusivos y beneficios de alta gama para nuestra comunidad Aval en Costa Rica.",
         theme_color: "#f97316",
         background_color: "#0a0a0a",
         display: "standalone",

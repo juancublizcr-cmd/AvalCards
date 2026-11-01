@@ -7,7 +7,14 @@ import {
   Ticket,
   ArrowRight,
   ShieldCheck,
+  ZoomIn,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { Premio } from "@/lib/premios-types";
 import type { Paquete } from "@/components/StickersModal";
@@ -37,6 +44,7 @@ interface Props {
   };
   onSeleccionarPaquete: (paquete: Paquete) => void;
   onVerFicha: (premio: Premio) => void;
+  onFotoZoom?: (foto: { url: string; titulo: string; nivel?: string }) => void;
   onCambiarAClasico?: () => void;
 }
 
@@ -51,6 +59,7 @@ export function ComunidadDirectaLanding({
   cuentaRegresiva,
   onSeleccionarPaquete,
   onVerFicha,
+  onFotoZoom,
   onCambiarAClasico,
 }: Props) {
   // Podio seleccionado: 1 (Motos), 2 (Autos), 3 (Efectivo)
@@ -58,6 +67,9 @@ export function ComunidadDirectaLanding({
 
   // En cada podio, cuál de las 2 opciones está seleccionada (0 o 1)
   const [opcionElegida, setOpcionElegida] = useState<number>(0);
+
+  // Lightbox local para ampliar foto al hacer clic
+  const [lightboxFoto, setLightboxFoto] = useState<{ url: string; titulo: string; nivel?: string } | null>(null);
 
   // Paquete de tokens seleccionado (por defecto 6 tokens ₡8.000)
   const [paqueteSeleccionado, setPaqueteSeleccionado] = useState<Paquete>(() => {
@@ -185,6 +197,19 @@ export function ComunidadDirectaLanding({
   const opcionActual = podioActual.opciones[opcionElegida] || podioActual.opciones[0];
   const pct = Math.min(100, Math.max(0, Math.round(progreso.porcentajeReal || 0)));
 
+  const abrirFotoEnGrande = () => {
+    const foto = {
+      url: opcionActual.imagen,
+      titulo: opcionActual.nombre,
+      nivel: podioActual.tituloNivel,
+    };
+    if (onFotoZoom) {
+      onFotoZoom(foto);
+    } else {
+      setLightboxFoto(foto);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#070708] text-zinc-100 font-sans selection:bg-amber-500 selection:text-black">
       
@@ -216,17 +241,17 @@ export function ComunidadDirectaLanding({
       </header>
 
       {/* ─── 2. CONTENIDO PRINCIPAL CENTRADO (EXACTO A TU CAPTURA) ─── */}
-      <main className="max-w-3xl mx-auto px-4 py-5 space-y-4">
+      <main className="max-w-3xl mx-auto px-4 py-3 sm:py-4 space-y-3">
         
         {/* Encabezado */}
-        <div className="text-left space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/30">
+        <div className="text-left space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/30">
             <Sparkles className="size-3" /> OPORTUNIDAD ACTIVA · COMUNIDAD AVAL
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase leading-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-tight">
             TU PRÓXIMA GRAN OPORTUNIDAD
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+          <p className="text-xs text-zinc-400 leading-snug">
             Descubre los beneficios destacados. En cada lugar, <strong className="text-white">vos escogés cuál de los dos premios te llevás</strong> como miembro oficial de Aval Community.
           </p>
         </div>
@@ -257,9 +282,9 @@ export function ComunidadDirectaLanding({
           })}
         </div>
 
-        {/* Sección "EN ESTE LUGAR TENÉS 2 OPCIONES PARA ELEGIR" (Con Miniaturas Exactas) */}
+        {/* Sección "EN ESTE LUGAR TENÉS 2 OPCIONES PARA ELEGIR" (Sin foto miniatura para que suba y quede en 1 pantalla) */}
         {podioActual.opciones.length > 1 ? (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs px-1">
               <span className="text-amber-400 font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <Crown className="size-3.5" /> EN ESTE LUGAR TENÉS 2 OPCIONES PARA ELEGIR:
@@ -267,7 +292,7 @@ export function ComunidadDirectaLanding({
               <span className="text-zinc-500 text-[10px]">Toca para cambiar la vista</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2">
               {podioActual.opciones.map((opc, idx) => {
                 const isSelected = opcionElegida === idx;
                 return (
@@ -275,7 +300,7 @@ export function ComunidadDirectaLanding({
                     key={opc.id}
                     type="button"
                     onClick={() => setOpcionElegida(idx)}
-                    className={`rounded-2xl p-3 text-left transition-all cursor-pointer border flex flex-col justify-between relative overflow-hidden group ${
+                    className={`rounded-2xl p-2.5 text-left transition-all cursor-pointer border flex flex-col justify-between relative overflow-hidden group ${
                       isSelected
                         ? "bg-zinc-900 border-amber-500 ring-2 ring-amber-500/40 shadow-xl shadow-amber-500/10 scale-[1.01]"
                         : "bg-zinc-950 border-white/10 hover:border-white/20 opacity-75 hover:opacity-100"
@@ -292,16 +317,7 @@ export function ComunidadDirectaLanding({
                       )}
                     </div>
 
-                    {/* Miniatura visual del vehículo */}
-                    <div className="h-14 w-full rounded-lg overflow-hidden bg-black/60 my-2 border border-white/5 flex items-center justify-center">
-                      <img
-                        src={opc.imagen}
-                        alt={opc.nombre}
-                        className="h-full w-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    </div>
-
-                    <div>
+                    <div className="mt-1.5">
                       <div className="font-black text-xs sm:text-sm text-white leading-tight">
                         {opc.nombre}
                       </div>
@@ -310,7 +326,7 @@ export function ComunidadDirectaLanding({
                       </div>
                     </div>
 
-                    <div className="mt-2 pt-1.5 border-t border-white/5 text-[10px] font-mono font-bold text-amber-400 flex items-center justify-between">
+                    <div className="mt-1.5 pt-1 border-t border-white/5 text-[10px] font-mono font-bold text-amber-400 flex items-center justify-between">
                       <span>Valor: {opc.valor}</span>
                       <span className="text-[9px] uppercase tracking-wider text-zinc-500">{opc.tag}</span>
                     </div>
@@ -321,30 +337,40 @@ export function ComunidadDirectaLanding({
           </div>
         ) : null}
 
-        {/* Visor Fotográfico Cinemático */}
-        <div className="relative rounded-3xl overflow-hidden border border-white/15 bg-black group shadow-2xl">
-          <div className="aspect-[16/10] sm:aspect-[16/9] w-full flex items-center justify-center bg-[#070708] overflow-hidden">
+        {/* Visor Fotográfico Cinemático - 100% visible sin recorte y clic para ampliar */}
+        <div
+          onClick={abrirFotoEnGrande}
+          className="relative rounded-2xl overflow-hidden border border-white/15 bg-black group shadow-2xl cursor-zoom-in select-none"
+        >
+          <div className="w-full aspect-[16/10] sm:aspect-[16/9] flex items-center justify-center bg-gradient-to-b from-[#111115] via-[#09090b] to-black overflow-hidden p-1.5 sm:p-2">
             <img
               src={opcionActual.imagen}
               alt={opcionActual.nombre}
-              className="size-full object-cover group-hover:scale-105 transition-transform duration-700"
+              className="size-full object-contain object-center group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_15px_35px_rgba(0,0,0,0.9)]"
             />
           </div>
 
-          <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-[10px] font-mono text-zinc-300 bg-black/80 backdrop-blur-md border border-white/20">
+          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 pointer-events-none">
+            <span className="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono text-zinc-300 bg-black/80 backdrop-blur-md border border-white/20">
               {opcionActual.origen}
             </span>
-            <span className="px-3 py-1 rounded-full text-[10px] font-bold text-amber-400 bg-amber-500/20 backdrop-blur-md border border-amber-500/40">
+            <span className="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold text-amber-400 bg-amber-500/20 backdrop-blur-md border border-amber-500/40">
               {opcionActual.tag}
             </span>
+          </div>
+
+          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 rounded-full bg-black/85 px-2.5 py-1 text-[10px] sm:text-xs font-semibold text-zinc-200 border border-white/20 backdrop-blur shadow-md group-hover:bg-amber-500 group-hover:text-black transition-colors pointer-events-none">
+            <ZoomIn className="size-3 sm:size-3.5" /> Tocar para ampliar
           </div>
 
           {opcionActual.premioOriginal && (
             <button
               type="button"
-              onClick={() => onVerFicha(opcionActual.premioOriginal as Premio)}
-              className="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-black/80 hover:bg-white/90 text-zinc-300 hover:text-black border border-white/20 text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-md transition-all cursor-pointer shadow-lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                onVerFicha(opcionActual.premioOriginal as Premio);
+              }}
+              className="absolute top-2.5 right-2.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-black/80 hover:bg-white text-zinc-300 hover:text-black border border-white/20 text-[10px] sm:text-[11px] font-bold flex items-center gap-1 backdrop-blur-md transition-all cursor-pointer shadow-lg z-10"
             >
               <Sparkles className="size-3 text-amber-400" /> Ver Ficha
             </button>
@@ -365,7 +391,7 @@ export function ComunidadDirectaLanding({
         </div>
 
         {/* Progreso de la Dinámica */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950 p-3.5 text-left space-y-2">
+        <div className="rounded-xl border border-white/10 bg-zinc-950 p-2.5 text-left space-y-1.5">
           <div className="text-xs font-semibold text-zinc-400">
             Progreso de la dinámica
           </div>
@@ -373,9 +399,9 @@ export function ComunidadDirectaLanding({
             <span className="text-zinc-300 font-medium">Participaciones de la comunidad</span>
             <span className="font-mono font-black text-amber-400">{pct}% cubierto</span>
           </div>
-          <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
             <div
-              className="h-full bg-amber-500 rounded-full transition-all duration-700 shadow-[0_0_12px_rgba(245,158,11,0.6)]"
+              className="h-full bg-amber-500 rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(245,158,11,0.6)]"
               style={{ width: `${Math.max(4, pct)}%` }}
             />
           </div>
@@ -386,17 +412,17 @@ export function ComunidadDirectaLanding({
         </div>
 
         {/* Selector de Paquetes de Tokens */}
-        <div className="text-left space-y-2.5 pt-1">
+        <div className="text-left space-y-2 pt-0.5">
           <div>
-            <h3 className="text-sm font-black text-white uppercase tracking-wider">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider">
               Elige tu paquete de tokens
             </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-[11px] text-zinc-400">
               Selecciona cuántos tokens deseas adquirir para respaldar la comunidad y participar.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {paquetes.slice(0, 4).map((p) => {
               const isSelected = paqueteSeleccionado.cantidad === p.cantidad;
               return (
@@ -404,17 +430,17 @@ export function ComunidadDirectaLanding({
                   key={p.cantidad}
                   type="button"
                   onClick={() => setPaqueteSeleccionado(p)}
-                  className={`rounded-2xl p-3.5 text-left transition-all cursor-pointer border flex flex-col justify-between ${
+                  className={`rounded-xl p-2.5 text-left transition-all cursor-pointer border flex flex-col justify-between ${
                     isSelected
                       ? "bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/40 shadow-xl shadow-amber-500/10"
                       : "bg-zinc-950 border-white/10 hover:border-white/20 hover:bg-zinc-900/50"
                   }`}
                 >
-                  <div className="text-2xl font-black text-white leading-none">
+                  <div className="text-xl font-black text-white leading-none">
                     {p.cantidad}
                   </div>
-                  <div className="text-xs text-zinc-400 mt-1">Tokens</div>
-                  <div className="text-sm font-black text-amber-400 font-mono mt-2.5">
+                  <div className="text-[11px] text-zinc-400 mt-0.5">Tokens</div>
+                  <div className="text-sm font-black text-amber-400 font-mono mt-2">
                     {formatCRC(p.precio)}
                   </div>
                 </button>
@@ -427,13 +453,13 @@ export function ComunidadDirectaLanding({
             type="button"
             size="lg"
             onClick={() => onSeleccionarPaquete(paqueteSeleccionado)}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-black font-black text-base shadow-2xl shadow-amber-500/30 transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] gap-2 tracking-wider uppercase mt-1"
+            className="w-full h-13 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-black font-black text-base shadow-xl shadow-amber-500/25 transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] gap-2 tracking-wider uppercase mt-1"
           >
             PARTICIPAR AHORA · {formatCRC(paqueteSeleccionado.precio)}
             <ArrowRight className="size-5" />
           </Button>
 
-          <p className="text-center text-[11px] text-zinc-500">
+          <p className="text-center text-[10px] text-zinc-500">
             Acepta SINPE Móvil oficial y Tarjeta. Consulta las condiciones y reglamento de participación.
           </p>
         </div>
@@ -463,6 +489,37 @@ export function ComunidadDirectaLanding({
             </button>
           </div>
         )}
+
+        {/* MODAL LIGHTBOX / ZOOM DE FOTO EN PANTALLA COMPLETA */}
+        <Dialog open={!!lightboxFoto} onOpenChange={(v) => { if (!v) setLightboxFoto(null); }}>
+          <DialogContent className="max-w-4xl w-[95vw] border border-amber-500/40 bg-zinc-950/95 p-3 sm:p-5 shadow-2xl backdrop-blur-2xl text-foreground">
+            <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b border-white/10 text-left">
+              <div>
+                {lightboxFoto?.nivel && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/40">
+                    {lightboxFoto.nivel}
+                  </span>
+                )}
+                <DialogTitle className="text-lg sm:text-2xl font-bold text-white mt-1">
+                  {lightboxFoto?.titulo}
+                </DialogTitle>
+              </div>
+            </DialogHeader>
+
+            <div className="relative mt-2 flex items-center justify-center min-h-[40vh] max-h-[75vh] w-full overflow-hidden rounded-xl bg-black/90 p-2">
+              <img
+                src={lightboxFoto?.url}
+                alt={lightboxFoto?.titulo}
+                className="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-lg drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2 text-xs text-zinc-400">
+              <span>Vehículo oficial verificado ante Notario Público</span>
+              <span className="text-amber-400 font-bold">Aval Community CR</span>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

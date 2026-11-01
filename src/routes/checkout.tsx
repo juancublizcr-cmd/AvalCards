@@ -46,6 +46,8 @@ export const Route = createFileRoute("/checkout")({
         content:
           "Completa tus datos y paga con SINPE Móvil, Tarjeta de Débito/Crédito (TiloPay) o Criptomonedas (USDT).",
       },
+      { property: "og:title", content: "Finaliza tu Compra | Aval Community CR" },
+      { property: "og:description", content: "Asegura tus tokens oficiales y participa por los premios de nuestra comunidad Aval en Costa Rica." },
     ],
   }),
   component: Checkout,
@@ -462,7 +464,7 @@ function Checkout() {
     const urlReferido = `${typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.cr"}/?ref=${telLimpio}`;
     const premioTxt = config.referidosPremioSiGana || "₡1,000,000";
     const texto = encodeURIComponent(
-      `¡Mae, estoy participando por el Mercedes Benz 2026 en Aval Community CR! 🚗💨\n\nEntra con mi enlace exclusivo y asegura tus números oficiales:\n${urlReferido}\n\n¡Si pegas el premio mayor, yo también gano ${premioTxt} en efectivo por haberte recomendado!`
+      `¡Estoy participando por los premios oficiales de alta gama en Aval Community CR! 🚗🏍️✨\n\nEntra con mi enlace exclusivo y asegura tus números oficiales:\n${urlReferido}\n\n¡Si pegas el premio mayor, yo también gano ${premioTxt} en efectivo por haberte recomendado!`
     );
     window.open(`https://api.whatsapp.com/send?text=${texto}`, "_blank");
   };
@@ -707,40 +709,122 @@ function Checkout() {
     );
   }
 
+  const bloqueFacturacion = (
+    <div className="w-full rounded-2xl border border-border/80 bg-secondary/30 p-3 sm:p-3.5 space-y-2.5 transition-all overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-1.5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Receipt className="size-3.5 text-primary shrink-0" />
+          <span className="text-xs font-bold text-foreground truncate">
+            Factura Electrónica
+          </span>
+        </div>
+        <span className="rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-bold flex items-center gap-1 shrink-0">
+          <CheckCircle2 className="size-2.5" /> Hacienda CR
+        </span>
+      </div>
+
+      <label className="flex items-start gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={requiereFactura}
+          onChange={(e) => setRequiereFactura(e.target.checked)}
+          className="mt-0.5 rounded border-input text-primary focus:ring-primary h-3.5 w-3.5 shrink-0"
+        />
+        <div className="text-[11px] min-w-0">
+          <span className="font-semibold text-foreground">
+            ¿Requieres Factura con Cédula?
+          </span>
+          <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+            Por defecto emitimos <strong>Tiquete Electrónico (04)</strong>. Marca aquí para registrar Cédula o Razón Social.
+          </p>
+        </div>
+      </label>
+
+      {requiereFactura && (
+        <div className="grid gap-2 pt-2 border-t border-border/60 animate-in fade-in-50">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div>
+              <Label htmlFor="fe-tipo" className="text-[10px]">Tipo Cédula</Label>
+              <select
+                id="fe-tipo"
+                value={facturaTipoCedula}
+                onChange={(e) => setFacturaTipoCedula(e.target.value)}
+                className="w-full mt-1 h-8 rounded-md border border-input bg-background px-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="02">02 - Jurídica</option>
+                <option value="01">01 - Física</option>
+                <option value="03">03 - DIMEX</option>
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <Label htmlFor="fe-cedula" className="text-[10px]">Número de Cédula *</Label>
+              <Input
+                id="fe-cedula"
+                placeholder={facturaTipoCedula === "02" ? "3-101-xxxxxx" : "1-xxxx-xxxx"}
+                value={facturaCedula}
+                onChange={(e) => setFacturaCedula(e.target.value)}
+                className="mt-1 h-8 text-xs"
+              />
+              {errores["facturaCedula"] && (
+                <p className="mt-1 text-[10px] text-destructive">{errores["facturaCedula"]}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="fe-nombre" className="text-[10px]">Razón Social o Nombre Completo *</Label>
+            <Input
+              id="fe-nombre"
+              placeholder="Nombre o empresa en Hacienda"
+              value={facturaNombre}
+              onChange={(e) => setFacturaNombre(e.target.value)}
+              className="mt-1 h-8 text-xs"
+            />
+            {errores["facturaNombre"] && (
+              <p className="mt-1 text-[10px] text-destructive">{errores["facturaNombre"]}</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border/60">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3">
           <Link to="/" className="flex items-center gap-2">
             <img src="/isotipo.png" alt="Aval Community CR" className="size-6 object-contain shrink-0" />
             <span className="font-display text-xl tracking-widest">
               AVAL <span className="text-primary">COMMUNITY CR</span>
             </span>
           </Link>
-          <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <Link to="/" className="inline-flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="size-4" /> Volver
           </Link>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-4xl tracking-wide">
-            {ventasCerradas ? "Evento Oficial" : "Finaliza tu compra"}
-          </h1>
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 py-3 sm:py-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h1 className="font-display text-2xl sm:text-3xl tracking-wide">
+              {ventasCerradas ? "Evento Oficial" : "Finaliza tu compra"}
+            </h1>
+            {!ventasCerradas && (
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {seleccion
+                  ? `Paquete de ${seleccion.cantidad} Tokens ${seleccion.supertoken ? "(con SuperToken)" : ""} · ₡${seleccion.precio.toLocaleString("es-CR")} (aprox. $${montoUsdt} USD)`
+                  : "No hay un paquete seleccionado. Vuelve al inicio y elige uno."}
+              </p>
+            )}
+          </div>
           {seleccion?.supertoken && !ventasCerradas && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-500">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-400">
               <Crown className="size-3.5 text-amber-400" /> SuperToken (Hasta +{superSimbolo}{superPremioMax} {superCodigo})
             </span>
           )}
         </div>
-        {!ventasCerradas && (
-          <p className="mt-2 text-sm text-muted-foreground">
-            {seleccion
-              ? `Paquete de ${seleccion.cantidad} Tokens ${seleccion.supertoken ? "(con SuperToken)" : ""} · ₡${seleccion.precio.toLocaleString("es-CR")} (aprox. $${montoUsdt} USD)`
-              : "No hay un paquete seleccionado. Vuelve al inicio y elige uno."}
-          </p>
-        )}
 
         {ventasCerradas ? (
           <div className="mt-8 rounded-2xl border-2 border-amber-500/60 bg-zinc-950 p-6 sm:p-8 text-center space-y-4 shadow-xl">
@@ -767,87 +851,97 @@ function Checkout() {
             </div>
           </div>
         ) : (
-          <form onSubmit={(e) => { void enviar(e); }} className="mt-8 space-y-8" noValidate>
-          {referidoPor && !esUsuarioExistente && form.telefono.replace(/\D/g, "") !== (referidoPor || "").replace(/\D/g, "") && (
-            <div className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 via-green-500/15 to-emerald-500/20 p-4 flex items-center gap-3 text-xs sm:text-sm text-emerald-400 font-semibold shadow-md">
-              <Sparkles className="size-5 text-emerald-400 shrink-0" />
-              <div>
-                <span className="font-bold text-white block text-sm">🎁 ¡Enlace de Amigo Aplicado! (Ref: {referidoPor})</span>
-                {config.referidosDarTokensBono ? (
-                  <span>Por acceder con invitación exclusiva en tu primera compra, recibirás <strong>+{config.referidosBonoTokens ?? 1} Token{(config.referidosBonoTokens ?? 1) > 1 ? "s" : ""} Extra GRATIS</strong> de regalo.</span>
-                ) : (
-                  <span>Tu orden está vinculada a tu amigo padrino. Si te llevás cualquiera de los 3 premios oficiales, ¡tu amigo también cobra <strong>hasta {config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4,000,000"} en efectivo</strong> entregados formalmente!</span>
-                )}
+          <form onSubmit={(e) => { void enviar(e); }} className="mt-3.5 sm:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 items-start" noValidate>
+          {/* COLUMNA IZQUIERDA: Participante + Facturación */}
+          <div className="lg:col-span-5 space-y-3.5">
+            {referidoPor && !esUsuarioExistente && form.telefono.replace(/\D/g, "") !== (referidoPor || "").replace(/\D/g, "") && (
+              <div className="rounded-xl border-2 border-emerald-500/50 bg-gradient-to-r from-emerald-500/20 via-green-500/15 to-emerald-500/20 p-3 flex items-center gap-2.5 text-xs text-emerald-400 font-semibold shadow-sm">
+                <Sparkles className="size-4 text-emerald-400 shrink-0" />
+                <div>
+                  <span className="font-bold text-white block text-xs">🎁 ¡Enlace de Amigo Aplicado! (Ref: {referidoPor})</span>
+                  {config.referidosDarTokensBono ? (
+                    <span>Recibirás <strong>+{config.referidosBonoTokens ?? 1} Token{(config.referidosBonoTokens ?? 1) > 1 ? "s" : ""} Extra GRATIS</strong>.</span>
+                  ) : (
+                    <span>Tu orden está vinculada a tu amigo. Si ganás, ¡tu amigo también cobra hasta {config.referidosPremioPrimero || config.referidosPremioSiGana || "₡4.000.000"}!</span>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {esUsuarioExistente && (
-            <div className="rounded-2xl border border-primary/40 bg-primary/10 p-4 flex items-center gap-3 text-xs sm:text-sm text-primary shadow-xs">
-              <ShieldCheck className="size-5 text-primary shrink-0" />
-              <div>
-                <span className="font-bold text-white block text-sm">✓ Participante Registrado Activo ({form.telefono})</span>
-                <span>Ya formas parte de la plataforma y tienes tu propio enlace de referidos. ¡Esta compra se acumula a tu cuenta oficial!</span>
+            {esUsuarioExistente && (
+              <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 flex items-center gap-2.5 text-xs text-primary shadow-xs">
+                <ShieldCheck className="size-4 text-primary shrink-0" />
+                <div>
+                  <span className="font-bold text-white block text-xs">✓ Participante Registrado Activo ({form.telefono})</span>
+                  <span>Esta compra se acumula a tu cuenta oficial.</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* 1. INFORMACIÓN DE CONTACTO */}
-          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <h2 className="font-semibold text-lg flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">1</span>
-              Información del Participante
-            </h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <Label htmlFor="nombre">Nombre completo (como en tu cédula)</Label>
-                <Input
-                  id="nombre"
-                  maxLength={100}
-                  value={form.nombre}
-                  onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                  placeholder="Ana Rodríguez Mora"
-                  className="mt-1.5"
-                />
-                {errores["nombre"] && <p className="mt-1 text-xs text-destructive">{errores["nombre"]}</p>}
+            {/* 1. INFORMACIÓN DE CONTACTO */}
+            <section className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm space-y-3">
+              <h2 className="font-semibold text-sm sm:text-base flex items-center gap-2">
+                <span className="flex size-5 sm:size-6 items-center justify-center rounded-full bg-amber-500/20 text-xs font-bold text-amber-400 border border-amber-500/30">1</span>
+                Información del Participante
+              </h2>
+              <div className="space-y-2.5">
+                <div>
+                  <Label htmlFor="nombre" className="text-xs">Nombre completo (como en tu cédula)</Label>
+                  <Input
+                    id="nombre"
+                    maxLength={100}
+                    value={form.nombre}
+                    onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                    placeholder="Ana Rodríguez Mora"
+                    className="mt-1 h-9 text-xs sm:text-sm"
+                  />
+                  {errores["nombre"] && <p className="mt-1 text-xs text-destructive">{errores["nombre"]}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="telefono" className="text-xs">Número de teléfono (celular)</Label>
+                  <Input
+                    id="telefono"
+                    inputMode="tel"
+                    maxLength={9}
+                    value={form.telefono}
+                    onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+                    placeholder="8888-8888"
+                    className="mt-1 h-9 text-xs sm:text-sm"
+                  />
+                  {errores["telefono"] && (
+                    <p className="mt-1 text-xs text-destructive">{errores["telefono"]}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="email" className="text-xs">Correo electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    maxLength={255}
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="ana@correo.cr"
+                    className="mt-1 h-9 text-xs sm:text-sm"
+                  />
+                  {errores["email"] && <p className="mt-1 text-xs text-destructive">{errores["email"]}</p>}
+                </div>
               </div>
-              <div>
-                <Label htmlFor="telefono">Número de teléfono (celular)</Label>
-                <Input
-                  id="telefono"
-                  inputMode="tel"
-                  maxLength={9}
-                  value={form.telefono}
-                  onChange={(e) => setForm({ ...form, telefono: e.target.value })}
-                  placeholder="8888-8888"
-                  className="mt-1.5"
-                />
-                {errores["telefono"] && (
-                  <p className="mt-1 text-xs text-destructive">{errores["telefono"]}</p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="email">Correo electrónico</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  maxLength={255}
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="ana@correo.cr"
-                  className="mt-1.5"
-                />
-                {errores["email"] && <p className="mt-1 text-xs text-destructive">{errores["email"]}</p>}
-              </div>
-            </div>
-          </section>
+            </section>
 
-          {/* 2. SELECTOR DE MÉTODO DE PAGO */}
-          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
-            <h2 className="font-semibold text-lg flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">2</span>
-              Selecciona tu Método de Pago
-            </h2>
+            {/* Facturación en desktop (en columna izquierda debajo de Información del Participante) */}
+            <div className="hidden lg:block">
+              {bloqueFacturacion}
+            </div>
+          </div>
+
+          {/* COLUMNA DERECHA: Método de Pago + Botón Principal */}
+          <div className="lg:col-span-7 space-y-3.5">
+            {/* 2. SELECTOR DE MÉTODO DE PAGO */}
+            <section className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm space-y-3">
+              <h2 className="font-semibold text-sm sm:text-base flex items-center gap-2">
+                <span className="flex size-5 sm:size-6 items-center justify-center rounded-full bg-amber-500/20 text-xs font-bold text-amber-400 border border-amber-500/30">2</span>
+                Selecciona tu Método de Pago
+              </h2>
 
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
               {config.sinpeActivo && (
@@ -856,8 +950,8 @@ function Checkout() {
                   onClick={() => setMetodo("sinpe")}
                   className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3.5 text-center transition-all ${
                     metodo === "sinpe"
-                      ? "border-primary bg-primary/10 shadow-sm text-primary ring-1 ring-primary"
-                      : "border-border bg-secondary/30 text-muted-foreground hover:border-primary/40"
+                      ? "border-amber-500/70 bg-amber-500/10 shadow-sm text-foreground ring-1 ring-amber-500/50"
+                      : "border-border bg-secondary/30 text-muted-foreground hover:border-amber-500/40"
                   }`}
                 >
                   <Smartphone className="size-6 text-emerald-400" />
@@ -872,13 +966,13 @@ function Checkout() {
                   onClick={() => setMetodo("tarjeta")}
                   className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3.5 text-center transition-all ${
                     metodo === "tarjeta"
-                      ? "border-primary bg-primary/10 shadow-sm text-primary ring-1 ring-primary"
-                      : "border-border bg-secondary/30 text-muted-foreground hover:border-primary/40"
+                      ? "border-amber-500/70 bg-amber-500/10 shadow-sm text-foreground ring-1 ring-amber-500/50"
+                      : "border-border bg-secondary/30 text-muted-foreground hover:border-amber-500/40"
                   }`}
                 >
-                  <CreditCard className="size-6 text-primary" />
+                  <CreditCard className="size-6 text-amber-400" />
                   <div className="font-bold text-sm">Tarjetas (TiloPay)</div>
-                  <span className="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
+                  <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                     <Zap className="size-3" /> Aprobación Inmediata
                   </span>
                 </button>
@@ -966,29 +1060,29 @@ function Checkout() {
                     }}
                   />
                 ) : (
-                  <div className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-card via-card to-emerald-950/20 p-5 shadow-lg space-y-4 text-left">
-                    <div className="flex items-center justify-between pb-3 border-b border-border/60">
-                      <div className="flex items-center gap-2.5">
-                        <div className="size-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
-                          <Smartphone className="size-5" />
+                  <div className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-b from-card via-card to-emerald-950/20 p-3.5 sm:p-4 shadow-sm space-y-2.5 text-left">
+                    <div className="flex items-center justify-between pb-2 border-b border-border/60">
+                      <div className="flex items-center gap-2">
+                        <div className="size-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
+                          <Smartphone className="size-4" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm text-foreground">Pago por SINPE Móvil</h4>
-                          <span className="text-[11px] text-muted-foreground">Transfiere y adjunta tu comprobante</span>
+                          <h4 className="font-bold text-xs sm:text-sm text-foreground">Pago por SINPE Móvil</h4>
+                          <span className="text-[10px] text-muted-foreground">Transfiere y adjunta tu comprobante</span>
                         </div>
                       </div>
-                      <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-black text-emerald-400">
+                      <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-black text-emerald-400">
                         SINPE OFICIAL
                       </span>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="p-3 rounded-xl bg-secondary/40 border border-border/60 space-y-1">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="p-2.5 rounded-xl bg-secondary/40 border border-border/60 space-y-0.5">
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground block">
                           Número SINPE Móvil
                         </span>
                         <div className="flex items-center justify-between">
-                          <span className="text-xl font-black text-emerald-500 font-mono">
+                          <span className="text-base sm:text-lg font-black text-emerald-500 font-mono">
                             {config.telefonoSinpe || "8634-4772"}
                           </span>
                           <Button
@@ -999,35 +1093,35 @@ function Checkout() {
                               navigator.clipboard.writeText(config.telefonoSinpe || "8634-4772");
                               toast.success("Número SINPE copiado");
                             }}
-                            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                            className="h-6 px-1.5 text-[11px] text-muted-foreground hover:text-foreground"
                           >
-                            <Copy className="size-3.5 mr-1" /> Copiar
+                            <Copy className="size-3 mr-1" /> Copiar
                           </Button>
                         </div>
-                        <span className="text-[11px] text-muted-foreground block">
+                        <span className="text-[10px] text-muted-foreground block truncate">
                           A nombre de: <strong className="text-foreground">{config.razonSocial || "Kevin Durán Rojas"}</strong>
                         </span>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-secondary/40 border border-border/60 space-y-1">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                      <div className="p-2.5 rounded-xl bg-secondary/40 border border-border/60 space-y-0.5">
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground block">
                           Monto Exacto a Transferir
                         </span>
-                        <div className="text-xl font-black text-foreground font-mono">
+                        <div className="text-base sm:text-lg font-black text-foreground font-mono">
                           ₡{formatNumber(seleccion?.precio ?? 4000)}
                         </div>
-                        <span className="text-[11px] text-emerald-400 block font-semibold">
+                        <span className="text-[10px] text-emerald-400 block font-semibold">
                           ✓ Sin comisiones adicionales
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
-                      <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1.5">
-                        <Sparkles className="size-3.5" /> Detalle / Motivo recomendado para tu SINPE:
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+                      <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
+                        <Sparkles className="size-3" /> Detalle / Motivo recomendado para tu SINPE:
                       </span>
-                      <div className="flex items-center justify-between bg-card/80 p-2 rounded-lg border border-border">
-                        <code className="font-mono font-bold text-sm text-foreground">
+                      <div className="flex items-center justify-between bg-card/80 px-2 py-1 rounded-lg border border-border">
+                        <code className="font-mono font-bold text-xs sm:text-sm text-foreground">
                           {codigoSinpe}
                         </code>
                         <Button
@@ -1038,22 +1132,22 @@ function Checkout() {
                             navigator.clipboard.writeText(codigoSinpe);
                             toast.success("Código copiado al portapapeles");
                           }}
-                          className="h-7 px-2 text-xs text-amber-500 hover:text-amber-400"
+                          className="h-6 px-1.5 text-[11px] text-amber-500 hover:text-amber-400"
                         >
-                          <Copy className="size-3.5 mr-1" /> Copiar
+                          <Copy className="size-3 mr-1" /> Copiar
                         </Button>
                       </div>
-                      <p className="text-[10px] text-muted-foreground">
-                        Pega este código en el detalle de tu transferencia para agilizar la asignación de tus tokens.
+                      <p className="text-[9px] text-muted-foreground">
+                        Pega este código en el detalle de tu transferencia para agilizar la asignación.
                       </p>
                     </div>
                   </div>
                 )}
 
-                <div className="rounded-xl border border-border/80 bg-secondary/20 p-4 space-y-3">
+                <div className="rounded-xl border border-border/80 bg-secondary/20 p-3 space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="archivo-input" className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-                      <Receipt className="size-3.5" />
+                    <Label htmlFor="archivo-input" className="text-xs font-semibold flex items-center gap-1 text-muted-foreground">
+                      <Receipt className="size-3" />
                       <span>
                         {config.sinpeAutoVerificacion === true
                           ? "Comprobante adicional / respaldo (Opcional):"
@@ -1063,16 +1157,16 @@ function Checkout() {
                     <button
                       type="button"
                       onClick={abrirSoporteWhatsApp}
-                      className="text-xs text-emerald-500 hover:text-emerald-400 font-medium flex items-center gap-1"
+                      className="text-[11px] text-emerald-500 hover:text-emerald-400 font-medium flex items-center gap-1"
                     >
-                      <MessageCircle className="size-3.5" /> Ayuda WhatsApp
+                      <MessageCircle className="size-3" /> Ayuda WhatsApp
                     </button>
                   </div>
                   {preview && archivo ? (
-                    <div className="mt-2 relative rounded-2xl border-2 border-emerald-500/60 bg-emerald-950/20 p-4 space-y-3">
+                    <div className="mt-1 relative rounded-xl border-2 border-emerald-500/60 bg-emerald-950/20 p-3 space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                          <CheckCircle2 className="size-4 text-emerald-400" />
+                        <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
+                          <CheckCircle2 className="size-3.5 text-emerald-400" />
                           <span>¡Comprobante adjuntado con éxito!</span>
                         </div>
                         <Button
@@ -1083,24 +1177,24 @@ function Checkout() {
                             setArchivo(null);
                             setPreview(null);
                           }}
-                          className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                          className="h-6 text-[11px] text-muted-foreground hover:text-destructive"
                         >
                           Cambiar imagen
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-4 bg-zinc-950/80 p-3 rounded-xl border border-emerald-500/30">
+                      <div className="flex items-center gap-3 bg-zinc-950/80 p-2.5 rounded-lg border border-emerald-500/30">
                         <img
                           src={preview}
                           alt="Comprobante SINPE"
-                          className="h-20 w-20 rounded-lg object-cover border border-border shadow-md shrink-0"
+                          className="h-14 w-14 rounded-md object-cover border border-border shadow-xs shrink-0"
                         />
                         <div className="min-w-0 flex-1 text-left">
-                          <div className="font-bold text-sm text-foreground truncate">{archivo.name}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5 font-mono">
+                          <div className="font-bold text-xs text-foreground truncate">{archivo.name}</div>
+                          <div className="text-[10px] text-muted-foreground font-mono">
                             {(archivo.size / 1024).toFixed(1)} KB · Imagen verificada
                           </div>
-                          <div className="inline-flex items-center gap-1 mt-1.5 rounded-full bg-emerald-500/20 text-emerald-400 px-2 py-0.5 text-[10px] font-bold">
+                          <div className="inline-flex items-center gap-1 mt-1 rounded-full bg-emerald-500/20 text-emerald-400 px-1.5 py-0.2 text-[9px] font-bold">
                             ✓ Listo para validar
                           </div>
                         </div>
@@ -1117,17 +1211,17 @@ function Checkout() {
                         if (f) elegirArchivo(f);
                       }}
                       onClick={() => inputFile.current?.click()}
-                      className={`mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+                      className={`mt-1 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-3 sm:p-3.5 text-center transition-all ${
                         arrastrando
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50 hover:bg-secondary/40"
+                          ? "border-amber-400 bg-amber-500/10"
+                          : "border-border hover:border-amber-500/50 hover:bg-secondary/40"
                       }`}
                     >
-                      <Upload className="size-8 text-muted-foreground" />
-                      <p className="mt-2 text-xs font-medium text-foreground">
+                      <Upload className="size-5 text-muted-foreground" />
+                      <p className="mt-1 text-xs font-medium text-foreground">
                         Arrastra aquí tu comprobante o haz clic para seleccionarlo
                       </p>
-                      <span className="text-[10px] text-muted-foreground mt-1">Formatos JPG, PNG o WebP (máx. 5MB)</span>
+                      <span className="text-[9px] text-muted-foreground mt-0.5">Formatos JPG, PNG o WebP (máx. 5MB)</span>
                     </div>
                   )}
                   <input
@@ -1355,91 +1449,17 @@ function Checkout() {
             )}
           </section>
 
-          {/* SECCIÓN FACTURACIÓN ELECTRÓNICA HACIENDA CR */}
-          <div className="rounded-2xl border border-border/80 bg-secondary/40 p-4 space-y-3 transition-all">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Receipt className="size-4 text-primary" />
-                <span className="text-xs font-bold text-foreground">
-                  Comprobante Electrónico Tributario
-                </span>
-              </div>
-              <span className="rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold flex items-center gap-1">
-                <CheckCircle2 className="size-3" /> Hacienda CR
-              </span>
-            </div>
-
-            <label className="flex items-start gap-2.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={requiereFactura}
-                onChange={(e) => setRequiereFactura(e.target.checked)}
-                className="mt-0.5 rounded border-input text-primary focus:ring-primary h-4 w-4"
-              />
-              <div className="text-xs">
-                <span className="font-semibold text-foreground">
-                  ¿Requieres Factura Electrónica?
-                </span>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Por defecto emitimos un <strong>Tiquete Electrónico (04)</strong> para compra rápida. Marca si necesitas deducir gastos.
-                </p>
-              </div>
-            </label>
-
-            {requiereFactura && (
-              <div className="grid gap-3 pt-3 border-t border-border/60 animate-in fade-in-50">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <div>
-                    <Label htmlFor="fe-tipo" className="text-[11px]">Tipo de Cédula</Label>
-                    <select
-                      id="fe-tipo"
-                      value={facturaTipoCedula}
-                      onChange={(e) => setFacturaTipoCedula(e.target.value)}
-                      className="w-full mt-1 h-9 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    >
-                      <option value="02">02 - Cédula Jurídica</option>
-                      <option value="01">01 - Cédula Física</option>
-                      <option value="03">03 - DIMEX</option>
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Label htmlFor="fe-cedula" className="text-[11px]">Número de Cédula *</Label>
-                    <Input
-                      id="fe-cedula"
-                      placeholder={facturaTipoCedula === "02" ? "3-101-xxxxxx" : "1-xxxx-xxxx"}
-                      value={facturaCedula}
-                      onChange={(e) => setFacturaCedula(e.target.value)}
-                      className="mt-1 h-9 text-xs"
-                    />
-                    {errores["facturaCedula"] && (
-                      <p className="mt-1 text-[11px] text-destructive">{errores["facturaCedula"]}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="fe-nombre" className="text-[11px]">Razón Social o Nombre Completo *</Label>
-                  <Input
-                    id="fe-nombre"
-                    placeholder="Nombre o empresa registrada en Hacienda"
-                    value={facturaNombre}
-                    onChange={(e) => setFacturaNombre(e.target.value)}
-                    className="mt-1 h-9 text-xs"
-                  />
-                  {errores["facturaNombre"] && (
-                    <p className="mt-1 text-[11px] text-destructive">{errores["facturaNombre"]}</p>
-                  )}
-                </div>
-              </div>
-            )}
+          {/* Facturación en mobile (debajo del método de pago, antes de confirmar) */}
+          <div className="block lg:hidden">
+            {bloqueFacturacion}
           </div>
 
           {/* BOTÓN PRINCIPAL DE ACCIÓN */}
           <Button
             type="submit"
-            variant={metodo === "tarjeta" || metodo === "paypal" || metodo === "applepay" || metodo === "googlepay" ? "hero" : "success"}
+            variant="hero"
             size="xl"
-            className="w-full py-7 text-base shadow-[var(--shadow-fire)]"
+            className="w-full py-4 sm:py-5 text-sm sm:text-base font-extrabold bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black hover:brightness-105 shadow-md cursor-pointer"
             disabled={enviando}
           >
             {enviando ? (
@@ -1458,7 +1478,8 @@ function Checkout() {
               "📱 Enviar Comprobante SINPE a Validación"
             )}
           </Button>
-        </form>
+        </div>
+      </form>
         )}
       </main>
 
