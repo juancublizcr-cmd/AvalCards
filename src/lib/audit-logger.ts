@@ -34,6 +34,9 @@ export interface AuditLog {
   metadata?: Record<string, any>;
 }
 
+export type AuditLogEntry = AuditLog;
+export const obtenerLogsAuditoria = fetchAuditLogs;
+
 const STORAGE_KEY = "aval_audit_logs_cache";
 const MAX_LOGS = 500;
 

@@ -167,17 +167,19 @@ function Admin() {
         }
 
         const labelInicio = SECCIONES.find((sec) => sec.id === seccionInicial)?.label || seccionInicial;
-        void registrarAuditoria({
-          accion: "ACCESO_SECCION",
-          titulo: `Entró a "${labelInicio}"`,
-          detalles: `${sesion.nombre || sesion.email} ingresó al panel y abrió la sección ${labelInicio}.`,
-          seccion: seccionInicial,
-          usuarioOverride: {
-            email: sesion.email,
-            nombre: sesion.nombre || sesion.email,
-            esSuperadmin: esSuper,
-          },
-        });
+        if (seccionInicial !== "auditoria") {
+          void registrarAuditoria({
+            accion: "ACCESO_SECCION",
+            titulo: `Entró a "${labelInicio}"`,
+            detalles: `${sesion.nombre || sesion.email} ingresó al panel y abrió la sección ${labelInicio}.`,
+            seccion: seccionInicial,
+            usuarioOverride: {
+              email: sesion.email,
+              nombre: sesion.nombre || sesion.email,
+              esSuperadmin: esSuper,
+            },
+          });
+        }
       } catch (err) {
         console.warn("Error sincronizando roles en tiempo real:", err);
       }
@@ -280,13 +282,15 @@ function Admin() {
     }
 
     if (anterior !== s) {
-      const labelSeccion = SECCIONES.find((sec) => sec.id === s)?.label || s;
-      void registrarAuditoria({
-        accion: "ACCESO_SECCION",
-        titulo: `Entró a "${labelSeccion}"`,
-        detalles: `${sessionUser?.nombre || sessionUser?.email || "Usuario"} abrió y navegó a la sección ${labelSeccion}.`,
-        seccion: s,
-      });
+      if (s !== "auditoria") {
+        const labelSeccion = SECCIONES.find((sec) => sec.id === s)?.label || s;
+        void registrarAuditoria({
+          accion: "ACCESO_SECCION",
+          titulo: `Entró a "${labelSeccion}"`,
+          detalles: `${sessionUser?.nombre || sessionUser?.email || "Usuario"} abrió y navegó a la sección ${labelSeccion}.`,
+          seccion: s,
+        });
+      }
     }
   };
 

@@ -980,7 +980,7 @@ function IndexPage() {
                                 : isEleccion2
                                 ? "Vehículo a escoger por el favorecido del 2° Lugar con traspaso notarial y marchamo incluidos."
                                 : isEfectivo3
-                                ? "Premio oficial entregado formalmente ante Notario Público sin retenciones ni comisiones."
+                                ? "Premio oficial entregado formalmente."
                                 : isMayor
                                 ? "Vehículo 0 KM con traspaso y marchamo incluidos."
                                 : isSegundo

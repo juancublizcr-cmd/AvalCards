@@ -1009,3 +1009,20 @@ Plataforma web progresiva (PWA) de rifas, tokens digitales y juegos promocionale
 
 
 
+
+
+---
+
+## 📌 Hito 55: Rediseño de Alto Contraste en Auditoría y Presencia del Isotipo Oficial Aval
+
+1. **Logo Oficial Aval en Encabezado y Pie:**
+   - En [`src/components/ComunidadDirectaLanding.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/ComunidadDirectaLanding.tsx), se incorporó el isotipo oficial (`/isotipo.png`) con resplandor dorado sutil a la izquierda de `AVAL | COMMUNITY` en la barra superior móvil y de escritorio, así como en la sección de invitación *"Forma parte de Aval"*.
+
+2. **Rediseño Completo de UX & Contraste en Auditoría de Actividad:**
+   - En [`src/components/admin/AuditoriaSection.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/components/admin/AuditoriaSection.tsx), se rediseñó toda la interfaz para eliminar colores pálidos o lavados en modo claro:
+     - **Super Administrador:** Fondo ámbar suave con tipografía oscura de máximo contraste (`text-amber-950`), borde reforzado e icono sólido.
+     - **Sub-administrador:** Fondo azul nítido con texto azul oscuro (`text-blue-950`) e icono azul sólido para identificar al instante las acciones de `admin@avalcommunity.cr`.
+     - **Badges de Acciones:** Badges sólidos de navegación, pagos, logins y configuración con alto contraste en modo claro y oscuro.
+     - **Estructura por Tarjetas:** Cada registro cuenta con separación visual limpia, avatar e información del usuario arriba con hora/fecha destacadas, y acción con título y detalles abajo.
+     - **Filtros Rápidos en 1 Clic:** Botones de acceso directo *"Ver Todo"*, *"Solo Operador (admin@avalcommunity.cr)"*, *"Solo Superadmin"* y *"Ocultar Navegación"* (para centrarse exclusivamente en pagos y cambios críticos).
+     - **Eliminación de Auto-Spam:** En [`src/routes/admin.tsx`](file:///d:/AntigravitDev/AvalCarCr-main/src/routes/admin.tsx), se omitió el registro automático al ingresar a la propia sección de auditoría para evitar saturar el historial con consultas del propio superadmin.

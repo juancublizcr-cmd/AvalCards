@@ -159,7 +159,7 @@ export function ComunidadDirectaLanding({
         premioOriginal: pEfectivo,
         nombre: pEfectivo?.nombre || "₡4,000,000 en Efectivo",
         subtitulo: "Transferencia Bancaria Inmediata Libre de Impuestos",
-        descripcion: "Premio oficial entregado formalmente ante Notario Público sin retenciones ni comisiones.",
+        descripcion: "Premio oficial entregado formalmente.",
         imagen: limpiarImg(pEfectivo?.imagen, efectivoImg),
         origen: "avalcommunity.cr",
         tag: "EFECTIVO DIRECTO",
@@ -211,13 +211,20 @@ export function ComunidadDirectaLanding({
       {/* ─── 1. NAVBAR (EXACTO A TU CAPTURA) ─── */}
       <header className="border-b border-white/10 bg-[#070708]/90 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="text-lg font-black tracking-wider text-amber-500">
-              AVAL
-            </span>
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 border-l border-white/20">
-              COMMUNITY
-            </span>
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <img
+              src="/isotipo.png"
+              alt="Aval Community CR"
+              className="size-7 sm:size-8 object-contain shrink-0 group-hover:scale-105 transition-transform drop-shadow-[0_0_12px_rgba(245,158,11,0.35)]"
+            />
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg font-black tracking-wider text-amber-500">
+                AVAL
+              </span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1.5 border-l border-white/20">
+                COMMUNITY
+              </span>
+            </div>
           </Link>
 
           <nav className="flex items-center gap-4 sm:gap-6 text-xs text-zinc-400 font-medium">
@@ -378,7 +385,8 @@ export function ComunidadDirectaLanding({
             {opcionActual.nombre}
           </h2>
           <p className="text-xs text-amber-400 font-semibold">
-            {podioActual.tituloNivel} · Entrega con traspaso notarial y marchamo incluidos
+            {podioActual.tituloNivel}
+            {podioActivo !== 3 ? " · Entrega con traspaso notarial y marchamo incluidos" : ""}
           </p>
           <p className="text-xs text-zinc-400 leading-relaxed pt-0.5">
             {opcionActual.descripcion}
@@ -461,9 +469,12 @@ export function ComunidadDirectaLanding({
 
         {/* FORMA PARTE DE AVAL */}
         <div className="rounded-2xl border border-white/10 bg-zinc-950 p-4 text-left space-y-1.5 mt-4">
-          <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider">
-            FORMA PARTE DE AVAL
-          </h4>
+          <div className="flex items-center gap-2">
+            <img src="/isotipo.png" alt="Aval" className="size-4.5 object-contain shrink-0" />
+            <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider">
+              FORMA PARTE DE AVAL
+            </h4>
+          </div>
           <p className="text-xs text-zinc-400 leading-relaxed">
             Participa y descubre los beneficios exclusivos de nuestra comunidad.
           </p>
