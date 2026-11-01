@@ -498,8 +498,10 @@ function IndexPage() {
           config={config}
           progreso={{
             porcentajeReal: progreso,
-            tokensVendidos: loaderData?.inventario ? loaderData.inventario.length - loaderData.inventario.filter((i) => i.disponible).length : 24,
-            totalMetaTokens: loaderData?.inventario?.length || 100,
+            tokensVendidos: loaderData?.inventario
+              ? Math.max(0, (loaderData.inventario.total || 0) - (loaderData.inventario.disponibles || 0))
+              : 24,
+            totalMetaTokens: loaderData?.inventario?.total || 100,
           }}
           cuentaRegresiva={t}
           onSeleccionarPaquete={(paq) => {
