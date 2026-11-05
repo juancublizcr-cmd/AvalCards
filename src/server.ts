@@ -47,6 +47,48 @@ function isH3SwallowedErrorBody(body: string): boolean {
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const url = new URL(request.url);
+    if (url.pathname === "/api/send-email" && request.method === "POST") {
+      try {
+        const body = (await request.json()) as any;
+        const { apiKey, from, reply_to, to, subject, html, text } = body;
+        const key = apiKey || process.env.RESEND_API_KEY || "";
+        if (!key) {
+          return new Response(JSON.stringify({ ok: false, error: "Falta la API Key de Resend" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        const resendPayload: Record<string, any> = {
+          from: from || "Aval Community CR <contacto@avalcommunity.com>",
+          reply_to: reply_to || "contacto@avalcommunity.com",
+          to: Array.isArray(to) ? to : [to],
+          subject: subject || "Confirmación de Orden - Aval Community CR",
+          html: html || "<p>Confirmación Aval Community</p>",
+        };
+        if (text) resendPayload.text = text;
+
+        const resendResp = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(resendPayload),
+        });
+        const resendData = await resendResp.json().catch(() => ({}));
+        return new Response(JSON.stringify(resendData), {
+          status: resendResp.status,
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (err: any) {
+        return new Response(JSON.stringify({ ok: false, error: err.message }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

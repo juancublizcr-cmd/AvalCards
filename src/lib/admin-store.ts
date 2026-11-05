@@ -177,6 +177,9 @@ export type Config = {
   // Google Pay
   googlePayActivo?: boolean;
   googlePayMerchantId?: string;
+  // Resend - Correos Transaccionales
+  resendApiKey?: string;
+  resendFromEmail?: string;
   // 5 Herramientas Virales de Crecimiento
   fomoActivo?: boolean;
   rankingReferidosActivo?: boolean;
@@ -575,7 +578,9 @@ export const CONFIG_DEFAULT: Config = {
   miniSorteoTitulo: "⛽ Viernes de Tanque Lleno + 🎮 Domingos de PlayStation 5 Extra",
   miniSorteoFecha: "Viernes 7:30 PM (Gasolina Delta/Uno) y Domingos 7:30 PM (PlayStation 5)",
   miniSorteoPremio: "₡50,000 en Gasolina Delta/Uno y Consola PlayStation 5",
-  pwaBannerActivo: true,
+  pwaBannerActivo: false,
+  resendApiKey: "",
+  resendFromEmail: "Aval Community CR <contacto@avalcommunity.com>",
   termometroFaseTitulo: "Progreso de la Edición",
   termometroMetaTokens: 100000,
   termometroPorcentajeManual: 0,
@@ -1345,7 +1350,9 @@ export async function fetchConfig(): Promise<Config> {
       miniSorteoTitulo: extra.miniSorteoTitulo || CONFIG_DEFAULT.miniSorteoTitulo,
       miniSorteoFecha: extra.miniSorteoFecha || CONFIG_DEFAULT.miniSorteoFecha,
       miniSorteoPremio: extra.miniSorteoPremio || CONFIG_DEFAULT.miniSorteoPremio,
-      pwaBannerActivo: extra.pwaBannerActivo ?? CONFIG_DEFAULT.pwaBannerActivo,
+      pwaBannerActivo: extra.pwaBannerActivo !== undefined ? Boolean(extra.pwaBannerActivo) : false,
+      resendApiKey: extra.resendApiKey ?? CONFIG_DEFAULT.resendApiKey,
+      resendFromEmail: extra.resendFromEmail || CONFIG_DEFAULT.resendFromEmail,
       termometroFaseTitulo: extra.termometroFaseTitulo || data.termometro_fase_titulo || CONFIG_DEFAULT.termometroFaseTitulo,
       termometroMetaTokens: extra.termometroMetaTokens ?? data.termometro_meta_tokens ?? CONFIG_DEFAULT.termometroMetaTokens,
       termometroPorcentajeManual: extra.termometroPorcentajeManual ?? data.termometro_porcentaje_manual ?? CONFIG_DEFAULT.termometroPorcentajeManual,

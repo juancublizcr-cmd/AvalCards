@@ -36,6 +36,7 @@ import { calcularGirosPorTokens, guardarGiros } from "@/lib/giros-store";
 import { JuegosExpressModal } from "@/components/JuegosExpressModal";
 import { StoryShareModal } from "@/components/StoryShareModal";
 import { SinpeWidget } from "@/components/checkout/SinpeWidget";
+import { enviarCorreoConfirmacionOrden } from "@/lib/email-service";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -372,6 +373,40 @@ function Checkout() {
       setTokensCreados(numerosFinales);
       limpiarSeleccion();
 
+      // Envío de correo con la tarjeta de Aval vía Resend
+      if (form.email && form.email.includes("@")) {
+        const premioNombre = sorteo?.premios?.[0]?.nombre || "Premio Oficial a Elección";
+        enviarCorreoConfirmacionOrden({
+          apiKey: config.resendApiKey,
+          from: config.resendFromEmail,
+          to: form.email.trim(),
+          orden: {
+            id: nuevoId,
+            nombre: form.nombre.trim(),
+            telefono: form.telefono.trim(),
+            email: form.email.trim(),
+            cantidad: cantidadTokens,
+            precio: precioFinal,
+            numeros: numerosFinales,
+            estado: estadoInicial,
+            supertoken: seleccion?.supertoken ?? false,
+            monto_supertoken: seleccion?.monto_supertoken ?? 0,
+            metodo_pago: metodo,
+            fecha: new Date().toISOString(),
+          },
+          premioNombre,
+          tipo: "compra_nueva",
+        }).then((res) => {
+          if (!res.ok) {
+            console.warn("[Resend] No se pudo enviar el correo:", res.error);
+          } else {
+            console.log("[Resend] Correo enviado exitosamente con ID:", res.id);
+          }
+        }).catch((err) => {
+          console.warn("[Resend] Error enviando correo:", err);
+        });
+      }
+
       // Emisión electrónica automática en FacturaOS (Tiquete 04 o Factura 01)
       try {
         const { apiUrl, apiKey } = getFacturaOSConfig();
@@ -520,6 +555,13 @@ function Checkout() {
                   {n}
                 </span>
               ))}
+            </div>
+          )}
+
+          {form.email && (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-xs text-emerald-400">
+              <span className="text-sm">✉️</span>
+              <span>Te enviamos la confirmación oficial con tu tarjeta de tokens a <strong>{form.email}</strong></span>
             </div>
           )}
 

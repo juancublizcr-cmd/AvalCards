@@ -8,6 +8,7 @@ import {
   ArrowRight,
   ShieldCheck,
   ZoomIn,
+  Flame,
 } from "lucide-react";
 import {
   Dialog,
@@ -46,9 +47,15 @@ interface Props {
   onVerFicha: (premio: Premio) => void;
   onFotoZoom?: (foto: { url: string; titulo: string; nivel?: string }) => void;
   onCambiarAClasico?: () => void;
+  onVerGarantia?: () => void;
 }
 
-const formatCRC = (val: number) => "₡" + Number(val || 0).toLocaleString("es-CR");
+function formatNumber(val: number | string): string {
+  const num = Math.round(Number(val) || 0);
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+const formatCRC = (val: number) => `₡${formatNumber(val)}`;
 
 export function ComunidadDirectaLanding({
   premios,
@@ -61,7 +68,10 @@ export function ComunidadDirectaLanding({
   onVerFicha,
   onFotoZoom,
   onCambiarAClasico,
+  onVerGarantia,
 }: Props) {
+  const metaMinimaSorteo = Number(config.porcentajeMinimoSorteo || sorteo.porcentajeMinimo || 80);
+
   // Podio seleccionado: 1 (Motos), 2 (Autos), 3 (Efectivo)
   const [podioActivo, setPodioActivo] = useState<1 | 2 | 3>(2);
 
@@ -425,26 +435,40 @@ export function ComunidadDirectaLanding({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-2">
             {paquetes.slice(0, 4).map((p) => {
               const isSelected = paqueteSeleccionado.cantidad === p.cantidad;
+              const esPopular = p.popular || p.cantidad === 6;
+              const tagTexto = p.tag || (p.cantidad === 6 ? (config.paqueteTagBest || "EL MEJOR · MÁS VENDIDO") : (config.paqueteTagPopular || "MÁS VENDIDO"));
+
               return (
                 <button
                   key={p.cantidad}
                   type="button"
                   onClick={() => setPaqueteSeleccionado(p)}
-                  className={`rounded-xl p-2.5 text-left transition-all cursor-pointer border flex flex-col justify-between ${
+                  className={`group relative rounded-2xl p-4 sm:p-5 text-left transition-all cursor-pointer border flex flex-col justify-between ${
                     isSelected
-                      ? "bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/40 shadow-xl shadow-amber-500/10"
-                      : "bg-zinc-950 border-white/10 hover:border-white/20 hover:bg-zinc-900/50"
+                      ? "border-amber-500 bg-gradient-to-b from-amber-500/15 via-zinc-950 to-zinc-950 ring-2 ring-amber-500/50 shadow-xl shadow-amber-500/15"
+                      : "border-white/10 bg-zinc-950/80 hover:border-white/20 hover:bg-zinc-900/60"
                   }`}
                 >
-                  <div className="text-xl font-black text-white leading-none">
-                    {p.cantidad}
+                  {esPopular && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-black text-black shadow-md flex items-center gap-1 whitespace-nowrap uppercase tracking-wider z-10">
+                      <Flame className="size-2.5 fill-black text-black" /> {tagTexto}
+                    </span>
+                  )}
+
+                  <div>
+                    <div className="font-display text-4xl sm:text-5xl font-black text-amber-500 leading-none">
+                      {p.cantidad}
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 mt-2 leading-tight">
+                      {config.paquetesTokensLabel || "Tokens Digitales Oficiales"}
+                    </div>
                   </div>
-                  <div className="text-[11px] text-zinc-400 mt-0.5">Tokens</div>
-                  <div className="text-sm font-black text-amber-400 font-mono mt-2">
-                    {formatCRC(p.precio)}
+
+                  <div className="mt-4 text-xl sm:text-2xl font-black text-white font-mono tracking-tight">
+                    {`₡${formatNumber(p.precio)}`}
                   </div>
                 </button>
               );
@@ -465,6 +489,51 @@ export function ComunidadDirectaLanding({
           <p className="text-center text-[10px] text-zinc-500">
             Acepta SINPE Móvil oficial y Tarjeta. Consulta las condiciones y reglamento de participación.
           </p>
+
+          {/* Tarjetas de Transparencia y Respaldo / Garantía de Cumplimiento */}
+          {config.mostrarTarjetasGarantia !== false && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2">
+              {/* Tarjeta 1: Cierre Inmediato */}
+              <div className="rounded-2xl border border-emerald-500/30 bg-[#07130c]/90 p-4 sm:p-5 space-y-2 shadow-lg">
+                <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-black uppercase tracking-wider">
+                  <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                  <span>{config.garantia1Badge || `SI LLEGAMOS AL ${metaMinimaSorteo}%`}</span>
+                </div>
+                <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  {config.garantia1Titulo || "Cierre Inmediato del Evento"}
+                </h4>
+                <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                  {config.garantia1Desc ||
+                    `Al alcanzar el ${metaMinimaSorteo}% de la meta o más, la edición se cierra y los ganadores se definen oficialmente con la Emisión Oficial de la JPS más cercana.`}
+                </p>
+              </div>
+
+              {/* Tarjeta 2: Garantía de Cumplimiento */}
+              <div
+                onClick={() => onVerGarantia?.()}
+                className="rounded-2xl border border-amber-500/40 bg-[#130f06]/90 p-4 sm:p-5 space-y-2 shadow-lg cursor-pointer hover:border-amber-500/70 transition-all group"
+                role="button"
+                tabIndex={0}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-amber-400 text-xs font-black uppercase tracking-wider">
+                    <ShieldCheck className="size-4 text-amber-400 shrink-0" />
+                    <span>{config.garantia2Badge || "GARANTÍA DE CUMPLIMIENTO"}</span>
+                  </div>
+                  <span className="text-xs font-bold text-amber-400 underline decoration-amber-400/60 group-hover:decoration-amber-400 group-hover:text-amber-300 transition-colors flex items-center gap-0.5">
+                    Ver respaldo →
+                  </span>
+                </div>
+                <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  {config.garantia2Titulo || "La Edición Continúa"}
+                </h4>
+                <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                  {config.garantia2Desc ||
+                    `Si al vencer el contador aún no se alcanza el ${metaMinimaSorteo}% mínimo, la edición continúa abierta acumulando ventas y se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.`}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* FORMA PARTE DE AVAL */}

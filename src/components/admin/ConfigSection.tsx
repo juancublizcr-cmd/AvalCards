@@ -41,6 +41,7 @@ import { registrarAuditoria } from "@/lib/audit-logger";
 import { probarConexionIA } from "@/lib/ai-service";
 import { formatearHora12 } from "@/lib/fecha-utils";
 import { FacturaOSConfigCard } from "@/components/FacturaOSConfigCard";
+import { enviarCorreoConfirmacionOrden } from "@/lib/email-service";
 
 export function ConfigSection({
   config,
@@ -54,6 +55,7 @@ export function ConfigSection({
   const [borrador, setBorrador] = useState<Config>(config);
   const [guardando, setGuardando] = useState(false);
   const [probandoIA, setProbandoIA] = useState(false);
+  const [probandoCorreo, setProbandoCorreo] = useState(false);
   const [mostrarKeys, setMostrarKeys] = useState<Record<string, boolean>>({});
   const [modoSimulacion, setModoSimulacion] = useState<string>("auto");
 
@@ -89,6 +91,48 @@ export function ConfigSection({
 
   const toggleMostrarKey = (k: string) => {
     setMostrarKeys((prev) => ({ ...prev, [k]: !prev[k] }));
+  };
+
+  const probarEnvioCorreo = async () => {
+    const key = borrador.resendApiKey || "";
+    const destino = prompt("Ingresa el correo electrónico donde quieres recibir la tarjeta de prueba:", "admin@avalmotors.cr");
+    if (!destino || !destino.includes("@")) return;
+
+    setProbandoCorreo(true);
+    try {
+      const res = await enviarCorreoConfirmacionOrden({
+        apiKey: key,
+        from: borrador.resendFromEmail || "Aval Community CR <onboarding@resend.dev>",
+        to: destino.trim(),
+        orden: {
+          id: "SG-PRUEBA",
+          nombre: "Usuario Aval",
+          telefono: "8888-8888",
+          email: destino.trim(),
+          cantidad: 6,
+          precio: 8000,
+          numeros: ["14285", "37194", "50281", "68492", "79103", "91240"],
+          estado: "pendiente",
+          fecha: new Date().toISOString(),
+        },
+        premioNombre: "Vehículo o Moto de Alta Gama a Elección",
+        tipo: "compra_nueva",
+      });
+
+      if (res.ok) {
+        toast.success("¡Correo de prueba enviado con éxito!", {
+          description: `Revisa la bandeja de entrada de ${destino}.`,
+        });
+      } else {
+        toast.error("Error al enviar con Resend", {
+          description: res.error || "Verifica tu API Key.",
+        });
+      }
+    } catch (err: any) {
+      toast.error("Error de conexión", { description: err.message });
+    } finally {
+      setProbandoCorreo(false);
+    }
   };
 
   const ejecutarPruebaIA = async () => {
@@ -1006,10 +1050,80 @@ export function ConfigSection({
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">{borrador.pwaBannerActivo ? "Activo" : "Inactivo"}</span>
             <Switch
-              checked={borrador.pwaBannerActivo ?? true}
+              checked={borrador.pwaBannerActivo ?? false}
               onCheckedChange={(v) => setBorrador({ ...borrador, pwaBannerActivo: v })}
             />
           </div>
+        </div>
+      </section>
+
+      {/* 7.6 CORREOS TRANSACCIONALES CON RESEND (TARJETA AVAL) */}
+      <section className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-card to-card p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <div className="flex items-center gap-2.5 font-black text-base text-emerald-400">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 font-black text-sm">✉️</span>
+              7.6 Confirmación de Correos al Comprar (Resend)
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Envía automáticamente la tarjeta digital de lujo de Aval por correo al cliente cuando realiza su compra indicando que queda en firme con la confirmación del SINPE Móvil.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-foreground">API Key de Resend (.env / Dashboard)</Label>
+            <div className="relative">
+              <Input
+                type={mostrarKeys["resend"] ? "text" : "password"}
+                placeholder="re_..."
+                value={borrador.resendApiKey ?? ""}
+                onChange={(e) => setBorrador({ ...borrador, resendApiKey: e.target.value.trim() })}
+                className="font-mono text-xs pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => toggleMostrarKey("resend")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                {mostrarKeys["resend"] ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Configurada en tu archivo <code className="text-emerald-400">.env</code>.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-foreground">Remitente ("From")</Label>
+            <Input
+              placeholder="Aval Community CR <onboarding@resend.dev>"
+              value={borrador.resendFromEmail ?? ""}
+              onChange={(e) => setBorrador({ ...borrador, resendFromEmail: e.target.value.trim() })}
+              className="text-xs"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Para pruebas usa <code className="text-amber-400">onboarding@resend.dev</code> o tu dominio oficial de Resend.
+            </p>
+          </div>
+        </div>
+
+        {/* Botón de Prueba */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-border/50">
+          <div className="text-[11px] text-muted-foreground">
+            Incluye la credencial VIP dorada con los tokens asignados y el mensaje de confirmación SINPE Móvil.
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={probarEnvioCorreo}
+            disabled={probandoCorreo}
+            className="w-full sm:w-auto text-xs font-bold gap-1.5 cursor-pointer border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
+          >
+            {probandoCorreo ? "Enviando prueba..." : "✉️ Enviar correo de prueba a mí"}
+          </Button>
         </div>
       </section>
 

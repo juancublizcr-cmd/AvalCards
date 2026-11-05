@@ -514,6 +514,7 @@ function IndexPage() {
           }}
           onFotoZoom={(foto) => setFotoZoom(foto)}
           onCambiarAClasico={() => setEstiloLocal("clasico")}
+          onVerGarantia={() => setOpenGarantiaModal(true)}
         />
       ) : (
         <div className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
@@ -1395,7 +1396,7 @@ function IndexPage() {
                 </div>
                 <h4 className="font-bold text-sm text-foreground">{config.garantia2Titulo || "La Edición Continúa"}</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {config.garantia2Desc || `Si al vencer el contador aún no se alcanza el ${metaMinimaSorteo}%, se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.`}
+                  {config.garantia2Desc || `Si al vencer el contador aún no se alcanza el ${metaMinimaSorteo}% mínimo, la edición continúa abierta acumulando ventas y se traslada la fecha de cierre. Todos los tokens pagados conservan 100% su validez.`}
                 </p>
               </div>
             </div>
@@ -2033,7 +2034,7 @@ function IndexPage() {
 
       {/* NOTIFICACIONES FOMO Y BANNER PWA */}
       <FomoNotifications config={config} />
-      <PwaInstallPrompt config={config} />
+      {config.pwaBannerActivo && <PwaInstallPrompt config={config} />}
 
       <StickersModal
         paquete={paquete}

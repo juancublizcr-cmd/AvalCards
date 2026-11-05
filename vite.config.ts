@@ -38,9 +38,69 @@ function imapTestPlugin() {
   };
 }
 
+function resendEmailPlugin() {
+  return {
+    name: "resend-email-middleware",
+    configureServer(server: any) {
+      server.middlewares.use("/api/send-email", (req: any, res: any) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        let body = "";
+        req.on("data", (chunk: any) => {
+          body += chunk;
+        });
+        req.on("end", async () => {
+          try {
+            const { apiKey, from, reply_to, to, subject, html, text } = JSON.parse(body || "{}");
+            const key = apiKey || process.env.RESEND_API_KEY || "";
+            if (!key) {
+              res.statusCode = 400;
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify({ ok: false, error: "Falta la API Key de Resend" }));
+              return;
+            }
+
+            const resendPayload: Record<string, any> = {
+              from: from || "Aval Community CR <contacto@avalcommunity.com>",
+              reply_to: reply_to || "contacto@avalcommunity.com",
+              to: Array.isArray(to) ? to : [to],
+              subject: subject || "Confirmación de Orden - Aval Community CR",
+              html: html || "<p>Confirmación Aval Community</p>",
+            };
+            if (text) resendPayload.text = text;
+
+            const resendResp = await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${key}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(resendPayload),
+            });
+
+            const resendData = await resendResp.json().catch(() => ({}));
+            res.statusCode = resendResp.status;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify(resendData));
+          } catch (e: any) {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: false, error: e.message || "Error al enviar correo" }));
+          }
+        });
+      });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     imapTestPlugin(),
+    resendEmailPlugin(),
     // 1. TanStack Start (incluye router, SSR y file-based routing)
     tanstackStart({
       server: { entry: "server" },

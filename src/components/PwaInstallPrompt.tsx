@@ -10,7 +10,7 @@ export function PwaInstallPrompt({ config }: { config: Config }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (config.pwaBannerActivo === false) return;
+    if (!config.pwaBannerActivo) return;
 
     // Verificar si ya está instalada o si el usuario la cerró recientemente
     if (window.matchMedia("(display-mode: standalone)").matches) return;
@@ -43,7 +43,7 @@ export function PwaInstallPrompt({ config }: { config: Config }) {
     };
   }, [config.pwaBannerActivo]);
 
-  if (config.pwaBannerActivo === false || !visible) return null;
+  if (!config.pwaBannerActivo || !visible) return null;
 
   const handleInstalar = async () => {
     if (deferredPrompt) {
