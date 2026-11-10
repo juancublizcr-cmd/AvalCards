@@ -415,7 +415,7 @@ function Admin() {
               ) : null}
               {seccion === "remates" ? <RematesSection /> : null}
               {seccion === "pagos" ? (
-                <PagosSection ordenes={ordenes} onEstado={cambiarEstado} />
+                <PagosSection ordenes={ordenes} onEstado={cambiarEstado} config={config} />
               ) : null}
               {seccion === "facturacion" ? (
                 <FacturacionSection ordenes={ordenes} />

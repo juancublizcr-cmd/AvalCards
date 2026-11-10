@@ -589,7 +589,7 @@ export const CONFIG_DEFAULT: Config = {
   supertokenMoneda: "CRC",
   supertokenPremioUsd: 4500000,
   supertokenPremioPrimeroUsd: 4500000,
-  supertokenPremioSegundoUsd: 250000,
+  supertokenPremioSegundoUsd: 2500000,
   supertokenPremioTerceroUsd: 1500000,
   // Agente de IA
   aiActivo: true,

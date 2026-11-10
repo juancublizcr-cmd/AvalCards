@@ -32,6 +32,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { Orden } from "@/lib/orders";
+import type { Config } from "@/lib/admin-store";
 import { exportarOrdenesExcel } from "@/lib/export-excel";
 
 const POR_PAGINA = 8;
@@ -66,15 +67,23 @@ function formatearFechaHora(fechaStr?: string) {
 export function PagosSection({
   ordenes,
   onEstado,
+  config,
 }: {
   ordenes: Orden[];
   onEstado: (id: string, estado: Orden["estado"]) => void;
+  config?: Config;
 }) {
   const [q, setQ] = useState("");
   const [estado, setEstado] = useState<string>("todos");
   const [filtroMetodo, setFiltroMetodo] = useState<string>("todos");
   const [pagina, setPagina] = useState(1);
   const [detalle, setDetalle] = useState<Orden | null>(null);
+
+  const superMoneda = config?.supertokenMoneda || "CRC";
+  const superSimbolo = superMoneda === "CRC" ? "₡" : "$";
+  const superPremio1 = (config?.supertokenPremioPrimeroUsd || config?.supertokenPremioUsd || 4500000).toLocaleString("es-CR");
+  const superPremio2 = (config?.supertokenPremioSegundoUsd || 2500000).toLocaleString("es-CR");
+  const superPremio3 = (config?.supertokenPremioTerceroUsd || 1500000).toLocaleString("es-CR");
 
   const filtradas = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -460,7 +469,7 @@ export function PagosSection({
                   <Crown className="size-5 text-amber-500 shrink-0" />
                   <div>
                     <strong className="block text-sm">SuperToken VIP Activo</strong>
-                    <span>Esta orden califica para bonos en efectivo: $10,000 USD (1° Lugar), $6,000 USD (2° Lugar) y $3,000 USD (3° Lugar).</span>
+                    <span>Esta orden califica para bonos en efectivo: {superSimbolo}{superPremio1} (1° Lugar), {superSimbolo}{superPremio2} (2° Lugar) y {superSimbolo}{superPremio3} (3° Lugar).</span>
                   </div>
                 </div>
               )}

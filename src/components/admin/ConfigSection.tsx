@@ -1136,7 +1136,7 @@ export function ConfigSection({
               8. Configuración de SuperTokens (Opción Extra y Premio Cash)
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Controla el precio adicional que pagan los clientes al activar SuperToken y el monto en efectivo USD extra que ganan con el 1° Lugar.
+              Controla el precio adicional que pagan los clientes al activar SuperToken y el monto en efectivo en colones (₡) extra que ganan con los premios.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -1168,16 +1168,16 @@ export function ConfigSection({
 
           <div className="space-y-2">
             <Label className="text-xs font-bold text-amber-400">
-              🥇 Bono 1° Lugar ($ USD)
+              🥇 Bono 1° Lugar (₡ CRC)
             </Label>
             <Input
               type="number"
-              value={borrador.supertokenPremioPrimeroUsd ?? borrador.supertokenPremioUsd ?? 10000}
+              value={borrador.supertokenPremioPrimeroUsd ?? borrador.supertokenPremioUsd ?? 4500000}
               onChange={(e) => {
                 const val = Number(e.target.value);
                 setBorrador({ ...borrador, supertokenPremioPrimeroUsd: val, supertokenPremioUsd: val });
               }}
-              placeholder="10000"
+              placeholder="4500000"
               className="border-amber-500/40 font-bold font-mono text-amber-400"
             />
             <span className="text-[11px] text-muted-foreground block">
@@ -1187,13 +1187,13 @@ export function ConfigSection({
 
           <div className="space-y-2">
             <Label className="text-xs font-bold text-amber-300">
-              🥈 Bono 2° Lugar ($ USD)
+              🥈 Bono 2° Lugar (₡ CRC)
             </Label>
             <Input
               type="number"
-              value={borrador.supertokenPremioSegundoUsd ?? 6000}
+              value={borrador.supertokenPremioSegundoUsd ?? 2500000}
               onChange={(e) => setBorrador({ ...borrador, supertokenPremioSegundoUsd: Number(e.target.value) })}
-              placeholder="6000"
+              placeholder="2500000"
               className="border-amber-500/40 font-bold font-mono text-amber-300"
             />
             <span className="text-[11px] text-muted-foreground block">
@@ -1203,13 +1203,13 @@ export function ConfigSection({
 
           <div className="space-y-2">
             <Label className="text-xs font-bold text-yellow-500">
-              🥉 Bono 3° Lugar ($ USD)
+              🥉 Bono 3° Lugar (₡ CRC)
             </Label>
             <Input
               type="number"
-              value={borrador.supertokenPremioTerceroUsd ?? 3000}
+              value={borrador.supertokenPremioTerceroUsd ?? 1500000}
               onChange={(e) => setBorrador({ ...borrador, supertokenPremioTerceroUsd: Number(e.target.value) })}
-              placeholder="3000"
+              placeholder="1500000"
               className="border-amber-500/40 font-bold font-mono text-yellow-500"
             />
             <span className="text-[11px] text-muted-foreground block">

@@ -172,7 +172,7 @@ export function generarHtmlTarjetaAval(params: EnviarEmailParams): string {
                         orden.supertoken
                           ? `<tr>
                               <td style="color: #71717a; padding: 4px 0;">Opcion SuperToken:</td>
-                              <td style="color: #fbbf24; font-weight: 700; padding: 4px 0;">Activo (Premio Extra USD)</td>
+                              <td style="color: #fbbf24; font-weight: 700; padding: 4px 0;">Activo (Bono Extra en Colones)</td>
                             </tr>`
                           : ""
                       }
