@@ -46,6 +46,8 @@ export function QrFlyerSection() {
   );
   const [footerTexto, setFooterTexto] = useState<string>("www.avalcommunity.com");
   const [formato, setFormato] = useState<"afiche" | "historia">("afiche");
+  const [estiloQr, setEstiloQr] = useState<"redondeado" | "clasico">("redondeado");
+  const [incluirLogoCentro, setIncluirLogoCentro] = useState<boolean>(true);
   const [telefonoReferido, setTelefonoReferido] = useState<string>("");
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -85,6 +87,8 @@ export function QrFlyerSection() {
     logoUrl: "/isotipo.png",
     formato,
     colorAcento: "#f97316",
+    estiloQr,
+    incluirLogoCentro,
   };
 
   // Re-generar preview cuando cambien las opciones
@@ -112,7 +116,7 @@ export function QrFlyerSection() {
       activo = false;
       clearTimeout(timer);
     };
-  }, [urlFinal, subtitulo, titulo, descripcion, footerTexto, formato]);
+  }, [urlFinal, subtitulo, titulo, descripcion, footerTexto, formato, estiloQr, incluirLogoCentro]);
 
   // Acciones
   const handleDescargarFlyer = async () => {
@@ -133,7 +137,7 @@ export function QrFlyerSection() {
   const handleDescargarSoloQr = async () => {
     try {
       toast.info("Generando código QR con logo...");
-      await descargarSoloQrPng(urlFinal, "/isotipo.png", 1200, "Codigo-QR-Oficial-Aval.png");
+      await descargarSoloQrPng(urlFinal, "/isotipo.png", 1200, "Codigo-QR-Oficial-Aval.png", estiloQr, incluirLogoCentro);
       toast.success("¡Código QR oficial descargado (1200x1200px)!", {
         description: "Ideal para imprentas, rotulación, banners o stickers de vinil.",
       });
@@ -389,6 +393,34 @@ export function QrFlyerSection() {
                   placeholder="www.avalcommunity.com"
                   className="text-xs font-mono"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Estilo de Puntos QR</Label>
+                  <Select value={estiloQr} onValueChange={(v) => setEstiloQr(v as "redondeado" | "clasico")}>
+                    <SelectTrigger className="text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="redondeado">Puntos Suaves (Aesthetic)</SelectItem>
+                      <SelectItem value="clasico">Cuadros Suaves</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Logo en el Centro</Label>
+                  <Select value={incluirLogoCentro ? "si" : "no"} onValueChange={(v) => setIncluirLogoCentro(v === "si")}>
+                    <SelectTrigger className="text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="si">Con Logo Oficial</SelectItem>
+                      <SelectItem value="no">Sin Logo (QR Limpio)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
