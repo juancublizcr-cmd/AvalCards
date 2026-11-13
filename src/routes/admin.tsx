@@ -36,6 +36,7 @@ import { ReferidosSection } from "@/components/admin/ReferidosSection";
 import { ReglamentoNotarialSection } from "@/components/admin/ReglamentoNotarialSection";
 import { ImpactoSocialSection } from "@/components/admin/ImpactoSocialSection";
 import { SponsorsSection } from "@/components/admin/SponsorsSection";
+import { QrFlyerSection } from "@/components/admin/QrFlyerSection";
 import { ConfigSection } from "@/components/admin/ConfigSection";
 import { DisenoWebSection } from "@/components/admin/DisenoWebSection";
 import { UsuariosPermisosSection } from "@/components/admin/UsuariosPermisosSection";
@@ -463,6 +464,7 @@ function Admin() {
               ) : null}
               {seccion === "social" ? <ImpactoSocialSection /> : null}
               {seccion === "sponsors" ? <SponsorsSection /> : null}
+              {seccion === "qrFlyer" ? <QrFlyerSection /> : null}
               {seccion === "disenoWeb" ? <DisenoWebSection config={config} setConfig={setConfig} /> : null}
               {seccion === "config" ? (
                 <ConfigSection config={config} setConfig={setConfig} onCambiarSeccion={handleCambiarSeccion} />

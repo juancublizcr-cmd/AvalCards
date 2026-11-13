@@ -56,6 +56,7 @@ export type AdminSeccion =
   | "legal"
   | "social"
   | "sponsors"
+  | "qrFlyer"
   | "disenoWeb"
   | "config"
   | "usuarios"
@@ -101,6 +102,7 @@ export const GRUPOS_SECCIONES: GrupoSecciones[] = [
       { id: "remates", label: "Remates & Subastas VIP", icono: Gavel },
       { id: "referidos", label: "Referidos y Afiliados", icono: Share2 },
       { id: "sponsors", label: "Sponsors & Comercios", icono: Store },
+      { id: "qrFlyer", label: "Afiches & Códigos QR", icono: QrCode, badge: "NUEVO" },
       { id: "social", label: "Bien Social & Causas", icono: HeartHandshake },
     ],
   },
