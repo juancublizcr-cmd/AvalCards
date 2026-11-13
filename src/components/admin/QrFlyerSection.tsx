@@ -38,7 +38,7 @@ import {
 
 export function QrFlyerSection() {
   const [destino, setDestino] = useState<string>("home");
-  const [urlPersonalizada, setUrlPersonalizada] = useState<string>("https://avalcommunity.com");
+  const [urlPersonalizada, setUrlPersonalizada] = useState<string>("https://www.avalcommunity.com");
   const [subtitulo, setSubtitulo] = useState<string>("AVAL COMMUNITY CR");
   const [titulo, setTitulo] = useState<string>("Escaneá el QR");
   const [descripcion, setDescripcion] = useState<string>(
@@ -54,24 +54,26 @@ export function QrFlyerSection() {
   const [generando, setGenerando] = useState<boolean>(false);
   const [copiado, setCopiado] = useState<boolean>(false);
 
+  // URL base oficial de producción (siempre apunta a www.avalcommunity.com, nunca a localhost)
+  const BASE_URL = "https://www.avalcommunity.com";
+
   // Calcular URL final según el destino elegido
   const obtenerUrlFinal = () => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://avalcommunity.com";
     const refParam = telefonoReferido ? `?ref=${telefonoReferido.replace(/\D/g, "")}` : "";
 
     switch (destino) {
       case "home":
-        return `${origin}/${refParam}`;
+        return `${BASE_URL}/${refParam}`;
       case "checkout":
-        return `${origin}/checkout${refParam}`;
+        return `${BASE_URL}/checkout${refParam}`;
       case "validar":
-        return `${origin}/validar`;
+        return `${BASE_URL}/validar`;
       case "sponsors":
-        return `${origin}/sponsors`;
+        return `${BASE_URL}/sponsors`;
       case "personalizada":
-        return urlPersonalizada.trim() || origin;
+        return urlPersonalizada.trim() || BASE_URL;
       default:
-        return origin;
+        return BASE_URL;
     }
   };
 
@@ -270,7 +272,7 @@ export function QrFlyerSection() {
                     <SelectValue placeholder="Seleccionar página" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="home">Portada Oficial (avalcommunity.com)</SelectItem>
+                    <SelectItem value="home">Portada Oficial (https://www.avalcommunity.com)</SelectItem>
                     <SelectItem value="checkout">Página Directa de Compra (/checkout)</SelectItem>
                     <SelectItem value="validar">Consulta y Validación de Tokens (/validar)</SelectItem>
                     <SelectItem value="sponsors">Comercios y Beneficios Aliados (/sponsors)</SelectItem>
